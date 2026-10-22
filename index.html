@@ -63,6 +63,10 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
     radial-gradient(120% 110% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.6));
   box-shadow:inset 0 0 24px rgba(0,0,0,.8)}
 .vbox[hidden]{display:none}
+.tapsound{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:21;
+  padding:7px 14px;border-radius:999px;background:rgba(10,10,9,.55);color:var(--title);font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;pointer-events:none;opacity:0;transition:opacity .4s}
+body.filmfull:not(.sound-on) .tapsound{opacity:1}
 .transport{display:flex;gap:6px}
 .transport[hidden], .tr[hidden]{display:none!important}
 .nogl{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--title-soft)}
@@ -121,6 +125,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
 
 <canvas id="gl" aria-label="A 1970s television on a studio set. Turn the channel dial to change films."></canvas>
 <div class="vbox" id="vbox" hidden></div>
+<div class="tapsound" aria-hidden="true">Tap for sound</div>
 <div class="fx vignette"></div>
 <div class="fx grain" id="grain"></div>
 <div class="fx curtain" id="curtain"></div>
@@ -730,6 +735,7 @@ canvas.addEventListener('pointermove', e => {
   const a = pick(e); canvas.style.cursor = a === 'screen' && zoomTo < 1 ? 'zoom-in' : a ? 'pointer' : 'default';
 });
 canvas.addEventListener('pointerdown', e => {
+  if (document.body.classList.contains('filmfull')) { if (!soundOn) setSound(true); return; }
   const a = pick(e);
   if (a === 'dial') { drag = { x: e.clientX, y: e.clientY, moved: false }; canvas.setPointerCapture(e.pointerId); }
   else if (a === 'vol') setSound(!soundOn);
@@ -881,7 +887,7 @@ function startChannelAudio() {
 const soundBtn = $('sound');
 function setSound(on) {
   ensureAudio(); actx.resume();
-  soundOn = on;
+  soundOn = on; document.body.classList.toggle('sound-on', on);
   master.gain.setTargetAtTime(on ? .85 : 0, actx.currentTime, .06);
   volAngle = on ? -1.2 : 2.2;  // knob turns clockwise when on
   soundBtn.setAttribute('aria-pressed', on); soundBtn.textContent = on ? 'Sound on' : 'Sound off';
@@ -961,7 +967,9 @@ setWall(WALLS.find(w => w.id === saved) || WALLS[0]);
 const vbox = $('vbox');
 let vFrame = null, vId = null, vimeoBlocked = false;
 addEventListener('securitypolicyviolation', e => { if (/vimeo/.test(e.blockedURI || '')) { vimeoBlocked = true; killVimeo(); } });
-function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; vId = null; vbox.hidden = true; }
+const landscapePhone = matchMedia('(orientation: landscape) and (pointer: coarse) and (max-height: 540px)');
+let fullP = 0;
+function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
 function makeVimeo(id) {
   vFrame = document.createElement('iframe');
   vFrame.src = `https://player.vimeo.com/video/${id}?autoplay=1&muted=${soundOn ? 0 : 1}&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0`;
@@ -988,11 +996,26 @@ function syncVimeo(now) {
   // on the set the film fills the 4:3 tube; stepping in opens it to the whole display above the deck
   const zp = zoomProgress(now), deckH = zp > 0 ? $('deck').offsetHeight : 0;
   const L = (a, b) => a + (b - a) * zp;
-  const bx = L(x0, 0), by = L(y0, 0), bw = L(x1 - x0, innerWidth), bh = L(y1 - y0, innerHeight - deckH);
+  let bx = L(x0, 0), by = L(y0, 0), bw = L(x1 - x0, innerWidth), bh = L(y1 - y0, innerHeight - deckH);
   vbox.style.transform = `translate(${bx}px, ${by}px)`;
   vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px';
   vbox.style.borderRadius = L(.045 / SW * (x1 - x0), 0) + 'px';
   vbox.style.setProperty('--crt', 1 - zp * .75);
+  // phone turned sideways: the film takes the whole screen, edge to edge
+  const full = landscapePhone.matches;
+  const dt = Math.min(.1, (now - (syncVimeo.last || now)) / 1000); syncVimeo.last = now;
+  fullP += ((full ? 1 : 0) - fullP) * (reduce ? 1 : 1 - Math.exp(-dt * 7));
+  if (Math.abs(fullP - (full ? 1 : 0)) < .002) fullP = full ? 1 : 0;
+  document.body.classList.toggle('filmfull', full);
+  if (fullP > .001) {
+    const F = (a, b) => a + (b - a) * fullP;
+    bx = F(bx, 0); by = F(by, 0); bw = F(bw, innerWidth); bh = F(bh, innerHeight);
+    vbox.style.transform = `translate(${bx}px, ${by}px)`;
+    vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px';
+    vbox.style.borderRadius = F(parseFloat(vbox.style.borderRadius), 0) + 'px';
+    vbox.style.setProperty('--crt', F(1 - zp * .75, .12));
+  }
+  vbox.style.zIndex = fullP > .01 ? 20 : 0;
   // crop to cover: centered, no letterbox, horizontal or vertical
   const ar = w.aspect || 16 / 9, fw = bw / bh > ar ? bw : bh * ar, fh = fw / ar;
   vFrame.style.width = fw + 'px'; vFrame.style.height = fh + 'px';
