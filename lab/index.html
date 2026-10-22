@@ -8,30 +8,78 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tibetan:wght@600&display=swap&text=%E0%BD%96%E0%BD%A2%E0%BC%8B%E0%BD%91%E0%BD%BC%E0%BC%8B%E0%BD%90%E0%BD%BC%E0%BD%A6%E0%BC%8B%E0%BD%82%E0%BE%B2%E0%BD%BC%E0%BD%A3%E0%BC%8D">
 <link rel="stylesheet" href="lab.css">
 <style>
-main{max-width:1040px;margin:0 auto;padding:clamp(40px, 9vh, 96px) 16px 64px}
-h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clamp(2.6rem, 8vw, 5rem);line-height:1;margin:10px 0 14px}
-.lede{max-width:52ch;color:var(--title-soft);font-size:.85rem;line-height:1.7;margin:0 0 clamp(36px, 7vh, 64px)}
-.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.exp{border-bottom:1px solid var(--line)}
-.exp a,.exp .soon{display:grid;grid-template-columns:3.2rem 1fr auto;gap:8px 16px;align-items:baseline;padding:24px 4px;text-decoration:none}
-.exp a{transition:background .3s}
-.exp a:hover{background:rgba(239,232,216,.04)}
-.no{font-size:.72rem;color:var(--title-soft);letter-spacing:.14em}
-.exp h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(1.6rem, 4vw, 2.3rem);line-height:1.05}
-.exp p{grid-column:2 / -1;margin:0;max-width:62ch;color:var(--title-soft);font-size:.8rem;line-height:1.7}
-.tags{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--title-soft);white-space:nowrap}
-.go{color:var(--amber)}
-.soon h2{color:var(--title-soft)}
-.exp .also{display:block;margin:-10px 0 0;padding:0 4px 22px calc(3.2rem + 20px);font-size:.74rem;color:var(--title-soft);text-decoration:none}
-.exp .also b{font-weight:500;color:var(--title)}
-.exp .also:hover{color:var(--title)}
-@media (max-width:560px){
-  .exp a,.exp .soon{grid-template-columns:2.4rem 1fr}
-  .tags{grid-column:2}
-  .exp .also{padding-left:calc(2.4rem + 20px)}
+/* Layout: a dark room with one long table under two pools of light. Each experiment sits on the table as an object (the drum machine itself, running silently; the Tibetan book in its cloth). Click one and the camera falls into it. Phones stack the objects. */
+html,body{overflow-x:clip}
+body{min-height:100vh;display:flex;flex-direction:column}
+main{flex:1;display:flex;flex-direction:column;max-width:1320px;width:100%;margin:0 auto;padding:clamp(28px, 6vh, 64px) 16px 40px}
+.title{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clamp(2.6rem, 8vw, 5rem);line-height:1;margin:10px 0 0}
+.lede{max-width:44ch;color:var(--title-soft);font-size:.8rem;line-height:1.7;margin:0}
+
+.room{position:relative;flex:1;display:flex;align-items:flex-end;gap:clamp(24px, 4vw, 64px);margin-top:clamp(24px, 6vh, 56px);padding:0 clamp(0px, 2vw, 32px) 26px}
+/* the table */
+.room::before{content:"";position:absolute;left:-40px;right:-40px;bottom:0;height:46%;z-index:-1;border-radius:6px 6px 0 0;
+  background:
+    radial-gradient(40% 70% at 30% 0%, rgba(255,214,150,.13), transparent 70%),
+    radial-gradient(30% 70% at 78% 0%, rgba(255,214,150,.11), transparent 70%),
+    repeating-linear-gradient(92deg, rgba(0,0,0,.18) 0 2px, rgba(0,0,0,0) 2px 14px),
+    linear-gradient(180deg,#3a2618,#22160e 60%,#130c08);
+  box-shadow:inset 0 2px 0 rgba(255,220,170,.12)}
+.station{position:relative;display:flex;flex-direction:column;align-items:center;gap:22px;min-width:0}
+.station.machine{flex:1.7}
+.station.book{flex:1.15}
+.station.card{flex:.8}
+/* a pool of light from above */
+.station::before{content:"";position:absolute;left:50%;bottom:58px;width:130%;aspect-ratio:2.2;transform:translateX(-50%);z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side, rgba(255,226,170,.16), rgba(255,226,170,0))}
+
+.obj{display:block;position:relative;width:100%;border:0;padding:0;background:none;cursor:pointer;color:inherit;text-decoration:none;
+  perspective:1600px}
+.obj .tilt{position:relative;transform:rotateX(24deg);transform-origin:50% 100%;transition:transform .7s cubic-bezier(.2,.7,.2,1), filter .7s}
+.obj:hover .tilt,.obj:focus-visible .tilt{transform:rotateX(10deg) translateY(-10px)}
+.obj .shadow{position:absolute;left:4%;right:4%;bottom:-18px;height:36px;border-radius:50%;background:rgba(0,0,0,.7);filter:blur(14px);z-index:-1;transition:opacity .7s, transform .7s}
+.obj:hover .shadow{opacity:.7;transform:scale(.96)}
+.obj:focus-visible{outline:none}
+.obj:focus-visible .tilt{filter:drop-shadow(0 0 0 2px var(--title))}
+
+/* the machine is the real page, shrunk onto the table */
+.mframe{position:relative;width:100%;aspect-ratio:1180 / 496;overflow:hidden;border-radius:10px;box-shadow:0 2px 0 2px #0b0b0a}
+.mframe iframe{position:absolute;left:0;top:0;width:1180px;height:496px;border:0;transform-origin:0 0;pointer-events:none;background:transparent}
+.mframe::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(170deg,rgba(255,255,255,.07),rgba(255,255,255,0) 40%)}
+
+.book svg{display:block;width:100%;height:auto;overflow:visible}
+.slip{cursor:pointer}
+.slip:hover rect,.slip:focus-visible rect{fill:#fff8e6}
+.slip:focus-visible{outline:none}
+
+.cap{text-align:center;max-width:44ch;display:grid;gap:6px}
+.cap .no{font-size:.66rem;letter-spacing:.24em;color:var(--title-soft)}
+.cap h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(1.5rem, 3vw, 2.1rem);line-height:1.05}
+.cap h2 a{text-decoration:none}
+.cap p{margin:0;font-size:.74rem;line-height:1.6;color:var(--title-soft)}
+.cap .also{font-size:.7rem;color:var(--title-soft);text-decoration:none}
+.cap .also b{font-weight:500;color:var(--title)}
+.cap .also:hover{color:var(--title)}
+.tile{display:grid;place-items:center;aspect-ratio:4/3;border:1px dashed var(--line);border-radius:10px;color:var(--title-soft);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase}
+
+/* the fall into an object */
+.veil{position:fixed;inset:0;z-index:99;background:#000;opacity:0;transition:opacity .55s ease .4s;pointer-events:none}
+.veil.on{opacity:1}
+.station.chosen{z-index:100}
+body.leaving .title, body.leaving .top, body.leaving .station:not(.chosen), body.leaving .room::before, body.leaving .chosen .cap{opacity:0;transition:opacity .45s}
+
+@media (max-width:820px){
+  .room{flex-direction:column;align-items:stretch;gap:56px;padding:0 0 30px}
+  .room::before{display:none}
+  .station{padding-bottom:10px}
+  .station::after{content:"";position:absolute;left:0;right:0;bottom:-14px;height:60%;z-index:-2;
+    background:linear-gradient(180deg,#3a2618,#1a110b);border-radius:4px;opacity:.75}
+  .obj .tilt{transform:rotateX(16deg)}
 }
+@media (prefers-reduced-motion: reduce){ .obj .tilt{transition:none}  }
 </style>
 </head>
 <body>
@@ -45,25 +93,96 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
   </nav>
 </div>
 <main>
-  <span class="eyebrow">The lab</span>
-  <h1>Interactive</h1>
-  <p class="lede">Things to play with. Some are instruments, some are experiments. This room keeps changing, so come back.</p>
-  <ul class="list" id="list"></ul>
+  <div class="title">
+    <div><span class="eyebrow">The lab</span><h1>Interactive</h1></div>
+    <p class="lede">Things to play with. Some are instruments, some are experiments. Pick one up. This room keeps changing, so come back.</p>
+  </div>
+  <div class="room" id="room"></div>
 </main>
+<div class="veil" id="veil"></div>
+
 <script src="experiments.js"></script>
 <script>
-const list = document.getElementById('list');
-for (const x of window.EXPERIMENTS) {
-  const li = document.createElement('li'); li.className = 'exp';
-  const live = x.status === 'live';
-  li.innerHTML = `<${live ? `a href="${x.slug}/"` : 'div class="soon"'}>
-    <span class="no">${x.no}</span>
-    <h2>${x.title}</h2>
-    <span class="tags">${live ? '<span class="go">Enter →</span>' : 'Soon'}</span>
-    <p>${x.blurb}</p>
-  </${live ? 'a' : 'div'}>${(x.also || []).map(y => `<a class="also" href="${y.href}">Also: <b>${y.label}</b>, ${y.note} →</a>`).join('')}`;
-  list.appendChild(li);
+const room = document.getElementById('room');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const BOOK = `<svg viewBox="0 0 660 270" role="img" aria-label="A Tibetan book, long loose pages between carved wooden boards, wrapped in maroon cloth">
+  <defs>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b3a1c"/><stop offset=".6" stop-color="#4a2410"/><stop offset="1" stop-color="#36190a"/></linearGradient>
+    <linearGradient id="cloth" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c1f1c"/><stop offset="1" stop-color="#4a0f0e"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3cf6a"/><stop offset=".5" stop-color="#c8952e"/><stop offset="1" stop-color="#8d6416"/></linearGradient>
+    <pattern id="weave" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#b8892f"/><path d="M0 4h8" stroke="#8a2a1a" stroke-width="2"/><path d="M4 0v8" stroke="#e1b04a" stroke-width="1"/></pattern>
+  </defs>
+  <!-- the cloth it is kept in, opened out underneath -->
+  <path d="M8 92 Q40 34 120 30 L560 22 Q640 24 652 84 L646 252 Q520 266 330 262 Q120 266 14 252 Z" fill="url(#cloth)"/>
+  <path d="M30 70 Q90 120 70 250 M600 40 Q560 140 620 250 M300 26 Q340 60 320 30" fill="none" stroke="#300807" stroke-width="3" opacity=".6"/>
+  <!-- the stack of long pages -->
+  <rect x="44" y="150" width="560" height="64" rx="4" fill="#eadfc3"/>
+  <g stroke="#c4b28a" stroke-width="1" opacity=".75">${Array.from({ length: 19 }, (_, i) => `<path d="M46 ${153 + i * 3.2} Q324 ${152 + i * 3.2 + (i % 3)} 602 ${153 + i * 3.2}"/>`).join('')}</g>
+  <!-- a paper slip tucked between the pages -->
+  <a class="slip" href="bardo/49-days/" aria-label="Forty-Nine Days, a short practice for each day">
+    <rect x="584" y="168" width="66" height="30" rx="2" fill="#f6efdc" stroke="#b9a77d"/>
+    <text x="617" y="189" text-anchor="middle" font-family="Instrument Serif, Georgia, serif" font-style="italic" font-size="18" fill="#7a2a1a">49</text>
+  </a>
+  <!-- wooden boards, top and bottom -->
+  <rect x="38" y="208" width="572" height="14" rx="3" fill="#3a1b0b"/>
+  <rect x="38" y="152" width="572" height="10" fill="#2f1608"/>
+  <rect x="38" y="40" width="572" height="118" rx="6" fill="url(#wood)"/>
+  <rect x="52" y="52" width="544" height="94" rx="3" fill="none" stroke="url(#gold)" stroke-width="2"/>
+  <rect x="58" y="58" width="532" height="82" rx="2" fill="none" stroke="#c8952e" stroke-width=".8" opacity=".6"/>
+  <rect x="190" y="70" width="268" height="58" rx="4" fill="#2a1207" stroke="url(#gold)" stroke-width="2"/>
+  <text x="324" y="110" text-anchor="middle" font-family="'Noto Serif Tibetan', 'Kailasa', 'Microsoft Himalaya', serif" font-weight="600" font-size="27" fill="url(#gold)">བར་དོ་ཐོས་གྲོལ།</text>
+  ${[128, 520].map(x => `<g transform="translate(${x} 99)"><circle r="24" fill="#2a1207" stroke="url(#gold)" stroke-width="2"/><circle r="6" fill="url(#gold)"/>${Array.from({ length: 8 }, (_, i) => `<path d="M0 -8 V-20" stroke="url(#gold)" stroke-width="2.4" stroke-linecap="round" transform="rotate(${i * 45})"/>`).join('')}</g>`).join('')}
+  <!-- woven straps -->
+  <rect x="84" y="34" width="16" height="192" fill="url(#weave)" opacity=".95"/>
+  <rect x="560" y="34" width="16" height="192" fill="url(#weave)" opacity=".95"/>
+  <!-- the silk title tag -->
+  <path d="M606 60 L640 66 L636 122 L604 116 Z" fill="#e8b13a"/>
+  <path d="M606 116 l-2 10 M612 117 l-1 10 M618 118 l-1 10 M624 119 l0 10 M630 120 l0 10" stroke="#e8b13a" stroke-width="2"/>
+  <path d="M606 60 L640 66" stroke="#9c6a12" stroke-width="2"/>
+</svg>`;
+
+function station(x) {
+  const live = x.status === 'live', el = document.createElement('div');
+  el.className = 'station ' + (x.object || 'card');
+  let obj;
+  if (x.object === 'machine') obj = `<div class="mframe"><iframe src="${x.slug}/?embed" title="${x.title}, running" tabindex="-1" loading="eager" scrolling="no"></iframe></div>`;
+  else if (x.object === 'book') obj = BOOK;
+  else obj = `<div class="tile">${live ? 'Enter' : 'Soon'}</div>`;
+  el.innerHTML = `${live ? `<a class="obj" href="${x.slug}/" data-slug="${x.slug}" aria-label="Open ${x.title}">` : '<div class="obj">'}
+      <div class="tilt">${obj}</div><span class="shadow"></span>${live ? '</a>' : '</div>'}
+    <div class="cap"><span class="no">${x.no}</span><h2>${x.title}</h2><p>${x.blurb}</p>
+      ${(x.also || []).map(y => `<a class="also" href="${y.href}">Also: <b>${y.label}</b>, ${y.note} →</a>`).join('')}</div>`;
+  room.appendChild(el);
 }
+window.EXPERIMENTS.forEach(station);
+
+// keep the shrunken machine page scaled to its frame
+function fit() { document.querySelectorAll('.mframe').forEach(f => { const i = f.querySelector('iframe'); i.style.transform = `scale(${f.clientWidth / 1180})`; }); }
+addEventListener('resize', fit); fit();
+
+// clicking an object falls into it: it grows to fill the screen, the room goes dark, then the page opens
+room.addEventListener('click', e => {
+  if (e.target.closest('.slip, .also')) { fall(e, e.target.closest('.slip, .also'), e.target.closest('.slip, .also').getAttribute('href')); return; }
+  const a = e.target.closest('a.obj'); if (!a) return;
+  fall(e, a.querySelector('.tilt'), a.getAttribute('href'), a.dataset.slug);
+});
+function fall(e, el, href, slug) {
+  if (reduce || e.metaKey || e.ctrlKey || e.shiftKey) return;
+  e.preventDefault();
+  try { sessionStorage.setItem('zoomTo', slug || ''); } catch (err) {}
+  const st = el.closest('.station'), r = el.getBoundingClientRect();
+  st.classList.add('chosen'); document.body.classList.add('leaving');
+  const s = Math.max(innerWidth / r.width, innerHeight / r.height) * 1.5;
+  const tx = innerWidth / 2 - (r.left + r.width / 2), ty = innerHeight / 2 - (r.top + r.height / 2);
+  el.style.transition = 'transform .9s cubic-bezier(.6,0,.2,1)';
+  el.style.transformOrigin = '50% 50%';
+  el.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+  document.getElementById('veil').classList.add('on');
+  setTimeout(() => { location.href = href; }, 950);
+}
+// coming back with the browser's back button: undo the fall
+addEventListener('pageshow', e => { if (e.persisted) { document.body.classList.remove('leaving'); document.getElementById('veil').classList.remove('on'); document.querySelectorAll('.chosen').forEach(c => c.classList.remove('chosen')); document.querySelectorAll('.tilt, .slip, .also').forEach(t => { t.style.transform = ''; t.style.transition = ''; }); } });
 </script>
 </body>
 </html>
