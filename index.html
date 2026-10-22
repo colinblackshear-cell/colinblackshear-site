@@ -4,7 +4,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=UnifrakturMaguntia&family=VT323&display=swap">
 <style>[hidden]{display:none!important}body{margin:0}
 
 /* Layout: a full-bleed lit 3D set (one seamless wall color, a walnut 1970s TV under a key light); type floats over it like film titles */
@@ -15,6 +15,7 @@
   --phosphor:#a6ff92;
   --f-display:"Instrument Serif", "Iowan Old Style", Georgia, serif;
   --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --f-name:"UnifrakturMaguntia", "Old English Text MT", "Instrument Serif", Georgia, serif;
   color-scheme:dark;
 }
 html,body{height:100%;overflow:hidden}
@@ -36,7 +37,7 @@ button:focus-visible{outline:2px solid var(--title);outline-offset:3px}
   text-shadow:0 1px 12px rgba(0,0,0,.6)}
 .ui button{pointer-events:auto}
 header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
-.name{font-family:var(--f-display);font-size:1.6rem;margin:0;font-weight:400;letter-spacing:.01em}
+.name{font-family:var(--f-name);font-size:1.9rem;margin:0;font-weight:400;letter-spacing:.01em;line-height:1}
 .disciplines{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--title-soft)}
 
 .bottom{display:grid;gap:12px;justify-items:center}
@@ -331,11 +332,11 @@ function snow(t) {
   g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.5, 'rgba(0,0,0,.4)'); g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g; ctx.fillRect(0, y - 50, W, 100);
 }
-function titleCard(main, sub, lt, dur) {
+function titleCard(main, sub, lt, dur, nameFace) {
   ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, W, H);
   ctx.globalAlpha = Math.max(0, Math.min(1, lt / .6, (dur - lt) / .5));
   ctx.fillStyle = '#f3efe4'; ctx.textAlign = 'center';
-  ctx.font = 'italic 60px "Instrument Serif", Georgia, serif'; ctx.fillText(main, W / 2, H / 2 + 6);
+  ctx.font = nameFace ? '62px "UnifrakturMaguntia", "Instrument Serif", Georgia, serif' : 'italic 60px "Instrument Serif", Georgia, serif'; ctx.fillText(main, W / 2, H / 2 + 6);
   ctx.font = '500 13px "IBM Plex Mono", monospace'; ctx.fillText(sub.split('').join('  '), W / 2, H / 2 + 44);
   ctx.globalAlpha = 1;
 }
@@ -346,7 +347,7 @@ function burnIn(text, a) {
 }
 function drawMontage(t) {
   const intro = BEAT * 6, cut = BEAT * 2, cycle = intro + cut * 24, lt = t % cycle;
-  if (lt < intro) { titleCard('Colin Blackshear', 'SELECTED WORK', lt, intro); return; }
+  if (lt < intro) { titleCard('Colin Blackshear', 'SELECTED WORK', lt, intro, true); return; }
   const k = Math.floor((lt - intro) / cut), local = lt - intro - k * cut, w = WORKS[MONTAGE_ORDER[k % 6]];
   w.scene(t + k * 3.7);
   if (local < .07 && !reduce) { ctx.fillStyle = 'rgba(255,250,235,.5)'; ctx.fillRect(0, 0, W, H); }
