@@ -415,36 +415,22 @@ function burnIn(text, a) {
 }
 /* the reel opens on a different line each time round, hand-lettered in the round like a mandala page */
 const SAYINGS = [
-  ['The film is already running.', 'You are the light', 'it passes through.'],
-  ['Every frame is a now.', 'Twenty-four of them a second,', 'and still we miss them.'],
-  ['Stillness, projected fast enough,', 'becomes motion.', 'So does a life.'],
-  ['The screen was never empty.', 'It was waiting', 'for the light.'],
-  ['Cut to:', 'this moment,', 'which was always the scene.'],
+  'Be here. Now playing.',
+  'Only this frame.',
+  'All light, passing through.',
+  'The light remembers.',
+  'Watch. That is enough.',
 ];
-const RING = ' STILL · MOVING · PICTURE · LIGHT · TIME · ';
-function sayingCard(lines, lt, dur) {
+function sayingCard(line, lt, dur) {
   ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, W, H);
-  const fade = Math.max(0, Math.min(1, lt / .8, (dur - lt) / .7));
-  const g = ctx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, 260);
-  g.addColorStop(0, `rgba(255,190,110,${.10 * fade})`); g.addColorStop(1, 'rgba(255,190,110,0)');
+  const fade = Math.max(0, Math.min(1, (lt - .6) / 1.6, (dur - lt) / 1.2));
+  const g = ctx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, 240);
+  g.addColorStop(0, `rgba(255,190,110,${.08 * fade})`); g.addColorStop(1, 'rgba(255,190,110,0)');
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  // a slow-turning ring of words around the saying
-  ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate(lt * .12);
-  ctx.font = '500 13px "IBM Plex Mono", monospace'; ctx.textAlign = 'center';
-  const ring = RING.repeat(2), step = Math.PI * 2 / ring.length;
-  for (let i = 0; i < ring.length; i++) {
-    ctx.save(); ctx.rotate(i * step); ctx.fillStyle = `hsla(${(i * 9 + lt * 40) % 360},80%,72%,${.55 * fade})`;
-    ctx.fillText(ring[i], 0, -212); ctx.restore();
-  }
-  ctx.restore();
-  ctx.textAlign = 'center';
-  lines.forEach((ln, i) => {
-    const a = Math.max(0, Math.min(1, (lt - .4 - i * .9) / .8)) * fade;
-    ctx.globalAlpha = a; ctx.fillStyle = '#f6eedb';
-    ctx.font = `italic ${i === 0 ? 32 : 28}px "Instrument Serif", Georgia, serif`;
-    ctx.fillText(ln, W / 2, H / 2 - 26 + i * 40 + (1 - a) * 8);
-  });
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha = fade; ctx.fillStyle = '#f6eedb'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = 'italic 36px "Instrument Serif", Georgia, serif';
+  ctx.fillText(line, W / 2, H / 2 + (1 - fade) * 6);
+  ctx.globalAlpha = 1; ctx.textBaseline = 'alphabetic';
 }
 function drawMontage(t) {
   const intro = BEAT * 10, cut = BEAT * 2, cycle = intro + cut * 24, lt = t % cycle;
