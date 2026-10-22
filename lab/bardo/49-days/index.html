@@ -1,8 +1,7 @@
-<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Forty-Nine Days</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>The Forty-Nine Day Walk</title></head><body>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
-/* Layout: a seven-by-seven calendar (one row per week, as the tradition counts) beside a reading card; stacks on phones. Single safety-card look, shared with The Bardo Manual. */
+/* Layout: a single map page (the 49-stone path) that launches one continuous, full-screen walk. Same safety-card look as The Bardo Manual. */
 :root{
   color-scheme: light;
   --cream:#F6EBD2; --parchment:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --teal:#1F5E63; --brown:#8A4B22; --lamp:#E8B13A;
@@ -18,54 +17,41 @@ button{font:inherit}
 .brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
 .bar .sp{flex:1}
 .pill{font-family:var(--display);font-weight:700;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
-.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-inline:16px;display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:28px;align-items:start}
-.panel{background:var(--parchment);border:2px solid var(--ink);border-radius:16px;padding:18px}
-.cal h2,.welcome h2{margin:0 0 4px;font-family:var(--display);font-weight:800;font-size:1.25rem;text-transform:uppercase;letter-spacing:.03em}
-.progress{font-size:.9rem;color:var(--ink-soft);margin:0 0 14px}
-.weeks{display:flex;flex-direction:column;gap:8px}
-.week{display:grid;grid-template-columns:58px repeat(7,minmax(0,1fr));gap:6px;align-items:center}
-.week b{font-family:var(--display);font-weight:700;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
-.d{aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font-family:var(--display);font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center;padding:0;position:relative;min-width:0}
-.d.locked{border-style:dashed;border-color:rgba(30,42,43,.35);color:rgba(30,42,43,.45)}
-.d.open{background:var(--parchment)}
-.d.read{background:var(--c);border-color:var(--ink);color:#FFFFFF}
-.d.today::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--c);animation:ping 2s ease-out infinite}
-.d.sel{box-shadow:0 0 0 3px var(--parchment),0 0 0 5px var(--ink)}
-@keyframes ping{from{opacity:.9;transform:scale(.9)}to{opacity:0;transform:scale(1.25)}}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;font-size:.82rem;color:var(--ink-soft)}
-.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1.5px solid var(--ink)}
-.settings{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
-.reader{min-height:420px}
-.rhead{display:flex;gap:16px;align-items:center;margin-bottom:12px}
-.rhead svg{flex:none;width:82px;height:82px}
-.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--c,var(--brown))}
-.reader h1{margin:2px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3.2vw,2.1rem);line-height:1.08;text-wrap:balance}
-.sec{margin-top:18px;max-width:64ch}
-.sec h3{margin:0 0 4px;font-family:var(--display);font-weight:800;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
-.sec p{margin:0;font-size:1.06rem}
-.sec.book p{font-size:1.1rem}
-.try{background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:12px 14px}
-.sit{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-top:2px dashed rgba(30,42,43,.25);padding-top:16px}
-.ring{position:relative;width:96px;height:96px;flex:none}
-.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:1.2rem;font-variant-numeric:tabular-nums}
-.sit .txt{flex:1;min-width:200px}
-.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
-.btn{font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--teal);color:var(--parchment);border-radius:999px;padding:11px 20px;cursor:pointer;min-height:46px}
-.btn.alt{background:transparent;color:var(--ink)}
-.btn.gold{background:var(--lamp);color:var(--ink)}
-.lockcard{display:flex;flex-direction:column;gap:12px;align-items:flex-start;max-width:52ch}
-.lockcard p{margin:0}
-.welcome p{margin:0 0 10px;max-width:58ch}
-.welcome ol{margin:0 0 14px;padding-left:1.2em}
-.welcome label{display:block;font-weight:700;margin:10px 0 6px}
-.welcome input,.settings input{font:inherit;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;background:#FFFFFF;color:var(--ink);min-height:44px}
-.note{font-size:.85rem;color:var(--ink-soft)}
-.breathe{animation:breathe 8s ease-in-out infinite}
-@keyframes breathe{50%{transform:scale(1.06)}}
-@media (max-width:860px){.wrap{grid-template-columns:1fr}.reader{min-height:0}}
-@media (max-width:420px){.week{grid-template-columns:40px repeat(7,minmax(0,1fr));gap:4px}.d{font-size:.72rem}.week b{font-size:.56rem;letter-spacing:.06em}}
-
+.wrap{max-width:980px;margin:0 auto;padding-block:24px 56px;padding-inline:16px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brown)}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.map{background:#10181B;border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.map svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.bigbegin{font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:.04em;border:2px solid var(--ink);background:var(--lamp);color:var(--ink);border-radius:999px;padding:13px 24px;min-height:52px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.bigbegin:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn{font-family:var(--display);font-weight:700;font-size:.92rem;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:10px 18px;min-height:46px;cursor:pointer}
+.weeks{margin-top:34px}
+.weeks h2,.how h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.wk{text-align:left;background:var(--parchment);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink)}
+.wk b{font-family:var(--display);font-weight:800;letter-spacing:.06em}
+.wk span{font-size:.86rem;color:var(--ink-soft)}
+.wk i{display:block;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--a),var(--b))}
+.wk:hover{background:#FFFFFF}
+.how{margin-top:34px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how h2{grid-column:1/-1}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.carrylist{position:absolute;inset:6% 6% 18%;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 16px;overflow:auto;transition:transform 1s cubic-bezier(.5,0,.3,1),opacity 1s}
+.carrylist b{font-family:var(--display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem;color:var(--brown)}
+.carrylist ol{margin:8px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:clamp(.78rem,1.8vw,.95rem);line-height:1.35}
+.carrylist li span{font-family:var(--display);font-weight:700;font-size:.72em;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-right:6px}
+.carrylist.taken{transform:translateY(60%) scale(.1);opacity:0}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
 /* ---------- the daily practice (full-screen session) ---------- */
 body.insession{overflow:hidden}
 .session{position:fixed;inset:0;z-index:50;background:#0E1416;color:#FFF6DE;display:flex;flex-direction:column;align-items:center;padding:max(10px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom));gap:10px;overflow:auto}
@@ -156,35 +142,20 @@ body.insession{overflow:hidden}
 .flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.5}}
 .shock{transform-origin:300px 200px;transform-box:view-box;animation:shock 2.8s ease-out infinite}@keyframes shock{from{transform:scale(.3);opacity:1}to{transform:scale(5);opacity:0}}
 .rp{transform-origin:300px 190px;transform-box:view-box;animation:shock 2.6s ease-out forwards}
-/* the practice card on the calendar page */
-.practice{margin-top:6px;background:#10181B;color:#FFF6DE;border:2px solid var(--ink);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
-.practice::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 90% at 85% 0%,color-mix(in srgb,var(--c) 40%,transparent),transparent 70%);pointer-events:none}
-.practice>*{position:relative}
-.practice .what{font-size:1.02rem;margin:0}
-.flow{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
-.flow li{font-family:var(--display);font-weight:700;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.4);border-radius:999px;padding:4px 10px}
-.flow li.key{background:#FFF6DE;color:var(--ink);border-color:#FFF6DE}
-.bigbegin{align-self:flex-start;font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:.04em;border:2px solid var(--ink);background:var(--lamp);color:var(--ink);border-radius:999px;padding:13px 24px;min-height:52px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
-.bigbegin:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-details.text{margin-top:16px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
-details.text summary{cursor:pointer;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:.9rem;min-height:36px;display:flex;align-items:center}
-.keep{margin-top:16px;border-top:2px solid rgba(30,42,43,.15);padding-top:12px}
-.keep h3{margin:0 0 6px;font-family:var(--display);font-weight:800;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
-.keep p{margin:0 0 8px;font-size:.9rem}
-.keep .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.keep input{font:inherit;border:2px solid var(--ink);border-radius:10px;padding:6px 8px;background:#FFFFFF;color:var(--ink);min-height:40px}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <header class="bar">
-  <span class="brand">Forty-Nine Days<small>A daily companion to The Bardo Manual</small></span>
+  <span class="brand">The Forty-Nine Day Walk<small>From the Tibetan Book of the Dead</small></span>
   <span class="sp"></span>
-  <a class="pill" href="../../">Interactive</a><a class="pill" href="../">Open the manual</a>
+  <a class="pill" href="../../">Interactive</a><a class="pill" href="../" id="manlink">Open the manual</a>
 </header>
 <main class="wrap" id="wrap"></main>
 
 <script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const PARTS=[
  {name:'Dying', sub:'The moment of death and the Clear Light', col:'#C9962E'},
  {name:'The Peaceful Visions', sub:'Five lights, five wisdoms', col:'#2F5FA8'},
@@ -636,46 +607,47 @@ function narrate(text){ return new Promise(res=>{ if(!voiceOn||!('speechSynthesi
   u.onend=fin; u.onerror=fin; setTimeout(fin, 2500+text.length*95); speechSynthesis.speak(u); }); }
 function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
 
-/* ---------------- session shell ---------------- */
-const STEPS=['Arrive','Hear','Do','Understand','Sit','Carry'];
-let SS=null; /* current session */
+/* ---------------- the walk: one journey through all 49 days ---------------- */
+const STEPS=['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7'];
+const WKEY='fortynine-walk';
+let SS=null;
 class Abort extends Error{}
 function alive(s){ if(!SS||SS!==s) throw new Abort(); }
+function getNext(){ try{ return +(JSON.parse(localStorage.getItem(WKEY)||'{}').next||0); }catch(e){ return 0; } }
+function setNext(n){ try{ localStorage.setItem(WKEY,JSON.stringify({next:n})); }catch(e){} }
+function setDay(s,n){ s.n=n; s.D=DAYS[n-1]; s.P=PARTS[s.D.p]; s.A=ACTS[n-1]; s.el.style.setProperty('--c',s.P.col);
+  $('#stitle').innerHTML=`<b>Day ${n}</b> ${esc(s.D.t)}`; s.el.setAttribute('aria-label',`The Forty-Nine Day Walk, day ${n}: ${s.D.t}`); }
 function openSession(n){
-  const D=DAYS[n-1], P=PARTS[D.p], A=ACTS[n-1];
   aInit(); hush();
-  const el=document.createElement('div'); el.className='session'; el.id='session'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',`Day ${n}: ${D.t}`);
-  el.style.setProperty('--c',P.col);
-  el.innerHTML=`<div class="sbar"><span class="stitle"><b>Day ${n}</b> ${esc(D.t)}</span><span class="sp"></span>
+  const el=document.createElement('div'); el.className='session'; el.id='session'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true');
+  el.innerHTML=`<div class="sbar"><span class="stitle" id="stitle"></span><span class="sp"></span>
       <button type="button" class="sbtn" id="svoice" aria-pressed="${voiceOn}">${voiceOn?'Narrator on':'Narrator off'}</button>
       <button type="button" class="sbtn" id="ssound" aria-pressed="${soundOn}">${soundOn?'Sound on':'Sound off'}</button>
-      <button type="button" class="sbtn x" id="sclose" aria-label="Close and return to the calendar">✕</button></div>
-    <ol class="steps" aria-label="Today's practice">${STEPS.map((s,i)=>`<li data-i="${i}">${s}</li>`).join('')}</ol>
+      <button type="button" class="sbtn x" id="sclose" aria-label="Stop here and return to the map">✕</button></div>
+    <ol class="steps" aria-label="Weeks of the walk">${STEPS.map((s,i)=>`<li data-i="${i}">${s}</li>`).join('')}</ol>
     <div class="stage" id="stage"><svg id="art" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label=""></svg><canvas id="cv" aria-hidden="true"></canvas><div id="layer"></div></div>
     <div class="scap" id="scap" aria-live="polite"><span class="seye" id="seye"></span><p id="stext"></p><div class="srow" id="srow"></div></div>`;
   document.body.appendChild(el); document.body.classList.add('insession');
-  const s={n,D,P,A,el}; SS=s;
+  const s={el}; SS=s; setDay(s,n);
   $('#sclose').onclick=()=>closeSession();
   $('#svoice').onclick=e=>{ voiceOn=!voiceOn; if(!voiceOn) hush(); e.target.textContent=voiceOn?'Narrator on':'Narrator off'; e.target.setAttribute('aria-pressed',voiceOn); try{ localStorage.setItem('fortynine-voice',voiceOn?'1':'0'); }catch(x){} };
   $('#ssound').onclick=e=>{ soundOn=!soundOn; if(mstr) mstr.gain.value=soundOn?.9:0; e.target.textContent=soundOn?'Sound on':'Sound off'; e.target.setAttribute('aria-pressed',soundOn); };
   el.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSession(); });
-  run(s).catch(e=>{ if(!(e instanceof Abort)) console.error(e); });
+  journey(s,n).catch(e=>{ if(!(e instanceof Abort)) console.error(e); });
   $('#sclose').focus({preventScroll:true});
 }
 function closeSession(){ const s=SS; SS=null; hush(); if(actx) allOff(.8); if(inhaleN){ try{ inhaleN.s.stop(); }catch(e){} inhaleN=null; } stopWatch(); if(s){ s.el.remove(); } document.body.classList.remove('insession'); cvStop(); render(); }
 function stepTo(i){ document.querySelectorAll('.steps li').forEach((li,k)=>{ li.className=k<i?'done':k===i?'on':''; if(k===i) li.setAttribute('aria-current','step'); else li.removeAttribute('aria-current'); }); }
-function art(svg,label=''){ const a=$('#art'); a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function art(svg,label=''){ const a=$('#art'); a.classList.remove('morphd'); a.innerHTML=svg; a.setAttribute('aria-label',label); }
 const layer=()=>$('#layer');
 function clearLayer(){ layer().innerHTML=''; }
 function eyebrow(t){ $('#seye').textContent=t||''; }
-/* typed caption, with narration; resolves when read (narrator) or tapped (no narrator) */
 async function line(s,text,{tap=true,eye}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#stext'), row=$('#srow'); row.innerHTML=''; p.textContent='';
   let skip=false; const sk=()=>{ skip=true; }; $('#scap').addEventListener('pointerdown',sk,{once:true});
   const spoke=narrate(text);
   for(let i=1;i<=text.length;i++){ if(skip||reduceM){ p.textContent=text; break; } p.textContent=text.slice(0,i); await sleep(text[i-1]===' '?18:24); alive(s); }
-  if(!tap) return;
+  if(!tap) return spoke;
   await waitTap(s, voiceOn?spoke:null); }
-/* Continue button; also auto-continues after narration */
 function waitTap(s, spoke){ return new Promise((res,rej)=>{ const row=$('#srow'); row.innerHTML=`<button type="button" class="sgo" id="sgo">Continue <span aria-hidden="true">→</span></button>`;
   const b=$('#sgo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); row.innerHTML=''; if(SS!==s) return rej(new Abort()); res(); };
   const kd=e=>{ if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight') && !e.target.closest('.sbar,#layer button')){ e.preventDefault(); go(); } };
@@ -684,33 +656,68 @@ function waitTap(s, spoke){ return new Promise((res,rej)=>{ const row=$('#srow')
 function prompt(text,eye){ eyebrow(eye??$('#seye').textContent); $('#stext').textContent=text; $('#srow').innerHTML=''; narrate(text); }
 function sentences(t){ const parts=t.match(/[^.!?]+[.!?]+["”']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>190&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
 
-async function run(s){
-  const {n,D,P,A}=s; const K=PARTKEY[D.p];
-  /* 1. ARRIVE */
-  stepTo(0); pad('pad',K,.03);
-  await arrive(s);
-  /* 2. HEAR: what the book says */
-  stepTo(1); const sc=SCENES[A.k]||SCENES.generic; art(sc.before(s),D.t);
-  for(const t of sentences(D.book)) await line(s,t,{eye:'What the book says'});
-  /* 3. DO */
-  stepTo(2); eyebrow('Try it');
-  await sc.act(s); alive(s); clearLayer();
-  await line(s,A.done,{eye:'Try it'});
-  /* 4. UNDERSTAND */
-  stepTo(3); art(sc.after?sc.after(s):sc.before(s),D.t);
-  for(const t of sentences(D.mean)) await line(s,t,{eye:'What it means'});
-  /* 5. SIT */
-  stepTo(4); await sit(s);
-  /* 6. CARRY */
-  stepTo(5); await carry(s);
+/* the path of 49 stones: seven rows, walked back and forth */
+function stonePos(i){ const r=Math.floor(i/7), c=i%7, cc=r%2?6-c:c; return [90+cc*70, 52+r*44]; }
+function pathArt(n,{label=true}={}){ let d='', st='';
+  for(let i=0;i<49;i++){ const [x,y]=stonePos(i); d+=(i?' L':'M')+x+' '+y; }
+  for(let i=0;i<49;i++){ const [x,y]=stonePos(i); const col=PARTS[DAYS[i].p].col; const cur=i===n-1;
+    st+= cur? `<circle cx="${x}" cy="${y}" r="20" fill="${col}" opacity=".35"><animate attributeName="r" values="14;24;14" dur="2.4s" repeatCount="indefinite"/></circle><circle cx="${x}" cy="${y}" r="11" fill="${col}" stroke="#FFF6DE" stroke-width="3"/>`
+      : `<circle cx="${x}" cy="${y}" r="${i<n-1?8:6}" fill="${i<n-1?col:'#10181B'}" stroke="${col}" stroke-width="2.5" opacity="${i<n-1?1:.6}"/>`; }
+  return `<rect width="600" height="400" fill="#10181B"/><path d="${d}" fill="none" stroke="#FFF6DE" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round" opacity=".35"/>${st}`; }
+
+async function journey(s,start){
+  /* arrive once, at the start of the walk */
+  setNext(start); pad('pad',PARTKEY[s.D.p],.03); s.part=s.D.p; stepTo(Math.floor((start-1)/7));
+  await arrive(s,start);
+  for(let n=start;n<=49;n++){
+    alive(s); setDay(s,n); setNext(n); stepTo(Math.floor((n-1)/7));
+    if(s.D.p!==s.part){ loopOff('pad',2); setTimeout(()=>{ if(SS===s) pad('pad',PARTKEY[s.D.p],.03); },1800); s.part=s.D.p;
+      art(pathArt(n),'The path'); await line(s,`${PARTS[s.D.p].name}. ${PARTS[s.D.p].sub}.`,{eye:'A new stretch of the path'}); }
+    /* the day card: the path, with today's stone lit */
+    art(pathArt(n),`Day ${n} of 49`); eyebrow(`Day ${n} of 49 · ${PARTS[s.D.p].name}`);
+    const sp=await line(s,`Day ${n}. ${s.D.t}.`,{tap:false}); await Promise.race([sp,sleep(2600)]); await sleep(500); alive(s);
+    const sc=SCENES[s.A.k]||SCENES.generic; art(sc.before(s),s.D.t);
+    await line(s,sentences(s.D.book)[0],{eye:'What the book says'});
+    eyebrow('Try it'); await sc.act(s); alive(s); clearLayer(); stopWatch();
+    await line(s,s.A.done,{eye:'Try it'});
+    art(sc.after?sc.after(s):sc.before(s),s.D.t);
+    await line(s,sentences(s.D.mean)[0],{eye:'What it means'});
+    if(n%7===0){ await sit(s); await weekCarry(s, n/7); }
+    setNext(n<49?n+1:0);
+  }
+  await finale(s);
+}
+
+async function weekCarry(s,w){
+  const days=DAYS.slice((w-1)*7,w*7);
+  art(`<rect width="600" height="400" fill="#10181B"/><circle cx="300" cy="200" r="230" fill="${s.P.col}" opacity=".12"/>`,'Seven things to carry');
+  layer().innerHTML=`<div class="carrylist" id="clist"><b>Week ${w}: seven things to carry</b><ol>${days.map((d,i)=>`<li><span>Day ${(w-1)*7+i+1}</span> ${esc(d.try)}</li>`).join('')}</ol></div>`;
+  await line(s,`That's week ${w}. Here are seven small practices from it. You don't need to remember them all. Pick the one that tugs at you.`,{eye:`Week ${w} complete`,tap:false});
+  await holdBtn(s,{label:'Hold to take them with you',ms:1500,col:s.P.col,onP:p=>{ const c=$('#clist'); if(c) c.style.transform=`scale(${1-p*.05})`; }});
+  alive(s); const c=$('#clist'); if(c){ c.classList.add('taken'); } whoosh(.12); setTimeout(chime,600); await sleep(1000); alive(s); clearLayer();
+  if(w===7) return;
+  eyebrow(`Week ${w} complete`); $('#stext').textContent=`${7-w} week${7-w>1?'s':''} left on the path. Keep walking, or rest and come back to it. It will remember where you are.`;
+  $('#srow').innerHTML=`<button type="button" class="sgo alt" id="srest">Rest here</button><button type="button" class="sgo" id="skeep">Keep walking <span aria-hidden="true">→</span></button>`; $('#skeep').focus({preventScroll:true});
+  const keep=await new Promise(r=>{ $('#skeep').onclick=()=>r(true); $('#srest').onclick=()=>r(false); }); alive(s);
+  if(!keep){ setNext(w*7+1); closeSession(); throw new Abort(); }
+}
+
+async function finale(s){ setNext(0); loopOff('pad',2); setTimeout(()=>{ if(SS===s) pad('pad',[146.8,220,293.7,440],.03); },1500);
+  art(pathArt(50)+`<g class="spin" style="transform-origin:300px 200px">${rays(300,200,500,30,.06)}</g>`,'The whole path, walked');
+  await line(s,"Forty-nine days. Dying, the lights, the fierce ones, the drift, and the doors. You've walked the whole way.",{eye:'The end of the path'});
+  await line(s,"The book was always meant for the living. It only works if the words are familiar before you need them. Now they are.",{eye:'The end of the path'});
+  await line(s,"If you remember one thing: whatever appears, bright or terrifying, it is your own mind. Recognize it, and let go.",{eye:'The end of the path'});
+  bowl(196,.2); setTimeout(()=>bowl(293.7,.12),900);
+  eyebrow('The end of the path'); $('#stext').textContent='Thank you for walking it. Maybe someday you\'ll read it to someone.';
+  $('#srow').innerHTML=`<button type="button" class="sgo" id="sdone">Back to the map</button>`; $('#sdone').onclick=()=>closeSession(); $('#sdone').focus({preventScroll:true});
 }
 
 /* --- 1. arrive: three breaths you control --- */
-async function arrive(s){
-  const {n,D,P}=s;
-  art(`<rect width="600" height="400" fill="#10181B"/><circle cx="300" cy="200" r="150" fill="${P.col}" opacity=".12"/><g id="bc" style="transform-origin:300px 200px;transform:scale(.45)"><circle cx="300" cy="200" r="120" fill="none" stroke="${P.col}" stroke-width="6"/><circle cx="300" cy="200" r="120" fill="${P.col}" opacity=".18"/><circle cx="300" cy="200" r="20" fill="#FFF6DE"/></g><text x="300" y="372" text-anchor="middle" font-family="Jost,sans-serif" font-weight="700" font-size="15" letter-spacing="4" fill="#FFF6DE" opacity=".7">DAY ${n} OF 49</text>`,'A breathing circle');
-  await line(s,`Day ${n}. ${D.t}.`,{eye:PARTS[D.p].name});
-  await line(s,"Before anything, arrive. Press and hold while you breathe in. Let go as you breathe out. Three times.",{tap:false});
+async function arrive(s,n){
+  const {D,P}=s;
+  art(`<rect width="600" height="400" fill="#10181B"/><circle cx="300" cy="200" r="150" fill="${P.col}" opacity=".12"/><g id="bc" style="transform-origin:300px 200px;transform:scale(.45)"><circle cx="300" cy="200" r="120" fill="none" stroke="${P.col}" stroke-width="6"/><circle cx="300" cy="200" r="120" fill="${P.col}" opacity=".18"/><circle cx="300" cy="200" r="20" fill="#FFF6DE"/></g><text x="300" y="372" text-anchor="middle" font-family="Jost,sans-serif" font-weight="700" font-size="15" letter-spacing="4" fill="#FFF6DE" opacity=".7">${n>1?'DAY '+n+' OF 49':'FORTY-NINE DAYS'}</text>`,'A breathing circle');
+  await line(s,n>1?`Welcome back. We pick up the path at day ${n}.`:"The book says the journey between one life and the next takes forty-nine days. We'll walk them together, one stone at a time.",{eye:'The Forty-Nine Day Walk'});
+  await line(s,"First, arrive. Press and hold while you breathe in. Let go as you breathe out. Three times.",{tap:false});
   const bc=$('#bc'); let count=0;
   layer().innerHTML=`<button type="button" class="holdzone" id="hz" aria-label="Hold while breathing in, release to breathe out"><span class="holdpill" id="hp">Hold to breathe in</span></button><div class="count" id="bcount" aria-hidden="true"><i></i><i></i><i></i></div>`;
   const hz=$('#hz'), hp=$('#hp'); hz.focus({preventScroll:true});
@@ -803,24 +810,6 @@ async function sit(s){
   stopWatch(); alive(s); M.set({bal:1}); clearLayer(); bowl(K0(s)*.5,.22); setTimeout(()=>bowl(K0(s),.12),900);
   await line(s, early? 'Even a little stillness counts.' : 'Well done. Rest here a moment.',{eye:'Sit'});
   M.stop(); cvStop();
-}
-
-/* --- 6. carry it with you --- */
-async function carry(s){
-  const {n,D,P}=s; loopLevel('pad',.03);
-  art(`<rect width="600" height="400" fill="#10181B"/><circle cx="300" cy="200" r="230" fill="${P.col}" opacity=".12"/><g id="card" style="transform-origin:300px 200px;transition:transform 1.1s cubic-bezier(.5,0,.3,1),opacity 1.1s"><rect x="150" y="70" width="300" height="230" rx="16" fill="#FBF3DF" stroke="${INK}" stroke-width="4"/><rect x="150" y="70" width="300" height="46" rx="16" fill="${P.col}"/><rect x="150" y="100" width="300" height="16" fill="${P.col}"/><text x="300" y="100" text-anchor="middle" font-family="Jost,sans-serif" font-weight="800" font-size="16" letter-spacing="4" fill="#FFFFFF">TRY TODAY</text>${[0,1,2,3].map(i=>`<rect x="180" y="${146+i*30}" width="${240-i*30*(i%2)}" height="9" rx="4" fill="${INK}" opacity=".18"/>`).join('')}</g>${lf(300,380,.42)}`,'A card to carry with you');
-  await line(s,D.try,{eye:'Carry it with you'});
-  prompt('Press and hold to take it with you.','Carry it with you');
-  await holdBtn(s,{label:'Hold to take it with you',ms:1600,col:P.col,onP:p=>{ const c=$('#card'); if(c){ c.style.transition='none'; c.style.transform=`scale(${1-p*.08})`; } }});
-  alive(s); const c=$('#card'); c.style.transition=''; requestAnimationFrame(()=>{ c.style.transform='translate(0,170px) scale(.12)'; c.style.opacity='.0'; }); whoosh(.12); setTimeout(chime,700);
-  if(!st.read.includes(n)){ st.read.push(n); save(); }
-  await sleep(900); alive(s);
-  const nx=n<49?n+1:null; const opens=nx&&!isOpen(nx)?`Day ${nx} opens ${openDate(nx).split(',')[0]==='Invalid Date'?'tomorrow':'on '+openDate(nx)}.`:'';
-  eyebrow(`Day ${n} complete`); $('#stext').textContent=n===49?'Forty-nine days. You have walked the whole way through. Read it to someone, someday.':`That's day ${n}. ${opens}`;
-  narrate($('#stext').textContent);
-  $('#srow').innerHTML=`<button type="button" class="sgo" id="sdone">Back to the calendar</button>${nx&&isOpen(nx)?`<button type="button" class="sgo alt" id="snext">Day ${nx} →</button>`:''}`;
-  $('#sdone').onclick=()=>closeSession(); const sn=$('#snext'); if(sn) sn.onclick=()=>{ closeSession(); sel=nx; render(); openSession(nx); };
-  $('#sdone').focus({preventScroll:true});
 }
 
 /* =========================================================
@@ -1029,108 +1018,30 @@ function realmIcon(k){ const I={
   hells:`<rect x="8" y="14" width="7" height="20" fill="#4A4A4A"/><rect x="17" y="8" width="7" height="26" fill="#7A1712"/><rect x="26" y="16" width="6" height="18" fill="#4A4A4A"/>` };
   return `<rect width="40" height="40" rx="8" fill="#174C50"/>${I[k]}`; }
 
-const $=s=>document.querySelector(s);
-const KEY='fortynine-v1';
-let st={start:null,read:[],ahead:[]}, sel=null, memOnly=false;
-try{ const raw=localStorage.getItem(KEY); if(raw) st=Object.assign(st,JSON.parse(raw)); }catch(e){ memOnly=true; }
-function save(){ try{ localStorage.setItem(KEY,JSON.stringify(st)); }catch(e){ memOnly=true; } }
-const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-const parse=s=>{ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
-function todayN(){ if(!st.start) return 0; const n=Math.floor((new Date(new Date().toDateString())-parse(st.start))/864e5)+1; return Math.max(1,Math.min(49,n)); }
-const isOpen=n=>n<=todayN()||st.ahead.includes(n);
-function openDate(n){ const d=parse(st.start); d.setDate(d.getDate()+n-1); return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}); }
-const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
-
-function mandala(n,col){ let s=''; const seed=k=>{ const x=Math.sin(n*97.1+k*13.7)*43758.5; return x-Math.floor(x); };
-  const rings=[[6+Math.floor(seed(1)*4),.32],[10+Math.floor(seed(2)*6),.58],[14+Math.floor(seed(3)*8),.82]];
-  rings.forEach(([c,k],ri)=>{ for(let i=0;i<c;i++){ const a=i/c*360; s+=`<ellipse cx="${50+k*40}" cy="50" rx="${10-ri*2.4}" ry="${4.2-ri}" fill="${ri===1?col:'none'}" stroke="${col}" stroke-width="1.6" opacity="${ri===1?.55:.9}" transform="rotate(${a} 50 50)"/>`; } });
-  return `<svg viewBox="0 0 100 100" aria-hidden="true"><g class="breathe" style="transform-origin:50px 50px">${s}<circle cx="50" cy="50" r="9" fill="${col}"/><circle cx="50" cy="50" r="4" fill="#FFFFFF"/></g></svg>`; }
-
 function render(){
-  if(!st.start) return renderWelcome();
-  const t=todayN(); if(!sel) sel=Math.min(t, (st.read.length? Math.max(...st.read.filter(isOpen))+1 : 1)) || t; if(sel>49) sel=49; if(!isOpen(sel)) sel=t;
-  const rows=[0,1,2,3,4,5,6].map(w=>`<div class="week"><b>Week ${w+1}</b>${[1,2,3,4,5,6,7].map(k=>{ const n=w*7+k, D=DAYS[n-1], c=PARTS[D.p].col;
-      const cls=['d', st.read.includes(n)?'read':(isOpen(n)?'open':'locked'), n===t?'today':'', n===sel?'sel':''].join(' ');
-      return `<button type="button" class="${cls}" style="--c:${c}" data-n="${n}" aria-label="Day ${n}: ${esc(D.t)}${st.read.includes(n)?', read':isOpen(n)?', open':', not open yet'}">${n}</button>`; }).join('')}</div>`).join('');
-  $('#wrap').innerHTML=`<section class="panel cal" aria-label="Calendar"><h2>Your forty-nine days</h2>
-      <p class="progress">Day ${t} of 49 · ${st.read.length} read${memOnly?' · progress won\'t be saved in this browser':''}</p>
-      <div class="weeks">${rows}</div>
-      <div class="legend">${PARTS.map(p=>`<span><i style="background:${p.col}"></i>${p.name}</span>`).join('')}</div>
-      <div class="settings"><button type="button" class="pill" id="chg">Change start date</button><button type="button" class="pill" id="reset">Start over</button></div>
-      <div id="setbox"></div>
-      <div class="keep"><h3>Keep it close</h3><p>Get a daily nudge: a reminder in your calendar for each of the 49 days, linking straight back here.</p>
-        <div class="row"><label class="note" for="rt">Time</label><input type="time" id="rt" value="08:00"><a class="pill" id="gcal" href="#" target="_blank" rel="noopener">Add to Google Calendar</a><button type="button" class="pill" id="ics" hidden>Download for Apple Calendar</button></div>
-        <p class="note" style="margin-top:8px">On a Mac, you can keep this as its own app: open it in Safari, then choose File › Add to Dock.</p></div></section>
-    <article class="panel reader" id="reader" tabindex="-1"></article>`;
-  document.querySelectorAll('.d').forEach(b=>b.onclick=()=>{ sel=+b.dataset.n; render(); if(innerWidth<860) $('#reader').scrollIntoView({behavior:'smooth',block:'start'}); });
-  $('#chg').onclick=()=>{ $('#setbox').innerHTML=`<label class="note" for="sd" style="display:block;margin-top:12px">New start date</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><input type="date" id="sd" value="${st.start}"><button type="button" class="btn alt" id="sdok">Save</button></div>`;
-    $('#sdok').onclick=()=>{ const v=$('#sd').value; if(v){ st.start=v; save(); sel=null; render(); } }; };
-  $('#reset').onclick=()=>{ $('#setbox').innerHTML=`<p class="note" style="margin:12px 0 6px">Clear your progress and start again?</p><div style="display:flex;gap:8px"><button type="button" class="btn alt" id="rsyes">Start over</button><button type="button" class="btn alt" id="rsno">Keep going</button></div>`;
-    $('#rsyes').onclick=()=>{ st={start:null,read:[],ahead:[]}; save(); sel=null; render(); }; $('#rsno').onclick=()=>{ $('#setbox').innerHTML=''; }; };
-  $('#ics').onclick=downloadIcs; if(window.self===window.top) $('#ics').hidden=false;
-  const gc=()=>{ $('#gcal').href=gcalUrl(($('#rt')&&$('#rt').value)||'08:00'); }; gc(); $('#rt').oninput=gc;
-  renderDay(sel);
-}
-
-function renderDay(n){
-  const D=DAYS[n-1], P=PARTS[D.p], r=$('#reader'); r.style.setProperty('--c',P.col);
-  const wk=Math.ceil(n/7);
-  if(!isOpen(n)){
-    r.innerHTML=`<div class="rhead">${mandala(n,'#B9B2A2')}<div><span class="eyebrow">Day ${n} · Week ${wk} · ${P.name}</span><h1>${esc(D.t)}</h1></div></div>
-      <div class="lockcard"><p>This day opens on <b>${openDate(n)}</b>.</p><p class="note">The book is meant to be taken slowly, one day at a time. But you're welcome to read ahead.</p>
-      <button type="button" class="btn gold" id="ahead">Read ahead now</button></div>`;
-    $('#ahead').onclick=()=>{ st.ahead.push(n); save(); render(); };
-    return;
-  }
-  const done=st.read.includes(n); const A=ACTS[n-1];
-  r.innerHTML=`<div class="rhead">${mandala(n,P.col)}<div><span class="eyebrow">Day ${n} · Week ${wk} · ${P.name}</span><h1>${esc(D.t)}</h1></div></div>
-    <div class="practice" style="--c:${P.col}">
-      <p class="what">${esc(KIND_HINT[A.k]||'A short guided practice.')}</p>
-      <ol class="flow" aria-label="The practice, step by step"><li>Arrive</li><li>Hear</li><li class="key">Do</li><li>Understand</li><li class="key">Sit</li><li>Carry</li></ol>
-      <button type="button" class="bigbegin" id="begin">${done?'Practice it again':'Begin today\'s practice'}</button>
-      <span class="note" style="color:rgba(255,246,222,.7)">About six minutes. Headphones help. ${n<=todayN()?'':'You\'re practicing ahead.'}</span>
-    </div>
-    <details class="text"><summary>Or just read today's text</summary>
-      <div class="sec book"><h3>What the book says</h3><p>${esc(D.book)}</p></div>
-      <div class="sec"><h3>What it means</h3><p>${esc(D.mean)}</p></div>
-      <div class="sec try"><h3>Try today</h3><p>${esc(D.try)}</p></div>
-      <div class="sec"><h3>The sit</h3><p>${esc(D.sit)}</p></div>
-    </details>
-    <div class="actions">${done?'<button type="button" class="btn alt" id="mark">Mark as not done</button>':'<button type="button" class="btn alt" id="mark">Mark as done without practicing</button>'}
-      ${n<49?`<button type="button" class="btn alt" id="next">Day ${n+1} →</button>`:''}</div>`;
-  $('#begin').onclick=()=>openSession(n);
-  $('#mark').onclick=()=>{ if(done) st.read=st.read.filter(x=>x!==n); else st.read.push(n); save(); render(); };
-  const nx=$('#next'); if(nx) nx.onclick=()=>{ sel=n+1; render(); $('#reader').focus({preventScroll:true}); if(innerWidth<860) $('#reader').scrollIntoView({behavior:'smooth'}); };
-}
-const KIND_HINT={listen:'Today you listen: find one sound among many.',gap:'Today you breathe with a circle and catch the pause between breaths.',release:'Today your hands are full, and you let things go one by one.',dissolve:'Today you press and hold, and let an element dissolve.',drops:'Today you guide the white and red drops to the heart.',still:'Today the practice is stillness: the scene only opens if you don\'t move.',bubbles:'Today you watch thoughts pop up, and tap each one.',choose:'Today you choose between a bright light and a soft one.',pick:'Today you choose honestly. There\'s no wrong answer.',face:'Today you press and hold to face a wrathful mask.',mirror:'Today you wipe the mist from a mirror.',hold:'Today you press and hold against the wind.',door:'Today you press and hold to close a door.',doors:'Today you choose a door.',cliffs:'Today you step back from three cliffs.',bloom:'Today you build a small pure land.',aloud:'Today you read the book aloud.'};
-function ics(time){ const [h,m]=time.split(':').map(Number); const d=parse(st.start); d.setHours(h,m,0,0); const f=x=>String(x).padStart(2,'0'); const loc=`${d.getFullYear()}${f(d.getMonth()+1)}${f(d.getDate())}T${f(h)}${f(m)}00`;
-  const url=location.origin+location.pathname;
-  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Forty-Nine Days//EN','BEGIN:VEVENT',`UID:fortynine-${st.start}@bardo`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').split('.')[0]}Z`,`DTSTART:${loc}`,'DURATION:PT10M','RRULE:FREQ=DAILY;COUNT=49','SUMMARY:Forty-Nine Days: today\'s practice',`DESCRIPTION:Six minutes with the Book of the Dead. ${url}`,`URL:${url}`,'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Today\'s practice is open','TRIGGER:PT0M','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n'); }
-function gcalUrl(time){ const [h,m]=time.split(':').map(Number); const d=parse(st.start); const f=x=>String(x).padStart(2,'0'); const day=`${d.getFullYear()}${f(d.getMonth()+1)}${f(d.getDate())}`; const em=h*60+m+10;
-  const q=new URLSearchParams({action:'TEMPLATE',text:'Forty-Nine Days: today\'s practice',dates:`${day}T${f(h)}${f(m)}00/${day}T${f(Math.floor(em/60)%24)}${f(em%60)}00`,recur:'RRULE:FREQ=DAILY;COUNT=49',details:'Six minutes with the Book of the Dead. '+location.origin+location.pathname}); return 'https://calendar.google.com/calendar/render?'+q.toString(); }
-function downloadIcs(){ const t=($('#rt')&&$('#rt').value)||'08:00'; const blob=new Blob([ics(t)],{type:'text/calendar'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='forty-nine-days.ics'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }
-
-let ac=null, sitT=null;
-function bell(f=528){ try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const t=ac.currentTime; [f,f*2.01,f*3.02].forEach((fr,i)=>{ const o=ac.createOscillator(), g=ac.createGain(); o.frequency.value=fr; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.16/(i+1),t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+4.5); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+4.6); }); }catch(e){} }
-function sitTimer(col){ const b=$('#sitbtn'), arc=$('#arc'), lab=$('#secs');
-  if(sitT){ clearInterval(sitT); sitT=null; b.textContent='Begin the sit'; arc.setAttribute('stroke-dashoffset','276.5'); lab.textContent='1:00'; return; }
-  bell(); const t0=Date.now(); b.textContent='Stop';
-  sitT=setInterval(()=>{ const el=(Date.now()-t0)/1000, left=Math.max(0,60-el); lab.textContent=`0:${String(Math.ceil(left)).padStart(2,'0')}`.replace('0:60','1:00');
-    arc.setAttribute('stroke-dashoffset',(276.5*(1-el/60)).toFixed(1));
-    if(el>=60){ clearInterval(sitT); sitT=null; bell(396); lab.textContent='✓'; b.textContent='Sit again'; } },250); }
-
-function renderWelcome(){
-  $('#wrap').innerHTML=`<section class="panel welcome" style="grid-column:1/-1;max-width:720px;justify-self:center">
-    <div style="display:flex;gap:16px;align-items:center;margin-bottom:10px">${mandala(7,'#1F5E63')}<h2>Forty-nine days with the Book of the Dead</h2></div>
-    <p>The Tibetan Book of the Dead describes forty-nine days between one life and the next. Here they are, one a day, as a short guided practice. Each day you hear what the book says, do something with it (face a mask, let something go, choose between two lights), sit for a minute, and carry one small thing into your day.</p>
-    <p>It isn't only about dying. Every day has a little letting go in it, and the book was always meant to be practiced by the living.</p>
-    <ol><li>Pick a start date. A new day opens each morning.</li><li>Read at your own pace; you can always read ahead.</li><li>Each practice takes about six minutes. Headphones help.</li></ol>
-    <label for="sd">Start date</label>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><input type="date" id="sd" value="${ymd(new Date())}"><button type="button" class="btn" id="go">Begin</button></div>
-    <p class="note" style="margin-top:12px">Your progress is kept in this browser only.${memOnly?' This browser isn\'t saving it, so it will reset when you close the page.':''}</p></section>`;
-  $('#go').onclick=()=>{ st.start=$('#sd').value||ymd(new Date()); st.read=[]; st.ahead=[]; save(); sel=null; render(); };
+  const nx=getNext(); const resume=nx>1;
+  const map=`<svg viewBox="40 20 520 330" role="img" aria-label="A path of forty-nine stones${resume?`, walked as far as day ${nx-1}`:''}">${pathArt(resume?nx:0)}</svg>`;
+  const wk=[0,1,2,3,4,5,6].map(w=>{ const a=PARTS[DAYS[w*7].p], b=PARTS[DAYS[w*7+6].p];
+    return `<button type="button" class="wk" data-d="${w*7+1}" style="--a:${a.col};--b:${b.col}"><i></i><b>Week ${w+1}</b><span>Days ${w*7+1}–${w*7+7}: ${esc(DAYS[w*7].t)} to ${esc(DAYS[w*7+6].t)}</span></button>`; }).join('');
+  const all=PARTS.map((p,pi)=>`<h3 style="color:${p.col}">${esc(p.name)}</h3>`+DAYS.map((d,i)=>d.p!==pi?'':`<p><b>Day ${i+1}. ${esc(d.t)}.</b> ${esc(d.book)} ${esc(d.mean)}</p>`).join('')).join('');
+  $('#wrap').innerHTML=`<section class="hero">
+      <div><span class="eyebrow">Tibetan Book of the Dead</span><h1>The Forty-Nine Day Walk</h1>
+        <p class="lede">The book says the journey between one life and the next takes forty-nine days. Here you walk all of them in one go: dying, the peaceful lights, the fierce ones, and the doors back in.</p>
+        <p class="lede">Each day is a short scene you take part in: you face a mask, let something go, choose between two lights. At the end of each week you sit for a minute and take a few small practices with you.</p>
+        <div class="cta">${resume?`<button type="button" class="bigbegin" id="go">Continue from day ${nx}</button><button type="button" class="btn" id="fresh">Start from the beginning</button>`:`<button type="button" class="bigbegin" id="go">Begin the walk</button>`}</div>
+        <p class="note">About an hour in all, in seven parts of eight or nine minutes. Stop whenever you like. Headphones help, and turn your ringer on.</p></div>
+      <div class="map">${map}</div></section>
+    <section class="weeks" aria-label="Start at a week"><h2>Or start at any week</h2><div class="wgrid">${wk}</div></section>
+    <section class="how"><h2>How the walk works</h2>
+      <div><b>Arrive</b><p>Three breaths you control with your finger.</p></div>
+      <div><b>Each day</b><p>A line from the book, something to do, and what it means.</p></div>
+      <div><b>Each week</b><p>A sit, where the mandala settles only when you're still, and seven practices to carry.</p></div>
+      <div><b>The end</b><p>The whole path, walked. No account and nothing to come back for.</p></div></section>
+    <details class="all"><summary>Or read all forty-nine days as text</summary>${all}</details>`;
+  $('#go').onclick=()=>openSession(resume?nx:1);
+  const f=$('#fresh'); if(f) f.onclick=()=>{ setNext(0); openSession(1); };
+  document.querySelectorAll('.wk').forEach(b=>b.onclick=()=>openSession(+b.dataset.d));
 }
 render();
 </script>
-
 </body></html>

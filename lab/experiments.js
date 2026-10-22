@@ -17,6 +17,6 @@ window.EXPERIMENTS = [
     status: 'live',
     object: 'book',
     blurb: 'The Tibetan Book of the Dead, told as an illustrated flight through the in-between.',
-    also: [{ label: 'Forty-Nine Days', href: 'bardo/49-days/', note: 'the slip in the book: one short practice for each day' }],
+    also: [{ label: 'The Forty-Nine Day Walk', href: 'bardo/49-days/', note: 'the slip in the book: walk all forty-nine days, one stone at a time' }],
   },
 ];
