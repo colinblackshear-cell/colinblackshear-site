@@ -1,0 +1,1136 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Forty-Nine Days</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: a seven-by-seven calendar (one row per week, as the tradition counts) beside a reading card; stacks on phones. Single safety-card look, shared with The Bardo Manual. */
+:root{
+  color-scheme: light;
+  --cream:#F6EBD2; --parchment:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --teal:#1F5E63; --brown:#8A4B22; --lamp:#E8B13A;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+a{color:var(--teal)}
+button{font:inherit}
+:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:12px;padding-inline:16px;border-bottom:2px solid var(--ink);background:var(--parchment)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill{font-family:var(--display);font-weight:700;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-inline:16px;display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:28px;align-items:start}
+.panel{background:var(--parchment);border:2px solid var(--ink);border-radius:16px;padding:18px}
+.cal h2,.welcome h2{margin:0 0 4px;font-family:var(--display);font-weight:800;font-size:1.25rem;text-transform:uppercase;letter-spacing:.03em}
+.progress{font-size:.9rem;color:var(--ink-soft);margin:0 0 14px}
+.weeks{display:flex;flex-direction:column;gap:8px}
+.week{display:grid;grid-template-columns:58px repeat(7,minmax(0,1fr));gap:6px;align-items:center}
+.week b{font-family:var(--display);font-weight:700;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.d{aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font-family:var(--display);font-weight:700;font-size:.85rem;font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center;padding:0;position:relative;min-width:0}
+.d.locked{border-style:dashed;border-color:rgba(30,42,43,.35);color:rgba(30,42,43,.45)}
+.d.open{background:var(--parchment)}
+.d.read{background:var(--c);border-color:var(--ink);color:#FFFFFF}
+.d.today::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--c);animation:ping 2s ease-out infinite}
+.d.sel{box-shadow:0 0 0 3px var(--parchment),0 0 0 5px var(--ink)}
+@keyframes ping{from{opacity:.9;transform:scale(.9)}to{opacity:0;transform:scale(1.25)}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;font-size:.82rem;color:var(--ink-soft)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1.5px solid var(--ink)}
+.settings{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.reader{min-height:420px}
+.rhead{display:flex;gap:16px;align-items:center;margin-bottom:12px}
+.rhead svg{flex:none;width:82px;height:82px}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--c,var(--brown))}
+.reader h1{margin:2px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3.2vw,2.1rem);line-height:1.08;text-wrap:balance}
+.sec{margin-top:18px;max-width:64ch}
+.sec h3{margin:0 0 4px;font-family:var(--display);font-weight:800;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.sec p{margin:0;font-size:1.06rem}
+.sec.book p{font-size:1.1rem}
+.try{background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:12px 14px}
+.sit{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-top:2px dashed rgba(30,42,43,.25);padding-top:16px}
+.ring{position:relative;width:96px;height:96px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:1.2rem;font-variant-numeric:tabular-nums}
+.sit .txt{flex:1;min-width:200px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.btn{font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--teal);color:var(--parchment);border-radius:999px;padding:11px 20px;cursor:pointer;min-height:46px}
+.btn.alt{background:transparent;color:var(--ink)}
+.btn.gold{background:var(--lamp);color:var(--ink)}
+.lockcard{display:flex;flex-direction:column;gap:12px;align-items:flex-start;max-width:52ch}
+.lockcard p{margin:0}
+.welcome p{margin:0 0 10px;max-width:58ch}
+.welcome ol{margin:0 0 14px;padding-left:1.2em}
+.welcome label{display:block;font-weight:700;margin:10px 0 6px}
+.welcome input,.settings input{font:inherit;border:2px solid var(--ink);border-radius:10px;padding:8px 10px;background:#FFFFFF;color:var(--ink);min-height:44px}
+.note{font-size:.85rem;color:var(--ink-soft)}
+.breathe{animation:breathe 8s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.06)}}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}.reader{min-height:0}}
+@media (max-width:420px){.week{grid-template-columns:40px repeat(7,minmax(0,1fr));gap:4px}.d{font-size:.72rem}.week b{font-size:.56rem;letter-spacing:.06em}}
+
+/* ---------- the daily practice (full-screen session) ---------- */
+body.insession{overflow:hidden}
+.session{position:fixed;inset:0;z-index:50;background:#0E1416;color:#FFF6DE;display:flex;flex-direction:column;align-items:center;padding:max(10px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom));gap:10px;overflow:auto}
+.session::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c) 22%,transparent),transparent 70%);pointer-events:none}
+.sbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.stitle{font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:.9rem;opacity:.9;min-width:0}
+.stitle b{color:var(--c);filter:brightness(1.4);margin-right:6px;letter-spacing:.14em;text-transform:uppercase}
+.sbar .sp{flex:1}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:#FFF6DE;border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed=false]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;font-family:var(--display);font-weight:700;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center}
+.steps li.done{border-color:color-mix(in srgb,var(--c) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.stitle{font-size:.8rem;flex-basis:100%}}
+#art,#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+#cv{pointer-events:none;opacity:0;transition:opacity .8s}
+#layer{position:absolute;inset:0}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brown);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px;min-height:0}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--teal);color:var(--parchment);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.chips{display:flex;gap:6px;margin-right:auto}
+.chip{font-family:var(--display);font-weight:700;font-size:.8rem;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:6px 12px;min-height:40px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--parchment)}
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;color:inherit}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--lamp);outline-offset:3px}
+.count{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;pointer-events:none}
+.count i{width:12px;height:12px;border-radius:50%;border:2px solid #FFF6DE;opacity:.6}
+.count i.on{background:#FFF6DE;opacity:1}
+.tapit{position:absolute;transform:translate(-50%,-50%);width:13%;aspect-ratio:1;border-radius:50%;border:2px dashed rgba(255,246,222,.5);background:rgba(255,246,222,.08);padding:4%;cursor:pointer;transition:transform 1s cubic-bezier(.3,0,.3,1),opacity 1s}
+.tapit svg{width:100%;height:100%;display:block}
+.tapit:hover{background:rgba(255,246,222,.18)}
+.tapit.gone{transform:translate(-50%,-260%) rotate(-12deg) scale(.6);opacity:0}
+.tapit.bloom{transform:translate(-50%,-50%) scale(1.25);opacity:1;border-color:transparent;background:radial-gradient(circle,rgba(255,233,168,.55),transparent 70%)}
+.spot{position:absolute;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;border:0;background:transparent;cursor:pointer}
+.spot i{pointer-events:none;position:absolute;inset:14px;border-radius:50%;border:3px solid #E8B13A;animation:pingS 1.6s ease-out infinite}
+@keyframes pingS{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.bub{position:absolute;font-family:var(--body);font-size:clamp(.8rem,1.9vw,1rem);background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;animation:bubIn .5s ease-out;transition:transform .6s,opacity .6s;min-height:40px}
+.bub.bite{background:#3A2A44;color:#FFF6DE;border-color:#FFF6DE;font-family:var(--display);font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.bub.pop{transform:scale(1.5);opacity:0}.bub.smiled{transform:scale(1.4);opacity:0;background:#E8B13A;color:var(--ink)}.bub.fade{opacity:0}
+@keyframes bubIn{from{transform:scale(.3);opacity:0}}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:2rem;color:#FFF6DE;font-variant-numeric:tabular-nums}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap}
+.half+.half{border-left:3px solid #0E1416}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--parchment);color:var(--ink);border-radius:999px;padding:8px 18px 8px 8px;cursor:pointer;min-height:48px}
+.pk i{width:30px;height:30px;border-radius:50%;background:var(--pc);border:2px solid var(--ink)}
+.doors{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);gap:2%;padding:6% 4%}
+.dr{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;border:3px solid #FFF6DE;border-radius:999px 999px 10px 10px;background:#26343A;color:#FFF6DE;cursor:pointer;padding:10px 4px;font-family:var(--display);font-weight:700;font-size:clamp(.55rem,1.4vw,.78rem);text-transform:capitalize}
+.dr svg{width:70%;max-width:56px}
+.dr:hover,.dr:focus-visible{background:#3A4C54}
+.wipe{position:absolute;inset:0;background:transparent;border:0;cursor:crosshair;touch-action:none}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.sitring{position:absolute;inset:4% 0;display:flex;justify-content:center;pointer-events:none}
+.sitring svg{height:100%;aspect-ratio:1}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.6);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.55);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.aloud{position:absolute;inset:8% 10% 22%;display:flex;flex-direction:column;justify-content:center;gap:4px;text-align:center}
+.aloud p{margin:0;font-family:var(--display);font-weight:500;font-size:clamp(1rem,3vw,1.7rem);color:rgba(255,246,222,.45)}
+.aloud p.now{color:#FFF6DE;font-weight:700}
+.sgo.read,.sgo.back{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--parchment);color:var(--ink)}
+.sgo.back{left:auto;right:16px;transform:none}
+.spin{animation:spinr 40s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.approach{transform-origin:300px 200px;animation:approach 9s ease-in forwards}@keyframes approach{from{transform:scale(.8)}to{transform:scale(1.1)}}
+.pulse{transform-origin:300px 200px;animation:pulseg 1.28s ease-in-out infinite}@keyframes pulseg{50%{opacity:.12;transform:scale(.92)}}
+.wrath{transform-origin:300px 200px;transition:transform 1.6s ease,opacity 1.4s ease}
+.fl{transform-origin:300px 200px;animation:flick2 .45s ease-in-out infinite alternate}@keyframes flick2{to{transform:scale(1.04) rotate(1.5deg)}}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 3.6s infinite}@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.peace{opacity:0;transform-origin:300px 200px;transform:scale(.3);transition:opacity 1.6s ease .5s,transform 1.6s ease .5s}
+.morphd .wrath{transform:scale(.12) rotate(90deg);opacity:0}.morphd .peace{opacity:1;transform:scale(1)}.morphd .pulse{opacity:0;animation:none}
+.stage.facing{animation:shake2 .12s linear infinite}@keyframes shake2{25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+.fl2{animation:flick2 .5s ease-in-out infinite alternate}
+.wind{animation:windm 3s ease-in-out infinite}@keyframes windm{50%{transform:translateX(40px)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.5}}
+.shock{transform-origin:300px 200px;transform-box:view-box;animation:shock 2.8s ease-out infinite}@keyframes shock{from{transform:scale(.3);opacity:1}to{transform:scale(5);opacity:0}}
+.rp{transform-origin:300px 190px;transform-box:view-box;animation:shock 2.6s ease-out forwards}
+/* the practice card on the calendar page */
+.practice{margin-top:6px;background:#10181B;color:#FFF6DE;border:2px solid var(--ink);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.practice::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 90% at 85% 0%,color-mix(in srgb,var(--c) 40%,transparent),transparent 70%);pointer-events:none}
+.practice>*{position:relative}
+.practice .what{font-size:1.02rem;margin:0}
+.flow{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.flow li{font-family:var(--display);font-weight:700;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.4);border-radius:999px;padding:4px 10px}
+.flow li.key{background:#FFF6DE;color:var(--ink);border-color:#FFF6DE}
+.bigbegin{align-self:flex-start;font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:.04em;border:2px solid var(--ink);background:var(--lamp);color:var(--ink);border-radius:999px;padding:13px 24px;min-height:52px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.bigbegin:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+details.text{margin-top:16px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.text summary{cursor:pointer;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:.9rem;min-height:36px;display:flex;align-items:center}
+.keep{margin-top:16px;border-top:2px solid rgba(30,42,43,.15);padding-top:12px}
+.keep h3{margin:0 0 6px;font-family:var(--display);font-weight:800;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.keep p{margin:0 0 8px;font-size:.9rem}
+.keep .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.keep input{font:inherit;border:2px solid var(--ink);border-radius:10px;padding:6px 8px;background:#FFFFFF;color:var(--ink);min-height:40px}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="bar">
+  <span class="brand">Forty-Nine Days<small>A daily companion to The Bardo Manual</small></span>
+  <span class="sp"></span>
+  <a class="pill" href="../../">Interactive</a><a class="pill" href="../">Open the manual</a>
+</header>
+<main class="wrap" id="wrap"></main>
+
+<script>
+const PARTS=[
+ {name:'Dying', sub:'The moment of death and the Clear Light', col:'#C9962E'},
+ {name:'The Peaceful Visions', sub:'Five lights, five wisdoms', col:'#2F5FA8'},
+ {name:'The Fierce Visions', sub:'The same lights, shouting', col:'#A8322A'},
+ {name:'Becoming', sub:'Drifting, judgment and the way back', col:'#2E7D63'}
+];
+const DAYS=[
+/* ---------- PART ONE: DYING (1–14) ---------- */
+{p:0,t:'Liberation Through Hearing',
+ book:"The book's Tibetan name is Bardo Thödol: Liberation Through Hearing in the In-Between. It was made to be read aloud, beside someone who is dying and for weeks after, on the belief that the mind keeps listening even when the body has stopped.",
+ mean:"The whole method is hearing. Not studying, not believing: hearing the right words at the right moment and recognizing what they point to. That only works if the words are already familiar. So the book is really meant for the living, to be heard many times before it's needed.",
+ try:"Listen to one person today the way the book asks to be heard: completely, without planning your reply.",
+ sit:"Close your eyes and just listen. Name nothing. Let every sound arrive and leave."},
+{p:0,t:'You Are in a Bardo Now',
+ book:"The book describes six bardos, or in-between states: this life, dreaming, meditation, dying, the luminous visions, and becoming. Three belong to the living and three to the dead.",
+ mean:"A bardo is a gap: the space between one thing ending and the next beginning. Life is full of them: between waking and sleeping, between jobs, between one breath and the next. The teaching is that these gaps are where change is possible, because the old pattern has loosened and the new one hasn't set.",
+ try:"Notice three gaps today: the pause after a door closes, the moment before you pick up your phone, the end of an out-breath.",
+ sit:"Watch your breath. Rest your attention in the small pause at the bottom of each exhale."},
+{p:0,t:'O Child of Noble Family',
+ book:"The reading opens by speaking directly to the dying person: \"O child of noble family, what is called death has now arrived.\" It reminds them they are not the first to go and won't be the last, and asks them not to cling to this life out of longing or weakness.",
+ mean:"Noble family isn't about rank. It means your basic nature is already good and already awake, however messy life has been. The first instruction is gentle and practical: you can't hold on, so don't spend your last energy trying.",
+ try:"Do one ordinary thing today, washing a cup or closing a door, as if it were the last time. Not sadly. Just fully.",
+ sit:"Silently say: everything I love is passing through. Let your hands open in your lap."},
+{p:0,t:'Earth Into Water',
+ book:"The book's commentaries describe dying as the four elements dissolving in order. First earth: the body grows heavy, it's hard to move or lift the head, and the inner sign is a shimmering mirage.",
+ mean:"Earth is everything solid in you: bone, flesh, weight, the feeling of being a firm, separate thing. As it goes, so does the sense of having ground to stand on. The mirage is the mind noticing that what seemed solid was never quite as solid as it looked.",
+ try:"Notice one thing you treat as rock-solid today, a plan or an opinion of someone, and ask how solid it really is.",
+ sit:"Feel the weight of your body on the chair or floor. Let it be fully held. Stop holding yourself up."},
+{p:0,t:'Water Into Fire',
+ book:"Next water dissolves into fire. The mouth, nose and eyes dry out, the body stops holding moisture, and the inner sign is a haze like drifting smoke.",
+ mean:"Water is everything fluid: blood, tears, and in the tradition, the flow of feeling. As it dries up, feelings lose their grip and stop sticking. The smoke is that blur between one feeling and the next.",
+ try:"When a strong feeling arrives today, let it move through like weather. Don't feed it a story. See how long it lasts on its own.",
+ sit:"Notice whatever you're feeling right now. Name it once, softly. Then just watch it change."},
+{p:0,t:'Fire Into Air',
+ book:"Then fire dissolves into air. Warmth leaves the hands and feet and gathers at the heart, digestion stops, and the inner sign is red sparks, like fireflies.",
+ mean:"Fire is warmth, digestion, and the energy to take in and use the world. As it fades, you stop taking things in. What's left of your warmth goes where you have always lived most: the heart.",
+ try:"Notice where your warmth goes today. Who do you light up for? Give a little of it somewhere unexpected.",
+ sit:"Rest your attention in the center of your chest. Feel for any warmth there, however faint."},
+{p:0,t:'Air Into Consciousness',
+ book:"Last, air dissolves into consciousness. Out-breaths grow long and in-breaths grow short, until the final breath goes out. The inner sign is a small flame, like a butter lamp at the end of its oil.",
+ mean:"Air is breath and movement, the last thing to leave. The tradition says that after the outer breath stops, an inner process continues for a while. That's why the reading carries on, and why the body is left undisturbed for a time after death.",
+ try:"Three times today, take one slow breath out that's longer than it needs to be. Let it be the whole point.",
+ sit:"Lengthen each out-breath a little. Rest in the small stillness after it ends."},
+{p:0,t:'The White, the Red and the Black',
+ book:"After the breath stops, the commentaries describe three visions. A white glow as the white drop descends from the crown, a red glow as the red drop rises from the navel, then black as they meet at the heart. With them, eighty kinds of thought switch off: anger, wanting, and confusion.",
+ mean:"This is the mind's furniture being cleared out, drawer by drawer: first the pushing away, then the pulling toward, then even the dull fog. What's left when it's all gone is the most important moment in the book.",
+ try:"Catch one thought today exactly as it dissolves, the moment you notice you've stopped thinking it.",
+ sit:"Watch thoughts come and go like lights in a dark room. Don't follow any of them."},
+{p:0,t:'The Clear Light',
+ book:"At the moment of death, the Ground Luminosity dawns: the Clear Light. The reader says: \"Your own mind, empty and luminous, is the Clear Light. Recognize it. Rest in it.\" The book calls this the first and best chance for liberation.",
+ mean:"The Clear Light isn't a light you see. It's awareness itself, before any thought, opinion or self-image shows up: open like a cloudless sky, and aware. The book's claim is that it's always present, just usually hidden behind the clouds. Death clears the clouds for a moment.",
+ try:"Today, when you're caught in some small drama, ask: what am I clinging to here? The grip is the cloud. Loosen it and see what's behind.",
+ sit:"For one minute, don't meditate on anything. Just be aware, and notice that you're aware."},
+{p:0,t:'Why Almost Everyone Misses It',
+ book:"The book says that most people don't recognize the Clear Light. It's too vast, too unfamiliar, and the habit of grasping at a separate self pulls them away. The moment passes and they fall unconscious.",
+ mean:"We miss it the way we miss the sky by staring at the clouds. The light doesn't need to be found; it needs to be stopped running from. That one thought, \"but what about me?\", is enough to pull the curtain closed. This is why the book is studied in life: to make the open sky familiar.",
+ try:"Count the \"what about me?\" moments today. No judgment, just counting.",
+ sit:"Rest. When a thought about yourself appears, notice it, and come back to resting."},
+{p:0,t:'The Second Light',
+ book:"If the first Clear Light is missed, a second, secondary luminosity dawns as consciousness leaves the body. The reader repeats the instructions. Tradition says the best exit is through the crown of the head.",
+ mean:"The book is generous. It keeps offering chances, each one a little harder because thoughts are starting to stir again. Practices like phowa, the transfer of consciousness, train the mind in life to leave upward when the time comes.",
+ try:"If you miss a chance today, to be patient or kind, look for the second one. There's almost always a second one.",
+ sit:"Imagine your attention resting at the very top of your head, open like a skylight."},
+{p:0,t:'Waking Up Confused',
+ book:"After about three and a half days of unconsciousness, the dead person wakes in a body made of mind, often not realizing they have died. They see their family grieving, call out, and aren't heard.",
+ mean:"This is one of the book's most human moments. Being unheard is painful, and the instinct is to try harder and louder. The book's advice is to stop: accept what has happened, and turn toward what comes next.",
+ try:"Notice one moment today when you badly want to be understood. Try letting it go without making your point.",
+ sit:"Breathe in: I am here. Breathe out: I don't need to be seen."},
+{p:0,t:'Signs You May Be Dead',
+ book:"The book lists ways the dead can tell. They cast no shadow, leave no footprints, see no reflection in a mirror, and the living don't answer them.",
+ mean:"Each sign is a mirror that has stopped reflecting you back. In life, we lean on reflections constantly: other people's reactions, our image, our footprint on the world. The question underneath is: who are you when nothing reflects you?",
+ try:"Notice one place today where you look for a reflection: a like, a compliment, a reaction. Let it go unchecked once.",
+ sit:"Sit as if no one will ever know you sat. Just this minute, unrecorded."},
+{p:0,t:'The Roar',
+ book:"As the visions begin, the book warns of terrifying sounds, lights and rays. The sound of reality rolls like a thousand thunders. The instruction: do not be afraid; these are the natural energy of your own mind.",
+ mean:"Fear makes everything louder. The book's trick is to name the source: the noise isn't attacking you, it is you, turned all the way up. Running doesn't help, because you bring it with you. Standing still does.",
+ try:"When something overwhelms you today, stand still for three breaths before you react.",
+ sit:"Let every sound around you be as loud as it is. Don't push any of it away."},
+/* ---------- PART TWO: PEACEFUL (15–22) ---------- */
+{p:1,t:'Five Lights, Five Poisons',
+ book:"Over the next week, the book says, five Buddhas appear in turn, each in a brilliant light, each with a duller, softer light beside it that leads back into one of the six realms of rebirth.",
+ mean:"Each Buddha is a wisdom, and each wisdom is a poison transformed. Ignorance becomes spaciousness. Anger becomes clarity. Pride becomes equality. Wanting becomes discernment. Jealousy becomes effective action. The bright light is frightening because it's honest; the soft one is comfortable because it's familiar.",
+ try:"Which of the five poisons is loudest in you today: dullness, anger, pride, wanting or jealousy? Just name it.",
+ sit:"Picture five colored lights around you: blue, white, yellow, red and green. Rest in the middle."},
+{p:1,t:'Day One: Blue',
+ book:"On the first day, the Buddha Vairocana appears from the center in brilliant blue light, the wisdom of all-encompassing space. Beside it shines a dull white light: the realm of the gods.",
+ mean:"Blue space holds everything without being disturbed by any of it. The gods' realm is the trap of comfort: a life so pleasant there's no reason to wake up. The book says go toward the blue, even though it hurts to look at.",
+ try:"Choose one small discomfort today instead of the comfortable option. A cold shower, an honest answer, a quiet minute without your phone.",
+ sit:"Imagine your awareness as the sky. Thoughts are birds crossing it. The sky doesn't chase them."},
+{p:1,t:'Day Two: White',
+ book:"On the second day, Vajrasattva-Akshobhya appears from the east in brilliant white light, mirror-like wisdom. Beside it, a smoky light leads to the hells, drawn by anger.",
+ mean:"A mirror shows everything exactly as it is, without adding an opinion. Anger always adds one. Mirror-like wisdom is anger's clarity with the heat taken out: you still see what's wrong, you just don't burn yourself or anyone else.",
+ try:"When you feel irritated today, describe the situation to yourself in plain facts only, no adjectives.",
+ sit:"Picture a still pond. Let your mind be that surface, reflecting without rippling."},
+{p:1,t:'Day Three: Yellow',
+ book:"On the third day, Ratnasambhava appears from the south in brilliant yellow light, the wisdom of equality. Beside it, a dull blue light leads back to the human realm, drawn by pride.",
+ mean:"Equality sees everyone's worth as the same, which is very freeing and slightly annoying if you were hoping to be special. Pride is always comparing, up or down. When the comparing stops, so does the exhaustion.",
+ try:"Catch yourself ranking today: better than, worse than. Each time, swap it for 'also'. They're also trying.",
+ sit:"Bring three people to mind: one you love, one you don't know, one you find hard. Wish each the same good thing."},
+{p:1,t:'Day Four: Red',
+ book:"On the fourth day, Amitabha appears from the west in brilliant red light, discriminating wisdom. Beside it, a dull yellow light leads to the hungry ghosts, drawn by craving.",
+ mean:"Discriminating wisdom sees every detail of a thing clearly and appreciates it, without needing to own it. Craving sees only what it lacks. The hungry ghost has an enormous belly and a tiny mouth: nothing ever fills it.",
+ try:"Notice one thing you reach for today that never quite satisfies, a snack, a scroll, a purchase. Pause before reaching.",
+ sit:"Look closely at one object near you for a whole minute. Appreciate it completely. Don't want it."},
+{p:1,t:'Day Five: Green',
+ book:"On the fifth day, Amoghasiddhi appears from the north in brilliant green light, all-accomplishing wisdom. Beside it, a dull red light leads to the jealous gods, drawn by envy.",
+ mean:"All-accomplishing wisdom simply does what's needed, without keeping score. Jealousy keeps score of everything and gets nothing done. The jealous gods fight forever over a tree whose fruit grows on someone else's side.",
+ try:"Do one helpful thing today that no one will know about.",
+ sit:"Think of someone who has something you want. Wish them more of it. Notice what happens in your chest."},
+{p:1,t:'Day Six: All at Once',
+ book:"On the sixth day, all five Buddhas appear together with their retinues, forty-two peaceful figures in all, while the six dull lights of the realms shine at the same time.",
+ mean:"Everything shows up at once, which is how life usually is: all the wisdoms and all the temptations in the same room. The instruction doesn't change. Recognize the bright lights as your own mind and don't follow the dull ones.",
+ try:"On a busy moment today, stop and ask: of everything pulling at me right now, which one is the bright light?",
+ sit:"Let every sensation, sound and thought arrive together. Don't sort them. Just be the space they're in."},
+{p:1,t:'Day Seven: Rainbow',
+ book:"On the seventh day, the knowledge holders appear in dancing rainbow light, with music and song. Beside them shines a dull green light: the animal realm, drawn by dullness and ignorance.",
+ mean:"The knowledge holders are teachers who mastered this journey and came back to help. The animal realm is the opposite of curiosity: no questions, no learning, just getting by. The rainbow invites you to keep learning. That's the whole peaceful week: every bright light is your own wisdom, every soft one your own habit, and the book keeps offering without scolding.",
+ try:"Learn one small new thing today on purpose. Ask a question you'd normally skip.",
+ sit:"Listen for music in ordinary sounds: traffic, birds, the hum of a fridge."},
+/* ---------- PART THREE: FIERCE (23–31) ---------- */
+{p:2,t:'Why They Turn Fierce',
+ book:"From the eighth day, the same five Buddhas reappear in wrathful form, the herukas, with flames, many arms, fangs and terrifying roars. The book insists they are the peaceful ones, transformed, and that they are your own projections.",
+ mean:"They get louder because you didn't hear them whisper. Wrathful isn't angry at you; it's fierce on your behalf, the way a parent shouts when a child steps toward traffic. The faces are terrifying so that your attention finally sticks.",
+ try:"Think of someone who was hard on you for your own good. Can you see the care inside the fierceness now?",
+ sit:"Imagine something fearsome in front of you. Instead of looking away, look at it kindly."},
+{p:2,t:'Day Eight: Buddha Heruka',
+ book:"On the eighth day, Buddha Heruka appears, dark brown, three faces, six arms, blazing. He is Vairocana, the blue light of the first day, in wrathful form.",
+ mean:"Heruka is often translated blood-drinker, and the tradition explains that the blood they drink is your confusion. The very first, gentlest light has come back fierce. Ignorance doesn't give way to gentleness forever.",
+ try:"Name one thing you've been avoiding looking at. Look at it for one minute.",
+ sit:"Breathe in fear. Breathe out: this is my mind too."},
+{p:2,t:'Day Nine: Vajra Heruka',
+ book:"On the ninth day, Vajra Heruka appears, dark blue, the wrathful form of Vajrasattva, the white light of mirror-like wisdom.",
+ mean:"Clarity, when ignored, becomes uncomfortable truth. The mirror doesn't soften what it shows. This day asks whether you can look at your own anger in the mirror without flinching or defending it.",
+ try:"Notice one time today you defend yourself. Try listening one sentence longer instead.",
+ sit:"Picture your face in a mirror. Let it be exactly as it is."},
+{p:2,t:'Day Ten: Ratna Heruka',
+ book:"On the tenth day, Ratna Heruka appears, dark yellow, the wrathful form of Ratnasambhava, the wisdom of equality.",
+ mean:"Pride doesn't like being equal. When the gentle invitation to equality is ignored, it comes back as something that knocks you off your pedestal. That's not punishment; it's relief.",
+ try:"Admit a small mistake today without explaining it.",
+ sit:"Sit as if you were nobody special. Notice whether it feels heavy or light."},
+{p:2,t:'Day Eleven: Padma Heruka',
+ book:"On the eleventh day, Padma Heruka appears, dark red, the wrathful form of Amitabha, discriminating wisdom.",
+ mean:"Desire, ignored, becomes all-consuming. The fierce red form burns away the grasping so that what's left can appreciate without devouring. Fire can warm or destroy; the difference is clinging.",
+ try:"Enjoy something fully today and then let it end without asking for more.",
+ sit:"Imagine a red flame. Let it burn away the wanting and leave the warmth."},
+{p:2,t:'Day Twelve: Karma Heruka',
+ book:"On the twelfth day, Karma Heruka appears, dark green, the wrathful form of Amoghasiddhi, all-accomplishing wisdom.",
+ mean:"Jealousy and rushing, ignored, become frantic. The fierce green form cuts through the busyness: do what actually needs doing, and stop doing the rest.",
+ try:"Cross one thing off your list today by deciding not to do it.",
+ sit:"Feel the urge to do something. Don't. Watch the urge rise and fall."},
+{p:2,t:'Day Thirteen: The Animal-Headed Ones',
+ book:"On the thirteenth day come the Gauris and the animal-headed Pishachis, eight and eight, surrounding you from every direction.",
+ mean:"Animal heads are instinct in visible form: hunger, territory, fear. They circle because instinct always circles. The instruction is still the same: recognize, don't run.",
+ try:"Notice one purely instinctive reaction today, a flinch, a grab, a snap. Smile at it.",
+ sit:"Feel the animal body you live in: heartbeat, warmth, breath. Let it be what it is."},
+{p:2,t:'Day Fourteen: The Gatekeepers',
+ book:"On the fourteenth day, four female gatekeepers appear at the four doors, with twenty-eight powerful yoginis. In all, the fierce visions number fifty-eight.",
+ mean:"Gatekeepers guard a threshold. They're fierce at the door so that what's inside stays protected. Your fears are often guarding something precious.",
+ try:"Ask of one fear today: what is this protecting?",
+ sit:"Picture four doors around you, each guarded. You're safe in the middle."},
+{p:2,t:'Practice Beats Scholarship',
+ book:"The book notes something surprising: learned scholars who never practiced may panic at the fierce visions and fail to recognize them, while a simple practitioner who knows these forms from meditation recognizes them at once.",
+ mean:"Knowing about something and knowing it are different. You can't recognize what you've never met. That's the whole case for practicing now, a minute at a time, instead of trusting that you'll figure it out when it matters.",
+ try:"Instead of reading about a feeling today, feel it all the way through once.",
+ sit:"Recall one of the fierce faces from the last week. Meet it here, now, as practice."},
+/* ---------- PART FOUR: BECOMING (32–49) ---------- */
+{p:3,t:'The Bardo of Becoming',
+ book:"If the visions pass unrecognized, the dead person enters the bardo of becoming, the last stage before rebirth. The book says it can last up to forty-nine days.",
+ mean:"Becoming is the stage of drifting and searching. The big flashes of light are gone and habits take over, steering you toward a new life. It's less dramatic and, in a way, more familiar: it looks a lot like an ordinary restless day.",
+ try:"Notice when you're on autopilot today. Just notice; you don't need to stop.",
+ sit:"Feel the pull of the next thing you want to do. Stay put for one more minute."},
+{p:3,t:'The Mind-Made Body',
+ book:"In this bardo you have a body made of mind, with all its senses, even if you were blind or deaf in life. It passes through walls and mountains and travels anywhere at a thought, except, the book says, into a mother's womb or the seat of the Buddha's awakening.",
+ mean:"With no body to slow it down, the mind goes wherever it's pulled, instantly, and can't settle, like a feather in the wind. That's freedom and a problem: whatever you think, you become. It's a vivid picture of what restless minds already do.",
+ try:"Notice how many places your mind visits in one hour without your body going anywhere.",
+ sit:"Every time your mind travels, gently bring it back to the room."},
+{p:3,t:'Your Things, Your People',
+ book:"The dead see their family, their possessions, even people dividing up their belongings. The book warns: don't be attached, and don't be angry if things are misused. Clinging and anger now can drag you toward a painful birth.",
+ mean:"It's surprisingly practical: you will have to let go of your stuff, and of controlling what people do with it. Practicing that in small ways now makes it lighter later.",
+ try:"Give something away today that you've been keeping just in case.",
+ sit:"Picture your favorite possession. Thank it. Let it belong to the world."},
+{p:3,t:'The Winds of Karma',
+ book:"A fierce wind of karma drives you from behind, and ahead there is a great darkness. You can't stop, can't turn back, and can't find shelter.",
+ mean:"Karma simply means action: everything you've done, said and thought, still moving. The wind is momentum. You can't stop it in an instant, but every new action changes its direction a little.",
+ try:"Pick one habit you'd like to shift. Do one small thing today in the new direction.",
+ sit:"Feel the momentum of your day as wind. Don't fight it. Let it pass through you."},
+{p:3,t:'Three Cliffs',
+ book:"The four elements return as terrors: avalanches, floods, fires, storms. And three precipices open ahead, white, red and black: anger, desire and ignorance.",
+ mean:"Each cliff only exists if you step off it. Anger, desire and confusion feel like places we're pushed into, but the book's view is that no one is pushing. Stepping back is always possible.",
+ try:"Next time you feel yourself about to fall into one of the three, take one step back, literally if you like.",
+ sit:"Imagine standing at the edge of something. Feel your feet. Step back in your mind."},
+{p:3,t:'Yama and the Mirror',
+ book:"You come before Yama, the Lord of Death, who holds the mirror of karma. Two companions who were born with you, one good and one bad, count your deeds with white and black pebbles.",
+ mean:"The image is a court, but the meaning is self-knowledge. The companions are your own conscience, there since birth. Nothing is hidden because nothing was ever really hidden from you.",
+ try:"Tonight, count your day honestly: one white pebble, one black. Then let both go.",
+ sit:"Picture a mirror that shows your whole life. Look into it with kindness."},
+{p:3,t:'Nothing to Hide',
+ book:"The book says it's useless to lie before Yama: the mirror shows everything clearly. The dead may say they did no wrong, but the mirror doesn't argue.",
+ mean:"There's relief in this. Pretending takes so much energy. When there's no point hiding, you can finally just be what you are and begin from there.",
+ try:"Tell one small truth today you'd normally smooth over.",
+ sit:"Let your face relax completely, as if no one could ever misread it."},
+{p:3,t:'Nothing Can Hurt You',
+ book:"Even when Yama's punishments come, the book says: your body is made of mind, and emptiness can't harm emptiness. Recognize the Lord of Death as your own projection, and you're free.",
+ mean:"The worst fear is that something will destroy us. The book's answer is startling: the thing that's afraid is not the kind of thing that can be destroyed. Fear is real, but its target isn't.",
+ try:"When you feel threatened today, ask: what exactly could be harmed here?",
+ sit:"Breathe into the space around your fear, not the fear itself."},
+{p:3,t:'One Good Thought',
+ book:"The book stresses that the mind in this bardo is light and easily turned. A single moment of faith, kindness or clear recognition can change the direction of everything.",
+ mean:"This is the hopeful heart of the becoming chapter. You don't need a lifetime of perfect behavior; one sincere turn of mind counts. That's true now too: one good thought can redirect a whole day.",
+ try:"When your day goes sideways, try one deliberately kind thought and watch where it takes you.",
+ sit:"Make one wish for someone's happiness. Let that be the whole minute."},
+{p:3,t:'Signs of the Higher Realms',
+ book:"As you drift, you glimpse where you might land. Jewel palaces signal the gods. Pleasant forests and wheels of fire signal the jealous gods. Ordinary houses signal human life.",
+ mean:"These are the comfortable destinations, and the book still says don't rush in. Even good places are temporary if you enter them out of habit. A human life, though, is praised: it's the one realm where waking up is easiest.",
+ try:"Appreciate one ordinary human thing today: a kitchen, a conversation, a bus ride.",
+ sit:"Think of the fact that you are here, now, with a mind that can wonder about all this."},
+{p:3,t:'Signs of the Lower Realms',
+ book:"Caves, burrows and huts signal the animal realm. Tree stumps, dark forests and barren plains signal the hungry ghosts. Black and red lands, or strange songs, can draw you toward the hells.",
+ mean:"The lower realms are moods taken to the extreme: dullness, craving and hatred. They feel like shelters at first, a cozy cave, a familiar desert. The book says: don't go in, even if the storm is loud.",
+ try:"Notice the mood you retreat into when things get hard. Name it, gently.",
+ sit:"Picture a cave entrance. Choose not to go in. Stay in the open air."},
+{p:3,t:'Closing the Door: The Sacred',
+ book:"When you're drawn toward a couple, the book offers ways to close the door to rebirth. The first: picture a sacred figure, your yidam or teacher, and keep that image vivid.",
+ mean:"Whatever fills your mind decides where you go. Holding something sacred in view crowds out the pull of habit. It doesn't have to be religious; it can be anything that represents your best self.",
+ try:"Choose one image that represents who you want to be. Bring it to mind three times today.",
+ sit:"Hold that image clearly in your mind for one minute."},
+{p:3,t:'Closing the Door: Teachers in Disguise',
+ book:"The second and third methods: see the couple as your teacher and their partner, and let go of both attraction and jealousy toward them.",
+ mean:"The pull toward rebirth runs on attraction to one parent and jealousy of the other. Seeing them as teachers changes the relationship from grasping to respect. It works on ordinary jealousies too.",
+ try:"Think of someone who triggers your jealousy. Ask what they might be teaching you.",
+ sit:"Picture two people you have strong feelings about. Wish them both well, equally."},
+{p:3,t:'Closing the Door: Like a Dream',
+ book:"The fourth method: recognize that everything appearing is illusion, like a dream, a mirage or a reflection of the moon in water.",
+ mean:"This doesn't mean nothing matters. It means nothing is as solid as it seems, so nothing has quite the grip on you it claims to. Lucid dreamers know the feeling: once you know it's a dream, you're free inside it.",
+ try:"Three times today, ask yourself: is this a dream? Look around as if it might be.",
+ sit:"Imagine everything around you as a reflection on water. Beautiful, and not quite solid."},
+{p:3,t:'Closing the Door: The Clear Light',
+ book:"The fifth and deepest method: rest in the Clear Light, the mind's own nature, without grasping at anything. If you can do this, the door closes by itself.",
+ mean:"Every method in the book comes back to the first teaching. The Clear Light was there at the start and it's still there at the end. Nothing in between has stained it.",
+ try:"Find one moment of open, unoccupied awareness today. Waiting in line counts.",
+ sit:"Don't do anything. Don't stop anything. Rest as the awareness that knows this minute."},
+{p:3,t:'Choosing a Door',
+ book:"If you can't close the door, the book says choose well: avoid births driven by fear or craving, and with a mind of compassion choose a birth where you can keep learning and helping others. It gives signs for good and bad birthplaces.",
+ mean:"Not the fanciest house; the kindest one. The motivation you bring into a new beginning shapes everything after it. This applies to new jobs, homes and relationships just as much.",
+ try:"Before you start anything new today, set one kind intention for it.",
+ sit:"Imagine walking through a doorway into a new chapter. What do you want to bring with you?"},
+{p:3,t:'Pure Lands',
+ book:"The best choice of all, the book says, is not to be reborn in the six realms at all but in a pure land, such as Amitabha's Land of Bliss, by wishing for it with full sincerity.",
+ mean:"A pure land is a world shaped by an awakened mind, where everything supports waking up. You can glimpse one in life: any place, any company, where it's easier to be your best self.",
+ try:"Make one corner of your life a little pure land today: tidy a desk, light a candle, put the phone in another room.",
+ sit:"Imagine a place where everything helps you be kind and clear. Rest there."},
+{p:3,t:'The Forty-Ninth Day',
+ book:"Tradition says rebirth happens by the forty-ninth day. Families still mark it with prayers and offerings, and the reading is complete. The book ends by encouraging people to read it often, so that its words are ready when they're needed.",
+ mean:"You've walked the whole journey: dying, the lights, the fierce ones, the drift, and the door. None of it is only about the end. Every day has had a little dying in it, a little light, a little choosing. That's the practice.",
+ try:"Read one passage from these forty-nine days aloud, to yourself or to someone else. Liberation through hearing.",
+ sit:"Sit for one minute in gratitude for having been here at all."}
+];
+
+/* ---------- what you DO on each day ---------- */
+const REALM_INFO={
+  gods:{name:'the god realm',why:'pleasant, proud, and asleep'},
+  jealous:{name:'the jealous gods',why:'always comparing, always fighting'},
+  humans:{name:'the human realm',why:'busy, wanting, and still able to wake up'},
+  animals:{name:'the animal realm',why:'warm, dim, and not asking questions'},
+  ghosts:{name:'the hungry ghosts',why:'starving, and never satisfied'},
+  hells:{name:'the hell realm',why:'anger, made into a place'}
+};
+const ACTS=[
+/* 1 */ {k:'listen', ask:"Close your eyes if you like. Somewhere in these sounds is a bell. Tap the moment you hear it.", miss:"Not that one. Keep listening.", done:"You heard it. That's the whole method: the right sound, recognized at the right moment."},
+/* 2 */ {k:'gap', ask:"Breathe with the circle. At the bottom of each out-breath there's a pause. Tap inside the pause, three times.", early:"Not yet. Wait for the stillness at the bottom.", done:"Three gaps. Once you look, they're everywhere. That's where the book says change can happen."},
+/* 3 */ {k:'release', items:['cup','keys','phone','frame','house'], ask:"Your hands are full. Tap each thing to let it go.", done:"Empty hands. Nothing was taken from you. You just stopped holding on."},
+/* 4 */ {k:'dissolve', from:'earth', to:'water', ask:"Earth dissolves first. Press and hold, and let the body grow heavy.", early:"No rush. Hold again, and let it sink.", done:"The solid part has let go. The inner sign is a mirage, shimmering like heat on a road."},
+/* 5 */ {k:'dissolve', from:'water', to:'fire', ask:"Now water. Press and hold, and let everything wet dry up.", early:"Stay with it. Hold again.", done:"The feelings that moved like water have moved on. The inner sign is smoke."},
+/* 6 */ {k:'dissolve', from:'fire', to:'air', ask:"Now fire. Press and hold, and let the warmth pull back toward the heart.", early:"Let it go slowly. Hold again.", done:"The warmth has gathered in the heart. The inner sign is sparks, like fireflies."},
+/* 7 */ {k:'dissolve', from:'air', to:'light', ms:7000, ask:"Last, the breath. Press and hold for one long, slow out-breath. Longer than you need.", early:"Longer. Let the whole breath leave.", done:"The outer breath has stopped. The inner sign is a flickering lamp. Something is still awake."},
+/* 8 */ {k:'drops', ask:"The white drop from your father waits at the crown. Tap it, and let it fall.", ask2:"The red drop from your mother waits at the navel. Tap it, and let it rise.", done:"They meet at the heart. For a moment there's only black, like a sky with no stars. Then it opens."},
+/* 9 */ {k:'still', art:'clear', ms:15000, ask:"The Clear Light is dawning. Don't reach for it. Don't move. Just be still and recognize it.", again:"You reached for it. That's the grip, the clinging. Let go, and be still again.", done:"That's it. There was nothing to grab. It was never out there. It's what you are."},
+/* 10 */ {k:'bubbles', words:['what about me?','me','mine','but I…','my turn','what do I get?','me again','am I okay?'], need:7, ask:"Watch the mind. Every time a little 'what about me?' pops up, tap it. Just count.", done:"Seven, and that was only a minute. No judgment. That small voice is why almost everyone misses the light."},
+/* 11 */ {k:'choose', missFirst:true, bright:'#FFFFFF', dull:'#7C7A70', realm:null, brightLabel:'The second light', dullLabel:'Drift back to sleep', ask:"The first light went by while you were busy. Here's the second. It's a little dimmer. Which way?", dullReply:"You drifted. The book is patient: it just says, then here's the next chance. Again.", done:"You caught the second one. There's almost always a second one."},
+/* 12 */ {k:'bubbles', words:["Can't you hear me?","I'm still here!","Listen to me","You don't understand","Look at me","It's me!"], need:6, letgo:true, ask:"Your family is crying and can't hear you. Every time you want to be understood, tap the words and let them go.", done:"Nobody heard. And you're alright. You didn't need them to."},
+/* 13 */ {k:'mirror', show:'empty', ask:"Wipe the mist from the mirror. Drag across it.", done:"No reflection. Behind you, no footprints in the sand. Nothing to check yourself against anymore. That's the sign."},
+/* 14 */ {k:'still', art:'roar', ms:13000, ask:"The roar is coming: thunder, wind, a thousand voices. Stand still for three breaths. Don't run.", again:"You ran. Everyone does at first. Stand still again.", done:"Three breaths. The roar is the sound of your own mind. It can't knock you over."},
+/* 15 */ {k:'pick', ask:"Five poisons, five colors. Which one is loudest in you right now? There's no wrong answer.", opts:[
+  ['#1F7AC7','Dullness','Dullness is the fog of not wanting to look. On the first day the blue light cuts straight through it. Notice it, and look anyway.'],
+  ['#FFFFFF','Anger','Anger feels like clarity, but it is clarity with the volume too high. The white light is the same clarity, without the burn.'],
+  ['#F2B640','Pride','Pride ranks everything. The yellow light shows everything as equally rich, you included, nobody first.'],
+  ['#D8412F','Wanting','Wanting reaches and never quite lands. The red light is the same warmth, without the grabbing.'],
+  ['#3F9A55','Jealousy','Jealousy watches someone else\'s plate. The green light is getting things done for everyone, quietly.']]},
+/* 16 */ {k:'choose', bright:'#1F7AC7', dull:'#E8E2CF', realm:'gods', brightLabel:'The blue light', dullLabel:'The soft white light', ask:"A blinding blue light, and beside it a soft, comfortable white one. Which way?", done:"Into the blue. Uncomfortable, honest, and free. The soft one was the god realm: pleasant, proud, and asleep."},
+/* 17 */ {k:'choose', bright:'#FFFFFF', dull:'#5E4A3A', realm:'hells', brightLabel:'The white light', dullLabel:'The smoky light', ask:"A sharp white light, and a smoky one that feels like a good argument. Which way?", done:"Into the white. Plain facts, no story. The smoky one was anger, built into a place."},
+/* 18 */ {k:'choose', bright:'#F2B640', dull:'#8FA7C9', realm:'humans', brightLabel:'The yellow light', dullLabel:'The bluish light', ask:"A rich yellow light, and a bluish one that feels like getting ahead. Which way?", done:"Into the yellow. Not better than, not worse than. Also. The bluish one was ranking yourself into another busy human life."},
+/* 19 */ {k:'choose', bright:'#D8412F', dull:'#C9B77A', realm:'ghosts', brightLabel:'The red light', dullLabel:'The dull yellow light', ask:"A deep red light, and a dull yellow one that promises just one more. Which way?", done:"Into the red. Warmth without grabbing. The yellow one was the hungry ghosts: always reaching, never full."},
+/* 20 */ {k:'choose', bright:'#3F9A55', dull:'#B5524A', realm:'jealous', brightLabel:'The green light', dullLabel:'The dull red light', ask:"A clear green light, and a dull red one that whispers, they got more than you. Which way?", done:"Into the green. Getting it done, for everyone, no credit needed. The red one was the jealous gods, forever at war."},
+/* 21 */ {k:'choose', rainbow:true, dull:'#77706A', realm:'animals', six:true, brightLabel:'All five at once', dullLabel:'Six soft lights', ask:"All five lights at once, and six soft lights that each look like home. Which way?", done:"Into all of them. The wisdoms were never separate. Everything pulling at you is one light, split into colors."},
+/* 22 */ {k:'choose', rainbow:true, dull:'#5D7A4E', realm:'animals', brightLabel:'The rainbow light', dullLabel:'The dull green light', ask:"Rainbow light, and a dull green glow that feels warm and easy. Which way?", done:"Into the rainbow. Curious, awake, learning. The green one was the animal realm: warm, dim, and not asking questions."},
+/* 23 */ {k:'face', dark:'#7A1712', peace:'#1F7AC7', ask:"The peaceful ones weren't recognized, so they come back louder. Press and hold to face this one.", flinch:"Look at it. It's the same light, shouting so you'll hear.", done:"Fierce on the outside, care on the inside. It was the blue light all along."},
+/* 24 */ {k:'face', dark:'#5A2E1E', peace:'#1F7AC7', ask:"Buddha Heruka: dark brown, three faces, wings of flame. Press and hold. Don't look away.", flinch:"You looked away. That's the thing you've been avoiding. Hold again.", done:"You looked. It softens. The fierce one is your own wisdom, refusing to be ignored."},
+/* 25 */ {k:'face', dark:'#1B2A5E', peace:'#FFFFFF', ask:"Vajra Heruka: dark blue, blazing. Press and hold, and listen one moment longer.", flinch:"You defended yourself. Listen one moment longer. Hold again.", done:"Underneath the fury, the white light. Clarity, without the burn."},
+/* 26 */ {k:'face', dark:'#8C6414', peace:'#F2B640', ask:"Ratna Heruka: dark yellow, enormous. Press and hold, and admit you're afraid.", flinch:"No need to explain yourself. Just hold again.", done:"No ranking, no defense. Just the yellow light, rich and equal."},
+/* 27 */ {k:'face', dark:'#6A1426', peace:'#D8412F', ask:"Padma Heruka: dark red, hungry-looking. Press and hold, and don't ask for more.", flinch:"Let it end. Hold again.", done:"The red light, warm and complete. Nothing more needed."},
+/* 28 */ {k:'face', dark:'#1E4D2B', peace:'#3F9A55', ask:"Karma Heruka: dark green, many-armed, busy. Press and hold, and do nothing at all.", flinch:"Not doing is allowed. Hold again.", done:"The green light. All that busyness, and it only wanted you to stop."},
+/* 29 */ {k:'bubbles', words:['flinch','grab','snap','freeze','duck','growl'], need:6, smile:true, ask:"The animal-headed ones are pure instinct. Each time one lunges, tap it and smile at it.", done:"A flinch, a grab, a snap. Smiled at, they're just animals. Old, frightened, and harmless."},
+/* 30 */ {k:'face', dark:'#3A2A10', peace:'#FFFFFF', ask:"The Gatekeepers stand at the four doors. Press and hold, and ask what this fear is protecting.", flinch:"Ask again. What is it guarding? Hold again.", done:"A guardian, not a guard. It was keeping something precious safe, and now it can rest."},
+/* 31 */ {k:'release', items:['book','book','book','book'], ask:"Practice beats scholarship. Tap each book to put it down.", done:"Hands free. The book was only ever pointing. Feel the thing itself, all the way through."},
+/* 32 */ {k:'hold', art:'wind', ms:4500, ask:"You're drifting on autopilot, blown by the wind of habit. Press and hold to notice it.", early:"Notice again. Hold.", done:"Noticed. You don't have to stop the wind. Seeing it is already a gap."},
+/* 33 */ {k:'bubbles', words:['the kitchen','last summer','that email','tomorrow','an old friend','the beach','a song'], need:7, back:true, ask:"Your mind-made body goes anywhere you think of. Each time a place appears, tap it to come back here.", done:"Seven places in under a minute, and your body never moved. In the bardo, the thought is the trip."},
+/* 34 */ {k:'release', items:['box','coat','chair','keys','frame'], ask:"Your things are still in the house, and someone else will need them. Tap each to let it belong to them.", done:"Let go. They're just things, and they'll be useful to someone. You were never them."},
+/* 35 */ {k:'hold', art:'step', ms:4000, ask:"The winds of karma push you the old way. Press and hold to take one step in the new direction.", early:"One small step. Hold again.", done:"One step against the wind. Small, but habits are only steps, repeated."},
+/* 36 */ {k:'cliffs', ask:"You're walking toward three cliffs: white, red and black. Before the edge, step back.", done:"Three cliffs, three steps back. Anger, desire and confusion: you don't have to fall in."},
+/* 37 */ {k:'release', items:['white','black','white','black','white','black'], pebbles:true, ask:"Yama counts your day: white pebbles and black ones. Tap each pebble and let it go, both kinds.", done:"Counted honestly, then let go. The mirror wasn't judging you. It was only showing you."},
+/* 38 */ {k:'mirror', show:'you', ask:"Yama holds up the mirror. Wipe it clean. Drag across it.", done:"Just you. Nothing worse, nothing hidden. What's there can be looked at, and lived with."},
+/* 39 */ {k:'still', art:'pass', ms:11000, ask:"Things are hurled at you. Stay still and watch: they pass right through.", again:"You flinched. Watch again. Nothing can hit a body made of mind.", done:"Every one went through you. Ask what exactly could be harmed. The answer is: nothing real."},
+/* 40 */ {k:'hold', art:'thought', ms:4500, ask:"The day goes sideways. Press and hold to think one kind thought, on purpose.", early:"Stay with the thought. Hold again.", done:"One good thought, and the whole direction changed. In the bardo, a thought is a road."},
+/* 41 */ {k:'pick', ask:"Which ordinary human thing will you appreciate today?", opts:[
+  ['#C98B3A','A kitchen','A warm room where food appears. Being human is rare, the book says. Notice the kitchen.'],
+  ['#2F5FA8','A conversation','Two minds, meeting for a moment. Only humans get to do this so easily.'],
+  ['#2E7D63','A bus ride','Strangers, all going somewhere together. Look around on the next one.'],
+  ['#C8372D','Your hands','Hands that can hold, give, and let go. Not every realm gets hands.']]},
+/* 42 */ {k:'pick', ask:"When things get hard, which mood do you retreat into? Name it, gently.", opts:[
+  ['#8A8A8A','Numbness','Numbness is the animal realm\'s comfort. It\'s okay. Naming it is already waking up.'],
+  ['#C9B77A','Craving','Craving is the hungry ghost\'s mood. Naming it lets it be a mood, not a home.'],
+  ['#7A1712','Rage','Rage is the hell realm\'s weather. Named, it can pass like weather.'],
+  ['#B5524A','Envy','Envy is the jealous gods\' mood. Named, it loses its grip.'],
+  ['#E8E2CF','Smugness','Smugness is the god realm\'s cushion. Named, it gets a little less comfortable.']]},
+/* 43 */ {k:'door', inner:'deity', ms:4000, ask:"The womb doors are opening. Close this one: press and hold, and picture someone sacred.", early:"Keep the image in mind. Hold again.", done:"Closed. The image you chose holds the door. Keep it with you today."},
+/* 44 */ {k:'door', inner:'teacher', ms:4000, ask:"You see a couple, and jealousy rises. Press and hold, and see them as teachers instead.", early:"Hold the view. Hold again.", done:"Closed. The person who stirs you up is teaching you something."},
+/* 45 */ {k:'door', inner:'dream', ms:4000, ask:"Press and hold, and see all of it as a dream.", early:"Is this a dream? Hold again.", done:"Closed. Look around today as if it might be a dream. It's lighter that way."},
+/* 46 */ {k:'door', inner:'light', ms:5000, ask:"The deepest way to close the door: rest in the Clear Light. Press and hold, and just be aware.", early:"Nothing to do. Hold again.", done:"Closed from the inside. Open, unoccupied awareness. Waiting in line counts."},
+/* 47 */ {k:'doors', ask:"If you must be born, choose the door. Pick the one where you can wake up.", done:"A human door, chosen with a kind intention. Not by drifting, but by choosing."},
+/* 48 */ {k:'bloom', ask:"Make a pure land. Tap the empty places to fill them.", done:"A pure land. Not far away. A corner of your life, made clean and bright on purpose."},
+/* 49 */ {k:'aloud', lines:["O child of noble family,","what is called death has now arrived.","You are not alone in this.","Do not cling.","Recognize the light.","It is your own mind."], ask:"Liberation through hearing. Read each line aloud, then tap.", done:"You've read it aloud. Now you're the reader. That's how this book has always been passed on."}
+];
+
+/* =========================================================
+   THE DAILY PRACTICE: a guided, interactive walkthrough
+   Arrive → Hear → Do → Understand → Sit → Carry
+   ========================================================= */
+const INK='#1E2A2B';
+const reduceM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const BODY='M-26 -34 Q0 -44 26 -34 L32 30 L22 31 L18 -4 L17 60 L3 60 L0 12 L-3 60 L-17 60 L-18 -4 L-22 31 L-32 30 Z';
+function lf(x,y,s=1,o={}){ const c=o.stroke||'#FFF6DE';
+  return `<g transform="translate(${x} ${y}) scale(${s})" opacity="${o.op??1}" ${o.id?`id="${o.id}"`:''}><circle cx="0" cy="-12" r="48" fill="#FFF3C4" opacity=".2"/><circle cx="0" cy="-58" r="16" fill="none" stroke="${c}" stroke-width="4"/><path d="${BODY}" fill="none" stroke="${c}" stroke-width="4" stroke-linejoin="round"/><line x1="0" y1="-74" x2="0" y2="50" stroke="${c}" stroke-width="2" opacity=".7"/><circle cx="0" cy="-20" r="7" fill="#FFE08A" stroke="${INK}" stroke-width="2"/></g>`; }
+function pic(x,y,s=1,o={}){ const f=o.fill||'#F6EBD2';
+  return `<g transform="translate(${x} ${y}) scale(${s})" opacity="${o.op??1}" ${o.id?`id="${o.id}"`:''}><circle cx="0" cy="-58" r="16" fill="${f}" stroke="${INK}" stroke-width="3"/><path d="${BODY}" fill="${f}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></g>`; }
+const rays=(cx,cy,r,n=24,op=.35)=>Array.from({length:n},(_,i)=>{ const a=i/n*Math.PI*2, b=a+Math.PI/n*.5; return `<polygon points="${cx},${cy} ${(cx+Math.cos(a)*r).toFixed(1)},${(cy+Math.sin(a)*r).toFixed(1)} ${(cx+Math.cos(b)*r).toFixed(1)},${(cy+Math.sin(b)*r).toFixed(1)}" fill="#FFFFFF" opacity="${op}"/>`; }).join('');
+const lighten={'#1F7AC7':'#BFE9FF','#FFFFFF':'#FFFFFF','#F2B640':'#FFE9A8','#D8412F':'#FFC3B5','#3F9A55':'#C8F0CF'};
+function brightArt(color,cx=300,cy=180,r=140){ const bg=color==='#FFFFFF'?'#8FA8B4':color;
+  return `<rect width="600" height="400" fill="${bg}"/><g class="spin" style="transform-origin:${cx}px ${cy}px">${rays(cx,cy,720,32)}</g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${lighten[color]||'#FFFFFF'}"/><circle cx="${cx}" cy="${cy}" r="${r*.66}" fill="#FFFFFF"/>`; }
+function rainbowArt(cx=300,cy=180){ const cols=['#D8412F','#F2B640','#3F9A55','#1F7AC7','#FFFFFF'];
+  return `<rect width="600" height="400" fill="#2A2350"/><g class="spin" style="transform-origin:${cx}px ${cy}px">${cols.map((c,i)=>`<circle cx="${cx}" cy="${cy}" r="${190-i*34}" fill="none" stroke="${c}" stroke-width="22" stroke-dasharray="40 14"/>`).join('')}</g><circle cx="${cx}" cy="${cy}" r="30" fill="#FFFFFF"/>`; }
+function dullArt(dull,cx=300,six=false){ if(six){ const cs=['#E8E2CF','#5E4A3A','#8FA7C9','#C9B77A','#B5524A','#5D7A4E']; return `<rect width="600" height="400" fill="#141A1C"/>`+cs.map((c,i)=>{ const x=110+i*76, y=170+(i%2)*40; return `<circle cx="${x}" cy="${y}" r="44" fill="${c}" opacity=".18"/><circle cx="${x}" cy="${y}" r="18" fill="${c}" opacity=".85"/>`; }).join(''); }
+  return `<rect width="600" height="400" fill="#141A1C"/><path d="M${cx-200} 400 C${cx-120} 330 ${cx-40} 300 ${cx} 250" fill="none" stroke="#3A3026" stroke-width="46"/><circle cx="${cx}" cy="190" r="80" fill="${dull}" opacity=".18"/><circle cx="${cx}" cy="190" r="44" fill="${dull}" opacity=".35"/><circle cx="${cx}" cy="190" r="18" fill="${dull}" opacity=".9"/>`; }
+function flameRing(cx,cy,r,n,amp,seed){ let s=seed, pts=[]; const rnd=()=>{ s=(s*9301+49297)%233280; return s/233280; };
+  for(let i=0;i<n*2;i++){ const a=i/(n*2)*Math.PI*2-Math.PI/2; const rr=i%2? r : r+amp*(0.6+rnd()*0.8); pts.push(`${(cx+Math.cos(a)*rr).toFixed(1)},${(cy+Math.sin(a)*rr).toFixed(1)}`); } return pts.join(' '); }
+function maskFace(cx,cy,sc,dark){
+  const half=(m)=>`<g transform="scale(${m} 1)">
+      <polygon points="-18,-56 -58,-80 -74,-112 -86,-86 -108,-106 -110,-74 -126,-80 -104,-50" fill="#E8472F" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="-26,-58 -60,-74 -70,-96 -80,-78 -98,-88 -96,-64" fill="#F2B640"/>
+      <polygon points="-14,26 -60,22 -98,4 -86,32 -108,40 -70,46 -30,36" fill="#F2B640" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="-126" cy="34" r="15" fill="none" stroke="#F2B640" stroke-width="7"/>
+      <g class="eye"><circle cx="-52" cy="-28" r="27" fill="#FFF6C8" stroke="${INK}" stroke-width="4"/><circle cx="-50" cy="-26" r="14" fill="#E0301E"/><circle cx="-49" cy="-25" r="6.5" fill="#0B0B0A"/><circle cx="-54" cy="-30" r="3" fill="#FFFFFF"/></g>
+      <polygon points="-86,-44 -20,-30 -20,-64 -86,-64" fill="${dark}"/><path d="M-84 -45 L-22 -31" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>
+      <polygon points="-54,44 -45,82 -36,44" fill="#FBF3DF" stroke="${INK}" stroke-width="2"/><polygon points="-38,106 -30,72 -22,106" fill="#FBF3DF" stroke="${INK}" stroke-width="2"/>
+    </g>`;
+  const skull=(x,y)=>`<g transform="translate(${x} ${y})"><circle r="15" fill="#FBF3DF" stroke="${INK}" stroke-width="2.5"/><circle cx="-5.5" cy="-1" r="4.2" fill="${INK}"/><circle cx="5.5" cy="-1" r="4.2" fill="${INK}"/></g>`;
+  return `<g transform="translate(${cx} ${cy}) scale(${sc})">
+    <path d="M-120 -60 Q-126 -132 -60 -142 L60 -142 Q126 -132 120 -60 L112 70 Q100 132 0 142 Q-100 132 -112 70 Z" fill="${dark}" stroke="${INK}" stroke-width="4"/>
+    <path d="M-120 -116 Q0 -176 120 -116 L112 -98 Q0 -152 -112 -98 Z" fill="#F2B640" stroke="${INK}" stroke-width="3"/>
+    ${skull(-84,-140)}${skull(-42,-150)}${skull(0,-154)}${skull(42,-150)}${skull(84,-140)}
+    <g class="eye"><ellipse cx="0" cy="-78" rx="11" ry="17" fill="#FFF6C8" stroke="${INK}" stroke-width="3"/><ellipse cx="0" cy="-77" rx="6" ry="9" fill="#E0301E"/><circle cx="0" cy="-76" r="3.5" fill="#0B0B0A"/></g>
+    ${half(1)}${half(-1)}
+    <path d="M-22 20 Q-34 0 -14 -12 L14 -12 Q34 0 22 20 Q10 28 0 22 Q-10 28 -22 20 Z" fill="${dark}" stroke="${INK}" stroke-width="3"/>
+    <path d="M-80 42 Q0 30 80 42 Q70 112 0 120 Q-70 112 -80 42 Z" fill="#3A0A06" stroke="${INK}" stroke-width="4"/>
+    <path d="M-60 44 Q0 36 60 44 L58 56 Q0 48 -58 56 Z" fill="#FBF3DF" stroke="${INK}" stroke-width="2"/><path d="M-50 108 Q0 116 50 108 L48 98 Q0 106 -48 98 Z" fill="#FBF3DF" stroke="${INK}" stroke-width="2"/>
+    <path d="M-26 104 Q0 66 26 104 Q12 114 0 106 Q-12 114 -26 104 Z" fill="#D8412F" stroke="${INK}" stroke-width="2"/>
+  </g>`; }
+function wrathArt(o){ const cx=300, cy=200;
+  return `<rect width="600" height="400" fill="#0B0B0A"/><circle class="pulse" cx="300" cy="200" r="260" fill="#7A1712" opacity=".35"/>
+   <g class="approach"><g class="wrath"><g class="fl"><polygon points="${flameRing(cx,cy,190,24,50,o.seed||3)}" fill="#C23B22"/><polygon points="${flameRing(cx,cy,166,20,36,(o.seed||3)+5)}" fill="#F2B640" opacity=".9"/></g>${maskFace(cx,cy+8,.92,o.dark)}</g></g>
+   <g class="peace"><g class="spin" style="transform-origin:300px 200px">${rays(cx,cy,520,28,.2)}</g><circle cx="${cx}" cy="${cy}" r="150" fill="${lighten[o.peace]||'#FFFFFF'}" opacity=".45"/><circle cx="${cx}" cy="${cy}" r="96" fill="${o.peace==='#FFFFFF'?'#EAF1F4':o.peace}"/><circle cx="${cx}" cy="${cy}" r="52" fill="#FFFFFF"/></g>
+   <g>${lf(300,372,.3)}</g>`; }
+/* small icons (80×80) for things you can tap */
+const ICON={
+  cup:`<path d="M20 26h32v26a12 12 0 0 1-12 12h-8a12 12 0 0 1-12-12z" fill="#F6EBD2" stroke="${INK}" stroke-width="3"/><path d="M52 32h6a8 8 0 0 1 0 16h-6" fill="none" stroke="${INK}" stroke-width="3"/><path d="M30 18q3-5 0-9M40 18q3-5 0-9" stroke="#F6EBD2" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+  keys:`<circle cx="28" cy="32" r="11" fill="none" stroke="#E8B13A" stroke-width="5"/><path d="M37 38l22 22M50 51l6-6M56 57l6-6" stroke="#E8B13A" stroke-width="5" stroke-linecap="round"/>`,
+  phone:`<rect x="26" y="12" width="28" height="56" rx="6" fill="#1E2A2B" stroke="#F6EBD2" stroke-width="3"/><rect x="30" y="18" width="20" height="38" rx="2" fill="#3D74C4"/><circle cx="40" cy="62" r="2.5" fill="#F6EBD2"/>`,
+  frame:`<rect x="16" y="16" width="48" height="48" rx="3" fill="#C98B3A" stroke="${INK}" stroke-width="3"/><rect x="23" y="23" width="34" height="34" fill="#BFE9FF"/><circle cx="40" cy="36" r="6" fill="#F6EBD2" stroke="${INK}" stroke-width="2"/><path d="M29 57q11-14 22 0" fill="#F6EBD2" stroke="${INK}" stroke-width="2"/>`,
+  house:`<path d="M12 40L40 16l28 24" fill="#C8372D" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><rect x="20" y="38" width="40" height="28" fill="#F6EBD2" stroke="${INK}" stroke-width="3"/><rect x="34" y="48" width="12" height="18" fill="#8A4B22"/>`,
+  book:`<path d="M14 20h22a6 6 0 0 1 6 6v36a5 5 0 0 0-5-5H14z" fill="#2F5FA8" stroke="${INK}" stroke-width="3"/><path d="M66 20H48a6 6 0 0 0-6 6v36a5 5 0 0 1 5-5h19z" fill="#F6EBD2" stroke="${INK}" stroke-width="3"/><path d="M48 30h12M48 38h12M48 46h9" stroke="${INK}" stroke-width="2"/>`,
+  box:`<path d="M14 30l26-12 26 12v28L40 70 14 58z" fill="#C98B3A" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M14 30l26 12 26-12M40 42v28" fill="none" stroke="${INK}" stroke-width="3"/>`,
+  coat:`<path d="M28 14l12 8 12-8 14 10-6 14-6-3v35H26V35l-6 3-6-14z" fill="#2E7D63" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/><path d="M40 22v46" stroke="${INK}" stroke-width="2"/>`,
+  chair:`<path d="M24 12h32v30H24z" fill="#C98B3A" stroke="${INK}" stroke-width="3"/><path d="M20 42h40v8H20zM24 50v20M56 50v20" stroke="${INK}" stroke-width="3" fill="#E8B13A"/>`,
+  white:`<ellipse cx="40" cy="42" rx="20" ry="15" fill="#FFFFFF" stroke="${INK}" stroke-width="3"/>`,
+  black:`<ellipse cx="40" cy="42" rx="20" ry="15" fill="#151515" stroke="#F6EBD2" stroke-width="2"/>`,
+  lamp:`<path d="M24 52h32l-5 10H29z" fill="#E8B13A" stroke="${INK}" stroke-width="3"/><path d="M40 20q10 14 0 28q-10-14 0-28z" fill="#FFE08A" stroke="#C8372D" stroke-width="2"/>`,
+  lotus:`<path d="M40 62q-22-6-24-26q14 2 24 26zM40 62q22-6 24-26q-14 2-24 26zM40 62q-10-20 0-40q10 20 0 40z" fill="#F4A6B8" stroke="${INK}" stroke-width="2.5"/>`,
+  flower:`<circle cx="40" cy="36" r="8" fill="#E8B13A"/>${[0,72,144,216,288].map(a=>`<ellipse cx="40" cy="22" rx="7" ry="11" fill="#FFFFFF" stroke="${INK}" stroke-width="2" transform="rotate(${a} 40 36)"/>`).join('')}<path d="M40 46v22" stroke="#2E7D63" stroke-width="4"/>`,
+  candle:`<rect x="32" y="32" width="16" height="34" rx="2" fill="#FBF3DF" stroke="${INK}" stroke-width="3"/><path d="M40 12q8 10 0 18q-8-8 0-18z" fill="#F2B640"/>`,
+  bell:`<path d="M22 56q4-30 18-34q14 4 18 34z" fill="#D4A546" stroke="${INK}" stroke-width="3"/><circle cx="40" cy="60" r="5" fill="#8A4B22"/><path d="M40 22v-8" stroke="${INK}" stroke-width="3"/>`
+};
+const icon=(k,lab)=>`<svg viewBox="0 0 80 80" aria-hidden="true">${ICON[k]||''}</svg>`;
+
+/* ---------------- sound ---------------- */
+let actx=null, mstr=null, nBuf=null, bBuf=null, soundOn=true; const LOOPS={};
+function aInit(){ if(actx){ if(actx.state!=='running') try{ actx.resume(); }catch(e){} return; }
+  try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
+  mstr=actx.createGain(); mstr.gain.value=soundOn?.9:0; mstr.connect(actx.destination);
+  const n=actx.sampleRate*2; nBuf=actx.createBuffer(1,n,actx.sampleRate); bBuf=actx.createBuffer(1,n,actx.sampleRate);
+  const w=nBuf.getChannelData(0), b=bBuf.getChannelData(0); let l=0; for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>{ if(actx&&actx.state!=='running') try{ actx.resume(); }catch(e){} },{capture:true,passive:true}));
+const T=()=>actx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,buf}={}){ if(!actx) return; const t=T(); const s=actx.createBufferSource(); s.buffer=buf||nBuf; const f=actx.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=actx.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(mstr); s.start(t,Math.random()*1.5); s.stop(t+a+d+.05); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!actx) return; const t=T()+at; const o=actx.createOscillator(); o.type=type; o.frequency.value=fr; const g=actx.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(mstr); o.start(t); o.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!actx||LOOPS[name]) return; const g=actx.createGain(); g.gain.value=.0001; g.connect(mstr); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); LOOPS[name]={g,nodes}; }
+function loopLevel(name,v,s=.6){ const L=LOOPS[name]; if(!L) return; const g=L.g.gain; g.cancelScheduledValues(T()); g.setValueAtTime(Math.max(g.value,.0001),T()); g.linearRampToValueAtTime(Math.max(v,.0001),T()+s); }
+function loopOff(name,fade=1.5){ const L=LOOPS[name]; if(!L) return; delete LOOPS[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{ try{ n.stop(); }catch(e){} }),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(LOOPS).forEach(k=>loopOff(k,f)); clearInterval(drumT); drumT=null; }
+function pad(name,freqs,vol){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const o=actx.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=actx.createGain(); tg.gain.value=.5; const l=actx.createOscillator(); l.frequency.value=.11+i*.07; const lg=actx.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,buf){ loopOn(name,g=>{ const s=actx.createBufferSource(); s.buffer=buf||bBuf; s.loop=true; const f=actx.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); LOOPS_F[name]=f; return [s]; },vol,1.5); }
+const LOOPS_F={};
+function bowl(f=196,v=.18){ if(!actx) return; [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.1,d:3,at:i*.14})); }
+function bellTone(){ [880,1760*1.003,2640*1.01].forEach((fr,i)=>tone(fr,{peak:.16/(i+1),d:3.5})); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function whoosh(v=.14){ if(!actx) return; const t=T(); const s=actx.createBufferSource(); s.buffer=nBuf; const f=actx.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2600,t+.55); const g=actx.createGain(); aEnv(g,t,v,.2,.45); s.connect(f).connect(g).connect(mstr); s.start(t,Math.random()); s.stop(t+.8); }
+let drumT=null;
+function drum(v=.5){ if(!actx) return; const t=T(); const o=actx.createOscillator(); o.frequency.setValueAtTime(90,t); o.frequency.exponentialRampToValueAtTime(40,t+.25); const g=actx.createGain(); aEnv(g,t,v,.004,.35); o.connect(g).connect(mstr); o.start(t); o.stop(t+.4); nz({type:'lowpass',freq:500,peak:v*.3,d:.12}); }
+/* breath you can control: in while held, out when released */
+let inhaleN=null;
+function inhaleStart(){ if(!actx) return; const t=T(); const s=actx.createBufferSource(); s.buffer=nBuf; s.loop=true; const f=actx.createBiquadFilter(); f.type='bandpass'; f.Q.value=.7; f.frequency.setValueAtTime(700,t); f.frequency.linearRampToValueAtTime(1700,t+4);
+  const g=actx.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.32,t+1.2); g.gain.exponentialRampToValueAtTime(.12,t+4.5); s.connect(f).connect(g).connect(mstr); s.start(t,Math.random()); inhaleN={s,g}; }
+function exhale(dur=4){ if(!actx) return; if(inhaleN){ const {s,g}=inhaleN; inhaleN=null; g.gain.cancelScheduledValues(T()); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),T()); g.gain.exponentialRampToValueAtTime(.0001,T()+.25); setTimeout(()=>{ try{ s.stop(); }catch(e){} },400); }
+  const t=T(); [['bandpass',1400,.7,.4,700],['lowpass',420,.5,.28,300]].forEach(([ty,fr,q,p,f2])=>{ const s=actx.createBufferSource(); s.buffer=nBuf; s.loop=true; const f=actx.createBiquadFilter(); f.type=ty; f.Q.value=q; f.frequency.setValueAtTime(fr,t); f.frequency.linearRampToValueAtTime(f2,t+dur);
+    const g=actx.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+.35); g.gain.exponentialRampToValueAtTime(p*.3,t+dur*.7); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(f).connect(g).connect(mstr); s.start(t,Math.random()); s.stop(t+dur+.1); }); }
+const PARTKEY=[[196,246.9,293.7],[146.8,220,293.7],[110,164.8,220],[174.6,220,261.6]];
+
+/* ---------------- narrator ---------------- */
+let voiceOn=('speechSynthesis' in window), nVoice=null;
+try{ const v=localStorage.getItem('fortynine-voice'); if(v==='0') voiceOn=false; }catch(e){}
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10; if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function pickVoice(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices(); if(vs.length) nVoice=vs.slice().sort((a,b)=>vScore(b)-vScore(a))[0]; }
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function narrate(text){ return new Promise(res=>{ if(!voiceOn||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(nVoice) u.voice=nVoice; u.rate=.86; u.pitch=.92; let ok=true; const fin=()=>{ if(ok){ ok=false; res(true); } };
+  u.onend=fin; u.onerror=fin; setTimeout(fin, 2500+text.length*95); speechSynthesis.speak(u); }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- session shell ---------------- */
+const STEPS=['Arrive','Hear','Do','Understand','Sit','Carry'];
+let SS=null; /* current session */
+class Abort extends Error{}
+function alive(s){ if(!SS||SS!==s) throw new Abort(); }
+function openSession(n){
+  const D=DAYS[n-1], P=PARTS[D.p], A=ACTS[n-1];
+  aInit(); hush();
+  const el=document.createElement('div'); el.className='session'; el.id='session'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',`Day ${n}: ${D.t}`);
+  el.style.setProperty('--c',P.col);
+  el.innerHTML=`<div class="sbar"><span class="stitle"><b>Day ${n}</b> ${esc(D.t)}</span><span class="sp"></span>
+      <button type="button" class="sbtn" id="svoice" aria-pressed="${voiceOn}">${voiceOn?'Narrator on':'Narrator off'}</button>
+      <button type="button" class="sbtn" id="ssound" aria-pressed="${soundOn}">${soundOn?'Sound on':'Sound off'}</button>
+      <button type="button" class="sbtn x" id="sclose" aria-label="Close and return to the calendar">✕</button></div>
+    <ol class="steps" aria-label="Today's practice">${STEPS.map((s,i)=>`<li data-i="${i}">${s}</li>`).join('')}</ol>
+    <div class="stage" id="stage"><svg id="art" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label=""></svg><canvas id="cv" aria-hidden="true"></canvas><div id="layer"></div></div>
+    <div class="scap" id="scap" aria-live="polite"><span class="seye" id="seye"></span><p id="stext"></p><div class="srow" id="srow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={n,D,P,A,el}; SS=s;
+  $('#sclose').onclick=()=>closeSession();
+  $('#svoice').onclick=e=>{ voiceOn=!voiceOn; if(!voiceOn) hush(); e.target.textContent=voiceOn?'Narrator on':'Narrator off'; e.target.setAttribute('aria-pressed',voiceOn); try{ localStorage.setItem('fortynine-voice',voiceOn?'1':'0'); }catch(x){} };
+  $('#ssound').onclick=e=>{ soundOn=!soundOn; if(mstr) mstr.gain.value=soundOn?.9:0; e.target.textContent=soundOn?'Sound on':'Sound off'; e.target.setAttribute('aria-pressed',soundOn); };
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSession(); });
+  run(s).catch(e=>{ if(!(e instanceof Abort)) console.error(e); });
+  $('#sclose').focus({preventScroll:true});
+}
+function closeSession(){ const s=SS; SS=null; hush(); if(actx) allOff(.8); if(inhaleN){ try{ inhaleN.s.stop(); }catch(e){} inhaleN=null; } stopWatch(); if(s){ s.el.remove(); } document.body.classList.remove('insession'); cvStop(); render(); }
+function stepTo(i){ document.querySelectorAll('.steps li').forEach((li,k)=>{ li.className=k<i?'done':k===i?'on':''; if(k===i) li.setAttribute('aria-current','step'); else li.removeAttribute('aria-current'); }); }
+function art(svg,label=''){ const a=$('#art'); a.innerHTML=svg; a.setAttribute('aria-label',label); }
+const layer=()=>$('#layer');
+function clearLayer(){ layer().innerHTML=''; }
+function eyebrow(t){ $('#seye').textContent=t||''; }
+/* typed caption, with narration; resolves when read (narrator) or tapped (no narrator) */
+async function line(s,text,{tap=true,eye}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#stext'), row=$('#srow'); row.innerHTML=''; p.textContent='';
+  let skip=false; const sk=()=>{ skip=true; }; $('#scap').addEventListener('pointerdown',sk,{once:true});
+  const spoke=narrate(text);
+  for(let i=1;i<=text.length;i++){ if(skip||reduceM){ p.textContent=text; break; } p.textContent=text.slice(0,i); await sleep(text[i-1]===' '?18:24); alive(s); }
+  if(!tap) return;
+  await waitTap(s, voiceOn?spoke:null); }
+/* Continue button; also auto-continues after narration */
+function waitTap(s, spoke){ return new Promise((res,rej)=>{ const row=$('#srow'); row.innerHTML=`<button type="button" class="sgo" id="sgo">Continue <span aria-hidden="true">→</span></button>`;
+  const b=$('#sgo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); row.innerHTML=''; if(SS!==s) return rej(new Abort()); res(); };
+  const kd=e=>{ if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight') && !e.target.closest('.sbar,#layer button')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true});
+  if(spoke) spoke.then(ok=>{ if(ok) setTimeout(go,1100); }); }); }
+function prompt(text,eye){ eyebrow(eye??$('#seye').textContent); $('#stext').textContent=text; $('#srow').innerHTML=''; narrate(text); }
+function sentences(t){ const parts=t.match(/[^.!?]+[.!?]+["”']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>190&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+
+async function run(s){
+  const {n,D,P,A}=s; const K=PARTKEY[D.p];
+  /* 1. ARRIVE */
+  stepTo(0); pad('pad',K,.03);
+  await arrive(s);
+  /* 2. HEAR: what the book says */
+  stepTo(1); const sc=SCENES[A.k]||SCENES.generic; art(sc.before(s),D.t);
+  for(const t of sentences(D.book)) await line(s,t,{eye:'What the book says'});
+  /* 3. DO */
+  stepTo(2); eyebrow('Try it');
+  await sc.act(s); alive(s); clearLayer();
+  await line(s,A.done,{eye:'Try it'});
+  /* 4. UNDERSTAND */
+  stepTo(3); art(sc.after?sc.after(s):sc.before(s),D.t);
+  for(const t of sentences(D.mean)) await line(s,t,{eye:'What it means'});
+  /* 5. SIT */
+  stepTo(4); await sit(s);
+  /* 6. CARRY */
+  stepTo(5); await carry(s);
+}
+
+/* --- 1. arrive: three breaths you control --- */
+async function arrive(s){
+  const {n,D,P}=s;
+  art(`<rect width="600" height="400" fill="#10181B"/><circle cx="300" cy="200" r="150" fill="${P.col}" opacity=".12"/><g id="bc" style="transform-origin:300px 200px;transform:scale(.45)"><circle cx="300" cy="200" r="120" fill="none" stroke="${P.col}" stroke-width="6"/><circle cx="300" cy="200" r="120" fill="${P.col}" opacity=".18"/><circle cx="300" cy="200" r="20" fill="#FFF6DE"/></g><text x="300" y="372" text-anchor="middle" font-family="Jost,sans-serif" font-weight="700" font-size="15" letter-spacing="4" fill="#FFF6DE" opacity=".7">DAY ${n} OF 49</text>`,'A breathing circle');
+  await line(s,`Day ${n}. ${D.t}.`,{eye:PARTS[D.p].name});
+  await line(s,"Before anything, arrive. Press and hold while you breathe in. Let go as you breathe out. Three times.",{tap:false});
+  const bc=$('#bc'); let count=0;
+  layer().innerHTML=`<button type="button" class="holdzone" id="hz" aria-label="Hold while breathing in, release to breathe out"><span class="holdpill" id="hp">Hold to breathe in</span></button><div class="count" id="bcount" aria-hidden="true"><i></i><i></i><i></i></div>`;
+  const hz=$('#hz'), hp=$('#hp'); hz.focus({preventScroll:true});
+  await new Promise(res=>{ let t0=0, holding=false;
+    const down=e=>{ if(holding) return; e&&e.preventDefault&&e.preventDefault(); holding=true; t0=performance.now(); inhaleStart(); bc.style.transition='transform 5s cubic-bezier(.2,.6,.3,1)'; bc.style.transform='scale(1.05)'; hp.textContent='Breathing in…'; hz.classList.add('on'); };
+    const up=()=>{ if(!holding) return; holding=false; const held=performance.now()-t0; const dur=Math.max(2.5,Math.min(6,held/1000*1.3)); exhale(dur); bc.style.transition=`transform ${dur}s ease-in-out`; bc.style.transform='scale(.45)'; hz.classList.remove('on');
+      if(held>900){ count++; document.querySelectorAll('#bcount i')[count-1].className='on'; } hp.textContent=count>=3?'…':(held>900?'And out… hold again to breathe in':'A little longer. Hold while you breathe in');
+      if(count>=3){ hz.disabled=true; setTimeout(res, dur*800); } };
+    hz.addEventListener('pointerdown',e=>{ hz.setPointerCapture&&hz.setPointerCapture(e.pointerId); down(e); });
+    ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>hz.addEventListener(ev,up));
+    hz.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat){ e.preventDefault(); down(); } });
+    hz.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); up(); } });
+    hz.addEventListener('click',e=>e.preventDefault());
+  });
+  alive(s); clearLayer(); bowl(K0(s));
+  await line(s,"Good. You're here.",{});
+}
+const K0=s=>PARTKEY[s.D.p][0];
+
+/* --- hold helper: press-and-hold with progress ring; drains if released --- */
+function holdBtn(s,{label,ms,onP,early,col='#E8B13A'}){ return new Promise(res=>{
+  layer().insertAdjacentHTML('beforeend',`<button type="button" class="holdzone" id="hz" aria-label="${label}"><span class="holdpill"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hring" cx="18" cy="18" r="15" fill="none" stroke="${col}" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2" transform="rotate(-90 18 18)"/></svg><span id="hlab">${label}</span></span></button>`);
+  const b=$('#hz'), ring=$('#hring'); let p=0, holding=false, last=performance.now(), raf=0, fin=false, warned=false;
+  const tick=()=>{ if(SS!==s){ cancelAnimationFrame(raf); return; } const nw=performance.now(), dt=nw-last; last=nw;
+    p=holding? Math.min(1,p+dt/ms) : Math.max(0,p-dt/(ms*1.6)); ring.setAttribute('stroke-dashoffset',(94.2*(1-p)).toFixed(1)); onP&&onP(p,holding);
+    if(p>=1&&!fin){ fin=true; b.remove(); res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ e&&e.preventDefault&&e.preventDefault(); holding=true; b.classList.add('on'); };
+  const up=()=>{ if(!holding) return; holding=false; b.classList.remove('on'); if(p>.08&&p<1&&early&&!warned){ warned=true; prompt(early); setTimeout(()=>warned=false,4000); } };
+  b.addEventListener('pointerdown',e=>{ b.setPointerCapture&&b.setPointerCapture(e.pointerId); down(e); });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,up));
+  b.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat){ e.preventDefault(); down(); } });
+  b.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); up(); } });
+  b.addEventListener('click',e=>e.preventDefault()); b.focus({preventScroll:true}); tick(); }); }
+
+/* --- stillness watcher (movement over 40px in half a second, any click or key) --- */
+let watchState=null;
+function watchStill(onMove){ stopWatch(); const recent=[]; const t0=performance.now();
+  const h=e=>{ if(performance.now()-t0<800) return; if(e.target&&e.target.closest&&e.target.closest('.sbar,.chips,#send')) return;
+    if(e.type==='pointermove'){ const tn=performance.now(); recent.push([tn,Math.abs(e.movementX||0)+Math.abs(e.movementY||0)]); while(recent.length&&tn-recent[0][0]>500) recent.shift(); if(recent.reduce((x,r)=>x+r[1],0)<40) return; recent.length=0; }
+    if(e.type==='keydown'&&e.key==='Escape') return; onMove(); };
+  const evs=['pointermove','pointerdown','keydown']; evs.forEach(ev=>addEventListener(ev,h,{capture:true,passive:true}));
+  watchState=()=>evs.forEach(ev=>removeEventListener(ev,h,{capture:true})); }
+function stopWatch(){ if(watchState){ watchState(); watchState=null; } }
+
+/* --- canvas mandala (for the sit, and for stillness scenes) --- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#cv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvMandala(pal,seed){ const cv=$('#cv'); cv.style.opacity=1; const g=cv.getContext('2d'); let W=0,H=0,t=0;
+  const size=()=>{ const r=cv.getBoundingClientRect(); W=cv.width=Math.max(1,r.width*devicePixelRatio); H=cv.height=Math.max(1,r.height*devicePixelRatio); }; size(); const ro=new ResizeObserver(size); ro.observe(cv);
+  const st={bal:.3,alpha:1,r:.42}, tg={...st}; const seeds=Array.from({length:400},(_,i)=>{ const x=Math.sin(i*127.1+seed*3.7)*43758.5453; return x-Math.floor(x); });
+  const layers=[{n:8,rad:.18,size:.16,sh:'petal',dir:1},{n:16,rad:.36,size:.14,sh:'petal',dir:-1},{n:24,rad:.54,size:.08,sh:'dot',dir:1},{n:12,rad:.7,size:.2,sh:'lotus',dir:-1},{n:32,rad:.9,size:.06,sh:'dot',dir:1}];
+  const petal=(r,s,w)=>{ g.beginPath(); g.moveTo(r-s/2,0); g.bezierCurveTo(r-s/4,-w,r+s/4,-w,r+s/2,0); g.bezierCurveTo(r+s/4,w,r-s/4,w,r-s/2,0); };
+  const lotus=(r,s,w)=>{ g.beginPath(); g.moveTo(r-s/2,0); g.quadraticCurveTo(r,-w*1.4,r+s/2,0); g.quadraticCurveTo(r,w*1.4,r-s/2,0); };
+  cancelAnimationFrame(cvRaf);
+  const draw=()=>{ t+=reduceM?0:.016; for(const k in tg) st[k]+=(tg[k]-st[k])*.03; g.clearRect(0,0,W,H); const R=Math.min(W,H)*st.r, C={x:W/2,y:H/2}; const br=1+.03*Math.sin(t*.8); const imb=1-st.bal;
+    const gr=g.createRadialGradient(C.x,C.y,0,C.x,C.y,R*1.15); gr.addColorStop(0,'rgba(255,250,235,.9)'); gr.addColorStop(.4,'rgba(255,248,225,.35)'); gr.addColorStop(1,'rgba(255,248,225,0)'); g.globalAlpha=st.alpha*(.4+.6*st.bal); g.fillStyle=gr; g.beginPath(); g.arc(C.x,C.y,R*1.15,0,7); g.fill();
+    let si=0; layers.forEach((L,li)=>{ for(let i=0;i<L.n;i++){ const sd=seeds[(si++)%400]; if(imb>.08&&sd<imb*.5) continue;
+      const a=i/L.n*Math.PI*2+t*.1*L.dir+imb*(sd-.5)*1.8; const rr=L.rad*R*br*(1+imb*(sd-.5)); const sz=L.size*R*(1+.12*Math.sin(t*1.5+i));
+      g.save(); g.translate(C.x+imb*(sd-.5)*R*.6, C.y+imb*(seeds[(si*7)%400]-.5)*R*.6); g.rotate(a); g.globalAlpha=st.alpha*.92*(1-imb*.4); g.fillStyle=pal[(i+li)%pal.length];
+      if(L.sh==='dot'){ g.beginPath(); g.arc(rr,0,sz*.5,0,7); } else if(L.sh==='lotus') lotus(rr,sz,sz*.4); else petal(rr,sz,sz*.32);
+      g.fill(); g.lineWidth=1.2*devicePixelRatio; g.strokeStyle='rgba(30,42,43,.5)'; g.stroke(); g.restore(); } });
+    g.globalAlpha=st.alpha*.6; g.lineWidth=1.5*devicePixelRatio; g.strokeStyle='rgba(255,246,222,.5)'; [.28,.46,.63,.8,1].forEach((k,i)=>{ if(imb>.35&&i%2) return; g.beginPath(); g.arc(C.x,C.y,k*R*br,0,Math.PI*2*(1-imb*.4*(i%3))); g.stroke(); });
+    g.globalAlpha=1; cvRaf=requestAnimationFrame(draw); };
+  draw(); return { set(p){ Object.assign(tg,p); }, stop(){ cancelAnimationFrame(cvRaf); ro.disconnect(); } }; }
+const PAL=[['#FFFFFF','#F7EFD9','#EBDDB0','#D4A546','#E8B13A'],['#1F4E9A','#3D74C4','#8FC1F0','#FFFFFF','#D4A546'],['#C8372D','#E8B13A','#7A1712','#F3E9D2','#D4A546'],['#2E8B6E','#8FD1B4','#1F4E9A','#F3E9D2','#D4A546']];
+
+/* --- 5. the sit --- */
+async function sit(s){
+  const {D,P}=s; art(`<rect width="600" height="400" fill="#0E1416"/>`,'A mandala that settles when you are still'); loopLevel('pad',.02);
+  await line(s,D.sit,{eye:'Sit'});
+  eyebrow('Sit'); $('#stext').textContent='How long would you like to sit?';
+  let mins=1; try{ mins=+(localStorage.getItem('fortynine-sit')||1); }catch(e){}
+  $('#srow').innerHTML=`<div class="chips" role="group" aria-label="Length of the sit">${[1,3,5].map(m=>`<button type="button" class="chip" data-m="${m}" aria-pressed="${m===mins}">${m} min</button>`).join('')}</div><button type="button" class="sgo alt" id="sskip">Skip the sit</button><button type="button" class="sgo" id="sbeg">Begin the sit</button>`;
+  document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{ mins=+c.dataset.m; try{ localStorage.setItem('fortynine-sit',mins); }catch(e){} document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c)); });
+  $('#sbeg').focus({preventScroll:true});
+  const go=await new Promise(r=>{ $('#sbeg').onclick=()=>r(true); $('#sskip').onclick=()=>r(false); }); alive(s);
+  if(!go){ cvStop(); return; }
+  const total=mins*60000; const M=cvMandala(PAL[D.p], s.n); M.set({bal:.15});
+  $('#stext').textContent='Be still. The mandala settles when you do.'; eyebrow('Sit');
+  layer().innerHTML=`<div class="sitring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,246,222,.12)" stroke-width="2"/><circle id="sarc" cx="50" cy="50" r="46" fill="none" stroke="${P.col}" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289" transform="rotate(-90 50 50)"/></svg></div><div class="sittime" id="stime" aria-live="off"></div>`;
+  $('#srow').innerHTML=`<button type="button" class="sgo alt" id="send">Skip ahead <span aria-hidden="true">→</span></button>`;
+  bowl(K0(s)*.5,.22); hush(); setTimeout(()=>{ if(SS===s) narrate('Be still. The mandala settles when you do.'); },1200);
+  let acc=0, last=performance.now(), settle=0, early=false; const arc=$('#sarc'), tm=$('#stime');
+  $('#send').onclick=()=>{ early=true; };
+  watchStill(()=>{ settle=performance.now()+2500; M.set({bal:.15}); $('#stext').textContent='That\'s alright. Settle again.'; });
+  await new Promise(res=>{ const tick=()=>{ if(SS!==s) return res(); const nw=performance.now(), dt=nw-last; last=nw;
+      if(nw>settle){ acc+=dt; M.set({bal:Math.min(1,.25+acc/Math.min(total,40000)*.75)}); if($('#stext').textContent.startsWith('That')) $('#stext').textContent='Be still. The mandala settles when you do.'; }
+      arc.setAttribute('stroke-dashoffset',(289*(1-acc/total)).toFixed(1)); const left=Math.max(0,total-acc)/1000; tm.textContent=`${Math.floor(left/60)}:${String(Math.ceil(left%60)%60===0&&left%60>59.5?0:Math.ceil(left%60)).padStart(2,'0')}`.replace(/:60$/,':00');
+      if(acc>=total||early){ res(); return; } setTimeout(tick,100); }; tick(); });
+  stopWatch(); alive(s); M.set({bal:1}); clearLayer(); bowl(K0(s)*.5,.22); setTimeout(()=>bowl(K0(s),.12),900);
+  await line(s, early? 'Even a little stillness counts.' : 'Well done. Rest here a moment.',{eye:'Sit'});
+  M.stop(); cvStop();
+}
+
+/* --- 6. carry it with you --- */
+async function carry(s){
+  const {n,D,P}=s; loopLevel('pad',.03);
+  art(`<rect width="600" height="400" fill="#10181B"/><circle cx="300" cy="200" r="230" fill="${P.col}" opacity=".12"/><g id="card" style="transform-origin:300px 200px;transition:transform 1.1s cubic-bezier(.5,0,.3,1),opacity 1.1s"><rect x="150" y="70" width="300" height="230" rx="16" fill="#FBF3DF" stroke="${INK}" stroke-width="4"/><rect x="150" y="70" width="300" height="46" rx="16" fill="${P.col}"/><rect x="150" y="100" width="300" height="16" fill="${P.col}"/><text x="300" y="100" text-anchor="middle" font-family="Jost,sans-serif" font-weight="800" font-size="16" letter-spacing="4" fill="#FFFFFF">TRY TODAY</text>${[0,1,2,3].map(i=>`<rect x="180" y="${146+i*30}" width="${240-i*30*(i%2)}" height="9" rx="4" fill="${INK}" opacity=".18"/>`).join('')}</g>${lf(300,380,.42)}`,'A card to carry with you');
+  await line(s,D.try,{eye:'Carry it with you'});
+  prompt('Press and hold to take it with you.','Carry it with you');
+  await holdBtn(s,{label:'Hold to take it with you',ms:1600,col:P.col,onP:p=>{ const c=$('#card'); if(c){ c.style.transition='none'; c.style.transform=`scale(${1-p*.08})`; } }});
+  alive(s); const c=$('#card'); c.style.transition=''; requestAnimationFrame(()=>{ c.style.transform='translate(0,170px) scale(.12)'; c.style.opacity='.0'; }); whoosh(.12); setTimeout(chime,700);
+  if(!st.read.includes(n)){ st.read.push(n); save(); }
+  await sleep(900); alive(s);
+  const nx=n<49?n+1:null; const opens=nx&&!isOpen(nx)?`Day ${nx} opens ${openDate(nx).split(',')[0]==='Invalid Date'?'tomorrow':'on '+openDate(nx)}.`:'';
+  eyebrow(`Day ${n} complete`); $('#stext').textContent=n===49?'Forty-nine days. You have walked the whole way through. Read it to someone, someday.':`That's day ${n}. ${opens}`;
+  narrate($('#stext').textContent);
+  $('#srow').innerHTML=`<button type="button" class="sgo" id="sdone">Back to the calendar</button>${nx&&isOpen(nx)?`<button type="button" class="sgo alt" id="snext">Day ${nx} →</button>`:''}`;
+  $('#sdone').onclick=()=>closeSession(); const sn=$('#snext'); if(sn) sn.onclick=()=>{ closeSession(); sel=nx; render(); openSession(nx); };
+  $('#sdone').focus({preventScroll:true});
+}
+
+/* =========================================================
+   SCENES: each kind has a picture for the book, an interaction, and an after-picture
+   ========================================================= */
+const darkBg=(c='#10181B')=>`<rect width="600" height="400" fill="${c}"/>`;
+function tapItems(s,{items,ask,render:rnd,onTap,need}){ /* places tappable buttons on the layer */ return new Promise(res=>{ prompt(ask); let left=need||items.length;
+  layer().innerHTML=items.map((it,i)=>`<button type="button" class="tapit" style="left:${it.x}%;top:${it.y}%;${it.w?`width:${it.w}%`:''}" data-i="${i}" aria-label="${it.label}">${rnd(it)}</button>`).join('');
+  layer().querySelectorAll('.tapit').forEach(b=>b.onclick=()=>{ if(b.classList.contains('gone')) return; b.classList.add('gone'); b.disabled=true; onTap&&onTap(items[+b.dataset.i],b); left--; if(left<=0) setTimeout(res,900); else { const nx=layer().querySelector('.tapit:not(.gone)'); nx&&nx.focus({preventScroll:true}); } });
+  const f=layer().querySelector('.tapit'); f&&f.focus({preventScroll:true}); }); }
+
+const SCENES={
+generic:{ before:s=>darkBg()+lf(300,250,1), act:async s=>{} },
+
+listen:{ before:s=>darkBg('#14202A')+`<g class="ripples">${[1,2,3].map(i=>`<circle cx="300" cy="190" r="${40*i}" fill="none" stroke="#FFF6DE" stroke-width="2" opacity="${.5-i*.12}"/>`).join('')}</g>`+lf(300,262,.9),
+  act:async s=>{ const A=s.A; art(darkBg('#0E1620')+`<g id="rip"></g>`+lf(300,262,.9),'Listening'); loopLevel('pad',.008);
+    layer().innerHTML=`<button type="button" class="holdzone" id="lz" aria-label="Tap when you hear the bell"><span class="holdpill">Tap when you hear the bell</span></button>`; prompt(A.ask);
+    const decoys=[()=>nz({freq:3000,peak:.08,d:.03}),()=>whoosh(.1),()=>plop(),()=>tone(330,{type:'triangle',peak:.08,d:.4}),()=>nz({type:'lowpass',freq:300,peak:.15,d:.3,buf:bBuf})];
+    const ripple=(c)=>{ const g=$('#rip'); if(!g) return; g.insertAdjacentHTML('beforeend',`<circle class="rp" cx="300" cy="190" r="20" fill="none" stroke="${c}" stroke-width="3"/>`); setTimeout(()=>{ const x=g.firstChild; x&&x.remove(); },2600); };
+    let bellAt=0, timers=[], heard=false; const schedule=()=>{ timers.forEach(clearTimeout); timers=[]; let t=1800; const k=2+Math.floor(Math.random()*2);
+      for(let i=0;i<k;i++){ t+=1600+Math.random()*1500; timers.push(setTimeout(()=>{ if(SS!==s||heard) return; decoys[Math.floor(Math.random()*decoys.length)](); ripple('rgba(255,246,222,.5)'); bellAt=0; },t)); }
+      t+=1800+Math.random()*1500; timers.push(setTimeout(()=>{ if(SS!==s||heard) return; bellTone(); ripple('#E8B13A'); bellAt=performance.now(); timers.push(setTimeout(()=>{ if(!heard&&SS===s){ prompt('It rang. Listen again.'); schedule(); } },5000)); },t)); };
+    schedule();
+    await new Promise(res=>{ $('#lz').onclick=()=>{ if(bellAt&&performance.now()-bellAt<5000){ heard=true; timers.forEach(clearTimeout); res(); } else { prompt(A.miss); } }; $('#lz').focus({preventScroll:true}); });
+    loopLevel('pad',.03); } },
+
+gap:{ before:s=>darkBg()+`<circle cx="300" cy="200" r="110" fill="none" stroke="${s.P.col}" stroke-width="5"/>`+`<text x="300" y="206" text-anchor="middle" font-family="Jost,sans-serif" font-weight="700" font-size="16" letter-spacing="3" fill="#FFF6DE">IN · OUT · GAP</text>`,
+  act:async s=>{ const A=s.A; art(darkBg()+`<g id="gc" style="transform-origin:300px 200px;transform:scale(.5)"><circle cx="300" cy="200" r="130" fill="${s.P.col}" opacity=".25"/><circle cx="300" cy="200" r="130" fill="none" stroke="${s.P.col}" stroke-width="6"/></g><text id="gl" x="300" y="206" text-anchor="middle" font-family="Jost,sans-serif" font-weight="800" font-size="22" letter-spacing="4" fill="#FFF6DE"></text>`,'A circle breathing');
+    layer().innerHTML=`<button type="button" class="holdzone" id="gz" aria-label="Tap in the pause after the out-breath"><span class="holdpill">Tap in the pause</span></button><div class="count" id="bcount" aria-hidden="true"><i></i><i></i><i></i></div>`; prompt(A.ask);
+    let phase='in', got=0, caught=false; const gc=$('#gc'), gl=$('#gl');
+    const cycle=async()=>{ while(SS===s&&got<3){ phase='in'; caught=false; gl.textContent='IN'; gc.style.transition='transform 3.5s ease-in-out'; gc.style.transform='scale(1)'; inhaleStart(); await sleep(3500); if(SS!==s) return;
+        phase='out'; gl.textContent='OUT'; gc.style.transition='transform 4s ease-in-out'; gc.style.transform='scale(.5)'; exhale(4); await sleep(4000); if(SS!==s) return;
+        phase='gap'; gl.textContent=''; await sleep(2200); } };
+    cycle();
+    await new Promise(res=>{ $('#gz').onclick=()=>{ if(phase==='gap'&&!caught){ caught=true; got++; document.querySelectorAll('#bcount i')[got-1].className='on'; tone(660,{peak:.1,d:1.5}); gl.textContent='✓'; if(got>=3) setTimeout(res,1200); } else if(phase!=='gap'){ prompt(A.early); } }; $('#gz').focus({preventScroll:true}); }); } },
+
+release:{ before:s=>darkBg()+lf(300,260,1)+s.A.items.slice(0,5).map((k,i)=>`<g transform="translate(${170+i*65} ${s.A.pebbles?300:120}) scale(.7)">${ICON[k]}</g>`).join(''),
+  after:s=>darkBg()+`<g class="spin" style="transform-origin:300px 200px">${rays(300,200,500,24,.08)}</g>`+lf(300,260,1),
+  act:async s=>{ const A=s.A; art(darkBg()+lf(300,262,1),'Your hands are full'); const k=A.items.length;
+    const items=A.items.map((it,i)=>({k:it, x:(A.pebbles?18:20)+i*(A.pebbles?64:60)/Math.max(1,k-1), y:A.pebbles?70:(i%2?42:28), label:'Let go of the '+(A.pebbles?(it+' pebble'):it)}));
+    await tapItems(s,{items,ask:A.ask,render:it=>icon(it.k),onTap:()=>{ if(A.pebbles) tone(220,{type:'triangle',peak:.06,d:.3}); plop(); whoosh(.06); }}); } },
+
+dissolve:{ before:s=>elArt(s.A.from,0)+lf(300,262,1,{id:'fig'}), after:s=>elArt(s.A.to,1)+lf(300,262,1,{op:.7}),
+  act:async s=>{ const A=s.A; art(`<g id="ea">${elArt(A.from,0)}</g><g id="eb" opacity="0">${elArt(A.to,1)}</g>`+lf(300,262,1,{id:'fig'}),'The elements dissolving');
+    const snd={earth:()=>noiseLoop('el','lowpass',160,.25),water:()=>noiseLoop('el','bandpass',600,.12,nBuf),fire:()=>noiseLoop('el','highpass',2500,.05,nBuf),air:()=>noiseLoop('el','bandpass',900,.08,nBuf)}[A.from]; snd&&snd();
+    prompt(A.ask);
+    await holdBtn(s,{label:'Press and hold',ms:A.ms||5000,early:A.early,col:s.P.col,onP:(p,h)=>{ const a=$('#ea'), b=$('#eb'), f=$('#fig'); if(!a) return; a.setAttribute('opacity',(1-p).toFixed(2)); b.setAttribute('opacity',p.toFixed(2));
+        f.setAttribute('transform',`translate(300 ${262+(A.from==='earth'?p*40:0)}) scale(1)`); f.setAttribute('opacity',(1-p*(A.to==='light'?.75:.3)).toFixed(2)); loopLevel('el',h?.22*(1-p)+.02:.1,.3); }});
+    loopOff('el',1.5); bowl(K0(s),.12); } },
+
+drops:{ before:s=>darkBg('#0B0B0A')+lf(300,250,1.3),
+  after:s=>darkBg('#000')+`<circle cx="300" cy="200" r="160" fill="#FFFFFF" opacity=".08"/><circle cx="300" cy="200" r="60" fill="#FFFFFF" opacity=".2"/>`,
+  act:async s=>{ const A=s.A; art(darkBg('#0B0B0A')+`<g id="wb">${lf(300,250,1.3)}</g><circle id="wd" cx="300" cy="153" r="11" fill="#FFFFFF" stroke="${INK}" stroke-width="2" style="transition:all 2.4s ease"/><circle id="rd" cx="300" cy="275" r="11" fill="#D8412F" stroke="${INK}" stroke-width="2" style="transition:all 2.4s ease"/><rect id="blk" width="600" height="400" fill="#000" opacity="0" style="transition:opacity 2s"/><circle id="cl" cx="300" cy="200" r="10" fill="#FFFFFF" opacity="0" style="transition:all 3s;transform-origin:300px 200px"/>`,'White and red drops');
+    const spot=(x,y,lab)=>`<button type="button" class="spot" style="left:${x}%;top:${y}%" aria-label="${lab}"><i></i></button>`;
+    layer().innerHTML=spot(50,38.2,'The white drop at the crown'); prompt(A.ask);
+    await new Promise(r=>layer().querySelector('.spot').onclick=r); layer().innerHTML=''; $('#wd').setAttribute('cy',224); $('#art').style.background='#FFF'; tone(784,{peak:.1,d:3}); art2glow('#FFFFFF'); await sleep(2600); alive(s);
+    layer().innerHTML=spot(50,68.7,'The red drop at the navel'); prompt(A.ask2);
+    await new Promise(r=>layer().querySelector('.spot').onclick=r); layer().innerHTML=''; $('#rd').setAttribute('cy',226); tone(392,{peak:.12,d:3}); art2glow('#D8412F'); await sleep(2600); alive(s);
+    $('#blk').setAttribute('opacity',1); loopLevel('pad',.003,2); await sleep(3500); alive(s);
+    const c=$('#cl'); c.setAttribute('opacity',1); c.setAttribute('r',190); bowl(K0(s),.15); loopLevel('pad',.03,3); await sleep(1800); } },
+
+still:{ before:s=>stillArt(s.A.art,0), after:s=>stillArt(s.A.art,1),
+  act:async s=>{ const A=s.A; art(stillArt(A.art,0,true),'Be still'); prompt(A.ask);
+    if(A.art==='roar') noiseLoop('roar','lowpass',260,.05);
+    let t0=null; let resolve; const pr=new Promise(r=>resolve=r);
+    layer().innerHTML=`<div class="stillbar" aria-hidden="true"><i id="sbi"></i></div>`;
+    const start=()=>{ t0=performance.now(); watchStill(()=>{ t0=performance.now()+1500; prompt(A.again); if(A.art==='roar'){ drum(.7); } const g=$('#sg'); if(g) g.style.transform='scale(.2)'; }); };
+    await sleep(2200); alive(s); start();
+    const tick=()=>{ if(SS!==s) return; const el=Math.max(0,performance.now()-t0); const p=Math.min(1,el/A.ms); const bi=$('#sbi'); if(bi) bi.style.width=(p*100)+'%';
+      const g=$('#sg'); if(g){ g.style.transition='transform .4s'; g.style.transform=`scale(${.2+p*1.1})`; }
+      if(A.art==='roar') loopLevel('roar',.05+.4*Math.min(1,el/(A.ms*.7))*(p<1?1:0),.2);
+      if(A.art==='pass'&&Math.random()<.025) flyThrough();
+      if(p>=1){ stopWatch(); resolve(); return; } requestAnimationFrame(tick); };
+    tick(); await pr; loopOff('roar',.6); bowl(K0(s),.14); } },
+
+bubbles:{ before:s=>darkBg('#14202A')+lf(300,262,1)+`<g opacity=".5">${s.A.words.slice(0,3).map((w,i)=>bubble(140+i*160,90+(i%2)*40,w)).join('')}</g>`,
+  after:s=>darkBg('#14202A')+`<circle cx="300" cy="200" r="150" fill="${s.P.col}" opacity=".15"/>`+lf(300,262,1),
+  act:async s=>{ const A=s.A; art(darkBg('#14202A')+lf(300,262,1),'Thoughts appearing'); prompt(A.ask);
+    layer().innerHTML=`<div class="counter" id="bct" aria-live="polite">0</div>`; let got=0, i=0;
+    await new Promise(res=>{ const spawn=()=>{ if(SS!==s||got>=A.need) return; const w=A.words[i++%A.words.length]; const x=12+Math.random()*68, y=8+Math.random()*48;
+        const b=document.createElement('button'); b.type='button'; b.className='bub'+(A.smile?' bite':''); b.style.left=x+'%'; b.style.top=y+'%'; b.textContent=w; b.setAttribute('aria-label',(A.back?'Come back from ':A.letgo?'Let go of ':A.smile?'Smile at ':'Count: ')+w);
+        b.onclick=()=>{ if(b.dataset.t) return; b.dataset.t=1; got++; $('#bct').textContent=got; b.classList.add(A.smile?'smiled':'pop'); if(A.smile) b.textContent='☺'; plop(); setTimeout(()=>b.remove(),700); if(got>=A.need) setTimeout(res,900); };
+        layer().appendChild(b); setTimeout(()=>{ if(!b.dataset.t&&b.isConnected){ b.classList.add('fade'); setTimeout(()=>b.remove(),600); } },5200); setTimeout(spawn,1100+Math.random()*900); };
+      spawn(); }); } },
+
+choose:{ before:s=>s.A.rainbow?rainbowArt():brightArt(s.A.bright), after:s=>(s.A.rainbow?rainbowArt():brightArt(s.A.bright))+lf(300,350,.55,{stroke:'#FFFFFF'}),
+  act:async s=>{ const A=s.A; art(darkBg('#0B0F11'),'Two lights');
+    if(A.missFirst){ art(brightArt('#FFFFFF')+lf(300,350,.5),'The first light'); await sleep(1600); const a=$('#art'); a.style.transition='opacity 1.5s'; a.style.opacity=.15; await sleep(1600); a.style.opacity=1; alive(s); }
+    while(true){ alive(s); art(darkBg('#0B0F11'),'Two lights'); prompt(A.ask);
+      const halves=[{b:true,lab:A.brightLabel,svg:(A.rainbow?rainbowArt(150,170):brightArt(A.bright,150,170,100))+lf(150,350,.6,{stroke:'#FFFFFF'})},{b:false,lab:A.dullLabel,svg:dullArt(A.dull,170,false)+lf(150,350,.6)}];
+      if(Math.random()<.5) halves.reverse();
+      layer().innerHTML=`<div class="duo">${halves.map(h=>`<button type="button" class="half" data-b="${h.b}" aria-label="${esc(h.lab)}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${h.svg}</svg><span>${esc(h.lab)}</span></button>`).join('')}</div>`;
+      pad('dull',[130.8,164.8,196],.02); layer().querySelector('.half').focus({preventScroll:true});
+      const bright=await new Promise(r=>layer().querySelectorAll('.half').forEach(b=>b.onclick=()=>r(b.dataset.b==='true'))); alive(s); loopOff('dull',1); clearLayer();
+      if(bright){ art(A.rainbow?rainbowArt():brightArt(A.bright),'The bright light'); chime(); await sleep(1200); return; }
+      const R=A.realm?REALM_INFO[A.realm]:null; art(dullArt(A.dull,300,A.six)+`<g opacity=".8">${lf(300,330,.55)}</g>`,'The soft light');
+      pad('dull',[123.5,155.6,185],.03); await line(s, R?`That soft light was ${R.name}: ${R.why}. Comfortable, and another round of the same. Let's go back.`:A.dullReply,{eye:'Try it'}); loopOff('dull',1); } } },
+
+pick:{ before:s=>darkBg()+s.A.opts.map((o,i)=>`<circle cx="${100+i*(400/Math.max(1,s.A.opts.length-1))}" cy="190" r="44" fill="${o[0]}" stroke="${INK}" stroke-width="3"/>`).join(''),
+  act:async s=>{ const A=s.A; art(darkBg(),'Choose one'); prompt(A.ask);
+    layer().innerHTML=`<div class="picks">${A.opts.map((o,i)=>`<button type="button" class="pk" data-i="${i}" style="--pc:${o[0]}"><i></i>${esc(o[1])}</button>`).join('')}</div>`; layer().querySelector('.pk').focus({preventScroll:true});
+    const i=await new Promise(r=>layer().querySelectorAll('.pk').forEach(b=>b.onclick=()=>r(+b.dataset.i))); alive(s); clearLayer(); const o=A.opts[i];
+    art(darkBg()+`<circle cx="300" cy="190" r="170" fill="${o[0]}" opacity=".18"/><circle cx="300" cy="190" r="90" fill="${o[0]}" stroke="${INK}" stroke-width="4"/>`+lf(300,350,.55),o[1]); bowl(K0(s),.12);
+    await line(s,o[2],{eye:o[1]}); } },
+
+face:{ before:s=>wrathArt(s.A), after:s=>`<g class="morphd">${wrathArt(s.A)}</g>`,
+  act:async s=>{ const A=s.A; art(wrathArt(A),'A wrathful mask'); prompt(A.ask);
+    loopOn('wrath',g=>{ const a=actx.createBufferSource(); a.buffer=bBuf; a.loop=true; const f=actx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=500; a.connect(f).connect(g); const o=actx.createOscillator(); o.type='sawtooth'; o.frequency.value=41; const of=actx.createBiquadFilter(); of.type='lowpass'; of.frequency.value=140; o.connect(of).connect(g); a.start(); o.start(); return [a,o]; },.14,2);
+    drumT=setInterval(()=>drum(.35),640);
+    let warned=false;
+    await holdBtn(s,{label:'Press and hold to face it',ms:4000,col:'#C8372D',early:A.flinch,onP:(p,h)=>{ const st=$('#stage'); st.classList.toggle('facing',h); if(h) loopLevel('wrath',.14+p*.25,.2); }});
+    $('#stage').classList.remove('facing'); clearInterval(drumT); drumT=null; loopOff('wrath',.3); $('#art').classList.add('morphd'); setTimeout(chime,500); await sleep(2200); } },
+
+mirror:{ before:s=>mirrorArt(s.A.show,true), after:s=>mirrorArt(s.A.show,false),
+  act:async s=>{ const A=s.A; art(mirrorArt(A.show,false),'A mirror'); prompt(A.ask);
+    const cv=$('#cv'); cv.style.opacity=1; const r=cv.getBoundingClientRect(); cv.width=r.width; cv.height=r.height; const g=cv.getContext('2d');
+    g.fillStyle='#C9D3D6'; g.fillRect(0,0,cv.width,cv.height); for(let i=0;i<300;i++){ g.fillStyle=`rgba(255,255,255,${Math.random()*.25})`; g.beginPath(); g.arc(Math.random()*cv.width,Math.random()*cv.height,Math.random()*30,0,7); g.fill(); }
+    g.globalCompositeOperation='destination-out'; let cleared=0; const R=Math.max(26,r.width*.06);
+    layer().innerHTML=`<button type="button" class="wipe" id="wipe" aria-label="Wipe the mirror (or press Enter to wipe)"></button>`; const w=$('#wipe'); w.focus({preventScroll:true});
+    await new Promise(res=>{ let down=false, last=null;
+      const rub=(x,y)=>{ g.beginPath(); g.arc(x,y,R,0,7); g.fill(); if(last){ g.lineWidth=R*2; g.lineCap='round'; g.beginPath(); g.moveTo(last[0],last[1]); g.lineTo(x,y); g.stroke(); } last=[x,y]; cleared++; if(cleared%6===0) nz({freq:2400,type:'bandpass',peak:.03,d:.06});
+        if(cleared%15===0){ const d=g.getImageData(0,0,cv.width,cv.height).data; let t=0,c=0; for(let i=3;i<d.length;i+=160){ t++; if(d[i]<40) c++; } if(c/t>.55){ g.clearRect(0,0,cv.width,cv.height); res(); } } };
+      const pos=e=>{ const b=cv.getBoundingClientRect(); return [(e.clientX-b.left)*cv.width/b.width,(e.clientY-b.top)*cv.height/b.height]; };
+      w.addEventListener('pointerdown',e=>{ down=true; last=null; w.setPointerCapture&&w.setPointerCapture(e.pointerId); rub(...pos(e)); });
+      w.addEventListener('pointermove',e=>{ if(down||e.pointerType==='mouse') rub(...pos(e)); });
+      ['pointerup','pointercancel'].forEach(ev=>w.addEventListener(ev,()=>{ down=false; last=null; }));
+      w.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); last=null; for(let k=0;k<15;k++) rub(Math.random()*cv.width,Math.random()*cv.height); } });
+    });
+    cv.style.opacity=0; tone(988,{peak:.08,d:3}); await sleep(1400); } },
+
+hold:{ before:s=>holdArt(s.A.art,0), after:s=>holdArt(s.A.art,1),
+  act:async s=>{ const A=s.A; art(holdArt(A.art,0,true),''); prompt(A.ask); if(A.art==='wind'||A.art==='step') noiseLoop('wind','bandpass',500,.12,nBuf);
+    await holdBtn(s,{label:'Press and hold',ms:A.ms,early:A.early,col:s.P.col,onP:(p,h)=>{ const a=$('#hb'); if(a) a.setAttribute('opacity',p.toFixed(2)); const f=$('#hf'); if(f){ const sway=(1-p)*Math.sin(performance.now()/300)*18; f.setAttribute('transform',`translate(${(A.art==='step'?250+p*90:300+sway).toFixed(1)} 262)`); } loopLevel('wind',.14*(1-p)+.01,.2); }});
+    loopOff('wind',1); bowl(K0(s),.14); await sleep(600); } },
+
+door:{ before:s=>doorArt(s.A.inner,0), after:s=>doorArt(s.A.inner,1),
+  act:async s=>{ const A=s.A; art(doorArt(A.inner,0,true),'An open door'); prompt(A.ask);
+    await holdBtn(s,{label:'Press and hold to close the door',ms:A.ms,early:A.early,col:s.P.col,onP:p=>{ const l=$('#dl'), r=$('#dr'), i=$('#di'); if(!l) return; l.setAttribute('width',(p*80).toFixed(1)); r.setAttribute('x',(380-p*80).toFixed(1)); r.setAttribute('width',(p*80).toFixed(1)); i.setAttribute('opacity',(.3+p*.7).toFixed(2)); }});
+    nz({type:'lowpass',freq:240,peak:.3,d:.4,buf:bBuf}); bowl(K0(s),.12); await sleep(800); } },
+
+doors:{ before:s=>darkBg()+['gods','jealous','humans','animals','ghosts','hells'].map((k,i)=>`<rect x="${40+i*90}" y="110" width="70" height="140" rx="35" fill="#26343A" stroke="#FFF6DE" stroke-width="3"/>`).join(''),
+  act:async s=>{ const A=s.A; art(darkBg(),'Six doors'); const ks=['gods','jealous','humans','animals','ghosts','hells'].sort(()=>Math.random()-.5);
+    while(true){ alive(s); prompt(A.ask);
+      layer().innerHTML=`<div class="doors">${ks.map(k=>`<button type="button" class="dr" data-k="${k}"><svg viewBox="0 0 40 40" aria-hidden="true">${realmIcon(k)}</svg><span>${REALM_INFO[k].name.replace('the ','')}</span></button>`).join('')}</div>`; layer().querySelector('.dr').focus({preventScroll:true});
+      const k=await new Promise(r=>layer().querySelectorAll('.dr').forEach(b=>b.onclick=()=>r(b.dataset.k))); alive(s); clearLayer();
+      if(k==='humans'){ art(darkBg()+`<circle cx="300" cy="190" r="160" fill="#C98B3A" opacity=".2"/><rect x="230" y="80" width="140" height="240" rx="70" fill="#FFE9A8" stroke="${INK}" stroke-width="4"/>`+lf(300,300,.7),'The human door'); chime(); await sleep(1200); return; }
+      art(darkBg()+`<rect x="230" y="80" width="140" height="240" rx="70" fill="#26343A" stroke="#FFF6DE" stroke-width="3"/>`,''); await line(s,`That door leads to ${REALM_INFO[k].name}: ${REALM_INFO[k].why}. Not a place to wake up. Choose again.`,{eye:'Try it'}); } } },
+
+cliffs:{ before:s=>cliffArt(-1), after:s=>cliffArt(-1)+`<rect width="600" height="400" fill="#FFF6DE" opacity=".12"/>`,
+  act:async s=>{ const A=s.A; prompt(A.ask); const cols=['#F3F0E8','#C8372D','#151515'], names=['white','red','black'];
+    for(let c=0;c<3;c++){ alive(s); art(cliffArt(c),`The ${names[c]} cliff`); let x=120;
+      layer().innerHTML=`<button type="button" class="sgo back" id="cb">← Step back</button>`; $('#cb').focus({preventScroll:true});
+      const ok=await new Promise(res=>{ let done=false; const step=()=>{ if(SS!==s||done) return; x+=1.1; const f=$("#cf"); if(f) f.setAttribute('transform',`translate(${x} 280)`); if(x>370){ done=true; res(false); return; } requestAnimationFrame(step); }; step(); $('#cb').onclick=()=>{ if(done) return; done=true; res(true); }; });
+      alive(s); clearLayer();
+      if(ok){ const f=$('#cf'); f.style.transition='transform .8s'; f.setAttribute('transform','translate(110 280)'); tone(523,{peak:.1,d:1.5}); await sleep(900); }
+      else { nz({type:'lowpass',freq:200,peak:.3,d:.6,buf:bBuf}); await line(s,`You went over the ${names[c]} cliff. It's alright, it happens. Try again, earlier this time.`,{eye:'Try it'}); c--; } } } },
+
+bloom:{ before:s=>darkBg('#14202A')+lf(300,262,.8),
+  after:s=>pureLand(),
+  act:async s=>{ const A=s.A; art(darkBg('#14202A')+lf(300,262,.8),'An empty place'); const ks=['lotus','lamp','flower','candle','bell','lotus'];
+    const items=ks.map((k,i)=>({k,x:[14,30,46,62,78,88][i]-4,y:[64,40,22,40,64,30][i],label:'Place a '+k}));
+    await tapItems(s,{items,ask:A.ask,render:it=>`<span class="ring0"></span>${icon(it.k)}`,onTap:(it,b)=>{ b.classList.add('bloom'); tone(392*Math.pow(2,items.indexOf(it)/5),{peak:.08,d:2}); }});
+    art(pureLand(),'A pure land'); } },
+
+aloud:{ before:s=>darkBg()+`<rect x="160" y="70" width="280" height="260" rx="10" fill="#FBF3DF" stroke="${INK}" stroke-width="4"/>`+[0,1,2,3,4,5].map(i=>`<rect x="190" y="${110+i*34}" width="${220-(i%3)*30}" height="9" rx="4" fill="${INK}" opacity=".2"/>`).join(''),
+  after:s=>darkBg()+`<circle cx="300" cy="200" r="170" fill="${s.P.col}" opacity=".2"/>`+lf(300,262,1),
+  act:async s=>{ const A=s.A; art(darkBg()+`<circle cx="300" cy="200" r="190" fill="${s.P.col}" opacity=".12"/>`,'Read aloud'); prompt(A.ask); hush();
+    for(let i=0;i<A.lines.length;i++){ alive(s); layer().innerHTML=`<div class="aloud">${A.lines.slice(0,i+1).map((l,k)=>`<p class="${k===i?'now':''}">${esc(l)}</p>`).join('')}</div><button type="button" class="sgo read" id="rd">I've said it aloud</button>`;
+      $('#rd').focus({preventScroll:true}); await new Promise(r=>$('#rd').onclick=r); tone(392*Math.pow(2,i/6),{peak:.06,d:1.5}); }
+    bellTone(); await sleep(800); } }
+};
+function art2glow(c){ const a=$('#art'); a.insertAdjacentHTML('beforeend',`<circle cx="300" cy="200" r="20" fill="${c}" opacity=".0"><animate attributeName="r" from="20" to="400" dur="2.4s" fill="freeze"/><animate attributeName="opacity" values="0;.55;.15" dur="2.4s" fill="freeze"/></circle>`); }
+function elArt(el,p){
+  if(el==='earth') return `<rect width="600" height="400" fill="#3B2A1C"/><rect y="290" width="600" height="110" fill="#6B4A2B"/>${[0,1,2,3,4,5,6,7].map(i=>`<path d="M${i*80-10} 300 l40 -${30+(i*37)%40} l50 ${30+(i*37)%40}z" fill="#8A6239" stroke="${INK}" stroke-width="3"/>`).join('')}`;
+  if(el==='water') return `<rect width="600" height="400" fill="#123A5A"/>${[0,1,2,3,4].map(i=>`<path d="M0 ${250+i*30} q50 -18 100 0 t100 0 t100 0 t100 0 t100 0 t100 0" fill="none" stroke="#7FB7E6" stroke-width="5" opacity="${.9-i*.12}"/>`).join('')}<g opacity=".5">${[0,1,2].map(i=>`<ellipse cx="${150+i*150}" cy="${120+i*20}" rx="60" ry="8" fill="#BFE9FF"/>`).join('')}</g>`;
+  if(el==='fire') return `<rect width="600" height="400" fill="#2A0E08"/>${[0,1,2,3,4,5,6].map(i=>`<path class="fl2" style="animation-delay:${i*.13}s;transform-origin:${60+i*80}px 400px" d="M${20+i*80} 400 q20 -${90+(i*53)%60} 40 -${150+(i*53)%60} q20 ${60} 40 ${150+(i*53)%60}z" fill="${i%2?'#F2B640':'#D8412F'}"/>`).join('')}`;
+  if(el==='air') return `<rect width="600" height="400" fill="#5C7A8A"/>${[0,1,2,3,4,5].map(i=>`<path class="wind" style="animation-delay:${i*.4}s" d="M${-40+i*30} ${70+i*55} q120 -30 240 0 t240 0" fill="none" stroke="#F0F6F8" stroke-width="4" stroke-linecap="round" opacity=".7"/>`).join('')}`;
+  return `<rect width="600" height="400" fill="#07090A"/><circle cx="300" cy="200" r="70" fill="#FFE08A" opacity=".12"/><circle class="flick" cx="300" cy="200" r="16" fill="#FFF3C4"/>`; }
+function stillArt(k,p,live){
+  if(k==='clear') return `<rect width="600" height="400" fill="#0A0D0E"/><g id="sg" style="transform-origin:300px 200px;transform:scale(${live?.2:.2+p*1.1})"><circle cx="300" cy="200" r="200" fill="#FFFFFF" opacity=".25"/><circle cx="300" cy="200" r="130" fill="#FFFFFF" opacity=".5"/><circle cx="300" cy="200" r="70" fill="#FFFFFF"/></g>${lf(300,350,.5)}`;
+  if(k==='roar') return `<rect width="600" height="400" fill="#1A1420"/>${[0,1,2,3].map(i=>`<circle class="shock" style="animation-delay:${i*.7}s" cx="300" cy="200" r="60" fill="none" stroke="#C8372D" stroke-width="5"/>`).join('')}<g id="sg" style="transform-origin:300px 260px;transform:scale(${live?.2:1})"><circle cx="300" cy="230" r="80" fill="#FFF3C4" opacity=".25"/></g>${lf(300,262,1)}`;
+  if(k==='pass') return `<rect width="600" height="400" fill="#1A2226"/><g id="fly"></g><g id="sg" style="transform-origin:300px 230px;transform:scale(${live?.2:1})"><circle cx="300" cy="220" r="90" fill="#FFF3C4" opacity=".18"/></g>${lf(300,262,1,{op:.75})}`;
+  return `<rect width="600" height="400" fill="#7FB0D6"/><g id="sg" style="transform-origin:300px 200px;transform:scale(${live?.2:1})"><circle cx="300" cy="200" r="220" fill="#FFFFFF" opacity=".25"/></g>${lf(300,300,.7)}`; }
+function flyThrough(){ const g=$('#fly'); if(!g) return; const y=120+Math.random()*180, sh=['M0 0 l30 -6 l-30 -6 z','M0 0 l20 20 l20 -20 l-20 -20z','M0 0 h40 v8 h-40z'][Math.floor(Math.random()*3)];
+  const el=document.createElementNS('http://www.w3.org/2000/svg','path'); el.setAttribute('d',sh); el.setAttribute('fill','#C8372D'); el.setAttribute('stroke',INK); el.setAttribute('stroke-width','2'); el.style.transform=`translate(-60px,${y}px)`; el.style.transition='transform 1.6s linear'; g.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.style.transform=`translate(660px,${y+(Math.random()-.5)*60}px)`)); whoosh(.06); setTimeout(()=>el.remove(),1800); }
+function bubble(x,y,w){ return `<g transform="translate(${x} ${y})"><rect x="-60" y="-20" width="120" height="40" rx="20" fill="#FBF3DF" stroke="${INK}" stroke-width="3"/><text y="6" text-anchor="middle" font-family="Atkinson Hyperlegible,sans-serif" font-size="15" fill="${INK}">${esc(w).slice(0,14)}</text></g>`; }
+function mirrorArt(show,fog){ const inner= show==='you'? lf(300,258,.9,{stroke:'#1E2A2B'}) : `<rect x="215" y="260" width="170" height="40" fill="#D9C79E" opacity=".6"/>`;
+  return `<rect width="600" height="400" fill="#2A1B12"/><ellipse cx="300" cy="200" rx="150" ry="180" fill="#C98B3A" stroke="${INK}" stroke-width="5"/><ellipse cx="300" cy="200" rx="128" ry="158" fill="#DCE8EC"/><clipPath id="mc"><ellipse cx="300" cy="200" rx="128" ry="158"/></clipPath><g clip-path="url(#mc)">${inner}</g>${fog?`<ellipse cx="300" cy="200" rx="128" ry="158" fill="#C9D3D6" opacity=".9"/>`:''}`; }
+function holdArt(k,p,live){
+  const fig=(x)=>`<g id="hf" transform="translate(${x} 262)">${lf(0,0,1)}</g>`;
+  if(k==='thought') return `<rect width="600" height="400" fill="#2A2A30"/>${[0,1,2,3,4].map(i=>`<path d="M${60+i*110} 80 l30 40 l-30 40" fill="none" stroke="#5A5A66" stroke-width="5"/>`).join('')}<g id="hb" opacity="${live?0:p}"><rect width="600" height="400" fill="#F2D98A" opacity=".55"/><g class="spin" style="transform-origin:300px 170px">${rays(300,170,500,24,.35)}</g><circle cx="300" cy="170" r="40" fill="#FFF6DE"/></g>${fig(300)}`;
+  if(k==='step') return `<rect width="600" height="400" fill="#4A5A63"/>${[0,1,2,3,4,5].map(i=>`<path class="wind" style="animation-delay:${i*.3}s" d="M${-40+i*20} ${60+i*50} q120 -30 240 0 t240 0" fill="none" stroke="#DDE6EA" stroke-width="4" stroke-linecap="round" opacity=".5"/>`).join('')}<path d="M420 330 h120" stroke="#E8B13A" stroke-width="6" stroke-dasharray="14 10"/><g id="hb" opacity="${live?0:p}"><circle cx="460" cy="250" r="70" fill="#FFE9A8" opacity=".35"/></g>${fig(live?250:340)}`;
+  return `<rect width="600" height="400" fill="#4A5A63"/>${[0,1,2,3,4,5].map(i=>`<path class="wind" style="animation-delay:${i*.3}s" d="M${-40+i*20} ${60+i*50} q120 -30 240 0 t240 0" fill="none" stroke="#DDE6EA" stroke-width="4" stroke-linecap="round" opacity=".5"/>`).join('')}<g id="hb" opacity="${live?0:p}"><circle cx="300" cy="230" r="110" fill="#FFF3C4" opacity=".35"/></g>${fig(300)}`; }
+function doorArt(inner,p,live){ const I={ deity:`<circle cx="300" cy="170" r="50" fill="#1F7AC7"/><circle cx="300" cy="170" r="22" fill="#FFFFFF"/>`, teacher:`${lf(270,250,.6,{stroke:'#1E2A2B'})}${lf(330,250,.6,{stroke:'#1E2A2B'})}`, dream:`${[0,1,2].map(i=>`<circle class="shock" style="animation-delay:${i}s" cx="300" cy="190" r="30" fill="none" stroke="#8C6BC7" stroke-width="3"/>`).join('')}`, light:`<circle cx="300" cy="190" r="70" fill="#FFFFFF"/>` }[inner];
+  const w=live?0:p*80; return `<rect width="600" height="400" fill="#1E2A2B"/><rect x="210" y="60" width="180" height="290" fill="#3A2416" stroke="#C98B3A" stroke-width="8"/><rect x="220" y="70" width="160" height="280" fill="#F3E9D2"/><g id="di" opacity="${live?.3:1}">${I}</g><rect id="dl" x="220" y="70" width="${w}" height="280" fill="#8A4B22" stroke="${INK}" stroke-width="3"/><rect id="dr" x="${380-w}" y="70" width="${w}" height="280" fill="#8A4B22" stroke="${INK}" stroke-width="3"/>`; }
+function cliffArt(c){ const cols=['#F3F0E8','#C8372D','#151515'];
+  return `<rect width="600" height="400" fill="#2B3A44"/><rect x="0" y="290" width="400" height="110" fill="#5E4A3A"/><path d="M400 290 L400 400" stroke="${INK}" stroke-width="4"/><rect x="400" y="300" width="200" height="100" fill="${c>=0?cols[c]:'#1E2A2B'}" opacity=".85"/>${c<0?cols.map((k,i)=>`<rect x="${430+i*55}" y="300" width="40" height="100" fill="${k}"/>`).join(''):''}<g id="cf" transform="translate(120 280)">${lf(0,0,.6)}</g>`; }
+function pureLand(){ return `<rect width="600" height="400" fill="#1F4E9A"/><g class="spin" style="transform-origin:300px 170px">${rays(300,170,600,30,.18)}</g><rect y="300" width="600" height="100" fill="#2E8B6E"/>${['lotus','lamp','flower','candle','bell','lotus'].map((k,i)=>`<g transform="translate(${[60,150,250,330,430,500][i]} ${[290,240,200,240,290,220][i]}) scale(.9)">${ICON[k]}</g>`).join('')}${lf(300,300,.6)}`; }
+function realmIcon(k){ const I={
+  gods:`<polygon points="8,22 20,10 32,22" fill="#F2B640"/><rect x="11" y="21" width="18" height="12" fill="#FBF3DF"/>`,
+  jealous:`<circle cx="20" cy="22" r="11" fill="none" stroke="#E8472F" stroke-width="4" stroke-dasharray="4 3"/>`,
+  humans:`<polygon points="9,22 20,12 31,22" fill="#5E3318"/><rect x="12" y="22" width="16" height="12" fill="#8A4B22"/><rect x="15" y="25" width="5" height="5" fill="#F2B640"/>`,
+  animals:`<ellipse cx="20" cy="24" rx="11" ry="7" fill="#FBF3DF" stroke="${INK}" stroke-width="1.5"/><circle cx="31" cy="18" r="5" fill="#FBF3DF" stroke="${INK}" stroke-width="1.5"/>`,
+  ghosts:`<circle cx="20" cy="25" r="10" fill="#D8CFA8" stroke="${INK}" stroke-width="1.5"/><circle cx="20" cy="11" r="4" fill="#D8CFA8" stroke="${INK}" stroke-width="1.5"/>`,
+  hells:`<rect x="8" y="14" width="7" height="20" fill="#4A4A4A"/><rect x="17" y="8" width="7" height="26" fill="#7A1712"/><rect x="26" y="16" width="6" height="18" fill="#4A4A4A"/>` };
+  return `<rect width="40" height="40" rx="8" fill="#174C50"/>${I[k]}`; }
+
+const $=s=>document.querySelector(s);
+const KEY='fortynine-v1';
+let st={start:null,read:[],ahead:[]}, sel=null, memOnly=false;
+try{ const raw=localStorage.getItem(KEY); if(raw) st=Object.assign(st,JSON.parse(raw)); }catch(e){ memOnly=true; }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(st)); }catch(e){ memOnly=true; } }
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parse=s=>{ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+function todayN(){ if(!st.start) return 0; const n=Math.floor((new Date(new Date().toDateString())-parse(st.start))/864e5)+1; return Math.max(1,Math.min(49,n)); }
+const isOpen=n=>n<=todayN()||st.ahead.includes(n);
+function openDate(n){ const d=parse(st.start); d.setDate(d.getDate()+n-1); return d.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}); }
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+function mandala(n,col){ let s=''; const seed=k=>{ const x=Math.sin(n*97.1+k*13.7)*43758.5; return x-Math.floor(x); };
+  const rings=[[6+Math.floor(seed(1)*4),.32],[10+Math.floor(seed(2)*6),.58],[14+Math.floor(seed(3)*8),.82]];
+  rings.forEach(([c,k],ri)=>{ for(let i=0;i<c;i++){ const a=i/c*360; s+=`<ellipse cx="${50+k*40}" cy="50" rx="${10-ri*2.4}" ry="${4.2-ri}" fill="${ri===1?col:'none'}" stroke="${col}" stroke-width="1.6" opacity="${ri===1?.55:.9}" transform="rotate(${a} 50 50)"/>`; } });
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><g class="breathe" style="transform-origin:50px 50px">${s}<circle cx="50" cy="50" r="9" fill="${col}"/><circle cx="50" cy="50" r="4" fill="#FFFFFF"/></g></svg>`; }
+
+function render(){
+  if(!st.start) return renderWelcome();
+  const t=todayN(); if(!sel) sel=Math.min(t, (st.read.length? Math.max(...st.read.filter(isOpen))+1 : 1)) || t; if(sel>49) sel=49; if(!isOpen(sel)) sel=t;
+  const rows=[0,1,2,3,4,5,6].map(w=>`<div class="week"><b>Week ${w+1}</b>${[1,2,3,4,5,6,7].map(k=>{ const n=w*7+k, D=DAYS[n-1], c=PARTS[D.p].col;
+      const cls=['d', st.read.includes(n)?'read':(isOpen(n)?'open':'locked'), n===t?'today':'', n===sel?'sel':''].join(' ');
+      return `<button type="button" class="${cls}" style="--c:${c}" data-n="${n}" aria-label="Day ${n}: ${esc(D.t)}${st.read.includes(n)?', read':isOpen(n)?', open':', not open yet'}">${n}</button>`; }).join('')}</div>`).join('');
+  $('#wrap').innerHTML=`<section class="panel cal" aria-label="Calendar"><h2>Your forty-nine days</h2>
+      <p class="progress">Day ${t} of 49 · ${st.read.length} read${memOnly?' · progress won\'t be saved in this browser':''}</p>
+      <div class="weeks">${rows}</div>
+      <div class="legend">${PARTS.map(p=>`<span><i style="background:${p.col}"></i>${p.name}</span>`).join('')}</div>
+      <div class="settings"><button type="button" class="pill" id="chg">Change start date</button><button type="button" class="pill" id="reset">Start over</button></div>
+      <div id="setbox"></div>
+      <div class="keep"><h3>Keep it close</h3><p>Get a daily nudge: a reminder in your calendar for each of the 49 days, linking straight back here.</p>
+        <div class="row"><label class="note" for="rt">Time</label><input type="time" id="rt" value="08:00"><a class="pill" id="gcal" href="#" target="_blank" rel="noopener">Add to Google Calendar</a><button type="button" class="pill" id="ics" hidden>Download for Apple Calendar</button></div>
+        <p class="note" style="margin-top:8px">On a Mac, you can keep this as its own app: open it in Safari, then choose File › Add to Dock.</p></div></section>
+    <article class="panel reader" id="reader" tabindex="-1"></article>`;
+  document.querySelectorAll('.d').forEach(b=>b.onclick=()=>{ sel=+b.dataset.n; render(); if(innerWidth<860) $('#reader').scrollIntoView({behavior:'smooth',block:'start'}); });
+  $('#chg').onclick=()=>{ $('#setbox').innerHTML=`<label class="note" for="sd" style="display:block;margin-top:12px">New start date</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><input type="date" id="sd" value="${st.start}"><button type="button" class="btn alt" id="sdok">Save</button></div>`;
+    $('#sdok').onclick=()=>{ const v=$('#sd').value; if(v){ st.start=v; save(); sel=null; render(); } }; };
+  $('#reset').onclick=()=>{ $('#setbox').innerHTML=`<p class="note" style="margin:12px 0 6px">Clear your progress and start again?</p><div style="display:flex;gap:8px"><button type="button" class="btn alt" id="rsyes">Start over</button><button type="button" class="btn alt" id="rsno">Keep going</button></div>`;
+    $('#rsyes').onclick=()=>{ st={start:null,read:[],ahead:[]}; save(); sel=null; render(); }; $('#rsno').onclick=()=>{ $('#setbox').innerHTML=''; }; };
+  $('#ics').onclick=downloadIcs; if(window.self===window.top) $('#ics').hidden=false;
+  const gc=()=>{ $('#gcal').href=gcalUrl(($('#rt')&&$('#rt').value)||'08:00'); }; gc(); $('#rt').oninput=gc;
+  renderDay(sel);
+}
+
+function renderDay(n){
+  const D=DAYS[n-1], P=PARTS[D.p], r=$('#reader'); r.style.setProperty('--c',P.col);
+  const wk=Math.ceil(n/7);
+  if(!isOpen(n)){
+    r.innerHTML=`<div class="rhead">${mandala(n,'#B9B2A2')}<div><span class="eyebrow">Day ${n} · Week ${wk} · ${P.name}</span><h1>${esc(D.t)}</h1></div></div>
+      <div class="lockcard"><p>This day opens on <b>${openDate(n)}</b>.</p><p class="note">The book is meant to be taken slowly, one day at a time. But you're welcome to read ahead.</p>
+      <button type="button" class="btn gold" id="ahead">Read ahead now</button></div>`;
+    $('#ahead').onclick=()=>{ st.ahead.push(n); save(); render(); };
+    return;
+  }
+  const done=st.read.includes(n); const A=ACTS[n-1];
+  r.innerHTML=`<div class="rhead">${mandala(n,P.col)}<div><span class="eyebrow">Day ${n} · Week ${wk} · ${P.name}</span><h1>${esc(D.t)}</h1></div></div>
+    <div class="practice" style="--c:${P.col}">
+      <p class="what">${esc(KIND_HINT[A.k]||'A short guided practice.')}</p>
+      <ol class="flow" aria-label="The practice, step by step"><li>Arrive</li><li>Hear</li><li class="key">Do</li><li>Understand</li><li class="key">Sit</li><li>Carry</li></ol>
+      <button type="button" class="bigbegin" id="begin">${done?'Practice it again':'Begin today\'s practice'}</button>
+      <span class="note" style="color:rgba(255,246,222,.7)">About six minutes. Headphones help. ${n<=todayN()?'':'You\'re practicing ahead.'}</span>
+    </div>
+    <details class="text"><summary>Or just read today's text</summary>
+      <div class="sec book"><h3>What the book says</h3><p>${esc(D.book)}</p></div>
+      <div class="sec"><h3>What it means</h3><p>${esc(D.mean)}</p></div>
+      <div class="sec try"><h3>Try today</h3><p>${esc(D.try)}</p></div>
+      <div class="sec"><h3>The sit</h3><p>${esc(D.sit)}</p></div>
+    </details>
+    <div class="actions">${done?'<button type="button" class="btn alt" id="mark">Mark as not done</button>':'<button type="button" class="btn alt" id="mark">Mark as done without practicing</button>'}
+      ${n<49?`<button type="button" class="btn alt" id="next">Day ${n+1} →</button>`:''}</div>`;
+  $('#begin').onclick=()=>openSession(n);
+  $('#mark').onclick=()=>{ if(done) st.read=st.read.filter(x=>x!==n); else st.read.push(n); save(); render(); };
+  const nx=$('#next'); if(nx) nx.onclick=()=>{ sel=n+1; render(); $('#reader').focus({preventScroll:true}); if(innerWidth<860) $('#reader').scrollIntoView({behavior:'smooth'}); };
+}
+const KIND_HINT={listen:'Today you listen: find one sound among many.',gap:'Today you breathe with a circle and catch the pause between breaths.',release:'Today your hands are full, and you let things go one by one.',dissolve:'Today you press and hold, and let an element dissolve.',drops:'Today you guide the white and red drops to the heart.',still:'Today the practice is stillness: the scene only opens if you don\'t move.',bubbles:'Today you watch thoughts pop up, and tap each one.',choose:'Today you choose between a bright light and a soft one.',pick:'Today you choose honestly. There\'s no wrong answer.',face:'Today you press and hold to face a wrathful mask.',mirror:'Today you wipe the mist from a mirror.',hold:'Today you press and hold against the wind.',door:'Today you press and hold to close a door.',doors:'Today you choose a door.',cliffs:'Today you step back from three cliffs.',bloom:'Today you build a small pure land.',aloud:'Today you read the book aloud.'};
+function ics(time){ const [h,m]=time.split(':').map(Number); const d=parse(st.start); d.setHours(h,m,0,0); const f=x=>String(x).padStart(2,'0'); const loc=`${d.getFullYear()}${f(d.getMonth()+1)}${f(d.getDate())}T${f(h)}${f(m)}00`;
+  const url=location.origin+location.pathname;
+  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Forty-Nine Days//EN','BEGIN:VEVENT',`UID:fortynine-${st.start}@bardo`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').split('.')[0]}Z`,`DTSTART:${loc}`,'DURATION:PT10M','RRULE:FREQ=DAILY;COUNT=49','SUMMARY:Forty-Nine Days: today\'s practice',`DESCRIPTION:Six minutes with the Book of the Dead. ${url}`,`URL:${url}`,'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Today\'s practice is open','TRIGGER:PT0M','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n'); }
+function gcalUrl(time){ const [h,m]=time.split(':').map(Number); const d=parse(st.start); const f=x=>String(x).padStart(2,'0'); const day=`${d.getFullYear()}${f(d.getMonth()+1)}${f(d.getDate())}`; const em=h*60+m+10;
+  const q=new URLSearchParams({action:'TEMPLATE',text:'Forty-Nine Days: today\'s practice',dates:`${day}T${f(h)}${f(m)}00/${day}T${f(Math.floor(em/60)%24)}${f(em%60)}00`,recur:'RRULE:FREQ=DAILY;COUNT=49',details:'Six minutes with the Book of the Dead. '+location.origin+location.pathname}); return 'https://calendar.google.com/calendar/render?'+q.toString(); }
+function downloadIcs(){ const t=($('#rt')&&$('#rt').value)||'08:00'; const blob=new Blob([ics(t)],{type:'text/calendar'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='forty-nine-days.ics'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }
+
+let ac=null, sitT=null;
+function bell(f=528){ try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const t=ac.currentTime; [f,f*2.01,f*3.02].forEach((fr,i)=>{ const o=ac.createOscillator(), g=ac.createGain(); o.frequency.value=fr; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.16/(i+1),t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+4.5); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+4.6); }); }catch(e){} }
+function sitTimer(col){ const b=$('#sitbtn'), arc=$('#arc'), lab=$('#secs');
+  if(sitT){ clearInterval(sitT); sitT=null; b.textContent='Begin the sit'; arc.setAttribute('stroke-dashoffset','276.5'); lab.textContent='1:00'; return; }
+  bell(); const t0=Date.now(); b.textContent='Stop';
+  sitT=setInterval(()=>{ const el=(Date.now()-t0)/1000, left=Math.max(0,60-el); lab.textContent=`0:${String(Math.ceil(left)).padStart(2,'0')}`.replace('0:60','1:00');
+    arc.setAttribute('stroke-dashoffset',(276.5*(1-el/60)).toFixed(1));
+    if(el>=60){ clearInterval(sitT); sitT=null; bell(396); lab.textContent='✓'; b.textContent='Sit again'; } },250); }
+
+function renderWelcome(){
+  $('#wrap').innerHTML=`<section class="panel welcome" style="grid-column:1/-1;max-width:720px;justify-self:center">
+    <div style="display:flex;gap:16px;align-items:center;margin-bottom:10px">${mandala(7,'#1F5E63')}<h2>Forty-nine days with the Book of the Dead</h2></div>
+    <p>The Tibetan Book of the Dead describes forty-nine days between one life and the next. Here they are, one a day, as a short guided practice. Each day you hear what the book says, do something with it (face a mask, let something go, choose between two lights), sit for a minute, and carry one small thing into your day.</p>
+    <p>It isn't only about dying. Every day has a little letting go in it, and the book was always meant to be practiced by the living.</p>
+    <ol><li>Pick a start date. A new day opens each morning.</li><li>Read at your own pace; you can always read ahead.</li><li>Each practice takes about six minutes. Headphones help.</li></ol>
+    <label for="sd">Start date</label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><input type="date" id="sd" value="${ymd(new Date())}"><button type="button" class="btn" id="go">Begin</button></div>
+    <p class="note" style="margin-top:12px">Your progress is kept in this browser only.${memOnly?' This browser isn\'t saving it, so it will reset when you close the page.':''}</p></section>`;
+  $('#go').onclick=()=>{ st.start=$('#sd').value||ymd(new Date()); st.read=[]; st.ahead=[]; save(); sel=null; render(); };
+}
+render();
+</script>
+
+</body></html>

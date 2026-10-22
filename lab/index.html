@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interactive · Colin Blackshear</title>
+<meta name="description" content="Interactive experiments by Colin Blackshear.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="lab.css">
+<style>
+main{max-width:1040px;margin:0 auto;padding:clamp(40px, 9vh, 96px) 16px 64px}
+h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clamp(2.6rem, 8vw, 5rem);line-height:1;margin:10px 0 14px}
+.lede{max-width:52ch;color:var(--title-soft);font-size:.85rem;line-height:1.7;margin:0 0 clamp(36px, 7vh, 64px)}
+.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.exp{border-bottom:1px solid var(--line)}
+.exp a,.exp .soon{display:grid;grid-template-columns:3.2rem 1fr auto;gap:8px 16px;align-items:baseline;padding:24px 4px;text-decoration:none}
+.exp a{transition:background .3s}
+.exp a:hover{background:rgba(239,232,216,.04)}
+.no{font-size:.72rem;color:var(--title-soft);letter-spacing:.14em}
+.exp h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(1.6rem, 4vw, 2.3rem);line-height:1.05}
+.exp p{grid-column:2 / -1;margin:0;max-width:62ch;color:var(--title-soft);font-size:.8rem;line-height:1.7}
+.tags{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--title-soft);white-space:nowrap}
+.go{color:var(--amber)}
+.soon h2{color:var(--title-soft)}
+.exp .also{display:block;margin:-10px 0 0;padding:0 4px 22px calc(3.2rem + 20px);font-size:.74rem;color:var(--title-soft);text-decoration:none}
+.exp .also b{font-weight:500;color:var(--title)}
+.exp .also:hover{color:var(--title)}
+@media (max-width:560px){
+  .exp a,.exp .soon{grid-template-columns:2.4rem 1fr}
+  .tags{grid-column:2}
+  .exp .also{padding-left:calc(2.4rem + 20px)}
+}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="top">
+  <a class="home" href="../">Colin Blackshear</a>
+  <nav class="sections" aria-label="Sections">
+    <a href="../#films">Films</a>
+    <a href="../#music">Music</a>
+    <a href="./" aria-current="true">Interactive</a>
+  </nav>
+</div>
+<main>
+  <span class="eyebrow">The lab</span>
+  <h1>Interactive</h1>
+  <p class="lede">Things to play with. Some are instruments, some are experiments. This room keeps changing, so come back.</p>
+  <ul class="list" id="list"></ul>
+</main>
+<script src="experiments.js"></script>
+<script>
+const list = document.getElementById('list');
+for (const x of window.EXPERIMENTS) {
+  const li = document.createElement('li'); li.className = 'exp';
+  const live = x.status === 'live';
+  li.innerHTML = `<${live ? `a href="${x.slug}/"` : 'div class="soon"'}>
+    <span class="no">${x.no}</span>
+    <h2>${x.title}</h2>
+    <span class="tags">${live ? '<span class="go">Enter →</span>' : 'Soon'}</span>
+    <p>${x.blurb}</p>
+  </${live ? 'a' : 'div'}>${(x.also || []).map(y => `<a class="also" href="${y.href}">Also: <b>${y.label}</b>, ${y.note} →</a>`).join('')}`;
+  list.appendChild(li);
+}
+</script>
+</body>
+</html>
