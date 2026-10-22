@@ -4,7 +4,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=UnifrakturMaguntia&family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:wght@500&family=VT323&display=swap">
 <style>[hidden]{display:none!important}body{margin:0}
 
 /* Layout: a full-bleed lit 3D set (one seamless wall color, a walnut 1970s TV under a key light); type floats over it like film titles */
@@ -15,7 +15,7 @@
   --phosphor:#a6ff92;
   --f-display:"Instrument Serif", "Iowan Old Style", Georgia, serif;
   --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
-  --f-name:"UnifrakturMaguntia", "Old English Text MT", "Instrument Serif", Georgia, serif;
+  --f-name:"Cormorant Garamond", "Instrument Serif", Georgia, serif;
   color-scheme:dark;
 }
 html,body{height:100%;overflow:hidden}
@@ -37,7 +37,7 @@ button:focus-visible{outline:2px solid var(--title);outline-offset:3px}
   text-shadow:0 1px 12px rgba(0,0,0,.6)}
 .ui button{pointer-events:auto}
 header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
-.name{font-family:var(--f-name);font-size:1.9rem;margin:0;font-weight:400;letter-spacing:.01em;line-height:1}
+.name{font-family:var(--f-name);font-size:clamp(1rem, 3.4vw, 1.35rem);margin:0;font-weight:500;text-transform:uppercase;letter-spacing:.32em;line-height:1.2}
 .disciplines{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--title-soft)}
 
 .bottom{display:grid;gap:12px;justify-items:center}
@@ -336,7 +336,8 @@ function titleCard(main, sub, lt, dur, nameFace) {
   ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, W, H);
   ctx.globalAlpha = Math.max(0, Math.min(1, lt / .6, (dur - lt) / .5));
   ctx.fillStyle = '#f3efe4'; ctx.textAlign = 'center';
-  ctx.font = nameFace ? '62px "UnifrakturMaguntia", "Instrument Serif", Georgia, serif' : 'italic 60px "Instrument Serif", Georgia, serif'; ctx.fillText(main, W / 2, H / 2 + 6);
+  if (nameFace) { ctx.font = '500 40px "Cormorant Garamond", Georgia, serif'; if ('letterSpacing' in ctx) ctx.letterSpacing = '12px'; ctx.fillText(main.toUpperCase(), W / 2 + 6, H / 2 + 2); if ('letterSpacing' in ctx) ctx.letterSpacing = '0px'; }
+  else { ctx.font = 'italic 60px "Instrument Serif", Georgia, serif'; ctx.fillText(main, W / 2, H / 2 + 6); }
   ctx.font = '500 13px "IBM Plex Mono", monospace'; ctx.fillText(sub.split('').join('  '), W / 2, H / 2 + 44);
   ctx.globalAlpha = 1;
 }
