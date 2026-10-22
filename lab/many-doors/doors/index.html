@@ -1,0 +1,493 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Many Doors</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* Many Doors: the atlas palette. Cream, parchment, ink, teal, brown and lamp gold. */
+:root{
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#10181B; --nightink:#FBF3DF;
+  --display:'Jost','Futura',sans-serif;
+}
+.cover{background:#F6EBD2}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
+function manualLanding(B){
+  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
+    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
+    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
+  $('#begin').onclick=()=>playManual(B,next);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
+  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+}
+async function playManual(B,start){
+  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
+  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
+  s.onclose=()=>manualLanding(B);
+  try{
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
+      await c.run(s);
+      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
+      if(SND.ctx) allOff(1.2); }
+    store.set(B.key+'-next','0'); alive(s);
+    await B.finale(s); closePlayer();
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* Door kit for the Many Doors capstone: a row of painted doors, one per tradition, each with a small emblem above it. Same palette as the Many Doors atlas. */
+const K='#1E2A2B', CREAMD='#F6EBD2', PARCH='#FBF3DF', TEALD='#1F5E63', BROWND='#8A4B22', LAMPD='#E8B13A';
+const TRAD={
+ tibet:{name:'Tibetan',col:'#1F5E63',book:'The Bardo Manual',url:'../../bardo/'},
+ christ:{name:'Christian',col:'#7A2E3A',book:'The Art of Dying Well',url:'../../many-doors/christian/'},
+ egypt:{name:'Ancient Egyptian',col:'#B8902A',book:'The Hall of Two Truths',url:'../../many-doors/egypt/'},
+ hindu:{name:'Hindu',col:'#E86A17',book:'The Thirteen Days',url:'../../many-doors/hindu/'},
+ zoro:{name:'Zoroastrian',col:'#1E5E78',book:'Three Nights and a Bridge',url:'../../many-doors/zoro/'},
+ china:{name:'Chinese',col:'#B22A1E',book:'The Ten Courts',url:'../../many-doors/chinese/'},
+ aztec:{name:'Mexica',col:'#2E9A8E',book:'The Nine Levels of Mictlan',url:'../../many-doors/aztec/'},
+ greek:{name:'Greek',col:'#C8642E',book:'The Gold Leaf',url:'../../many-doors/greek/'},
+ islam:{name:'Islamic',col:'#14315A',book:'The Barzakh',url:'../../many-doors/islam/'},
+ jewish:{name:'Jewish',col:'#4A6A9A',book:'The Bundle of Life',url:'../../many-doors/judaism/'},
+ pure:{name:'Pure Land',col:'#8A6AA8',book:'The Welcome',url:'../../many-doors/pureland/'}};
+const EMB={
+ flame:`<path class="flame" d="M-10 10 Q-12 -6 0 -22 Q12 -6 10 10Z" fill="${LAMPD}" stroke="${K}" stroke-width="1.5"/>`,
+ scales:`<path d="M0 -20 V12 M-18 -14 H18 M-18 -14 L-24 0 H-12Z M18 -14 L12 0 H24Z" stroke="${K}" stroke-width="2" fill="${LAMPD}"/>`,
+ bridge:`<path d="M-24 8 Q0 -22 24 8" stroke="${K}" stroke-width="4" fill="none"/><path d="M-16 -2 V8 M0 -7 V8 M16 -2 V8" stroke="${K}" stroke-width="1.5"/>`,
+ boat:`<path d="M-24 0 Q0 16 24 0 L20 -6 Q0 4 -20 -6Z" fill="${K}"/><path d="M0 -2 V-22 L12 -8Z" fill="${PARCH}" stroke="${K}" stroke-width="1.5"/>`,
+ dog:`<path d="M-18 6 V-6 Q-18 -10 -10 -10 H8 L12 -18 L16 -12 L22 -10 L18 -4 H12 V6 M-12 -6 V6 M6 -6 V6 M-18 -6 Q-24 -12 -22 -18" stroke="${K}" stroke-width="3" fill="none" stroke-linejoin="round"/>`,
+ mirror:`<circle cy="-6" r="13" fill="#B8C4C8" stroke="${K}" stroke-width="2.5"/><path d="M0 7 V14 M-8 14 H8" stroke="${K}" stroke-width="2.5"/>`,
+ lotus:`<path d="M0 8 Q-6 -6 0 -18 Q6 -6 0 8Z M0 8 Q-16 0 -18 -12 Q-4 -8 0 8Z M0 8 Q16 0 18 -12 Q4 -8 0 8Z" fill="#E8A8B8" stroke="${K}" stroke-width="1.5"/>`,
+ candle:`<rect x="-5" y="-6" width="10" height="18" fill="${PARCH}" stroke="${K}" stroke-width="1.5"/><path class="flame" d="M-4 -6 Q-3 -16 0 -20 Q3 -16 4 -6Z" fill="${LAMPD}"/>`,
+ bowl:`<path d="M-16 -4 H16 Q14 10 0 12 Q-14 10 -16 -4Z" fill="${PARCH}" stroke="${K}" stroke-width="2"/><path d="M-4 -8 q-3 -8 2 -12 M4 -8 q3 -8 -2 -12" stroke="${K}" stroke-width="1.5" fill="none"/>`,
+ sun:`<circle r="9" fill="${LAMPD}" stroke="${K}" stroke-width="2"/>${Array.from({length:8},(_,i)=>`<path d="M0 -13 V-19" transform="rotate(${i*45})" stroke="${K}" stroke-width="2"/>`).join('')}`,
+ book:`<path d="M0 -10 Q-10 -16 -20 -12 V8 Q-10 4 0 10Z M0 -10 Q10 -16 20 -12 V8 Q10 4 0 10Z" fill="${PARCH}" stroke="${K}" stroke-width="2"/>`,
+ wheel:`<circle r="14" fill="none" stroke="${K}" stroke-width="2.5"/>${Array.from({length:4},(_,i)=>`<path d="M-14 0 H14" transform="rotate(${i*45})" stroke="${K}" stroke-width="1.5"/>`).join('')}<circle r="4" fill="${LAMPD}"/>`,
+ water:`<path d="M-20 -4 q5 -5 10 0 q5 5 10 0 q5 -5 10 0 q5 5 10 0 M-20 6 q5 -5 10 0 q5 5 10 0 q5 -5 10 0 q5 5 10 0" stroke="#4FA3B8" stroke-width="3" fill="none"/>`,
+ stone:`<ellipse cy="4" rx="14" ry="9" fill="#A8A090" stroke="${K}" stroke-width="2"/>`,
+ tree:`<path d="M0 12 V-4" stroke="${K}" stroke-width="3"/><circle cy="-10" r="12" fill="#4A7A3A" stroke="${K}" stroke-width="2"/>`,
+ paper:`<rect x="-12" y="-14" width="24" height="26" fill="${PARCH}" stroke="${K}" stroke-width="2"/><path d="M-6 -6 H6 M-6 0 H6 M-6 6 H2" stroke="${K}" stroke-width="1.5"/>`,
+ cloud:`<path d="M-18 6 Q-22 -6 -10 -8 Q-6 -18 4 -12 Q16 -16 18 -4 Q24 4 16 6Z" fill="#B8A8D0" stroke="${K}" stroke-width="2"/>`,
+ trumpet:`<path d="M-20 -3 L8 -6 Q14 -16 20 -16 V16 Q14 16 8 6 L-20 3Z" fill="${LAMPD}" stroke="${K}" stroke-width="1.5"/>`,
+ feather:`<path d="M0 14 Q-10 -4 0 -20 Q10 -4 0 14Z" fill="${PARCH}" stroke="${K}" stroke-width="2"/><path d="M0 14 V-18" stroke="${K}" stroke-width="1.2"/>`};
+function md(inner,{bg=CREAMD}={}){ return `<rect width="600" height="400" fill="${bg}"/><rect x="0" y="330" width="600" height="70" fill="#E6D6B4"/><path d="M0 330 H600" stroke="${K}" stroke-width="2"/>${inner}`; }
+function door(x,y,s=1,{col=TEALD,open=0,emb=''}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-34 0 V-120 Q0 -150 34 -120 V0Z" fill="#1A1410"/><circle cy="-70" r="40" fill="url(#mdGlow)" opacity="${open}"/><path d="M-34 0 V-120 Q0 -150 34 -120 V0Z" fill="${col}" stroke="${K}" stroke-width="2.5" style="transform-origin:-34px 0;transform:scaleX(${1-open*.75});transition:transform 1s"/><circle cx="20" cy="-60" r="3.5" fill="${LAMPD}" opacity="${1-open}"/><path d="M-40 0 H40" stroke="${K}" stroke-width="3"/><g transform="translate(0 -168)"><circle r="24" fill="${PARCH}" stroke="${col}" stroke-width="3"/>${EMB[emb]||''}</g></g>`; }
+const MD_DEFS=`<defs><radialGradient id="mdGlow"><stop offset="0" stop-color="#FFF6D8"/><stop offset="1" stop-color="${LAMPD}" stop-opacity="0"/></radialGradient></defs>`;
+/* Lay out n doors evenly; returns {svg, spots} positions in percent for spots(). */
+function doorRow(items,{open=0}={}){ const n=items.length, s=n>6?.72:n>4?.85:1, gap=600/(n+1); let svg=MD_DEFS; const pos=[];
+  items.forEach((it,i)=>{ const x=gap*(i+1); svg+=door(x,330,s,{col:TRAD[it.t].col,emb:it.e,open}); pos.push({x:x/6,y:(330-70*s)/4}); });
+  return {svg:md(svg),pos}; }
+async function doorChapter(s,{eye,intro,ask='Tap each door.',items,outro}){
+  const {svg,pos}=doorRow(items); art(svg);
+  await say(s,intro,{eye});
+  await spots(s,{ask,items:items.map((it,i)=>({x:pos[i].x,y:pos[i].y,label:TRAD[it.t].name,say:it.say}))});
+  art(doorRow(items,{open:1}).svg); if(SND.ctx) chime();
+  if(outro) await say(s,outro);
+}
+function mdCover(){ const ks=Object.keys(TRAD); return MD_DEFS+md(ks.map((k,i)=>door(30+i*54.5,330,.62,{col:TRAD[k].col,open:i===5?1:0,emb:['wheel','candle','scales','flame','bridge','mirror','dog','feather','book','stone','lotus'][i]})).join('')); }
+
+/* Many Doors: one moment at a time, across all the traditions in the series. */
+const BOOK={key:'manydoorsbook',brand:'Many Doors',brandSub:'One moment, all the maps',title:'Many Doors',eyebrow:'The capstone of the Spirit Project series',
+ lede:'Eleven traditions, eleven maps of what happens when we die. They disagree about almost everything, and yet the same moments keep returning: a last word, a guide, a crossing, a weighing, a forgetting, a choice. This book walks through those moments one at a time, opening every door at once.',
+ note:'About 25 minutes in ten chapters. Turn the sound on; a narrator reads each page. Each door leads to a full book in the series.',
+ walkUrl:'',walkName:'',
+ how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['One moment per chapter','Each chapter takes one moment of the journey and shows how each tradition sees it. Tap each door.'],['Not the same thing','Similar images don\'t mean the traditions agree. A bridge in Zoroastrianism and a bridge in Islam belong to different stories. This book shows the echoes; the individual books tell each story properly.'],['Go deeper','Every tradition here has its own book, listed below the chapters.']],
+ sources:'Drawn from the eleven books in the Spirit Project series and their sources, listed in each book.',
+ cover:mdCover,
+ extra:()=>`<section class="sec"><h2>The books</h2><div class="cgrid">${Object.values(TRAD).map(t=>`<a class="ck" href="${t.url}" target="_blank" rel="noopener" style="--c:${t.col};text-decoration:none;color:inherit"><i></i><b>${esc(t.book)}</b><span>${esc(t.name)}</span></a>`).join('')}<a class="ck" href="../../many-doors/" target="_blank" rel="noopener" style="--c:#8A4B22;text-decoration:none;color:inherit"><i></i><b>The Many Doors atlas</b><span>All 26 traditions compared</span></a></div></section>`,
+ chapters:[
+ {name:'The Last Word',short:'Last words',sub:'What to say at the end',col:'#7A2E3A',run:async s=>{ if(SND.ctx) pad('pad',[110,165,220],.03);
+   await doorChapter(s,{eye:'At the deathbed',intro:'Almost every tradition cares about the last moment of life, and many give the dying something to say, or to hear.',items:[
+     {t:'christ',e:'candle',say:'The Ars Moriendi taught Christians to resist five temptations at the deathbed and die holding a crucifix, saying: into your hands I commend my spirit.'},
+     {t:'islam',e:'book',say:'Muslims hope their last words will be the testimony: there is no god but God.'},
+     {t:'jewish',e:'candle',say:'Jews hope to die saying the Shema: Hear, O Israel, the Lord is our God, the Lord is one.'},
+     {t:'pure',e:'lotus',say:'Pure Land Buddhists call Amida\'s name, Namu Amida Butsu, holding five-coloured cords tied to his image.'},
+     {t:'tibet',e:'wheel',say:'In Tibet, a lama reads the Bardo Thödol into the ear of the dying, telling them to recognise the clear light.'}],
+    outro:'The words differ completely. The idea is the same: the last thought matters, and no one should face it alone.'}); }},
+ {name:'The Guide',short:'Guides',sub:'Who comes for you',col:'#2E9A8E',run:async s=>{
+   await doorChapter(s,{eye:'The escort',intro:'Hardly anyone in these traditions finds the way alone. Someone, or something, comes to take them.',items:[
+     {t:'greek',e:'feather',say:'Hermes, in his wide hat, leads Greek souls down to Hades with his golden wand.'},
+     {t:'aztec',e:'dog',say:'A small reddish-yellow dog carries the Mexica dead across the first river of Mictlan.'},
+     {t:'hindu',e:'flame',say:'Yama\'s messengers come for the soul and lead it south along the road to the city of the dead.'},
+     {t:'china',e:'mirror',say:'Ox-Head and Horse-Face, or Black and White Impermanence, come to fetch the Chinese dead.'},
+     {t:'islam',e:'book',say:'The angel of death takes the soul, and for the believer, angels with faces like the sun carry it up through the heavens.'},
+     {t:'pure',e:'cloud',say:'Amida himself descends on a purple cloud to welcome the dying.'}],
+    outro:'Some guides are frightening, some gentle, one is a dog. But the message is that the dead are expected.'}); }},
+ {name:'The Waiting',short:'Waiting',sub:'Three, seven, thirteen, forty, forty-nine days',col:'#1E5E78',run:async s=>{
+   await doorChapter(s,{eye:'The days after',intro:'Many traditions say the dead linger for a while, and give the living a count of days to keep.',items:[
+     {t:'zoro',e:'flame',say:'Three nights: the Zoroastrian soul sits by the head of the body, reliving its life.'},
+     {t:'china',e:'paper',say:'Seven sevens: Chinese families mark every seventh day for forty-nine days, one king at a time.'},
+     {t:'hindu',e:'bowl',say:'Thirteen days: Hindu offerings build the dead a new body and join them to the ancestors.'},
+     {t:'christ',e:'candle',say:'Forty days: Orthodox Christians pray for the dead on the 3rd, 9th and 40th days.'},
+     {t:'tibet',e:'wheel',say:'Forty-nine days: the Tibetan bardo between death and rebirth.'},
+     {t:'jewish',e:'stone',say:'Seven days of shiva, thirty of sheloshim, eleven months of Kaddish.'}],
+    outro:'The numbers are different, but each one gives grief a shape and an end.'}); }},
+ {name:'The Crossing',short:'Crossing',sub:'Rivers, boats and bridges',col:'#4FA3B8',run:async s=>{ if(SND.ctx) waterLoop();
+   await doorChapter(s,{eye:'The crossing',intro:'Again and again, there is water, or a gap, between the living and the dead.',items:[
+     {t:'greek',e:'boat',say:'Charon ferries Greek souls across the Acheron for a coin.'},
+     {t:'hindu',e:'water',say:'The Vaitaraṇī, a river of blood and filth, which the good cross easily, sometimes holding a cow\'s tail.'},
+     {t:'aztec',e:'water',say:'The Apanohuaya, the first river of Mictlan, crossed on a dog\'s back.'},
+     {t:'zoro',e:'bridge',say:'The Chinvat Bridge, wide for the righteous, a razor\'s edge for the wicked.'},
+     {t:'islam',e:'bridge',say:'The Sirat, thinner than a hair, over Hell, crossed on the Day of Judgment.'},
+     {t:'china',e:'bridge',say:'The Naihe Bridge, the Bridge of Helplessness, at the end of the courts.'}],
+    outro:'A crossing marks something final: on the other side, you aren\'t who you were.'}); loopOff('water'); }},
+ {name:'The Weighing',short:'Weighing',sub:'Scales, mirrors and books',col:'#B8902A',run:async s=>{
+   await doorChapter(s,{eye:'Judgment',intro:'Most traditions imagine some reckoning. Many reach for the same image: a pair of scales.',items:[
+     {t:'egypt',e:'scales',say:'The heart is weighed against the feather of Maat, while Thoth writes down the result.'},
+     {t:'zoro',e:'scales',say:'Rashnu weighs the soul\'s deeds on golden scales that favour no one.'},
+     {t:'islam',e:'scales',say:'On the Day of Judgment, the scales weigh every atom\'s weight of good and evil.'},
+     {t:'christ',e:'scales',say:'Medieval artists painted the archangel Michael weighing souls, though the Church teaches the judgment itself, not the image.'},
+     {t:'china',e:'mirror',say:'King Qinguang\'s mirror shows the soul its whole life, hiding nothing.'},
+     {t:'hindu',e:'book',say:'Chitragupta reads out every deed from his great ledger before Yama.'}],
+    outro:'Scales, mirrors, ledgers: all say the same thing. Nothing is lost. What you did counts.'}); }},
+ {name:'Meeting Yourself',short:'Yourself',sub:'The judge within',col:'#8A6AA8',run:async s=>{
+   await doorChapter(s,{eye:'The inner judge',intro:'Some traditions push further: what you meet at death is yourself.',items:[
+     {t:'zoro',e:'mirror',say:'The daēnā, your own conscience, comes to meet you as a beautiful girl or a hag, and says: I am your own self.'},
+     {t:'tibet',e:'wheel',say:'The peaceful and wrathful deities of the bardo are projections of your own mind. Recognise them, and you are free.'},
+     {t:'greek',e:'feather',say:'Plato\'s judges see the soul naked, with every wrong left on it like a scar.'},
+     {t:'egypt',e:'scales',say:'The dead person speaks forty-two declarations of innocence: a self-examination as much as a trial.'}],
+    outro:'Seen this way, judgment isn\'t something done to you. It\'s seeing clearly what you already are.'}); }},
+ {name:'Forgetting',short:'Forgetting',sub:'Lethe, Meng Po and the lake of memory',col:'#C8642E',run:async s=>{
+   await doorChapter(s,{eye:'Memory',intro:'Some traditions offer the dead a drink of forgetting. Others warn against it.',items:[
+     {t:'greek',e:'water',say:'Plato\'s souls drink from the river of Unmindfulness before rebirth. The Orphic gold tablets say: don\'t drink from that spring; drink from the Lake of Memory.'},
+     {t:'china',e:'bowl',say:'Meng Po serves every soul a bowl of soup that wipes away its past life.'},
+     {t:'tibet',e:'wheel',say:'The bardo teachings warn that the dead lose their memory of the clear light, and must be reminded.'}],
+    outro:'Forgetting can be mercy, a fresh start. Remembering can be liberation. The traditions argue about which we need.'}); }},
+ {name:'The Choice',short:'Choosing',sub:'Picking the next life',col:'#1F5E63',run:async s=>{
+   await doorChapter(s,{eye:'Rebirth',intro:'For traditions that believe in rebirth, the end of one life is the doorway to the next, and sometimes the dead get to choose.',items:[
+     {t:'greek',e:'feather',say:'In Plato\'s Myth of Er, souls choose their next lives from patterns laid on the ground. Odysseus picks a quiet one.'},
+     {t:'tibet',e:'wheel',say:'In the last bardo, the dead see six lights and many wombs, and are taught how to choose a good birth, or close the womb door.'},
+     {t:'hindu',e:'flame',say:'Karma decides the next birth. The goal is to escape the cycle altogether: moksha.'},
+     {t:'china',e:'wheel',say:'King Zhuanlun turns the wheel of six paths in the tenth court.'}],
+    outro:'Choice at death is only possible if you\'ve practised choosing in life. That\'s the lesson all four draw.'}); }},
+ {name:'What the Living Do',short:'The living',sub:'Food, fire and prayer',col:'#E86A17',run:async s=>{
+   await doorChapter(s,{eye:'The other side of the door',intro:'Every tradition gives the living work to do. The dead are fed, prayed for, sent gifts and remembered.',items:[
+     {t:'hindu',e:'bowl',say:'Rice balls, piṇḍa, are offered every day for ten days.'},
+     {t:'china',e:'paper',say:'Joss paper and paper houses are burned so they reach the dead.'},
+     {t:'jewish',e:'book',say:'Kaddish is said every day for eleven months, and a candle lit every year.'},
+     {t:'christ',e:'candle',say:'Masses and prayers are offered for the souls in purgatory.'},
+     {t:'aztec',e:'flame',say:'Gifts are burned for four years, and today ofrendas of marigolds welcome the dead home.'},
+     {t:'islam',e:'tree',say:'Ongoing charity, useful knowledge and a child\'s prayer keep reaching the dead.'}],
+    outro:'Whatever happens on the other side, the rites hold the living together on this side.'}); }},
+ {name:'Where It Ends',short:'Endings',sub:'Rest, paradise, return, renewal',col:'#E8B13A',run:async s=>{ if(SND.ctx) pad('pad',[130.8,196,261.6],.035);
+   await doorChapter(s,{eye:'The far side',intro:'And at the end of the road? The answers fall into a few families.',items:[
+     {t:'aztec',e:'stone',say:'Rest: the Mexica dead reach the ninth level of Mictlan and simply come to an end.'},
+     {t:'islam',e:'tree',say:'Paradise: the Garden, with rivers of water, milk and honey, and the vision of God.'},
+     {t:'pure',e:'lotus',say:'A better place to awaken: the Pure Land, where enlightenment is easy, and from which bodhisattvas return to help.'},
+     {t:'tibet',e:'sun',say:'Liberation: recognising the clear light and leaving the cycle of rebirth.'},
+     {t:'zoro',e:'sun',say:'Renewal: at the end of time the world is made wonderful, hell is emptied and every soul is saved.'},
+     {t:'jewish',e:'trumpet',say:'Resurrection: Ezekiel\'s dry bones rise, and the dead are brought home.'}],
+    outro:'Rest, paradise, return or renewal. Eleven traditions, and no agreement. But every one of them says the same thing about how to live now.'}); }}],
+ finale:async s=>{ art(mdCover()); if(SND.ctx) chime();
+   await say(s,'Remember that you will die. Make your peace. Be kind, because it will be weighed or mirrored or remembered. Care for the dead, because someone will care for you.',{eye:'The end of the book'});
+   await say(s,'There are many doors. Each book in this series opens one of them fully. Choose one, and walk through.'); }};
+header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors atlas','../../many-doors/']]});
+manualLanding(BOOK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>

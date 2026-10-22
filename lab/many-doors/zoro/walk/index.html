@@ -1,0 +1,451 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nine Nights to the Bridge</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* Three Nights and a Bridge: a Persian night. Lapis sky, the fire's gold, white cotton and turquoise tile. */
+:root{
+  --bg:#EFE6D2; --paper:#FAF4E4; --ink:#141C2E; --ink-soft:#4A5268; --accent:#1E5E78; --accent2:#B04A1E; --gold:#E8A93A; --night:#0B1020; --nightink:#FAF4E4;
+  --display:'Forum','Jost','Futura',serif;
+}
+h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);font-weight:400}
+h1{letter-spacing:.02em}
+.brand{letter-spacing:.14em;font-size:.95rem}
+.cover{background:#0B1020}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The walk: one short daily practice per stage, with a map of stones. Each day: the book, what it means, a practice, a task for today, a minute of sitting. */
+function stonePos(i,n){ const per=n<=10?n:n<=21?7:n<=42?7:7; const rows=Math.ceil(n/per); const r=Math.floor(i/per), c=i%per, cc=r%2?per-1-c:c;
+  const W=600,H=400, dx=(W-120)/Math.max(per-1,1), dy=rows>1?(H-110)/(rows-1):0; return [60+cc*dx, (rows>1?55:200)+r*dy]; }
+function walkMap(W,n,{label=true}={}){ const N=W.days.length; let d='',st=''; for(let i=0;i<N;i++){ const [x,y]=stonePos(i,N); d+=(i?'L':'M')+x+' '+y; }
+  for(let i=0;i<N;i++){ const [x,y]=stonePos(i,N), P=W.parts[W.days[i].p], done=i<n, cur=i===n; const r=N>20?13:N>9?18:26;
+    st+=`<g><circle cx="${x}" cy="${y}" r="${r}" fill="${done?P.col:'#26343A'}" stroke="${cur?W.gold||'#E8B13A':P.col}" stroke-width="${cur?4:2.5}"/>${label?`<text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="${N>20?11:14}" font-weight="700" fill="${done?'#10181B':'#FFF6DE'}">${i+1}</text>`:''}${cur?`<circle cx="${x}" cy="${y}" r="${r+6}" fill="none" stroke="${W.gold||'#E8B13A'}" stroke-width="2" class="pulse"/>`:''}</g>`; }
+  return `<rect width="600" height="400" fill="#10181B"/>${W.mapBg?W.mapBg():''}<path d="${d}" fill="none" stroke="rgba(255,246,222,.25)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/>${st}`; }
+function walkLanding(W){
+  const n=Math.min(+store.get(W.key+'-next')||0,W.days.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(W.eyebrow)}</span><h1>${esc(W.title)}</h1><p class="lede">${esc(W.lede)}</p><p class="note">${esc(W.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${n?`Continue: ${W.unit} ${n+1}`:`Begin ${W.unit} 1`}</button>${n?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${W.manualUrl?`<a class="pill" href="${W.manualUrl}" target="_blank" rel="noopener">${esc(W.manualName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="Map of the ${W.days.length} ${W.unit.toLowerCase()}s">${walkMap(W,n)}</svg></div></section>
+    <section class="sec"><h2>The ${W.parts.length>1?'stages':'path'}</h2><div class="cgrid">${W.parts.map((p,i)=>{ const first=W.days.findIndex(d=>d.p===i), last=W.days.length-1-[...W.days].reverse().findIndex(d=>d.p===i); return `<button type="button" class="ck" data-n="${first}" style="--c:${p.col}"><i></i><b>${esc(p.name)}</b><span>${W.unit}s ${first+1}${last>first?'–'+(last+1):''} · ${esc(p.sub)}</span></button>`; }).join('')}</div></section>
+    <section class="sec how"><h2>Each ${W.unit.toLowerCase()}</h2>${[['The book',W.howBook||'What the tradition itself says, in plain words.'],['What it means','What it could mean for a living person.'],['A practice','A short interactive moment on the screen.'],['Today','One small thing to do before tomorrow.'],['Sit','A minute of quiet with a breathing ring.']].map(([a,b])=>`<div><b>${a}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    <details class="all"><summary>Read every ${W.unit.toLowerCase()} as text</summary>${W.days.map((d,i)=>`<h3>${W.unit} ${i+1}: ${esc(d.t)}</h3><p>${esc(d.book)}</p><p>${esc(d.mean)}</p><p><b>Today:</b> ${esc(d.try)}</p>`).join('')}</details>
+    <section class="sec"><h2>Sources</h2><p class="sources">${W.sources}</p></section>`;
+  $('#begin').onclick=()=>playWalk(W,n);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(W.key+'-next','0'); playWalk(W,0); };
+  document.querySelectorAll('.ck').forEach(b=>b.onclick=()=>playWalk(W,+b.dataset.n));
+}
+async function playWalk(W,n){
+  const D=W.days[n], P=W.parts[D.p];
+  const menu={label:W.unit+'s',build:()=>`<h3>Jump to a ${W.unit.toLowerCase()}</h3><ol>${W.days.map((d,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===n}"><small>${i+1}</small>${esc(d.t)}</button></li>`).join('')}</ol>`,go:i=>playWalk(W,+i)};
+  const s=openPlayer({title:D.t,sub:`${W.unit} ${n+1} of ${W.days.length}`,steps:['The book','Meaning','Practice','Today','Sit'],menu,color:P.col});
+  s.onclose=()=>walkLanding(W);
+  const bg=W.art(D,n,P);
+  try{
+    if(W.ambient) W.ambient(D,P);
+    stepTo(0); art(bg,D.t); await say(s,D.book,{eye:`${P.name} · the book`});
+    stepTo(1); await say(s,D.mean,{eye:'What it means'});
+    stepTo(2); clearLayer(); eyebrow('Practice'); if(D.act) await D.act(s,D,P); else if(D.a) await runAct(s,D.a,P); else await hold(s,{label:'Press and hold',ms:3500,ask:'Press and hold while you let that sink in.'});
+    alive(s); art(bg,D.t);
+    stepTo(3); await say(s,D.try,{eye:'Today'});
+    stepTo(4); await sit(s,{text:D.sit,col:P.col});
+    alive(s); store.set(W.key+'-next',String(Math.min(n+1,W.days.length-1)));
+    if(n===W.days.length-1){ if(W.finale) await W.finale(s); store.set(W.key+'-next','0'); closePlayer(); return; }
+    art(walkMap(W,n+1),'Your path'); eyebrow(''); $('#pText').textContent=`${W.unit} ${n+1} done. ${W.unit} ${n+2}, “${W.days[n+1].t}”, is waiting.`; $('#pRow').innerHTML=`<button type="button" class="sgo alt" id="wDone">Close for today</button><button type="button" class="sgo" id="wNext">Go on to ${W.unit.toLowerCase()} ${n+2} →</button>`;
+    $('#wDone').onclick=()=>closePlayer(); $('#wNext').onclick=()=>playWalk(W,n+1); $('#wNext').focus({preventScroll:true});
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* practice specs written as data: {k:'hold'|'still'|'release'|'count'|'choose', ...} */
+async function runAct(s,a,P){
+  const q=a.q;
+  if(a.k==='hold') await hold(s,{label:a.label||'Press and hold',ms:a.ms||4000,ask:q,early:a.early||'Not yet. Hold again, slowly.'});
+  else if(a.k==='still') await still(s,{ask:q,ms:a.ms||8000});
+  else if(a.k==='release') await release(s,{ask:q,words:a.words});
+  else if(a.k==='count') await count(s,{ask:q,n:a.n,label:a.label||'Tap',onTap:k=>{ if(SND.ctx) (a.sound==='bell'?bell(392+k*20,.07):plop()); }});
+  else if(a.k==='choose'){ const i=await choose(s,q,a.opts,{right:a.right??-1,wrong:a.wrong}); if(a.replies&&a.replies[i]) await say(s,a.replies[i]); }
+  if(a.after) await say(s,a.after);
+}
+
+/* Miniature kit for Three Nights and a Bridge: lapis night, fire-gold, white cotton, turquoise tile borders. */
+const K='#141C2E', LAPIS='#14213D', NIGHT='#0B1020', FIRE='#E8A93A', EMBER='#B04A1E', WHITE='#F6F1E4', TURQ='#2E8B8B', SAND='#D9C7A0', STONE='#8C8577', SKIN='#C9926A', ROSE='#C46A6A';
+const ZO_DEFS=`<defs><radialGradient id="fire"><stop offset="0" stop-color="#FFF2C2"/><stop offset=".45" stop-color="${FIRE}" stop-opacity=".6"/><stop offset="1" stop-color="${FIRE}" stop-opacity="0"/></radialGradient>
+<linearGradient id="nsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070B18"/><stop offset="1" stop-color="#1E2C52"/></linearGradient>
+<linearGradient id="dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E2C52"/><stop offset=".6" stop-color="#C46A6A"/><stop offset="1" stop-color="#F2C46A"/></linearGradient>
+<pattern id="tile" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="${TURQ}"/><path d="M12 2 L15 9 L22 12 L15 15 L12 22 L9 15 L2 12 L9 9Z" fill="${WHITE}" opacity=".85"/><circle cx="12" cy="12" r="2.5" fill="${LAPIS}"/></pattern><clipPath id="zoclip"><rect width="600" height="400"/></clipPath></defs>`;
+function zo(inner,{sky='night',border=true}={}){ return `${ZO_DEFS}<g clip-path="url(#zoclip)"><rect width="600" height="400" fill="${sky==='night'?'url(#nsky)':sky==='dawn'?'url(#dawn)':sky}"/>${sky==='night'?stars(90,11,300):''}${inner}${border?`<rect x="0" y="0" width="600" height="14" fill="url(#tile)"/><rect x="0" y="386" width="600" height="14" fill="url(#tile)"/><rect x="0" y="14" width="600" height="2" fill="${FIRE}"/><rect x="0" y="384" width="600" height="2" fill="${FIRE}"/>`:''}</g>`; }
+function altar(x,y,s=1,{lit=true}={}){ return `<g transform="translate(${x} ${y}) scale(${s})">${lit?`<circle cx="0" cy="-90" r="70" fill="url(#fire)" class="flick"/>`:''}<path d="M-30 0 H30 L22 -12 H-22Z M-14 -12 Q-20 -40 -34 -52 H34 Q20 -40 14 -12Z" fill="#C9A15A" stroke="${K}" stroke-width="2"/><path d="M-38 -52 H38 V-60 H-38Z" fill="#C9A15A" stroke="${K}" stroke-width="2"/>
+  ${lit?[[-14,40],[0,62],[14,44],[-6,30],[8,34]].map(([dx,h],i)=>`<path class="flame" style="animation-delay:${i*.13}s" d="M${dx-10} -60 Q${dx-8} ${-60-h*.5} ${dx} ${-60-h} Q${dx+8} ${-60-h*.5} ${dx+10} -60Z" fill="${i%2?FIRE:EMBER}" stroke="${K}" stroke-width="1.2"/>`).join(''):''}</g>`; }
+function zfig(x,y,s=1,{robe=WHITE,cap=true,priest=false,skin=SKIN,glow=false,arms='down',hair=false}={}){ return `<g transform="translate(${x} ${y}) scale(${s})">${glow?`<circle cx="0" cy="-70" r="80" fill="url(#fire)" opacity=".8"/>`:''}
+  <path d="M-24 0 Q-26 -50 -16 -98 L16 -98 Q26 -50 24 0Z" fill="${robe}" stroke="${K}" stroke-width="2"/><path d="M-18 -60 H18" stroke="${K}" stroke-width="1"/><path d="M-19 -56 Q0 -50 19 -56" stroke="${WHITE}" stroke-width="3" fill="none"/><path d="M-19 -56 Q0 -50 19 -56" stroke="${K}" stroke-width="1" fill="none" stroke-dasharray="2 3"/>
+  ${arms==='pray'?`<path d="M-16 -92 L-4 -70 L0 -78 L4 -70 L16 -92" fill="none" stroke="${robe}" stroke-width="9" stroke-linejoin="round"/><path d="M-3 -74 L0 -84 L3 -74Z" fill="${skin}" stroke="${K}"/>`:arms==='open'?`<path d="M-16 -92 L-36 -70 M16 -92 L36 -70" stroke="${robe}" stroke-width="9" stroke-linecap="round"/><circle cx="-38" cy="-68" r="4" fill="${skin}"/><circle cx="38" cy="-68" r="4" fill="${skin}"/>`:`<path d="M-18 -94 L-22 -48 M18 -94 L22 -48" stroke="${robe}" stroke-width="9" stroke-linecap="round"/>`}
+  <circle cx="0" cy="-112" r="13" fill="${skin}" stroke="${K}" stroke-width="2"/>${hair?`<path d="M-14 -112 Q-16 -130 0 -129 Q16 -130 14 -112 Q18 -96 12 -84 L10 -106 Q0 -118 -10 -106 L-12 -84 Q-18 -96 -14 -112Z" fill="#2A1A12"/>`:cap?`<path d="M-13 -116 Q0 -132 13 -116 Z" fill="${priest?WHITE:'#2A2A3A'}" stroke="${K}" stroke-width="1.5"/>`:''}${priest?`<path d="M-11 -110 H11 V-96 Q0 -90 -11 -96Z" fill="${WHITE}" stroke="${K}" stroke-width="1.2"/>`:''}
+  <circle cx="-4" cy="-113" r="1.4" fill="${K}"/><circle cx="4" cy="-113" r="1.4" fill="${K}"/></g>`; }
+function slab(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-120" y="-14" width="240" height="20" fill="${STONE}" stroke="${K}" stroke-width="2"/><path d="M-110 -14 Q-118 -36 -94 -38 L100 -34 Q118 -30 112 -14Z" fill="${WHITE}" stroke="${K}" stroke-width="2"/><path d="M-60 -36 V-14 M-10 -36 V-14 M40 -35 V-14" stroke="${K}" stroke-width="1"/></g>`; }
+function urvan(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle cx="0" cy="-20" r="36" fill="url(#fire)" class="pulse"/><path d="M-10 0 Q-12 -20 -6 -30 H6 Q12 -20 10 0Z" fill="#FFF6D8" stroke="${K}" stroke-width="1.4"/><circle cx="0" cy="-38" r="7" fill="#FFF6D8" stroke="${K}" stroke-width="1.4"/></g>`; }
+function dog(x,y,s=1,{flip=false}={}){ return `<g transform="translate(${x} ${y}) scale(${flip?-s:s} ${s})"><path d="M-46 -24 Q-50 -44 -20 -44 L26 -44 L36 -64 L44 -62 L46 -50 L58 -46 L56 -38 L40 -36 L36 -22 L36 0 L28 0 L26 -20 L-30 -20 L-32 0 L-40 0 L-42 -22 Q-56 -30 -60 -46" fill="#D9C08A" stroke="${K}" stroke-width="2"/><circle cx="44" cy="-52" r="2" fill="${K}"/><circle cx="42" cy="-57" r="2.6" fill="#7A4A26"/><circle cx="48" cy="-56" r="2.6" fill="#7A4A26"/><path d="M36 -64 l-4 -10 l8 6" fill="#D9C08A" stroke="${K}" stroke-width="1.5"/></g>`; }
+function peaks(){ return `<path d="M0 400 V250 L60 200 L110 230 L150 170 L170 190 V400Z" fill="#26304A" stroke="${K}" stroke-width="2"/><path d="M430 400 V190 L460 170 L500 220 L540 160 L600 210 V400Z" fill="#26304A" stroke="${K}" stroke-width="2"/><path d="M150 170 L160 160 L170 190 M540 160 L548 152 L556 170" stroke="${WHITE}" stroke-width="3" fill="none"/>`; }
+function bridge(w=40,{cross=0,tilt=0}={}){ const y1=182,y2=172; return `${peaks()}<rect x="170" y="200" width="260" height="200" fill="#05070E"/><path d="M170 ${y1} L430 ${y2} L430 ${y2+w*.25} L170 ${y1+w*.25}Z" fill="${w>20?'#C9A15A':'#D8D0BC'}" stroke="${K}" stroke-width="2" style="transition:all 1.5s"/>${w>20?Array.from({length:12},(_,i)=>`<line x1="${180+i*21}" y1="${y1-(i*21+10)*10/260}" x2="${180+i*21}" y2="${y1-(i*21+10)*10/260+w*.25}" stroke="${K}" stroke-width="1"/>`).join(''):''}`; }
+function maiden(x,y,s=1,{fair=true}={}){ return fair?zfig(x,y,s,{robe:'#FFF8EC',cap:false,hair:true,glow:true,arms:'open',skin:'#E6B48A'}):zfig(x,y,s,{robe:'#4A4A4A',cap:false,hair:true,arms:'down',skin:'#7A7A6A'}); }
+function judge(x,y,s=1,o={}){ return zfig(x,y,s,{robe:o.robe||'#3E5C8A',cap:true,arms:o.arms||'down',...o}); }
+function scalesZ(x,y,s=1,tilt=0){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-3" y="-120" width="6" height="120" fill="${FIRE}" stroke="${K}"/><g class="beam" style="transform:rotate(${tilt}deg);transform-origin:0 -114px;transition:transform 1.4s"><rect x="-70" y="-117" width="140" height="6" fill="${FIRE}" stroke="${K}"/><path d="M-66 -112 L-80 -70 M-66 -112 L-52 -70 M66 -112 L52 -70 M66 -112 L80 -70" stroke="${K}" stroke-width="1.2"/><path d="M-86 -70 Q-66 -58 -46 -70Z M46 -70 Q66 -58 86 -70Z" fill="${FIRE}" stroke="${K}" stroke-width="1.5"/></g></g>`; }
+function dakhma(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-160 0 L-150 -90 H150 L160 0Z" fill="#B8AE98" stroke="${K}" stroke-width="2.5"/>${Array.from({length:14},(_,i)=>`<path d="M${-150+i*22} -90 V0" stroke="${K}" stroke-width=".8" opacity=".5"/>`).join('')}<path d="M-20 0 V-40 H20 V0" fill="#2A2A2A" stroke="${K}" stroke-width="2"/><path d="M-30 -60 l-16 -8 l16 2 l10 -10 l-2 14Z M60 -110 l-18 -8 l18 2 l10 -10 l-2 14Z M-80 -130 l-18 -8 l18 2 l10 -10 l-2 14Z" fill="#2A2A2A"/></g>`; }
+function sunMoonStar(){ return `<circle cx="140" cy="250" r="18" fill="${WHITE}" stroke="${K}" stroke-width="2"/>${rays(140,250,40,8,.5,WHITE)}<circle cx="300" cy="170" r="30" fill="#E6E1D0" stroke="${K}" stroke-width="2"/><circle cx="312" cy="164" r="26" fill="url(#nsky)"/><circle cx="460" cy="100" r="40" fill="${FIRE}" stroke="${K}" stroke-width="2"/>${rays(460,100,90,16,.4,FIRE)}`; }
+function faravahar(x,y,s=1){ let w=''; for(let i=0;i<5;i++) w+=`<path d="M${-30-i*0} ${-6+i*7} L${-140+i*8} ${-22+i*12} L${-136+i*8} ${-14+i*12} L-30 ${2+i*7}Z M30 ${-6+i*7} L${140-i*8} ${-22+i*12} L${136-i*8} ${-14+i*12} L30 ${2+i*7}Z" fill="${FIRE}" stroke="${K}" stroke-width="1.2"/>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">${w}<circle cx="0" cy="10" r="18" fill="none" stroke="${FIRE}" stroke-width="5"/><path d="M-14 28 L-24 60 L24 60 L14 28Z" fill="${FIRE}" stroke="${K}" stroke-width="1.2"/><path d="M-10 -10 Q-12 -40 0 -46 Q12 -40 10 -10Z" fill="${FIRE}" stroke="${K}" stroke-width="1.2"/><circle cx="0" cy="-54" r="9" fill="${FIRE}" stroke="${K}" stroke-width="1.2"/></g>`; }
+function metalRiver(y=260){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="#E07A1E"/>`; for(let k=0;k<5;k++){ let d=`M0 ${y+12+k*22}`; for(let x=0;x<600;x+=40) d+=` q20 -10 40 0`; o+=`<path d="${d}" stroke="#FFD27A" stroke-width="3" fill="none"/>`; } return o; }
+function zoCover(){ return zo(`${bridge(40)}<g transform="translate(300 176)">${maiden(0,0,.55)}</g>${dog(200,180,.5)}${dog(400,170,.5,{flip:true})}<circle cx="300" cy="80" r="60" fill="url(#fire)"/>`); }
+
+/* Nine Nights to the Bridge: three nights each of good thoughts, good words and good deeds, building the bridge you will one day cross. */
+const WSC=[
+ (n)=>zo(`${altar(300,330,1.1)}${zfig(170,340,.9,{arms:'pray'})}${urvan(450,250,.6+n*.05)}`),
+ (n)=>zo(`${altar(300,330,1)}${zfig(160,340,.9,{arms:'open'})}${zfig(440,340,.9,{arms:'pray',robe:'#E8D8B0'})}`,{sky:n>5?'dawn':'night'}),
+ (n)=>zo(`${bridge(Math.min(46,(n-5)*7+6))}${maiden(380,176,.45)}${urvan(240,176,.6)}`,{sky:'dawn'})];
+const WALK={key:'nnb',brand:'Nine Nights to the Bridge',brandSub:'A Zoroastrian practice',title:'Nine Nights to the Bridge',eyebrow:'A nightly practice · 9 nights',unit:'Night',gold:FIRE,
+ lede:'Zoroastrians say the bridge you cross after death is as wide as the life you lived. Spend nine nights building yours: three of good thoughts, three of good words, three of good deeds.',
+ note:'Each night takes about five minutes. You don\'t need to be Zoroastrian, or to be mourning anyone. The practice is the threefold path itself.',
+ manualUrl:'../../../many-doors/zoro/',manualName:'Three Nights and a Bridge',
+ howBook:'A line from the Gathas or the later texts, and what it asks of you tonight.',
+ sources:'The Gathas (Yasna 28–53); Yasna 12 (the Fravarane); Hadokht Nask; Videvdad 19; Book of Arda Viraf; Mary Boyce, Zoroastrians: Their Religious Beliefs and Practices (1979).',
+ parts:[{name:'Humata',sub:'Good thoughts',col:'#1E5E78'},{name:'Hukhta',sub:'Good words',col:'#E8A93A'},{name:'Hvarshta',sub:'Good deeds',col:'#B04A1E'}],
+ art:(D,n,P)=>WSC[D.p](n),
+ mapBg:()=>`<rect width="600" height="400" fill="#0B1020"/>`,
+ ambient:(D,P)=>{ if(SND.ctx){ pad('pad',[[98,147,196],[110,165,220],[130.8,196,261.6]][D.p],.03); fireLoop(); } },
+ finale:async s=>{ art(zo(`${bridge(46)}${maiden(330,176,.5)}${urvan(270,176,.7)}`,{sky:'dawn'})); if(SND.ctx) chime();
+   await say(s,'Nine nights. You have not crossed the bridge, and won\'t for a long time. But you\'ve been building it: a plank of thought, a plank of word, a plank of deed.',{eye:'The end of the walk'});
+   await say(s,'The daēnā who meets you at the end is made of nights like these. Zarathustra\'s hope was that she would be lovely. Keep going.'); },
+ days:[
+ {p:0,t:'The Choice',book:'"Hear with your ears the best things. Look at them with a clear mind, each person for himself, before the great decision." (Yasna 30.2)',
+  mean:'Zarathustra didn\'t ask for blind faith. He asked people to think, and then choose. The first good thought is the decision to be good at all.',
+  try:'Tonight, name one choice in front of you, and choose the truer path on purpose.',sit:'Breathe in clarity. Breathe out the half-decided.',a:{k:'choose',q:'Tonight, which do you choose?',opts:['Asha: truth','Druj: the lie'],right:0,wrong:'Choose again.'}},
+ {p:0,t:'The Lie Within',book:'The opposite of Asha is Druj, the lie. In Zoroastrian thought it isn\'t only falsehood spoken aloud, but every kind of disorder: self-deception, cruelty, decay.',
+  mean:'Most lies begin as thoughts we tell ourselves. Good thinking starts by noticing them.',
+  try:'Notice one story you tell yourself that isn\'t quite true.',sit:'Let the story go on the out-breath.',a:{k:'release',q:'Let go of what isn\'t true.',words:['I can\'t change','It doesn\'t matter','No one will know','I\'m the only one']}},
+ {p:0,t:'Vohu Manah',book:'Vohu Manah, Good Mind, is the first of the Amesha Spentas, the holy immortals who serve Ahura Mazda. In the Gathas it is through Good Mind that Zarathustra comes to know God.',
+  mean:'Good thinking isn\'t cleverness. It\'s a mind turned toward what is good, kind and true, so that the good becomes easy to see.',
+  try:'Think one generous thought about someone you find difficult.',sit:'Picture a clear flame in your mind. Keep it steady.',a:{k:'still',q:'Be still, and let the mind settle.',ms:9000}},
+ {p:1,t:'Ashem Vohu',book:'"Truth is the best good. It is happiness. Happiness to the one who is truthful for the sake of the best truth." The Ashem Vohu, said by the dying and for the dead.',
+  mean:'The shortest prayer holds the whole religion: truth and happiness are the same thing in the end.',
+  try:'Say the Ashem Vohu, or its English, three times before you sleep.',sit:'On each breath: truth is the best good.',a:{k:'count',n:3,label:'Say it',q:'Say the Ashem Vohu three times.',sound:'bell'}},
+ {p:1,t:'Truthful Speech',book:'Herodotus wrote that Persian boys were taught three things: to ride, to draw the bow, and to speak the truth. Lying was counted among the most shameful acts.',
+  mean:'A word is a deed done with the mouth. Hukhta, good speech, is truthful, kind and timely.',
+  try:'Today, say one true thing you\'ve been avoiding, gently.',sit:'Breathe in courage. Breathe out the unsaid word.',a:{k:'hold',label:'Speak it',q:'Press and hold, and say it, even if only to yourself.',ms:4500}},
+ {p:1,t:'The Fravarane',book:'Zoroastrians recite a declaration of faith in Yasna 12: "I profess myself a worshipper of Mazda, a follower of Zarathustra… I praise the well-thought thought, the well-spoken word, the well-done deed."',
+  mean:'Saying aloud what you stand for is a way of building it. The words hold you to them.',
+  try:'Write one sentence that says what you stand for.',sit:'Repeat your sentence on the in-breath.',a:{k:'choose',q:'Which do you praise?',opts:['The well-thought thought','The well-spoken word','The well-done deed'],replies:['Thought comes first. Every word and deed begins there.','Words are where thought meets the world.','In the end, the daēnā is made of what you did.']}},
+ {p:2,t:'Tending the Fire',book:'Fire is the symbol of Asha and the son of Ahura Mazda. In the fire temples it is never allowed to go out; priests feed it five times a day with sandalwood and frankincense.',
+  mean:'Goodness, too, has to be tended. It is kept alive by small acts, often and on time.',
+  try:'Do one small, regular task today with care, as if feeding a sacred fire.',sit:'Watch the ring like a flame you are keeping alive.',a:{k:'count',n:5,label:'Feed the fire',q:'Feed the fire five times, once for each watch of the day.'}},
+ {p:2,t:'The Good Creation',book:'Zoroastrians are asked to care for the seven creations: sky, water, earth, plants, animals, people and fire. Polluting water or earth was a serious wrong.',
+  mean:'Good deeds aren\'t only for people. The whole world is God\'s creation, and caring for it is worship.',
+  try:'Do one good thing for water, earth, a plant or an animal today.',sit:'Breathe in the green world. Breathe out thanks.',a:{k:'hold',label:'Tend the world',q:'Press and hold to water the garden.',ms:4000}},
+ {p:2,t:'The Bridge',book:'"The first step he took brought him to Good Thought; the second, to Good Word; the third, to Good Deed; the fourth, to the Endless Lights." (after Hadokht Nask)',
+  mean:'The bridge isn\'t a test you can study for at the end. It\'s made, plank by plank, every day.',
+  try:'Tonight, look back on the nine nights. Which plank is strongest? Which needs work?',sit:'Picture yourself walking a wide bridge, toward a figure who is glad to see you.',a:{k:'count',n:4,label:'Take a step',q:'Take the four steps across the bridge.',sound:'bell'}}
+ ]};
+header({brand:WALK.brand,brandSub:WALK.brandSub,links:[['Many Doors','../../../many-doors/'],[WALK.manualName,WALK.manualUrl]]});
+walkLanding(WALK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>
