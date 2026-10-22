@@ -215,7 +215,7 @@ const out = document.createElement('canvas'); out.width = W; out.height = H;
 const octx = out.getContext('2d');
 
 const WORKS = [
-  { ch: 3, title: '000',           kind: 'Film',         year: '',     role: '',                  scene: waves,   root: 57, vimeo: '628896953' },
+  { ch: 3, title: '000',           kind: 'Film',         year: '',     role: '',                  scene: waves,   root: 57, vimeo: '628896953', picture: 2.4 },
   { ch: 4, title: 'Night Drive',   kind: 'Music video',  year: '2023', role: 'Director / DP',     scene: road,    root: 50 },
   { ch: 5, title: 'Figure in Fog', kind: 'Art film',     year: '2022', role: 'Director',          scene: fog,     root: 53 },
   { ch: 6, title: 'Golden Hour',   kind: 'Commercial',   year: '2025', role: 'Director',          scene: sunset,  root: 55 },
@@ -1050,7 +1050,11 @@ function syncVimeo(now) {
   }
   vbox.style.zIndex = fullP > .01 ? 20 : 0;
   // crop to cover: centered, no letterbox, horizontal or vertical
-  const ar = w.aspect || 16 / 9, fw = bw / bh > ar ? bw : bh * ar, fh = fw / ar;
+  // `aspect` is the video frame; `picture` is the image inside it when the film has black bars baked in.
+  // On the set we crop past the bars; stepping in (or full screen) shows the whole frame.
+  const ar = w.aspect || 16 / 9, pa = w.picture || ar, open = Math.max(zp, fullP);
+  const fwRoom = Math.max(bw, bh * pa), fwFull = Math.max(bw, bh * ar);
+  const fw = fwRoom + (fwFull - fwRoom) * open, fh = fw / ar;
   vFrame.style.width = fw + 'px'; vFrame.style.height = fh + 'px';
   vFrame.style.left = (bw - fw) / 2 + 'px'; vFrame.style.top = (bh - fh) / 2 + 'px';
 }
@@ -1062,7 +1066,12 @@ function psyResize() { psyW = psy.width = innerWidth; psyH = psy.height = innerH
 psyResize(); addEventListener('resize', psyResize);
 const trail = [], energyWaves = [];
 let lastBeatWave = 0;
-addEventListener('pointermove', e => { trail.push({ x: e.clientX, y: e.clientY, t: performance.now() }); if (trail.length > 90) trail.shift(); }, { passive: true });
+addEventListener('pointermove', e => {
+  const now = performance.now(), last = trail[trail.length - 1];
+  // stutter: only leave a mark every so often, so the trail breaks into spaced-out echoes
+  if (last && (Math.hypot(e.clientX - last.x, e.clientY - last.y) < 34 || now - last.t < 45)) return;
+  trail.push({ x: e.clientX, y: e.clientY, t: now, h: (now / 9) % 360 }); if (trail.length > 70) trail.shift();
+}, { passive: true });
 function spawnWave(strength) { if (!reduce) energyWaves.push({ t: performance.now(), s: strength }); }
 const tubeC = new THREE.Vector3(SX, CY, FZ + .04);
 function drawPsy(now, zp) {
@@ -1097,17 +1106,27 @@ function drawPsy(now, zp) {
       pctx.lineWidth = 2 + (1 - age) * 7; pctx.stroke();
     }
   }
-  // light trails behind the pointer
-  while (trail.length && now - trail[0].t > 900) trail.shift();
-  if (trail.length > 1) {
-    pctx.lineCap = 'round'; pctx.globalCompositeOperation = 'lighter';
-    for (let i = 1; i < trail.length; i++) {
-      const a = trail[i - 1], b = trail[i], life = 1 - (now - b.t) / 900;
-      pctx.strokeStyle = `hsla(${(b.t / 6) % 360},100%,62%,${life * .32})`; pctx.lineWidth = 1 + life * 7;
-      pctx.beginPath(); pctx.moveTo(a.x, a.y); pctx.lineTo(b.x, b.y); pctx.stroke();
+  // ripple echoes behind the pointer: each one spreads outward and lets go slowly
+  const LIFE = 2600;
+  while (trail.length && now - trail[0].t > LIFE) trail.shift();
+  pctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < trail.length; i++) {
+    const p = trail[i], age = Math.max(0, (now - p.t) / LIFE), life = 1 - age, r = 3 + Math.pow(age, .6) * 46;
+    pctx.beginPath(); pctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    pctx.strokeStyle = `hsla(${p.h + age * 120},100%,64%,${life * life * .45})`; pctx.lineWidth = 1 + life * 2.5; pctx.stroke();
+    if (r > 14) {
+      pctx.beginPath(); pctx.arc(p.x, p.y, r * .55, 0, Math.PI * 2);
+      pctx.strokeStyle = `hsla(${p.h + 180},100%,70%,${life * life * .25})`; pctx.lineWidth = 1; pctx.stroke();
     }
-    pctx.globalCompositeOperation = 'source-over';
+    const q = trail[i + 1];
+    if (q) {
+      pctx.setLineDash([2, 7]); pctx.beginPath(); pctx.moveTo(p.x, p.y); pctx.lineTo(q.x, q.y);
+      pctx.strokeStyle = `hsla(${p.h},100%,70%,${life * .3})`; pctx.lineWidth = 1.5; pctx.stroke(); pctx.setLineDash([]);
+    }
+    pctx.beginPath(); pctx.arc(p.x, p.y, 1 + life * 3.5, 0, Math.PI * 2);
+    pctx.fillStyle = `hsla(${p.h},100%,75%,${life * .6})`; pctx.fill();
   }
+  pctx.globalCompositeOperation = 'source-over';
 }
 
 const born = performance.now();
