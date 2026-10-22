@@ -56,8 +56,8 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
 .sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--night), 0 0 0 3.5px var(--title)}
 .vbox{position:fixed;left:0;top:0;width:0;height:0;overflow:hidden;background:#000;pointer-events:none;transform-origin:0 0;
   display:flex;align-items:center;z-index:0}
-.vbox iframe{display:block;width:100%;aspect-ratio:16/9;border:0;filter:contrast(1.06) saturate(.88) sepia(.08) brightness(1.04)}
-.vbox::after{content:"";position:absolute;inset:0;pointer-events:none;
+.vbox iframe{position:absolute;display:block;border:0;filter:contrast(1.06) saturate(.88) sepia(.08) brightness(1.04)}
+.vbox::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:var(--crt,1);
   background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, rgba(0,0,0,0) 1px 3px),
     radial-gradient(55% 35% at 30% 18%, rgba(255,255,255,.10), rgba(255,255,255,0) 70%),
     radial-gradient(120% 110% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.6));
@@ -975,9 +975,18 @@ function syncVimeo(now) {
     const v = c.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
     x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
   }
-  vbox.style.transform = `translate(${x0}px, ${y0}px)`;
-  vbox.style.width = (x1 - x0) + 'px'; vbox.style.height = (y1 - y0) + 'px';
-  vbox.style.borderRadius = (.045 / SW * (x1 - x0)) + 'px';
+  // on the set the film fills the 4:3 tube; stepping in opens it to the whole display above the deck
+  const zp = zoomProgress(now), deckH = zp > 0 ? $('deck').offsetHeight : 0;
+  const L = (a, b) => a + (b - a) * zp;
+  const bx = L(x0, 0), by = L(y0, 0), bw = L(x1 - x0, innerWidth), bh = L(y1 - y0, innerHeight - deckH);
+  vbox.style.transform = `translate(${bx}px, ${by}px)`;
+  vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px';
+  vbox.style.borderRadius = L(.045 / SW * (x1 - x0), 0) + 'px';
+  vbox.style.setProperty('--crt', 1 - zp * .75);
+  // crop to cover: centered, no letterbox, horizontal or vertical
+  const ar = w.aspect || 16 / 9, fw = bw / bh > ar ? bw : bh * ar, fh = fw / ar;
+  vFrame.style.width = fw + 'px'; vFrame.style.height = fh + 'px';
+  vFrame.style.left = (bw - fw) / 2 + 'px'; vFrame.style.top = (bh - fh) / 2 + 'px';
 }
 
 const born = performance.now();
