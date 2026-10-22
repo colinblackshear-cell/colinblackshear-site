@@ -1,0 +1,483 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Bundle of Life</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* The Bundle of Life: a papercut mizrach. Night blue, ivory paper, a little gold and wine. */
+:root{
+  --bg:#F4EEDF; --paper:#FBF8EF; --ink:#101A30; --ink-soft:#46506A; --accent:#1B2A4A; --accent2:#7A2E3A; --gold:#C9A24A; --night:#0E1626; --nightink:#FBF8EF;
+  --display:'Frank Ruhl Libre','Georgia',serif;
+}
+h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);font-weight:700}
+.brand{letter-spacing:.06em;font-size:1rem}
+.cover{background:#16213C}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
+function manualLanding(B){
+  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
+    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
+    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
+  $('#begin').onclick=()=>playManual(B,next);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
+  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+}
+async function playManual(B,start){
+  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
+  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
+  s.onclose=()=>manualLanding(B);
+  try{
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
+      await c.run(s);
+      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
+      if(SND.ctx) allOff(1.2); }
+    store.set(B.key+'-next','0'); alive(s);
+    await B.finale(s); closePlayer();
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* Papercut kit for The Bundle of Life: ivory cut paper on night blue, after Jewish papercut mizrachs, with Hebrew set in Frank Ruhl Libre. */
+const K='#101A30', NAVY='#1B2A4A', IVJ='#F4EEDF', GOLDJ='#C9A24A', SKYJ='#9FB8D0', STONEJ='#B8B0A0', WINEJ='#7A2E3A', OLIVEJ='#6A7A3A', PINE='#C9A273', EARTHJ='#5A4432';
+const JW_DEFS=`<defs><pattern id="lace" width="30" height="22" patternUnits="userSpaceOnUse"><rect width="30" height="22" fill="${NAVY}"/><path d="M0 22 Q15 0 30 22Z" fill="${IVJ}"/><circle cx="15" cy="14" r="3" fill="${NAVY}"/><path d="M0 0 H30 V4 H0Z" fill="${IVJ}"/></pattern>
+<radialGradient id="flameJ"><stop offset="0" stop-color="#FFF6D6"/><stop offset=".5" stop-color="${GOLDJ}" stop-opacity=".55"/><stop offset="1" stop-color="${GOLDJ}" stop-opacity="0"/></radialGradient>
+<linearGradient id="duskJ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16213C"/><stop offset="1" stop-color="#3A4A6E"/></linearGradient><clipPath id="jwclip"><rect width="600" height="400"/></clipPath></defs>`;
+function jw(inner,{bg='dusk',border=true}={}){ const f=bg==='dusk'?'url(#duskJ)':bg==='paper'?IVJ:bg;
+  return `${JW_DEFS}<g clip-path="url(#jwclip)"><rect width="600" height="400" fill="${f}"/>${bg==='dusk'?stars(60,29,260,IVJ):''}${inner}${border?`<rect width="600" height="22" fill="url(#lace)"/><rect y="378" width="600" height="22" fill="url(#lace)" transform="rotate(180 300 389)"/>`:''}</g>`; }
+function heb(x,y,t,{size=40,col=IVJ}={}){ return `<text x="${x}" y="${y}" text-anchor="middle" direction="rtl" font-family="'Frank Ruhl Libre','David',serif" font-weight="700" font-size="${size}" fill="${col}">${t}</text>`; }
+function jerusalem(y=330,col='#0E1626'){ return `<path d="M0 ${y} V${y-40} H40 V${y-60} H70 V${y-40} H110 V${y-70} h8 v-10 h8 v10 h8 V${y-40} H190 V${y-56} Q230 ${y-120} 270 ${y-56} V${y-40} H330 V${y-80} h12 v-14 h-4 l8 -18 l8 18 h-4 v14 h12 V${y-40} H420 V${y-60} H470 V${y-40} H520 V${y-66} H560 V${y-40} H600 V400 H0Z" fill="${col}"/><circle cx="230" cy="${y-118}" r="3" fill="${GOLDJ}"/>`; }
+function yahrzeit(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle cy="-60" r="60" fill="url(#flameJ)" class="flick"/><path d="M-22 0 L-26 -50 H26 L22 0Z" fill="${SKYJ}" opacity=".55" stroke="${IVJ}" stroke-width="2"/><rect x="-24" y="-24" width="48" height="10" fill="${IVJ}" opacity=".7"/><path d="M0 -50 V-58" stroke="${K}" stroke-width="2"/><path class="flame" d="M-6 -56 Q-5 -72 0 -80 Q5 -72 6 -56Z" fill="${GOLDJ}"/></g>`; }
+function matzevah(x,y,s=1,{stones=0,text=true}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-60 0 V-140 Q0 -176 60 -140 V0Z" fill="${STONEJ}" stroke="${K}" stroke-width="2.5"/>${text?`${heb(0,-118,'פ״נ',{size:22,col:K})}<path d="M-36 -96 H36 M-40 -78 H40 M-40 -60 H40" stroke="${K}" stroke-width="2" opacity=".5"/>${heb(0,-22,'תנצב״ה',{size:20,col:K})}`:''}${Array.from({length:stones},(_,i)=>`<ellipse cx="${-40+i*20}" cy="${-4-(i%2)*6}" rx="9" ry="6" fill="${['#8A8478','#A8A090','#6A6A60'][i%3]}" stroke="${K}" stroke-width="1"/>`).join('')}<rect x="-70" y="0" width="140" height="12" fill="${STONEJ}" stroke="${K}" stroke-width="2"/></g>`; }
+function pineBox(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-120 0 V-50 L-100 -64 H100 L120 -50 V0Z" fill="${PINE}" stroke="${K}" stroke-width="2.5"/><path d="M-120 -50 H120 M-110 -24 H110" stroke="#8A6A40" stroke-width="2"/>${[-80,-20,40,90].map(d=>`<path d="M${d} -60 q6 20 0 56" stroke="#A88A5A" stroke-width="1.2" fill="none"/>`).join('')}</g>`; }
+function shovel(x,y,s=1,{flip=false}={}){ return `<g transform="translate(${x} ${y}) scale(${flip?-s:s} ${s})"><path d="M0 0 L60 -140" stroke="#8A6A40" stroke-width="7" stroke-linecap="round"/><path d="M-14 -4 Q-24 30 -4 44 Q16 40 22 8 L4 -6Z" fill="#8A8A90" stroke="${K}" stroke-width="2"/></g>`; }
+function earthMound(y=330){ return `<path d="M0 ${y} Q300 ${y-30} 600 ${y} V400 H0Z" fill="${EARTHJ}"/><rect x="180" y="${y-6}" width="240" height="90" fill="#2A2018"/>`; }
+function torn(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-80 -120 H80 V100 H-80Z" fill="#2A2A30" stroke="${K}" stroke-width="2"/><path d="M-80 -120 H-10 L-4 -100 L-14 -80 L-2 -62 L-10 -40 L0 -40 L0 100 M80 -120 H10 L6 -100 L16 -80 L4 -62 L12 -40" fill="none" stroke="${IVJ}" stroke-width="2.5"/><path d="M-10 -120 L-4 -100 L-14 -80 L-2 -62 L-10 -40 H12 L4 -62 L16 -80 L6 -100 L10 -120Z" fill="${NAVY}"/></g>`; }
+function cup(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-24 -60 H24 L18 0 H-18Z" fill="#C8C8D0" stroke="${K}" stroke-width="2"/><path d="M-24 -50 Q-44 -46 -40 -24 Q-36 -14 -20 -16 M24 -50 Q44 -46 40 -24 Q36 -14 20 -16" stroke="#C8C8D0" stroke-width="6" fill="none"/><path d="M24 -60 Q50 -66 60 -40" stroke="${SKYJ}" stroke-width="4" fill="none" class="flick"/></g>`; }
+function shroudJ(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-110 0 Q-122 -22 -96 -30 L96 -26 Q120 -20 110 0Z" fill="${IVJ}" stroke="${K}" stroke-width="2"/><path d="M-70 -28 V-2 M0 -28 V-2 M70 -27 V-2" stroke="${K}" stroke-width="1.2" opacity=".5"/></g>`; }
+function stool(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-40" y="-30" width="80" height="12" fill="#6A4A2A" stroke="${K}" stroke-width="2"/><path d="M-32 -18 L-36 0 M32 -18 L36 0" stroke="#6A4A2A" stroke-width="6"/></g>`; }
+function mirror(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-40" y="-110" width="80" height="110" rx="6" fill="#8AA0B8" stroke="${GOLDJ}" stroke-width="4"/><path d="M-46 -116 H46 L40 6 Q0 -6 -40 6Z" fill="${IVJ}" opacity=".95" stroke="${K}" stroke-width="1.5"/></g>`; }
+function treeLife(x,y,s=1){ let o=`<path d="M0 0 V-120" stroke="${IVJ}" stroke-width="10"/>`; [[-60,-60],[60,-70],[-50,-110],[50,-120],[0,-150]].forEach(([dx,dy])=>{ o+=`<path d="M0 ${dy+40} Q${dx*.5} ${dy+20} ${dx} ${dy}" stroke="${IVJ}" stroke-width="6" fill="none"/><circle cx="${dx}" cy="${dy}" r="16" fill="${IVJ}"/><circle cx="${dx}" cy="${dy}" r="6" fill="${WINEJ}"/>`; }); return `<g transform="translate(${x} ${y}) scale(${s})">${o}</g>`; }
+function boneField(y=330){ const r=rnd(12); let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="#B8A07A"/>`; for(let i=0;i<14;i++){ const x=30+r()*540, yy=y+10+r()*40, a=r()*180; o+=`<g transform="translate(${x} ${yy}) rotate(${a})"><path d="M-18 0 H18" stroke="${IVJ}" stroke-width="5"/><circle cx="-18" cy="-3" r="3.5" fill="${IVJ}"/><circle cx="-18" cy="3" r="3.5" fill="${IVJ}"/><circle cx="18" cy="-3" r="3.5" fill="${IVJ}"/><circle cx="18" cy="3" r="3.5" fill="${IVJ}"/></g>`; } return o; }
+function wind(){ return `<g class="drift">${[0,1,2,3].map(i=>`<path d="M${40+i*120} ${100+i*30} q40 -20 80 0 q40 20 80 0" stroke="${IVJ}" stroke-width="4" fill="none" opacity=".5"/>`).join('')}</g>`; }
+function bundleJ(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="110" fill="url(#flameJ)" opacity=".8"/><path d="M-50 -20 Q-60 30 0 44 Q60 30 50 -20 Q30 -40 0 -36 Q-30 -40 -50 -20Z" fill="${IVJ}" stroke="${GOLDJ}" stroke-width="3"/><path d="M-30 -34 Q0 -60 30 -34" stroke="${GOLDJ}" stroke-width="4" fill="none"/><path d="M-6 -46 q6 -14 12 0" stroke="${GOLDJ}" stroke-width="3" fill="none"/>${[-24,0,24].map(d=>`<circle cx="${d}" cy="8" r="5" fill="${GOLDJ}"/>`).join('')}</g>`; }
+function minyan(y=340){ return Array.from({length:10},(_,i)=>`<g transform="translate(${60+i*53} ${y-(i%2)*8})"><path d="M-14 0 V-50 Q0 -60 14 -50 V0Z" fill="${NAVY}" stroke="${IVJ}" stroke-width="1.5"/><path d="M-16 -46 H16 V-38 H-16Z" fill="${IVJ}"/><path d="M-14 -42 H14" stroke="${NAVY}" stroke-width="1.5"/><circle cy="-62" r="9" fill="${NAVY}" stroke="${IVJ}" stroke-width="1.5"/></g>`).join(''); }
+function jwCover(){ return jw(`${jerusalem(330)}${treeLife(300,320,1.1)}${yahrzeit(110,320,.9)}${yahrzeit(490,320,.9)}`); }
+
+/* The Bundle of Life: Jewish teaching and practice around death, from the Hebrew Bible to the Talmud, Maavar Yabok and the Kabbalah. */
+const BOOK={key:'bundle',brand:'The Bundle of Life',brandSub:'A Jewish book of death and mourning',title:'The Bundle of Life',eyebrow:'From the Bible, the Talmud and Maavar Yabok',
+ lede:'Judaism says less about the afterlife than many religions, and much more about how to honour the dead and comfort the living. This book follows both: the soul\'s journey as the rabbis imagined it, and the rites that carry a family from the deathbed through the first year.',
+ note:'About 35 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
+ walkUrl:'../../many-doors/judaism/walk/',walkName:'A Year of Kaddish',
+ how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['Many voices','Jews disagree, sometimes sharply, about what happens after death. Orthodox, Conservative, Reform and secular Jews will each recognise some of this and not all. Customs also differ between Ashkenazi, Sephardi and other communities.'],['Your part','You tear the garment, wash and guard the body, fill the grave and say the Kaddish.'],['A first draft','It should be read by rabbis and Jewish readers before it is shared widely.']],
+ sources:'Genesis 3:19; Ecclesiastes 12:7; 1 Samuel 25:29; Ezekiel 37; Daniel 12:2; Mishnah Sanhedrin 10:1 and Eduyot 2:10; Tosefta Sanhedrin 13:2; Babylonian Talmud Berakhot 17a, Shabbat 152b, Moed Katan 27b; Shulchan Arukh, Yoreh De\'ah 335–403; Aaron Berechiah of Modena, Maavar Yabok (1626); Maimonides, Thirteen Principles; Maurice Lamm, The Jewish Way in Death and Mourning (1969); Leon Wieseltier, Kaddish (1998).',
+ cover:jwCover,
+ chapters:[
+ {name:'Dust and Breath',short:'Dust',sub:'What a person is made of',col:'#B8B0A0',run:async s=>{
+   art(jw(`${wind()}<path d="M0 330 Q300 290 600 330 V400 H0Z" fill="${EARTHJ}"/>${heb(300,200,'עָפָר וְרוּחַ',{size:56})}`));
+   if(SND.ctx) windLoop();
+   await say(s,'In Genesis, God forms the first human from the dust of the ground and breathes into him the breath of life. After Eden, God tells Adam: you are dust, and to dust you shall return.',{eye:'Genesis 2–3'});
+   await say(s,'Ecclesiastes completes the picture: the dust returns to the earth as it was, and the spirit returns to God who gave it. Two parts, two homes.');
+   await still(s,{ask:'Be still, and notice your breath: the part that, the Bible says, was given.',ms:8000});
+   loopOff('wind');
+   await say(s,'Much of Jewish practice around death follows from this: the body is honoured and returned to the earth, quickly and simply, and the soul is entrusted to God.');
+ }},
+ {name:'Sheol and Beyond',short:'Beliefs',sub:'How the idea of an afterlife grew',col:'#9FB8D0',run:async s=>{
+   art(jw(`${jerusalem(330)}<circle cx="300" cy="150" r="80" fill="url(#flameJ)" opacity=".6"/>`));
+   await say(s,'Most of the Hebrew Bible says little about life after death. The dead go down to Sheol, a shadowy place, and the Psalms ask: do the dead praise you?',{eye:'The Hebrew Bible'});
+   await say(s,'The Book of Daniel, one of the latest in the Bible, is the first to say it clearly: many of those who sleep in the dust of the earth shall awake, some to everlasting life, and some to shame. By the time of the rabbis, belief in the resurrection of the dead was central, and the daily prayer, the Amidah, praises God who gives life to the dead.');
+   await spots(s,{ask:'Tap each idea.',items:[{x:20,y:72,label:'Sheol',say:'The early biblical underworld: quiet, dim, the same for everyone.'},{x:50,y:38,label:'Resurrection',say:'Techiyat ha-metim: the dead will rise in the days of the Messiah. Maimonides made it the last of his thirteen principles of faith.'},{x:80,y:72,label:'The World to Come',say:'Olam ha-ba: a world of reward for the righteous, described in many different ways by the rabbis.'}]});
+   await say(s,'Many modern Jews hold these ideas loosely, or not at all, and still keep every rite in this book. In Judaism, what you do matters more than what you can prove.');
+ }},
+ {name:'The Deathbed',short:'Deathbed',sub:'Viddui and the Shema',col:'#C9A24A',run:async s=>{
+   art(jw(`${heb(300,170,'שְׁמַע יִשְׂרָאֵל',{size:54})}${yahrzeit(300,330,1)}`));
+   if(SND.ctx) pad('pad',[110,165,220],.03);
+   await say(s,'Jewish law says that a dying person is to be treated as fully alive. You must not hasten death, and you should never leave a dying person alone.',{eye:'At the bedside'});
+   await say(s,'If they are able, the dying person says the Viddui, a short confession, asking forgiveness and placing themselves in God\'s hands. A 17th-century Italian book, Maavar Yabok, gathered prayers and rites for these hours, and it became a guide for burial societies across Europe.');
+   await hold(s,{label:'Say the Shema',ms:6000,ask:'The last words a Jew hopes to say are the Shema. Press and hold and say: Hear, O Israel, the Lord is our God, the Lord is one.'});
+   await say(s,'Those words, Shema Yisrael, have been said by Jews at the moment of death for two thousand years, including by many who were martyred.');
+ }},
+ {name:'The True Judge',short:'Keriah',sub:'The blessing and the tear',col:'#7A2E3A',run:async s=>{
+   art(jw(`${torn(300,200,1)}${heb(300,352,'בָּרוּךְ דַּיַּן הָאֱמֶת',{size:30,col:GOLDJ})}`));
+   await say(s,'When a death happens, those who hear say a blessing that is hard to say: Baruch dayan ha-emet. Blessed is the true Judge.',{eye:'Baruch dayan ha-emet'});
+   await say(s,'Close relatives tear their clothing, an act called keriah. For a parent, the tear is on the left, over the heart, and is never fully mended. For other relatives it is on the right.');
+   await hold(s,{label:'Tear the garment',ms:4000,ask:'Press and hold to make the tear.',onP:p=>{ if(SND.ctx&&Math.random()<.05) nz({freq:1500,peak:.04,d:.05}); }});
+   await say(s,'From now until the burial the mourner is an onen, freed from other religious duties. Their only task is to care for the dead.');
+ }},
+ {name:'The Holy Society',short:'Tahara',sub:'Washing and guarding the body',col:'#9FB8D0',run:async s=>{
+   art(jw(`<rect x="0" y="290" width="600" height="110" fill="#2A3450"/>${shroudJ(300,300,1.3)}${cup(120,300,1)}${yahrzeit(500,300,.7)}`));
+   if(SND.ctx) waterLoop();
+   await say(s,'The body is cared for by the Chevra Kadisha, the holy society: volunteers from the community, men for men and women for women. Their work is called the truest kindness, because the dead can never repay it.',{eye:'The Chevra Kadisha'});
+   await say(s,'They wash the body with great care, asking forgiveness of the dead for any indignity. Then they pour a continuous stream of water over it and say: tahor hu, tahorah hi. He is pure. She is pure.');
+   await count(s,{ask:'Pour water from the two-handled cup. Tap three times.',n:3,label:'Pour',onTap:()=>{ if(SND.ctx) plop(); }});
+   loopOff('water');
+   await say(s,'The body is dressed in simple white linen shrouds, the same for everyone. Until the funeral, someone stays with it, often reading Psalms. This is shmira, guarding, so the dead are never left alone.');
+ }},
+ {name:'A Plain Pine Box',short:'Burial',sub:'Filling the grave',col:'#5A4432',run:async s=>{
+   art(jw(`${earthMound(320)}${pineBox(300,330,.9)}${shovel(470,330,1)}`));
+   await say(s,'Jewish burial is quick, ideally within a day, and simple: no embalming, no viewing, and traditionally a plain wooden coffin, so rich and poor are alike, and the body can return to the earth.',{eye:'The funeral'});
+   await say(s,'At the graveside the mourners themselves fill the grave. Many begin with the back of the shovel, to show they don\'t want to do this. The shovel is put back in the earth, not handed from person to person.');
+   await count(s,{ask:'Take the shovel. Tap three times to fill the grave.',n:3,label:'A shovel of earth',onTap:()=>{ if(SND.ctx) thud(); }});
+   await say(s,'Burying the dead is a commandment, and filling the grave yourself is one of the last things you can do for someone you love. Then mourners walk out between two lines of friends, who say: may God comfort you among the mourners of Zion and Jerusalem.');
+ }},
+ {name:'Kaddish',short:'Kaddish',sub:'A prayer that never mentions death',col:'#C9A24A',run:async s=>{
+   art(jw(`${heb(300,160,'יִתְגַּדַּל וְיִתְקַדַּשׁ שְׁמֵהּ רַבָּא',{size:36})}${minyan(350)}`));
+   if(SND.ctx) pad('pad',[98,147,196],.03);
+   await say(s,'The mourner\'s Kaddish is in Aramaic, and it doesn\'t mention death at all. It praises God: Yitgadal v\'yitkadash sh\'mei rabba. Magnified and sanctified be God\'s great name.',{eye:'The mourner\'s Kaddish'});
+   await say(s,'It can only be said with a minyan, ten adults, so a mourner has to go out and be with other people. Every time the mourner says it, the community answers.');
+   await count(s,{ask:'Ten make a minyan. Tap to gather them.',n:10,label:'Join the minyan',onTap:()=>{ if(SND.ctx) bell(330,.04); }});
+   await hold(s,{label:'Answer together',ms:5000,ask:'Press and hold and answer with the community: Amen. May God\'s great name be blessed forever and ever.'});
+   await say(s,'At the hardest moment, the mourner stands up and praises God, and the community holds them while they do it.');
+ }},
+ {name:'Eden and Gehinnom',short:'Eden',sub:'Twelve months at most',col:'#6A7A3A',run:async s=>{
+   art(jw(`${treeLife(170,330,.9)}<rect x="360" y="200" width="200" height="130" fill="#3A1E1E"/>${Array.from({length:6},(_,i)=>`<path class="flame" style="animation-delay:${i*.12}s" d="M${370+i*32} 330 Q${380+i*32} 270 ${386+i*32} 250 Q${394+i*32} 280 ${400+i*32} 330Z" fill="${i%2?'#D9542A':GOLDJ}" opacity=".8"/>`).join('')}`));
+   await say(s,'The rabbis of the Talmud imagined a Gan Eden, a garden of the righteous, and a Gehinnom, named after a valley outside Jerusalem. But Gehinnom, for most souls, is not forever.',{eye:'The Mishnah'});
+   await say(s,'The Mishnah says the judgment of the wicked in Gehinnom lasts twelve months. It is a place of cleansing, like a fire that refines metal. Afterward, the soul goes on to rest.');
+   await choose(s,'A child says Kaddish for a parent. For how many months?',['Twelve','Eleven','Thirty days'],{right:1,wrong:'Close. Think about the twelve months of Gehinnom.'});
+   await say(s,'Eleven. Saying it for twelve would suggest your parent needed the full time of cleansing. Eleven months says: they were good. It\'s one of the gentlest customs in Judaism.');
+ }},
+ {name:'The Bundle of Life',short:'The bundle',sub:'Bound up with the living',col:'#F4EEDF',run:async s=>{
+   art(jw(`${bundleJ(300,170,1)}${matzevah(300,350,.9,{stones:4})}`));
+   if(SND.ctx){ pad('pad',[130.8,196,261.6],.03); chime(); }
+   await say(s,'Abigail, in the Book of Samuel, blesses David: may your soul be bound up in the bundle of life. These words, tzror ha-chayim, became the Jewish hope for the dead.',{eye:'1 Samuel 25:29'});
+   await say(s,'The memorial prayer, El Malei Rachamim, asks God to grant the dead perfect rest beneath the wings of the Divine Presence, and to bind their soul in the bundle of life. Five Hebrew letters on many gravestones say the same thing: may their soul be bound in the bundle of life.');
+   await count(s,{ask:'When Jews visit a grave, many leave a small stone. Place four stones.',n:4,label:'Place a stone',onTap:()=>{ if(SND.ctx) thud(); }});
+   await say(s,'Nobody knows for certain where the custom of stones comes from. Flowers fade; stones stay. They say: someone was here, and remembered.');
+ }},
+ {name:'Gilgul',short:'Gilgul',sub:'The soul\'s many journeys',col:'#1B2A4A',run:async s=>{
+   art(jw(`<g class="spin" style="transform-origin:300px 200px">${Array.from({length:8},(_,i)=>{ const a=i/8*Math.PI*2; return `<circle cx="${300+Math.cos(a)*120}" cy="${200+Math.sin(a)*120}" r="14" fill="${IVJ}" opacity="${.3+i*.08}"/>`; }).join('')}</g><circle cx="300" cy="200" r="50" fill="url(#flameJ)"/>`));
+   await say(s,'Jewish mysticism, the Kabbalah, adds another idea: gilgul, the rolling of the soul. In the Zohar, and in the teaching of Rabbi Isaac Luria in 16th-century Safed, souls can return in new lives to repair what they left unfinished.',{eye:'The Kabbalah'});
+   await say(s,'The Kabbalists also taught that the soul has several layers: nefesh, the life force, which lingers near the body and the grave; ruach, the spirit; and neshamah, the highest soul, which returns to God.');
+   await spots(s,{ask:'Tap each layer of the soul.',items:[{x:50,y:85,label:'Nefesh',say:'The animal soul, which stays near the body for a time. That is one reason the grave is visited and cared for.'},{x:25,y:50,label:'Ruach',say:'The spirit, the seat of feeling and character.'},{x:50,y:22,label:'Neshamah',say:'The divine breath, which returns to God who gave it.'}]});
+   await say(s,'Not all Jews accept gilgul. But it became part of Hasidic and Sephardi tradition, and it adds a hopeful idea: no soul is ever finished being repaired.');
+ }},
+ {name:'The World to Come',short:'Olam ha-ba',sub:'Crowns and radiance',col:'#C9A24A',run:async s=>{
+   art(jw(`<circle cx="300" cy="200" r="170" fill="url(#flameJ)"/>${[150,230,310,390,450].map((x,i)=>`<g transform="translate(${x} ${260-i%2*20})"><path d="M-14 -10 L-10 -28 L-4 -16 L0 -32 L4 -16 L10 -28 L14 -10Z" fill="${GOLDJ}"/></g>`).join('')}`,{bg:'#16213C'}));
+   if(SND.ctx) chime();
+   await say(s,'What is the World to Come like? The Talmud records a famous saying of Rav: In the World to Come there is no eating or drinking, no business, no envy, no hatred, no rivalry. The righteous sit with crowns on their heads and delight in the radiance of the Divine Presence.',{eye:'Talmud, Berakhot 17a'});
+   await say(s,'Who gets there? The Mishnah says all Israel has a share in the World to Come. And the Tosefta adds: the righteous of all the nations of the world have a share in the World to Come.');
+   await still(s,{ask:'Sit in the radiance for a moment.',ms:8000});
+   await say(s,'Judaism has no need to decide exactly how. The rabbis said: this world is like a hallway before the World to Come. Prepare yourself in the hallway, so you may enter the banquet hall.');
+ }},
+ {name:'The Dry Bones',short:'Resurrection',sub:'Ezekiel\'s valley',col:'#B8B0A0',run:async s=>{
+   art(jw(`${boneField(300)}${wind()}`,{bg:'#C9B898'}));
+   if(SND.ctx) windLoop();
+   await say(s,'The prophet Ezekiel is set down in a valley full of dry bones. God asks him: Son of man, can these bones live? And Ezekiel says: Lord God, you know.',{eye:'Ezekiel 37'});
+   await hold(s,{label:'Prophesy to the bones',ms:6000,ask:'Press and hold and say: O dry bones, hear the word of the Lord.'});
+   art(jw(`<rect x="0" y="300" width="600" height="100" fill="#B8A07A"/>${minyan(320)}${wind()}`,{bg:'#C9B898'}));
+   loopOff('wind'); if(SND.ctx) chime();
+   await say(s,'There is a rattling, and bone comes to bone, then sinews and flesh and skin, and then the wind, the breath, the ruach, enters them, and they stand up, a vast multitude. I will open your graves, God says, and bring you home.');
+ }}],
+ finale:async s=>{ art(jwCover()); if(SND.ctx) chime();
+   await say(s,'That is the passage, as Judaism sees it: dust and breath parting, a tear in the clothing, water and white linen, a plain box, earth filled in by your own hands, and a prayer of praise said among ten.',{eye:'The end of the book'});
+   await say(s,'What lies beyond, the tradition holds with humility. What is certain is the duty of the living. May their memory be a blessing.'); }};
+header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
+manualLanding(BOOK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>

@@ -1,0 +1,499 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Nine Levels of Mictlan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* The Nine Levels of Mictlan: a painted codex. Deer-hide cream, codex red, turquoise, ochre and obsidian. */
+:root{
+  --bg:#EFE2C4; --paper:#F8EFD8; --ink:#1A1210; --ink-soft:#5A4436; --accent:#B8322A; --accent2:#2E9A8E; --gold:#E0A82E; --night:#140E14; --nightink:#F8EFD8;
+  --display:'Alfa Slab One','Jost','Georgia',serif;
+}
+h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);font-weight:400}
+h1{letter-spacing:.005em}
+.brand{letter-spacing:.06em;font-size:.95rem}
+.cover{background:#1A1420}
+.clashL{animation:clashL 2.4s ease-in-out infinite}.clashR{animation:clashR 2.4s ease-in-out infinite}
+@keyframes clashL{50%{transform:translateX(70px)}}@keyframes clashR{50%{transform:translateX(-70px)}}
+@media (prefers-reduced-motion:reduce){.clashL,.clashR{animation:none}}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
+function manualLanding(B){
+  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
+    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
+    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
+  $('#begin').onclick=()=>playManual(B,next);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
+  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+}
+async function playManual(B,start){
+  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
+  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
+  s.onclose=()=>manualLanding(B);
+  try{
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
+      await c.run(s);
+      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
+      if(SND.ctx) allOff(1.2); }
+    store.set(B.key+'-next','0'); alive(s);
+    await B.finale(s); closePlayer();
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* Codex kit for The Nine Levels of Mictlan: flat colour on deer-hide, heavy black outline, step-fret borders, after the painted books. */
+const K='#1A1210', HIDE='#EFE2C4', RED='#B8322A', TURQ='#2E9A8E', OCHRE='#E0A82E', OBS='#2A2A33', BLUE='#4FA3B8', MAIZE='#F0C850', MARI='#F28C1E', SKIN='#C9814E', BONE='#F4EEDC', JADE='#3FA36A', DUSK='#2A1E2A', PINK='#D9667A';
+const CX_DEFS=`<defs><pattern id="xfret" width="40" height="20" patternUnits="userSpaceOnUse"><rect width="40" height="20" fill="${RED}"/><path d="M0 18 H10 V6 H22 V12 H16 M20 18 H30 V6 H42" stroke="${HIDE}" stroke-width="3" fill="none"/></pattern>
+<linearGradient id="under" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A1420"/><stop offset="1" stop-color="#3A2A30"/></linearGradient>
+<radialGradient id="sunG"><stop offset="0" stop-color="#FFF0B0"/><stop offset=".5" stop-color="${OCHRE}" stop-opacity=".6"/><stop offset="1" stop-color="${OCHRE}" stop-opacity="0"/></radialGradient><clipPath id="cxclip"><rect width="600" height="400"/></clipPath></defs>`;
+function cx(inner,{bg='under',border=true}={}){ const f=bg==='under'?'url(#under)':bg==='hide'?HIDE:bg;
+  return `${CX_DEFS}<g clip-path="url(#cxclip)"><rect width="600" height="400" fill="${f}"/>${bg==='under'?stars(50,13,260,'#C9B8D0'):''}${inner}${border?`<rect width="600" height="20" fill="url(#xfret)"/><rect y="380" width="600" height="20" fill="url(#xfret)"/>`:''}</g>`; }
+function ground(y=320,col='#5A3A2A'){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y} H600" stroke="${K}" stroke-width="3"/>${Array.from({length:12},(_,i)=>`<circle cx="${25+i*50}" cy="${y+18}" r="4" fill="${K}" opacity=".35"/>`).join('')}`; }
+/* A walker in a cloak, profile-free and frontal like the other kits; the dead are pale, faces painted. */
+function walker(x,y,s=1,{cloak=HIDE,skin=SKIN,dead=true,arms='down'}={}){ const ar=arms==='up'?`<path d="M-18 -74 L-30 -108 M18 -74 L30 -108" stroke="${skin}" stroke-width="8" stroke-linecap="round"/>`:arms==='offer'?`<path d="M-18 -74 Q-20 -54 0 -56 Q20 -54 18 -74" stroke="${skin}" stroke-width="8" fill="none" stroke-linecap="round"/>`:'';
+  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-12 0 V-30 M12 0 V-30" stroke="${skin}" stroke-width="9"/><path d="M-20 -28 H20 L16 -12 H-16Z" fill="${HIDE}" stroke="${K}" stroke-width="2"/><path d="M-22 -30 L-26 -86 Q0 -96 26 -86 L22 -30Z" fill="${cloak}" stroke="${K}" stroke-width="2.5"/><path d="M-24 -70 H24" stroke="${RED}" stroke-width="4"/><path d="M0 -86 L-8 -70 H8Z" fill="${RED}" stroke="${K}"/>${ar}<circle cx="0" cy="-104" r="15" fill="${dead?'#E8DCC4':skin}" stroke="${K}" stroke-width="2.5"/>${dead?`<path d="M-15 -104 H15" stroke="${K}" stroke-width="3"/>`:''}<path d="M-15 -106 Q-17 -122 0 -122 Q17 -122 15 -106 L10 -112 L4 -108 L-2 -112 L-8 -108Z" fill="${K}"/><circle cx="-5" cy="-100" r="1.8" fill="${K}"/><circle cx="5" cy="-100" r="1.8" fill="${K}"/></g>`; }
+/* Xoloitzcuintli, the hairless dog who carries the dead across the river. */
+function xolo(x,y,s=1,{col='#C9814E',flip=false,swim=false}={}){ return `<g transform="translate(${x} ${y}) scale(${flip?-s:s} ${s})">${swim?'':`<path d="M-30 -24 L-34 0 M-20 -24 L-18 0 M22 -24 L20 0 M32 -24 L36 0" stroke="${col}" stroke-width="7" stroke-linecap="round"/><path d="M-30 -24 L-34 0 M-20 -24 L-18 0 M22 -24 L20 0 M32 -24 L36 0" stroke="${K}" stroke-width="1.5" opacity=".0"/>`}<path d="M-40 -26 Q-42 -46 -20 -46 H28 Q40 -46 40 -30 Q40 -20 30 -20 H-30 Q-40 -18 -40 -26Z" fill="${col}" stroke="${K}" stroke-width="2.5"/><path d="M-40 -36 Q-58 -44 -60 -60" stroke="${col}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M28 -44 Q30 -62 46 -64 L66 -56 Q68 -48 58 -46 L44 -44Z" fill="${col}" stroke="${K}" stroke-width="2.5"/><path d="M34 -60 L28 -84 L44 -64 M46 -64 L50 -86 L54 -62" fill="${col}" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/><circle cx="48" cy="-56" r="2.5" fill="${K}"/><circle cx="66" cy="-55" r="2.5" fill="${K}"/>${Array.from({length:4},(_,i)=>`<circle cx="${-24+i*14}" cy="${-36+(i%2)*4}" r="3" fill="${K}" opacity=".25"/>`).join('')}<path d="M26 -44 Q34 -38 40 -44" stroke="${RED}" stroke-width="3" fill="none"/></g>`; }
+function river(y=270,{shells=true,col=BLUE}={}){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y} H600" stroke="${K}" stroke-width="3"/>`; for(let k=0;k<4;k++){ let d=`M${k%2*20} ${y+18+k*26}`; for(let x=0;x<620;x+=40) d+=` q10 -12 20 0 q10 12 20 0`; o+=`<path d="${d}" stroke="${HIDE}" stroke-width="2.5" fill="none" opacity=".8"/>`; }
+  if(shells) for(let i=0;i<7;i++) o+=`<g transform="translate(${50+i*85} ${y+(i%2?70:44)})"><path d="M-8 0 Q0 -14 8 0 Q0 6 -8 0Z" fill="${HIDE}" stroke="${K}" stroke-width="1.5"/><circle cx="0" cy="-2" r="2" fill="${K}"/></g>`; return o; }
+/* Tepetl, the hill glyph, bell-shaped with a curl on top. */
+function hill(x,y,s=1,{col=JADE}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 0 Q-80 -60 -52 -100 Q-30 -136 0 -140 Q30 -136 52 -100 Q80 -60 70 0Z" fill="${col}" stroke="${K}" stroke-width="3"/><path d="M-6 -140 Q-18 -164 4 -172 Q22 -170 14 -152" stroke="${K}" stroke-width="3" fill="${col}"/><rect x="-72" y="-14" width="144" height="14" fill="${RED}" stroke="${K}" stroke-width="2.5"/>${[-44,-16,16,44].map(d=>`<circle cx="${d}" cy="-60" r="6" fill="${MAIZE}" stroke="${K}" stroke-width="1.5"/>`).join('')}</g>`; }
+function blade(x,y,s=1,r=0){ return `<g transform="translate(${x} ${y}) rotate(${r}) scale(${s})"><path d="M0 -30 Q12 -10 8 20 L0 30 L-8 20 Q-12 -10 0 -30Z" fill="${OBS}" stroke="${K}" stroke-width="2"/><path d="M-4 -16 Q-2 0 -4 16" stroke="#8A8AA0" stroke-width="2" fill="none"/></g>`; }
+function banner(x,y,s=1,r=0){ return `<g transform="translate(${x} ${y}) rotate(${r}) scale(${s})"><path d="M0 0 V-80" stroke="${K}" stroke-width="3"/><path d="M0 -80 H34 V-44 H0" fill="${HIDE}" stroke="${K}" stroke-width="2"/><path d="M0 -62 H34 M17 -80 V-44" stroke="${RED}" stroke-width="3"/></g>`; }
+function arrow(x,y,s=1,r=0){ return `<g transform="translate(${x} ${y}) rotate(${r}) scale(${s})"><path d="M-50 0 H40" stroke="${K}" stroke-width="3"/><path d="M40 -6 L56 0 L40 6Z" fill="${OBS}" stroke="${K}"/><path d="M-50 0 l-10 -8 M-50 0 l-10 8 M-42 0 l-10 -8 M-42 0 l-10 8" stroke="${RED}" stroke-width="3"/></g>`; }
+function jaguar(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-50 0 Q-60 -60 -30 -80 Q0 -96 30 -80 Q60 -60 50 0Z" fill="${OCHRE}" stroke="${K}" stroke-width="3"/><circle cx="-34" cy="-80" r="12" fill="${OCHRE}" stroke="${K}" stroke-width="3"/><circle cx="34" cy="-80" r="12" fill="${OCHRE}" stroke="${K}" stroke-width="3"/>${[[-26,-50],[22,-54],[-10,-24],[30,-20],[-36,-20],[4,-66]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="6" fill="none" stroke="${K}" stroke-width="3"/><circle cx="${a}" cy="${b}" r="2" fill="${K}"/>`).join('')}<path d="M-20 -46 l10 4 M20 -46 l-10 4" stroke="${K}" stroke-width="4"/><path d="M-22 -14 Q0 4 22 -14" stroke="${K}" stroke-width="3" fill="${RED}"/><path d="M-14 -12 l4 8 l4 -8 M6 -12 l4 8 l4 -8" fill="${BONE}" stroke="${K}" stroke-width="1"/></g>`; }
+function jade(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="40" fill="url(#sunG)" opacity=".7"/><circle r="18" fill="${JADE}" stroke="${K}" stroke-width="3"/><circle r="5" fill="#1F5A3A"/><path d="M-10 -8 Q-6 -14 2 -14" stroke="#B8F0C8" stroke-width="3" fill="none"/></g>`; }
+/* Lord and Lady of the dead: skeletal, with a fan of feathers and paper rosettes. */
+function deathLord(x,y,s=1,{lady=false}={}){ const fe=Array.from({length:7},(_,i)=>{ const a=-150+i*20; return `<path d="M0 -140 L${Math.cos(a*Math.PI/180)*90} ${-140+Math.sin(a*Math.PI/180)*90}" stroke="${[RED,OCHRE,TURQ][i%3]}" stroke-width="16" stroke-linecap="round"/>`; }).join('');
+  return `<g transform="translate(${x} ${y}) scale(${s})">${fe}<path d="M-30 0 L-26 -80 Q0 -94 26 -80 L30 0Z" fill="${lady?RED:HIDE}" stroke="${K}" stroke-width="3"/>${lady?`<path d="M-30 -10 H30 M-29 -24 H29" stroke="${HIDE}" stroke-width="3"/>${[-18,-6,6,18].map(d=>`<circle cx="${d}" cy="-50" r="4" fill="${HIDE}"/>`).join('')}`:`<path d="M-20 -70 H20 M-20 -58 H20 M-20 -46 H20 M0 -80 V-30" stroke="${K}" stroke-width="3"/>`}<path d="M-26 -80 L-50 -40 M26 -80 L50 -40" stroke="${BONE}" stroke-width="8" stroke-linecap="round"/><path d="M-26 -80 L-50 -40 M26 -80 L50 -40" stroke="${K}" stroke-width="1.5" stroke-dasharray="4 6"/><path d="M-28 -120 Q-30 -160 0 -162 Q30 -160 28 -120 Q26 -98 14 -94 H-14 Q-26 -98 -28 -120Z" fill="${BONE}" stroke="${K}" stroke-width="3"/><circle cx="-11" cy="-128" r="8" fill="${K}"/><circle cx="11" cy="-128" r="8" fill="${K}"/><circle cx="-11" cy="-128" r="2.5" fill="${RED}"/><circle cx="11" cy="-128" r="2.5" fill="${RED}"/><path d="M-4 -112 L0 -118 L4 -112Z" fill="${K}"/><path d="M-14 -102 H14 M-10 -106 V-98 M-4 -106 V-98 M2 -106 V-98 M8 -106 V-98" stroke="${K}" stroke-width="2"/><circle cx="-30" cy="-140" r="8" fill="${HIDE}" stroke="${K}" stroke-width="2"/><circle cx="30" cy="-140" r="8" fill="${HIDE}" stroke="${K}" stroke-width="2"/></g>`; }
+function serpent(x,y,s=1){ let d='M-180 0'; for(let i=0;i<6;i++) d+=` q30 ${i%2?40:-40} 60 0`; return `<g transform="translate(${x} ${y}) scale(${s})"><path d="${d}" stroke="${K}" stroke-width="26" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${TURQ}" stroke-width="20" fill="none" stroke-linecap="round"/><path d="${d}" stroke="${JADE}" stroke-width="6" fill="none" stroke-dasharray="8 14"/><path d="M180 0 Q200 -30 230 -20 Q250 -10 240 6 L220 10 Q200 14 180 0Z" fill="${TURQ}" stroke="${K}" stroke-width="3"/><circle cx="222" cy="-10" r="4" fill="${K}"/><path d="M240 4 l16 6 l-6 -10 l12 -2" stroke="${RED}" stroke-width="3" fill="none"/>${Array.from({length:7},(_,i)=>`<path d="M${196+i*3} ${-20-i*2} q-10 -30 ${-20+i*6} -40" stroke="${[JADE,TURQ,'#7AC27A'][i%3]}" stroke-width="7" fill="none" stroke-linecap="round"/>`).join('')}</g>`; }
+function bones(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})">${[[-30,0,20],[0,-6,-15],[26,4,40],[-10,10,80]].map(([a,b,r])=>`<g transform="translate(${a} ${b}) rotate(${r})"><path d="M-24 0 H24" stroke="${BONE}" stroke-width="8"/><circle cx="-24" cy="-4" r="5" fill="${BONE}"/><circle cx="-24" cy="4" r="5" fill="${BONE}"/><circle cx="24" cy="-4" r="5" fill="${BONE}"/><circle cx="24" cy="4" r="5" fill="${BONE}"/></g>`).join('')}</g>`; }
+function bundle(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-40 0 Q-50 -60 -30 -96 Q0 -112 30 -96 Q50 -60 40 0Z" fill="#D9C08A" stroke="${K}" stroke-width="3"/>${[-74,-50,-26].map(v=>`<path d="M-44 ${v} Q0 ${v+10} 44 ${v}" stroke="${K}" stroke-width="2" fill="none"/>`).join('')}<path d="M-26 -126 Q-28 -150 0 -152 Q28 -150 26 -126 Q24 -104 0 -100 Q-24 -104 -26 -126Z" fill="${TURQ}" stroke="${K}" stroke-width="3"/><path d="M-14 -132 h8 M6 -132 h8 M-8 -114 Q0 -110 8 -114" stroke="${K}" stroke-width="3" fill="none"/>${Array.from({length:5},(_,i)=>`<path d="M${-20+i*10} -150 V-172" stroke="${[RED,OCHRE,TURQ,OCHRE,RED][i]}" stroke-width="6" stroke-linecap="round"/>`).join('')}</g>`; }
+function sun(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="110" fill="url(#sunG)"/>${Array.from({length:8},(_,i)=>`<path d="M0 -50 L-12 -76 L0 -96 L12 -76Z" transform="rotate(${i*45})" fill="${i%2?RED:OCHRE}" stroke="${K}" stroke-width="2"/>`).join('')}<circle r="50" fill="${OCHRE}" stroke="${K}" stroke-width="3"/><circle r="36" fill="${MAIZE}" stroke="${K}" stroke-width="2"/><path d="M-12 -6 h8 M4 -6 h8 M-8 12 Q0 18 8 12" stroke="${K}" stroke-width="3" fill="none"/></g>`; }
+function marigold(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})">${Array.from({length:10},(_,i)=>`<circle cx="${Math.cos(i*.628)*9}" cy="${Math.sin(i*.628)*9}" r="7" fill="${MARI}" stroke="${K}" stroke-width="1"/>`).join('')}<circle r="7" fill="${OCHRE}" stroke="${K}" stroke-width="1"/></g>`; }
+function candle(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle cx="0" cy="-46" r="22" fill="url(#sunG)" class="flick"/><rect x="-6" y="-36" width="12" height="36" fill="${HIDE}" stroke="${K}" stroke-width="1.5"/><path class="flame" d="M-5 -36 Q-4 -50 0 -56 Q4 -50 5 -36Z" fill="${MARI}" stroke="${K}" stroke-width="1"/></g>`; }
+function skullSugar(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-18 -10 Q-22 -40 0 -42 Q22 -40 18 -10 Q16 0 8 0 H-8 Q-16 0 -18 -10Z" fill="${BONE}" stroke="${K}" stroke-width="2"/><circle cx="-7" cy="-20" r="5" fill="${TURQ}"/><circle cx="7" cy="-20" r="5" fill="${PINK}"/><path d="M-6 -6 H6" stroke="${K}" stroke-width="2"/><path d="M-10 -34 q10 -6 20 0" stroke="${PINK}" stroke-width="2" fill="none"/></g>`; }
+function ofrenda(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-150" y="-40" width="300" height="40" fill="${RED}" stroke="${K}" stroke-width="2.5"/><rect x="-110" y="-80" width="220" height="40" fill="${MARI}" stroke="${K}" stroke-width="2.5"/><rect x="-70" y="-120" width="140" height="40" fill="${TURQ}" stroke="${K}" stroke-width="2.5"/>${[-130,-90,90,130].map(d=>candle(d,-40,.9)).join('')}${[-60,60].map(d=>skullSugar(d,-80,.9)).join('')}<rect x="-24" y="-176" width="48" height="56" fill="${HIDE}" stroke="${K}" stroke-width="2.5"/><circle cx="0" cy="-154" r="12" fill="#B8A890"/><path d="M-16 -126 Q0 -146 16 -126" fill="#B8A890"/>${Array.from({length:14},(_,i)=>marigold(-140+i*21.5,-4,.55)).join('')}</g>`; }
+function papel(y=20){ const C=[PINK,MARI,TURQ,OCHRE,'#8A5AB8',JADE]; return `<path d="M0 ${y} Q300 ${y+16} 600 ${y}" stroke="${K}" stroke-width="1.5" fill="none"/>${Array.from({length:10},(_,i)=>`<g transform="translate(${30+i*60} ${y+4+Math.sin(i/9*Math.PI)*8})"><path d="M-22 0 H22 V34 L16 40 L10 34 L4 40 L-2 34 L-8 40 L-14 34 L-22 40Z" fill="${C[i%6]}" stroke="${K}" stroke-width="1"/><circle cx="0" cy="14" r="5" fill="${HIDE}" opacity=".8"/><path d="M-12 24 h6 M6 24 h6" stroke="${HIDE}" stroke-width="2" opacity=".8"/></g>`).join('')}`; }
+function scroll(x,y,s=1,col=TURQ){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 Q20 -30 6 -50 Q-10 -66 -24 -52 Q-34 -40 -20 -32 Q-10 -28 -8 -40" stroke="${col}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M0 0 Q20 -30 6 -50 Q-10 -66 -24 -52 Q-34 -40 -20 -32 Q-10 -28 -8 -40" stroke="${K}" stroke-width="1.5" fill="none"/>${marigold(6,-58,.5)}</g>`; }
+function milkTree(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-12 0 L-8 -120 H8 L12 0Z" fill="#7A4A2A" stroke="${K}" stroke-width="3"/><circle cx="0" cy="-160" r="80" fill="${JADE}" stroke="${K}" stroke-width="3"/>${Array.from({length:9},(_,i)=>{ const a=i/9*Math.PI*2; return `<path d="M${Math.cos(a)*50} ${-160+Math.sin(a)*50} q-8 10 0 18 q8 -8 0 -18Z" fill="${BONE}" stroke="${K}" stroke-width="1.5"/>`; }).join('')}</g>`; }
+function cxCover(){ return cx(`${ground(330)}${hill(110,330,.75,{col:'#4A6A5A'})}${hill(490,330,.75,{col:'#4A6A5A'})}${deathLord(300,330,1)}${xolo(190,330,.7)}${walker(420,330,.7)}`); }
+
+/* The Nine Levels of Mictlan: the Mexica (Aztec) passage, after the Florentine Codex, the Codex Vaticanus A and the Legend of the Suns. */
+const BOOK={key:'mictlan',brand:'The Nine Levels of Mictlan',brandSub:'A Mexica book of the dead',title:'The Nine Levels of Mictlan',eyebrow:'From the Florentine Codex and the painted books',
+ lede:'The Mexica, the people we call the Aztecs, believed that how you died decided where you went. Most people went down to Mictlan, the place of the dead, on a four-year journey through nine levels with a small dog as their guide.',
+ note:'About 30 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
+ walkUrl:'../../many-doors/aztec/walk/',walkName:'The Road Down',
+ how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['How we know','Almost everything comes from sources written after the Spanish conquest, above all the Nahua elders who spoke to Bernardino de Sahagún in the 1550s. The names of the nine levels vary between sources.'],['A living people','Nahua communities live in Mexico today, and many of these ideas live on in their languages and in Día de Muertos. This book is a first draft that should be read by Nahua scholars and communities.'],['Your part','You choose your dog, cross the river, walk through the obsidian wind and bring your gifts to the Lord of the Dead.']],
+ sources:'Bernardino de Sahagún, Florentine Codex (General History of the Things of New Spain, 1577), Book 3 appendix, tr. Arthur J. O. Anderson and Charles E. Dibble; Codex Vaticanus A (Ríos), fol. 2–3; Legend of the Suns (1558), tr. John Bierhorst; Cantares Mexicanos, tr. John Bierhorst (1985) and Miguel León-Portilla, Aztec Thought and Culture (1963).',
+ cover:cxCover,
+ chapters:[
+ {name:'How You Die',short:'Roads',sub:'The manner of death decides',col:'#B8322A',run:async s=>{
+   art(cx(`${sun(120,120,.7)}${hill(470,330,.8,{col:BLUE})}${milkTree(300,330,.6)}<rect x="40" y="300" width="180" height="60" fill="${DUSK}" stroke="${K}" stroke-width="2"/>${deathLord(130,355,.32)}`,{bg:'hide'}));
+   if(SND.ctx) pad('pad',[110,165,220],.03);
+   await say(s,'For the Mexica, what mattered was not how good you had been, but how you died. Sahagún\'s Nahua informants, and the painted books, describe several destinations.',{eye:'Florentine Codex, Book 3'});
+   await spots(s,{ask:'Tap each place.',items:[
+     {x:20,y:30,label:'The House of the Sun',say:'Warriors killed in battle or as captives went east to the House of the Sun. For four years they escorted the sun each morning to the top of the sky. Then they became hummingbirds and butterflies, drinking from flowers.'},
+     {x:20,y:86,label:'Mictlan',say:'Those who died ordinary deaths, from sickness or old age, went down to Mictlan, the place of the dead. That was most people.'},
+     {x:78,y:52,label:'Tlalocan',say:'Those taken by water, by drowning, lightning, or diseases linked to water went to Tlalocan, the paradise of the rain god Tlaloc, where it is always summer.'},
+     {x:50,y:30,label:'The Wet-Nurse Tree',say:'Some colonial sources say babies who died before eating maize went to Chichihuacuauhco, a tree dripping with milk, where they waited to be born again.'}]});
+   await say(s,'And women who died giving birth were honoured like warriors. They escorted the sun from noon to sunset, and were called the Cihuateteo, the divine women.');
+ }},
+ {name:'Made from Bones',short:'Bones',sub:'Quetzalcoatl steals from the dead',col:'#2E9A8E',run:async s=>{
+   art(cx(`${ground(320,'#3A2A30')}${deathLord(450,320,.9)}${serpent(170,200,.6)}${bones(180,300,1)}`));
+   if(SND.ctx) pad('pad',[98,147,196],.03);
+   await say(s,'Mictlan is old. The Legend of the Suns says that after the last world was destroyed, the feathered serpent Quetzalcoatl went down to Mictlan to fetch the bones of the people who had lived before.',{eye:'The Legend of the Suns'});
+   await say(s,'The Lord of the Dead, Mictlantecuhtli, set him an impossible test: blow a conch shell with no holes. Quetzalcoatl had worms drill holes and bees fly inside to make it sound. He took the bones and ran. A quail startled him, he fell, and the bones broke.');
+   await count(s,{ask:'He ground the bones and bled on them. Tap to grind the bones.',n:4,label:'Grind',onTap:()=>{ if(SND.ctx) thud(); }});
+   await say(s,'From that paste, people were made, which is why they come in all sizes: the bones had broken unevenly. The Mexica word for us, macehualtin, was read as "the deserved ones": those the gods did penance for. We are made from the dead, and we return to them.');
+ }},
+ {name:'The Bundle',short:'Bundle',sub:'Jade, papers and a dog',col:'#E0A82E',run:async s=>{
+   art(cx(`${ground(320)}${bundle(300,320,1.1)}${jade(160,200,1)}${xolo(470,320,.8,{flip:true})}`,{bg:'hide'}));
+   await say(s,'When someone died, the body was dressed, seated with knees drawn up, and wrapped in cloth into a bundle. A mask might be placed over the face.',{eye:'Florentine Codex, Book 3'});
+   await say(s,'A small bead of jade, or for poorer people a green stone, was placed in the mouth. It stood for the heart, the yollotl, and some sources say it would be needed later on the road.');
+   await spots(s,{ask:'Tap what goes with the dead.',items:[
+     {x:27,y:50,label:'The jade bead',say:'Placed in the mouth. A heart that cannot be eaten.'},
+     {x:50,y:45,label:'Papers and water',say:'Cut papers to pass the dangers on the road, and a jar of water for the journey.'},
+     {x:78,y:72,label:'A dog',say:'A small reddish-yellow dog, killed and buried or burned with its master, with a loose cotton thread around its neck. It would be needed at the river.'}]});
+   await say(s,'Then most bodies were burned, and the ashes buried in a jar, sometimes under the floor of the house.');
+ }},
+ {name:'Choose Your Dog',short:'The dog',sub:'Who will carry you across',col:'#C9814E',run:async s=>{
+   art(cx(`${ground(320)}${xolo(130,320,.8,{col:BONE})}${xolo(300,320,.8,{col:'#C9814E'})}${xolo(470,320,.8,{col:OBS})}`,{bg:'hide'}));
+   await say(s,'The first level of Mictlan is a wide river, the Apanohuaya. The dead cannot cross it alone. Sahagún\'s informants were precise about which dog can take you.',{eye:'The first level'});
+   const i=await choose(s,'Three dogs wait on the bank. Which one will carry you?',['The white dog','The reddish-yellow dog','The black dog'],{right:1,wrong:'That dog won\'t take you. Try another.'});
+   await say(s,'The white dog says: I have just washed myself, I won\'t get wet again. The black dog says: I have just got dirty, I can\'t. Only the reddish-yellow dog will carry you. The xoloitzcuintli, the hairless dog of Mexico, is still linked to this role today.');
+ }},
+ {name:'The River',short:'Level 1',sub:'Apanohuaya, the crossing',col:'#4FA3B8',run:async s=>{
+   art(cx(`${river(230)}${hill(80,232,.5)}${hill(540,232,.5,{col:'#4A6A5A'})}<g class="drift">${xolo(260,300,.9,{swim:true})}${walker(250,262,.5)}</g>`));
+   if(SND.ctx){ waterLoop(); }
+   await say(s,'The dog recognises its master, jumps into the water, and swims. You hold on.',{eye:'Apanohuaya'});
+   await hold(s,{label:'Hold on to the dog',ms:6000,ask:'Press and hold, and don\'t let go until the far bank.',early:'Hold on. The current is strong.'});
+   loopOff('water'); if(SND.ctx) plop();
+   await say(s,'You\'re across. That\'s why families kept dogs and took care of them: you never knew which one you would need.');
+ }},
+ {name:'Mountains and Obsidian',short:'Levels 2–3',sub:'Where the hills clash',col:'#3FA36A',run:async s=>{
+   art(cx(`${ground(330,'#3A2A30')}<g class="clashL">${hill(170,330,1)}</g><g class="clashR">${hill(430,330,1,{col:'#4A6A5A'})}</g>${walker(300,340,.5)}`));
+   if(SND.ctx) pad('pad',[87.3,130.8,174.6],.03);
+   await say(s,'The second level is Tepeme Monamictlan, the place where the mountains crash together. The dead must slip between them, choosing the moment.',{eye:'The second level'});
+   await count(s,{ask:'Wait for the gap, then go. Tap three times to run between the hills.',n:3,label:'Run',onTap:()=>{ if(SND.ctx) thud(); }});
+   art(cx(`${ground(330,'#3A2A30')}${hill(300,330,1.3,{col:OBS})}${[[120,140,20],[480,120,-30],[200,80,60],[420,240,10]].map(([a,b,r])=>blade(a,b,1,r)).join('')}${walker(300,340,.5)}`));
+   await say(s,'The third is Itztepetl, the obsidian mountain, its slopes covered in blades. The papers buried with the dead were meant for dangers like these.');
+ }},
+ {name:'The Obsidian Wind',short:'Level 4',sub:'Itzehecayan',col:'#2A2A33',run:async s=>{
+   art(cx(`${ground(330,'#3A2A30')}${Array.from({length:12},(_,i)=>`<g class="drift" style="animation-duration:${2+i%4}s">${blade(40+i*48,90+(i*53)%200,.7,70+i*20)}</g>`).join('')}${walker(300,340,.6)}`));
+   if(SND.ctx){ windLoop(); }
+   await say(s,'The fourth level is Itzehecayan, the place of the obsidian wind. Sahagún\'s informants said a wind blows there so sharp it cuts like knives. This, they said, is why the dead were burned with their belongings: so they would have clothes to shield them.',{eye:'The fourth level'});
+   await hold(s,{label:'Walk into the wind',ms:6000,ask:'Wrap your cloak around you. Press and hold to walk through.',early:'Keep your head down. Hold again.'});
+   loopOff('wind');
+   await say(s,'You come out the other side, cut and cold, but walking.');
+ }},
+ {name:'Banners and Arrows',short:'Levels 5–6',sub:'Weightless, then hunted',col:'#D9667A',run:async s=>{
+   art(cx(`${ground(330,'#3A2A30')}${[100,200,400,500].map((x,i)=>`<g class="bob" style="animation-delay:${i*.4}s">${banner(x,250,1,i%2?8:-8)}</g>`).join('')}<g class="bob">${walker(300,260,.6)}</g>`));
+   await say(s,'The fifth level is Pancuecuetlacayan, where the dead lose their weight and float like banners in the wind.',{eye:'The fifth level'});
+   await release(s,{ask:'Become weightless. Let these go.',words:['My name','My house','My work','My worries']});
+   art(cx(`${ground(330,'#3A2A30')}${[[120,120,10],[480,90,170],[160,240,-10],[440,220,190],[300,60,90]].map(([a,b,r])=>arrow(a,b,1,r)).join('')}${walker(300,340,.6)}`));
+   await say(s,'The sixth is Temiminaloyan, where arrows fly at you from hands no one can see. You keep going.');
+ }},
+ {name:'The Jaguars',short:'Level 7',sub:'Where hearts are eaten',col:'#E0A82E',run:async s=>{
+   art(cx(`${ground(330,'#3A2A30')}${jaguar(130,330,.9)}${jaguar(470,330,.9)}${walker(300,340,.6)}${jade(300,170,1)}`));
+   if(SND.ctx) drum();
+   await say(s,'The seventh level is Teocoyocualoyan, the place where wild beasts eat hearts. Jaguars wait there.',{eye:'The seventh level'});
+   await choose(s,'What do you give them?',['The jade bead from my mouth','My own heart'],{right:0,wrong:'Your heart is what they want. Is there anything else?'});
+   await say(s,'Modern retellings say this is what the jade bead was for: a heart of stone that the jaguars can\'t eat. Whether or not Sahagún\'s elders meant it that way, the jade went down with the dead, and it was green, the colour of what is precious and alive.');
+ }},
+ {name:'The Dark Water',short:'Level 8',sub:'Narrow paths',col:'#4FA3B8',run:async s=>{
+   art(cx(`${river(300,{shells:false,col:'#1E3440'})}<path d="M0 300 Q150 280 300 300 T600 300" stroke="${OBS}" stroke-width="40" fill="none" opacity=".7"/>${walker(300,300,.55)}`,{bg:'#0E0A10'}));
+   if(SND.ctx){ allOff(1); pad('pad',[73.4,110,146.8],.03); }
+   await say(s,'The eighth level, Izmictlan Apochcalolca, is a place of narrow paths and dark water. It is very quiet.',{eye:'The eighth level'});
+   await still(s,{ask:'Be still, and walk carefully in the dark.',ms:9000});
+   await say(s,'Four years have passed since you died. The road down is long because the Mexica believed the dead deserved time.');
+ }},
+ {name:'The Lord of the Dead',short:'Level 9',sub:'Mictlantecuhtli and Mictecacihuatl',col:'#B8322A',run:async s=>{
+   art(cx(`${ground(330,'#3A2A30')}${deathLord(210,330,1)}${deathLord(390,330,.95,{lady:true})}${walker(300,380,.45,{arms:'offer'})}`));
+   if(SND.ctx) pad('pad',[98,147,196],.035);
+   await say(s,'At last you reach the ninth level, Chiconahuamictlan, and stand before Mictlantecuhtli, Lord of the Dead, and his wife Mictecacihuatl, Lady of the Dead.',{eye:'The ninth level'});
+   await say(s,'Sahagún\'s elders said the dead brought gifts: the papers, torches, incense and cloth burned for them by their families over four years. The Lord of the Dead received them.');
+   await spots(s,{ask:'Offer your gifts. Tap each one.',items:[{x:30,y:30,label:'Incense',say:'Copal, the sweet resin still burned at Mexican altars.'},{x:70,y:30,label:'Cloth',say:'Cloaks and cloth, burned for you by your family.'},{x:50,y:62,label:'Paper',say:'Cut paper, the oldest offering of all.'}]});
+   await say(s,'And then, the sources say, the dead went on into the ninth place and simply ended, or rested. Mictlan isn\'t punishment. It is the end of the road, and rest.');
+ }},
+ {name:'Flower and Song',short:'Feasts',sub:'The feasts of the dead',col:'#F28C1E',run:async s=>{
+   art(cx(`${papel(22)}${ofrenda(300,360,1.2)}${scroll(80,330,1.2)}${scroll(520,330,1.2,PINK)}`,{bg:'#2A1A2A'}));
+   if(SND.ctx){ allOff(1); pad('pad',[130.8,196,261.6],.035); chime(); }
+   await say(s,'The Mexica held two months of feasts for the dead each year, the Little Feast and the Great Feast of the Dead, with offerings of food and flowers. After the conquest, these blended with the Catholic days of All Saints and All Souls into what became Día de Muertos.',{eye:'The feasts of the dead'});
+   await count(s,{ask:'Build the ofrenda. Place four marigolds, cempōhualxōchitl, the flower whose scent guides the dead home.',n:4,label:'Place a flower',onTap:()=>{ if(SND.ctx) plop(); }});
+   await say(s,'Nahua poets sang of death in a way that still feels close. One song, attributed to the poet-king Nezahualcoyotl, asks: Is it true that we live on earth? Not forever on earth, only a little while here. Even jade breaks, even gold cracks, even quetzal plumes are torn. Not forever on earth, only a little while here.');
+ }}],
+ finale:async s=>{ art(cxCover()); if(SND.ctx) chime();
+   await say(s,'That is the passage: a death that decides your road, a bundle with a jade heart, a small dog at the river, mountains, blades, wind and jaguars, and four years later, rest.',{eye:'The end of the book'});
+   await say(s,'The Mexica didn\'t promise reward for the good or punishment for the bad. They promised a long road, a faithful companion, and a family that would keep burning gifts for you. Only a little while here.'); }};
+header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
+manualLanding(BOOK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>

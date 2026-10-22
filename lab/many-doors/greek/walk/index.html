@@ -1,0 +1,477 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Twelve Days of Er</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* The Gold Leaf: a black-figure vase. Terracotta, black glaze, cream slip and a little gold. */
+:root{
+  --bg:#F3E3C3; --paper:#FBF1DC; --ink:#1A1410; --ink-soft:#5A4636; --accent:#A8461E; --accent2:#5E6A32; --gold:#E3B341; --night:#120E0C; --nightink:#FBF1DC;
+  --display:'Cinzel','Jost','Georgia',serif;
+}
+h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);font-weight:600}
+h1{letter-spacing:.02em}
+.brand{letter-spacing:.1em;font-size:.95rem}
+.cover{background:#C8642E}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The walk: one short daily practice per stage, with a map of stones. Each day: the book, what it means, a practice, a task for today, a minute of sitting. */
+function stonePos(i,n){ const per=n<=10?n:n<=21?7:n<=42?7:7; const rows=Math.ceil(n/per); const r=Math.floor(i/per), c=i%per, cc=r%2?per-1-c:c;
+  const W=600,H=400, dx=(W-120)/Math.max(per-1,1), dy=rows>1?(H-110)/(rows-1):0; return [60+cc*dx, (rows>1?55:200)+r*dy]; }
+function walkMap(W,n,{label=true}={}){ const N=W.days.length; let d='',st=''; for(let i=0;i<N;i++){ const [x,y]=stonePos(i,N); d+=(i?'L':'M')+x+' '+y; }
+  for(let i=0;i<N;i++){ const [x,y]=stonePos(i,N), P=W.parts[W.days[i].p], done=i<n, cur=i===n; const r=N>20?13:N>9?18:26;
+    st+=`<g><circle cx="${x}" cy="${y}" r="${r}" fill="${done?P.col:'#26343A'}" stroke="${cur?W.gold||'#E8B13A':P.col}" stroke-width="${cur?4:2.5}"/>${label?`<text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="${N>20?11:14}" font-weight="700" fill="${done?'#10181B':'#FFF6DE'}">${i+1}</text>`:''}${cur?`<circle cx="${x}" cy="${y}" r="${r+6}" fill="none" stroke="${W.gold||'#E8B13A'}" stroke-width="2" class="pulse"/>`:''}</g>`; }
+  return `<rect width="600" height="400" fill="#10181B"/>${W.mapBg?W.mapBg():''}<path d="${d}" fill="none" stroke="rgba(255,246,222,.25)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/>${st}`; }
+function walkLanding(W){
+  const n=Math.min(+store.get(W.key+'-next')||0,W.days.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(W.eyebrow)}</span><h1>${esc(W.title)}</h1><p class="lede">${esc(W.lede)}</p><p class="note">${esc(W.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${n?`Continue: ${W.unit} ${n+1}`:`Begin ${W.unit} 1`}</button>${n?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${W.manualUrl?`<a class="pill" href="${W.manualUrl}" target="_blank" rel="noopener">${esc(W.manualName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="Map of the ${W.days.length} ${W.unit.toLowerCase()}s">${walkMap(W,n)}</svg></div></section>
+    <section class="sec"><h2>The ${W.parts.length>1?'stages':'path'}</h2><div class="cgrid">${W.parts.map((p,i)=>{ const first=W.days.findIndex(d=>d.p===i), last=W.days.length-1-[...W.days].reverse().findIndex(d=>d.p===i); return `<button type="button" class="ck" data-n="${first}" style="--c:${p.col}"><i></i><b>${esc(p.name)}</b><span>${W.unit}s ${first+1}${last>first?'–'+(last+1):''} · ${esc(p.sub)}</span></button>`; }).join('')}</div></section>
+    <section class="sec how"><h2>Each ${W.unit.toLowerCase()}</h2>${[['The book',W.howBook||'What the tradition itself says, in plain words.'],['What it means','What it could mean for a living person.'],['A practice','A short interactive moment on the screen.'],['Today','One small thing to do before tomorrow.'],['Sit','A minute of quiet with a breathing ring.']].map(([a,b])=>`<div><b>${a}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    <details class="all"><summary>Read every ${W.unit.toLowerCase()} as text</summary>${W.days.map((d,i)=>`<h3>${W.unit} ${i+1}: ${esc(d.t)}</h3><p>${esc(d.book)}</p><p>${esc(d.mean)}</p><p><b>Today:</b> ${esc(d.try)}</p>`).join('')}</details>
+    <section class="sec"><h2>Sources</h2><p class="sources">${W.sources}</p></section>`;
+  $('#begin').onclick=()=>playWalk(W,n);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(W.key+'-next','0'); playWalk(W,0); };
+  document.querySelectorAll('.ck').forEach(b=>b.onclick=()=>playWalk(W,+b.dataset.n));
+}
+async function playWalk(W,n){
+  const D=W.days[n], P=W.parts[D.p];
+  const menu={label:W.unit+'s',build:()=>`<h3>Jump to a ${W.unit.toLowerCase()}</h3><ol>${W.days.map((d,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===n}"><small>${i+1}</small>${esc(d.t)}</button></li>`).join('')}</ol>`,go:i=>playWalk(W,+i)};
+  const s=openPlayer({title:D.t,sub:`${W.unit} ${n+1} of ${W.days.length}`,steps:['The book','Meaning','Practice','Today','Sit'],menu,color:P.col});
+  s.onclose=()=>walkLanding(W);
+  const bg=W.art(D,n,P);
+  try{
+    if(W.ambient) W.ambient(D,P);
+    stepTo(0); art(bg,D.t); await say(s,D.book,{eye:`${P.name} · the book`});
+    stepTo(1); await say(s,D.mean,{eye:'What it means'});
+    stepTo(2); clearLayer(); eyebrow('Practice'); if(D.act) await D.act(s,D,P); else if(D.a) await runAct(s,D.a,P); else await hold(s,{label:'Press and hold',ms:3500,ask:'Press and hold while you let that sink in.'});
+    alive(s); art(bg,D.t);
+    stepTo(3); await say(s,D.try,{eye:'Today'});
+    stepTo(4); await sit(s,{text:D.sit,col:P.col});
+    alive(s); store.set(W.key+'-next',String(Math.min(n+1,W.days.length-1)));
+    if(n===W.days.length-1){ if(W.finale) await W.finale(s); store.set(W.key+'-next','0'); closePlayer(); return; }
+    art(walkMap(W,n+1),'Your path'); eyebrow(''); $('#pText').textContent=`${W.unit} ${n+1} done. ${W.unit} ${n+2}, “${W.days[n+1].t}”, is waiting.`; $('#pRow').innerHTML=`<button type="button" class="sgo alt" id="wDone">Close for today</button><button type="button" class="sgo" id="wNext">Go on to ${W.unit.toLowerCase()} ${n+2} →</button>`;
+    $('#wDone').onclick=()=>closePlayer(); $('#wNext').onclick=()=>playWalk(W,n+1); $('#wNext').focus({preventScroll:true});
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* practice specs written as data: {k:'hold'|'still'|'release'|'count'|'choose', ...} */
+async function runAct(s,a,P){
+  const q=a.q;
+  if(a.k==='hold') await hold(s,{label:a.label||'Press and hold',ms:a.ms||4000,ask:q,early:a.early||'Not yet. Hold again, slowly.'});
+  else if(a.k==='still') await still(s,{ask:q,ms:a.ms||8000});
+  else if(a.k==='release') await release(s,{ask:q,words:a.words});
+  else if(a.k==='count') await count(s,{ask:q,n:a.n,label:a.label||'Tap',onTap:k=>{ if(SND.ctx) (a.sound==='bell'?bell(392+k*20,.07):plop()); }});
+  else if(a.k==='choose'){ const i=await choose(s,q,a.opts,{right:a.right??-1,wrong:a.wrong}); if(a.replies&&a.replies[i]) await say(s,a.replies[i]); }
+  if(a.after) await say(s,a.after);
+}
+
+/* Black-figure kit for The Gold Leaf: black silhouettes on terracotta, incised lines in clay colour, a meander band above and below. */
+const K='#1A1410', CLAY='#C8642E', CLAYL='#E08A50', CREAM='#F3E3C3', GOLDL='#E3B341', NIGHTG='#141826', WINE='#6A1E1E', OLIVE='#5E6A32', ASH='#8A8478', SKYG='#DCE6EA';
+const GK_DEFS=`<defs><pattern id="meander" width="32" height="20" patternUnits="userSpaceOnUse"><rect width="32" height="20" fill="${K}"/><path d="M2 18 V2 H22 V14 H10 V8 H16 M24 18 H30" stroke="${CLAYL}" stroke-width="2.4" fill="none"/></pattern>
+<radialGradient id="glowG"><stop offset="0" stop-color="#FFF4C8"/><stop offset=".5" stop-color="${GOLDL}" stop-opacity=".55"/><stop offset="1" stop-color="${GOLDL}" stop-opacity="0"/></radialGradient>
+<linearGradient id="nightG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E1220"/><stop offset="1" stop-color="#2A2A3A"/></linearGradient>
+<linearGradient id="pillar" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFF4C8" stop-opacity="0"/><stop offset=".3" stop-color="#F2B8D8"/><stop offset=".5" stop-color="#FFFFFF"/><stop offset=".7" stop-color="#A8D8F0"/><stop offset="1" stop-color="#FFF4C8" stop-opacity="0"/></linearGradient><clipPath id="gkclip"><rect width="600" height="400"/></clipPath></defs>`;
+function gk(inner,{bg='clay',border=true}={}){ const f=bg==='clay'?CLAY:bg==='night'?'url(#nightG)':bg==='cream'?CREAM:bg;
+  return `${GK_DEFS}<g clip-path="url(#gkclip)"><rect width="600" height="400" fill="${f}"/>${bg==='night'?stars(80,21,300,'#E8E0D0'):''}${inner}${border?`<rect width="600" height="20" fill="url(#meander)"/><rect y="380" width="600" height="20" fill="url(#meander)"/>`:''}</g>`; }
+function line(y=330,col=K){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y+6} H600" stroke="${CLAYL}" stroke-width="1.5" opacity=".6"/>`; }
+/* A black-figure person: chiton, profile-ish head, incised details. hat: 'petasos' (Hermes), 'helmet', 'veil', 'wreath'. */
+function gfig(x,y,s=1,{fill=K,hat='',arms='down',staff='',flip=false,wings=false,inc=CLAYL,shade=false}={}){ const op=shade?' opacity=".55"':'';
+  const ar=arms==='up'?`<path d="M-14 -78 L-30 -110 M14 -78 L30 -110" stroke="${fill}" stroke-width="7" stroke-linecap="round"/>`:arms==='fwd'?`<path d="M14 -78 L44 -70" stroke="${fill}" stroke-width="7" stroke-linecap="round"/>`:arms==='mourn'?`<path d="M-14 -78 Q-22 -100 -6 -112 M14 -78 Q22 -100 6 -112" stroke="${fill}" stroke-width="7" fill="none" stroke-linecap="round"/>`:'';
+  const hd=hat==='petasos'?`<ellipse cx="0" cy="-112" rx="22" ry="5" fill="${fill}"/><path d="M-10 -114 Q0 -128 10 -114Z" fill="${fill}"/>`:hat==='helmet'?`<path d="M-12 -104 Q-14 -126 0 -126 Q14 -126 12 -104 Z" fill="${fill}"/><path d="M-14 -124 Q0 -150 18 -130" stroke="${fill}" stroke-width="7" fill="none"/>`:hat==='veil'?`<path d="M-14 -96 Q-16 -124 0 -124 Q16 -124 14 -96 L20 -60 L-20 -60Z" fill="${fill}"/>`:hat==='wreath'?`<path d="M-12 -112 q-4 -6 2 -8 M-6 -118 q-2 -6 4 -6 M4 -118 q4 -6 6 0 M10 -114 q6 -2 4 6" stroke="${OLIVE}" stroke-width="4" fill="none"/>`:'';
+  const st=staff==='kerykeion'?`<path d="M30 6 V-130" stroke="${fill}" stroke-width="4"/><path d="M30 -128 q-14 -10 0 -18 q14 -8 0 -16 M30 -128 q14 -10 0 -18 q-14 -8 0 -16" stroke="${fill}" stroke-width="3" fill="none"/>`:staff==='pole'?`<path d="M34 10 L20 -140" stroke="${fill}" stroke-width="4"/>`:staff==='sceptre'?`<path d="M30 6 V-140" stroke="${fill}" stroke-width="4"/><circle cx="30" cy="-144" r="6" fill="${fill}"/>`:'';
+  const wg=wings?`<path d="M-6 -86 Q-50 -120 -60 -80 Q-40 -86 -30 -70 Q-46 -66 -44 -50 Q-24 -60 -8 -66Z" fill="${fill}"/>`:'';
+  return `<g transform="translate(${x} ${y}) scale(${flip?-s:s} ${s})"${op}>${wg}${st}<path d="M-20 0 L-16 -60 Q-20 -84 -12 -90 H12 Q20 -84 16 -60 L20 0Z" fill="${fill}"/><path d="M-12 -12 L-10 -58 M0 -10 V-60 M12 -12 L10 -58" stroke="${inc}" stroke-width="1.2" opacity=".8"/><path d="M-14 -62 H14" stroke="${inc}" stroke-width="1.5"/>${ar}<circle cx="0" cy="-104" r="12" fill="${fill}"/><path d="M8 -106 L14 -100 L8 -98" fill="${fill}"/><circle cx="4" cy="-106" r="2" fill="${inc}"/><path d="M-12 -108 Q-14 -96 -8 -92" stroke="${inc}" stroke-width="1.2" fill="none"/>${hd}</g>`; }
+function shade(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})" opacity=".6"><path d="M-14 0 Q-20 -40 -12 -80 Q0 -96 12 -80 Q20 -40 14 0 Q6 -8 0 0 Q-6 -8 -14 0Z" fill="${SKYG}"/><circle cx="0" cy="-92" r="10" fill="${SKYG}"/><path d="M-4 -94 h3 M2 -94 h3" stroke="${K}" stroke-width="1.5"/><path d="M-10 -60 q-10 -14 -4 -26 M10 -60 q10 -14 4 -26" stroke="${SKYG}" stroke-width="4" fill="none" opacity=".7"/></g>`; }
+function water(y=280,col='#2A3A3A'){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/>`; for(let k=0;k<4;k++){ let d=`M0 ${y+18+k*24}`; for(let x=0;x<600;x+=40) d+=` q20 -9 40 0`; o+=`<path d="${d}" stroke="#5A7070" stroke-width="2" fill="none" opacity=".8"/>`; } return o; }
+function boat(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-110 -20 Q-90 10 0 10 Q90 10 110 -20 L120 -40 L104 -26 Q0 -14 -104 -26 L-120 -44Z" fill="${K}"/><path d="M-90 -12 H90" stroke="${CLAYL}" stroke-width="1.5"/><path d="M-118 -44 l-8 -10" stroke="${K}" stroke-width="5"/></g>`; }
+function cypress(x,y,s=1,col='#2A3A2A'){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 -180 Q26 -120 22 -40 Q20 -8 0 0 Q-20 -8 -22 -40 Q-26 -120 0 -180Z" fill="${col}" stroke="${K}" stroke-width="2"/><path d="M0 -160 V-6 M-10 -90 L0 -80 L10 -90 M-12 -60 L0 -50 L12 -60" stroke="${K}" stroke-width="1" fill="none" opacity=".5"/></g>`; }
+function whiteCypress(x,y,s=1){ return cypress(x,y,s,'#E6E2D6'); }
+function spring(x,y,s=1,{col='#6AA8B8',glow=false}={}){ return `<g transform="translate(${x} ${y}) scale(${s})">${glow?`<circle cy="-10" r="70" fill="url(#glowG)" opacity=".6"/>`:''}<ellipse rx="70" ry="18" fill="${col}" stroke="${K}" stroke-width="2.5"/><ellipse rx="50" ry="10" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity=".6"/><path d="M-80 0 Q-70 -16 -56 -14 M80 0 Q70 -16 56 -14" stroke="${ASH}" stroke-width="6" fill="none"/></g>`; }
+function cerberus(x,y,s=1){ const H=(dx,dy,r)=>`<g transform="translate(${dx} ${dy}) rotate(${r})"><path d="M0 0 Q4 -24 24 -26 L46 -18 Q50 -10 40 -8 L22 -6 Q14 8 0 6Z" fill="${K}"/><path d="M10 -22 l-2 -16 l10 12" fill="${K}"/><circle cx="26" cy="-18" r="2.4" fill="${CLAYL}"/><path d="M30 -8 l3 5 l3 -5" fill="${CREAM}"/></g>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 -30 Q-74 -60 -40 -62 H30 Q50 -60 50 -40 Q50 -24 40 -22 H-50 Q-70 -20 -70 -30Z" fill="${K}"/><path d="M-56 -26 L-60 0 M-40 -24 L-38 0 M24 -24 L22 0 M40 -24 L44 0" stroke="${K}" stroke-width="9" stroke-linecap="round"/><path d="M-68 -44 Q-96 -50 -94 -80 Q-90 -96 -80 -100" stroke="${K}" stroke-width="5" fill="none"/><circle cx="-80" cy="-100" r="5" fill="${K}"/>${H(36,-58,-20)}${H(42,-44,6)}${H(30,-72,-46)}<path d="M-30 -58 l4 -10 l4 10 M-10 -60 l4 -10 l4 10 M10 -60 l4 -10 l4 10" fill="${K}"/><path d="M-50 -40 H30" stroke="${CLAYL}" stroke-width="1.2"/></g>`; }
+function throne(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-30 0 V-60 H30 V0 M-36 -60 H36 M-30 -60 V-120 Q-30 -130 -20 -130" stroke="${K}" stroke-width="6" fill="none"/></g>`; }
+function pyre(x,y,s=1,{lit=false}={}){ return `<g transform="translate(${x} ${y}) scale(${s})">${lit?`<circle cy="-80" r="90" fill="url(#glowG)" class="flick"/>`:''}${[0,1,2,3,4].map(i=>`<rect x="-100" y="${-14-i*14}" width="200" height="12" fill="${i%2?'#5A3A22':'#6A4A2A'}" stroke="${K}" stroke-width="1.5"/>`).join('')}<path d="M-80 -84 Q-84 -98 -60 -100 L70 -98 Q90 -96 84 -84Z" fill="${CREAM}" stroke="${K}" stroke-width="2"/>${lit?[-60,-30,0,30,60].map((d,i)=>`<path class="flame" style="animation-delay:${i*.12}s" d="M${d-12} -84 Q${d-8} -110 ${d} -130 Q${d+8} -110 ${d+12} -84Z" fill="${i%2?GOLDL:'#E2641E'}"/>`).join(''):''}</g>`; }
+function tablet(x,y,s=1,{text=true}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="120" fill="url(#glowG)" opacity=".7"/><path d="M-90 -40 L86 -46 L92 36 L-86 44Z" fill="${GOLDL}" stroke="#8A6A1E" stroke-width="2.5"/><path d="M-80 -34 L80 -40 M-82 -16 L82 -22 M-84 2 L84 -4 M-84 20 L86 14 M-84 36 L60 32" stroke="#8A6A1E" stroke-width="1.6" stroke-dasharray="${text?'3 2 6 2 4 3':'0'}"/></g>`; }
+function coin(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="30" fill="url(#glowG)"/><circle r="14" fill="#B89A5A" stroke="${K}" stroke-width="2"/><path d="M-5 -4 q5 -6 10 0 q-5 8 -10 0Z" fill="${K}" opacity=".6"/></g>`; }
+function openings(){ return `<ellipse cx="160" cy="120" rx="50" ry="16" fill="${SKYG}" stroke="${K}" stroke-width="2"/><ellipse cx="440" cy="120" rx="50" ry="16" fill="${SKYG}" stroke="${K}" stroke-width="2"/><ellipse cx="160" cy="350" rx="56" ry="16" fill="${K}"/><ellipse cx="440" cy="350" rx="56" ry="16" fill="${K}"/>`; }
+function meadow(y=300){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${OLIVE}"/>`; const r=rnd(8); for(let i=0;i<40;i++){ const x=r()*600, yy=y+8+r()*(380-y); o+=`<path d="M${x} ${yy} v-10 M${x} ${yy-10} l-4 -4 M${x} ${yy-10} l4 -4" stroke="${CREAM}" stroke-width="1.5" opacity=".7"/>`; } return o; }
+function lightPillar(){ return `<rect x="250" y="0" width="100" height="400" fill="url(#pillar)" opacity=".9" class="flick"/>`; }
+function spindle(x,y,s=1){ const C=['#E8E0D0','#E07A3A','#F2D27A','#D8D0C0','#C8A060','#8AA0C8','#E85A3A','#F6F0E0']; return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 -150 V150" stroke="${GOLDL}" stroke-width="5"/><path d="M-4 150 L0 170 L4 150" fill="${GOLDL}"/><g class="spin" style="transform-origin:0 0">${C.map((c,i)=>`<ellipse rx="${120-i*13}" ry="${30-i*3}" fill="none" stroke="${c}" stroke-width="7"/>`).join('')}</g><circle r="10" fill="${GOLDL}" stroke="${K}" stroke-width="2"/></g>`; }
+function lots(x,y,s=1,n=7){ return `<g transform="translate(${x} ${y}) scale(${s})">${Array.from({length:n},(_,i)=>`<g transform="translate(${(i-(n-1)/2)*34} ${(i%2)*10}) rotate(${(i*37)%30-15})"><rect x="-12" y="-16" width="24" height="32" rx="3" fill="${CREAM}" stroke="${K}" stroke-width="2"/><path d="M-6 -6 h12 M-6 2 h8" stroke="${K}" stroke-width="1.5"/></g>`).join('')}</g>`; }
+function amphora(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-14 -150 H14 L12 -130 Q50 -110 46 -60 Q40 -10 0 0 Q-40 -10 -46 -60 Q-50 -110 -12 -130Z" fill="${CLAY}" stroke="${K}" stroke-width="3"/><path d="M-12 -130 Q-40 -140 -34 -110 M12 -130 Q40 -140 34 -110" stroke="${K}" stroke-width="5" fill="none"/><path d="M-44 -90 H44 M-46 -50 H46" stroke="${K}" stroke-width="3"/>${gfig(0,-54,.32,{arms:'mourn'})}</g>`; }
+function pomegranate(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="26" fill="${WINE}" stroke="${K}" stroke-width="2.5"/><path d="M-8 -24 l4 -10 l4 6 l4 -6 l4 10" fill="${WINE}" stroke="${K}" stroke-width="2"/><path d="M-12 -6 Q0 -16 12 -6" stroke="#E86A6A" stroke-width="2" fill="none"/></g>`; }
+function gkCover(){ return gk(`${line(330)}${whiteCypress(110,330,.9)}${spring(180,330,.6)}${spring(430,330,.8,{glow:true})}${gfig(300,330,1.1,{arms:'fwd'})}${tablet(470,140,.5)}`); }
+
+/* The Twelve Days of Er: Plato's Myth of Er, one scene a day, from the battlefield to the pyre. */
+const WSC=[
+ n=>gk(`${line(330)}${gfig(300,330,1.1,{hat:'helmet',arms:'up'})}<circle cx="300" cy="190" r="70" fill="url(#glowG)" opacity=".5"/>`),
+ n=>gk(`${meadow(330)}${openings()}${throne(300,330,.8)}${gfig(300,300,.8,{staff:'sceptre'})}`,{bg:'night'}),
+ n=>gk(`${meadow(330)}${shade(300,320,1)}${gfig(200,330,.9,{staff:'sceptre'})}${gfig(400,330,.9,{staff:'sceptre',flip:true})}`,{bg:'night'}),
+ n=>gk(`${meadow(310)}${[100,200,300,400,500].map((x,i)=>shade(x,320+i%2*20,.7)).join('')}<path d="M0 310 Q300 250 600 310" stroke="${CREAM}" stroke-width="2" fill="none" opacity=".4"/>`,{bg:'night'}),
+ n=>gk(`${line(330)}<ellipse cx="300" cy="300" rx="130" ry="36" fill="${K}"/><circle cx="300" cy="290" r="90" fill="#E2641E" opacity=".15" class="flick"/>${gfig(300,300,.9,{arms:'up'})}`,{bg:'night'}),
+ n=>gk(`${meadow(330)}${lightPillar()}${shade(150,330,.6)}${shade(450,330,.6)}`,{bg:'night'}),
+ n=>gk(`${lightPillar()}${spindle(300,200,1)}`,{bg:'night'}),
+ n=>gk(`${lightPillar()}${spindle(300,110,.5)}${['#A8461E','#5E6A32','#6A1E1E'].map((c,i)=>gfig(170+i*130,340,.9,{hat:'veil',fill:K,inc:c})).join('')}`,{bg:'night'}),
+ n=>gk(`${line(330)}${lots(300,250,1.4,9)}${gfig(300,170,.7,{staff:'sceptre'})}`,{bg:'night'}),
+ n=>gk(`${line(330)}${gfig(150,330,.8,{hat:'helmet'})}${gfig(300,330,.8,{hat:'petasos'})}${gfig(450,330,.8,{hat:'wreath'})}<path d="M520 250 l20 -10 l20 10 l-20 8Z" fill="${CREAM}"/>`,{bg:'night'}),
+ n=>gk(`<rect x="0" y="200" width="600" height="180" fill="#C9B88A"/>${water(300,'#5A6A6A')}${[150,300,450].map(x=>shade(x,300,.6)).join('')}`,{bg:'night'}),
+ n=>gk(`${line(330)}${pyre(300,330,1)}${gfig(300,250,.7,{arms:'up'})}${Array.from({length:6},(_,i)=>`<path class="rise" style="animation-delay:${i*.3}s" d="M${80+i*90} ${200-i%2*50} l6 -40" stroke="#FFF4C8" stroke-width="3"/>`).join('')}`,{bg:'night'})];
+const WALK={key:'er12',brand:'The Twelve Days of Er',brandSub:'Plato\'s Myth of Er, day by day',title:'The Twelve Days of Er',eyebrow:'A daily practice · 12 days',unit:'Day',gold:GOLDL,
+ lede:'A soldier named Er lay dead on the battlefield for ten days, yet his body didn\'t decay. On the twelfth day, on his funeral pyre, he woke up and told what he had seen. Walk through his story one scene a day.',
+ note:'Each day takes about five minutes. Plato told this story to end The Republic, his book about how to live justly. It is philosophy dressed as a ghost story.',
+ manualUrl:'../../../many-doors/greek/',manualName:'The Gold Leaf',
+ howBook:'What Er saw, closely following Plato\'s text.',
+ sources:'Plato, Republic 10.614b–621d, translations by Paul Shorey (1935), G. M. A. Grube rev. C. D. C. Reeve (1992) and Allan Bloom (1968).',
+ parts:[{name:'The Meadow',sub:'Judgment and the returning souls',col:'#5E6A32'},{name:'The Spindle',sub:'The structure of the universe',col:'#8AA0C8'},{name:'The Choice',sub:'Lots, lives, forgetting and waking',col:'#A8461E'}],
+ art:(D,n,P)=>WSC[n](n),
+ mapBg:()=>`<rect width="600" height="400" fill="#141826"/>`,
+ ambient:(D,P)=>{ if(SND.ctx) pad('pad',[[110,165,220],[130.8,196,261.6],[98,147,196]][D.p],.03); },
+ finale:async s=>{ art(gkCover()); if(SND.ctx) chime();
+   await say(s,'Twelve days. Er woke on the pyre and told his story, and Plato wrote it down.',{eye:'The end of the walk'});
+   await say(s,'His last words on it: and so the tale was saved, and not lost. And it may save us, if we listen to it; we shall cross the river of Lethe well, and keep our souls unstained.'); },
+ days:[
+ {p:0,t:'The Fallen Soldier',book:'Er, son of Armenius, a man of Pamphylia, was killed in battle. When the dead were gathered up on the tenth day, already decaying, his body was found whole. He was carried home, and on the twelfth day, lying on the pyre, he came back to life.',
+  mean:'Plato frames his deepest teaching as a report from someone who came back. It\'s a story to take seriously, not literally.',
+  try:'Today, imagine you are seeing your ordinary life for the first time, as a visitor would.',sit:'Breathe as if waking from a long sleep.',a:{k:'hold',label:'Lie still',q:'Press and hold. Er lies on the battlefield for ten days, untouched.',ms:5000}},
+ {p:0,t:'The Four Openings',book:'Er\'s soul travelled with many others to a strange place with two openings in the earth and two in the sky. Judges sat between them. The just were sent right and upward, with signs of their judgment on their fronts; the unjust left and downward, with signs on their backs.',
+  mean:'We carry the record of our lives in plain sight, in front or behind us. Other people can often read it before we can.',
+  try:'Notice one thing about yourself that others probably see more clearly than you do.',sit:'Picture the four openings, two of light, two of dark. Breathe between them.',a:{k:'choose',q:'Which way do the just go?',opts:['Right, and up into the sky','Left, and down into the earth'],right:0,wrong:'That is the road of the unjust. Try again.'}},
+ {p:0,t:'The Messenger',book:'When Er came before the judges, they told him he was to be a messenger to humankind about this place. He was to listen and watch everything.',
+  mean:'Each of us is, in some way, a messenger: we carry back what we have seen and tell it to others.',
+  try:'Tell someone about something that changed how you see life.',sit:'Breathe in, listening. Breathe out, ready to speak.',a:{k:'still',q:'Watch and listen, like Er.',ms:9000}},
+ {p:0,t:'The Meadow of Returning',book:'From the other two openings, souls kept arriving: from below, dusty and worn; from above, clean. They camped in a meadow like people at a festival and told each other their stories. Each wrong had been paid back ten times over, on a journey of a thousand years.',
+  mean:'Plato imagines justice as proportion: what you give out comes back to you, multiplied. Kindness too.',
+  try:'Repay one kindness today, with interest.',sit:'Picture the meadow full of travellers telling their stories.',a:{k:'count',n:10,label:'Repay',q:'Tenfold: tap ten times to repay a kindness.'}},
+ {p:0,t:'The Tyrant at the Mouth',book:'Some told of Ardiaeus, a tyrant who had killed his father and brother. When he tried to come up, the mouth of the opening roared and refused him, and fierce men seized him and dragged him back.',
+  mean:'Some wrongs aren\'t finished with us until we have truly changed. The roar of the mouth is the voice of what isn\'t yet healed.',
+  try:'Think of something you have done that still isn\'t settled. What would settle it?',sit:'Breathe into the place that still feels unfinished.',a:{k:'release',q:'Let go of what keeps you below.',words:['Pride','Revenge','Denial','Cruelty']}},
+ {p:1,t:'The Column of Light',book:'After seven days in the meadow, the souls set out, and on the fourth day they saw a straight light like a pillar, stretching through all of heaven and earth, more like a rainbow but brighter and purer. It was the bond of heaven, holding the universe together.',
+  mean:'Plato believed the universe has a shape and an order, and that a life can be in tune with it.',
+  try:'Watch a sunrise, a sunset or the night sky today, if you can.',sit:'Picture a column of light running straight through you.',a:{k:'hold',label:'Walk toward the light',q:'Press and hold to walk four days toward the light.',ms:5000}},
+ {p:1,t:'The Spindle of Necessity',book:'From the ends of the light hung the spindle of Necessity, turning all the heavens. It had eight whorls, one inside another. On each one stood a Siren, singing a single note, and together the eight notes made one harmony.',
+  mean:'Each life sings one note. The music comes from all of them together.',
+  try:'Listen to a piece of music today, and try to hear each part separately.',sit:'Hum one low note for three breaths.',a:{k:'count',n:8,label:'Sound a note',q:'Eight Sirens, eight notes. Tap to sound each one.',sound:'bell'}},
+ {p:1,t:'The Three Fates',book:'Around the spindle sat the three Fates, daughters of Necessity, singing with the Sirens: Lachesis of what has been, Clotho of what is, and Atropos of what will be.',
+  mean:'Past, present and future: you can\'t change the first, you can\'t yet see the third. You only ever choose in the present.',
+  try:'Make one decision today that you have been putting off.',sit:'Breathe in the past. Hold the present. Breathe out the future.',a:{k:'choose',q:'Which Fate do you live with today?',opts:['Lachesis: what has been','Clotho: what is','Atropos: what will be'],replies:['Let the past teach you, not hold you.','This is the only place where choosing happens.','Let the future come. Your job is today\'s choice.']}},
+ {p:2,t:'The Lots',book:'A spokesman took lots and patterns of lives from the lap of Lachesis and said: Souls of a day, here begins another cycle of mortal life. Your guardian spirit will not be assigned to you; you will choose it. The responsibility is the chooser\'s. God is blameless.',
+  mean:'This is perhaps Plato\'s most famous sentence. Whatever your lot, what you make of it is yours.',
+  try:'Name one thing you have blamed on bad luck that was partly your choice.',sit:'On each out-breath: the choice is mine.',a:{k:'count',n:1,label:'Pick up your lot',q:'The lots are thrown. Pick up the one at your feet.',sound:'bell'}},
+ {p:2,t:'The Choosing',book:'The lives were spread out: tyrants, beggars, the famous and the unknown, animals too. The first chooser seized the greatest tyranny without looking, and found he would eat his own children. Orpheus chose to be a swan. Odysseus, last of all, searched for the quiet life of a private man, and chose it gladly.',
+  mean:'Experience teaches what to want. Odysseus had seen everything; he chose peace.',
+  try:'Write down the life you\'d choose if you could see all of it in advance.',sit:'Picture Odysseus, searching the lives for a quiet one.',a:{k:'choose',q:'Which would you take?',opts:['Power','Fame','A quiet life'],replies:['The first chooser did, and wept.','Ajax and Agamemnon were so tired of it they chose to be animals.','Odysseus would agree.']}},
+ {p:2,t:'The River of Unmindfulness',book:'Then the souls crossed the scorching plain of Lethe, Forgetting, and camped by the river Ameles, Unmindfulness, whose water no vessel can hold. All must drink a measure. Those without wisdom drank more than the measure, and forgot everything.',
+  mean:'We all forget. Wisdom is not drinking more forgetting than you must.',
+  try:'Write down one thing you never want to forget.',sit:'Breathe in remembering. Breathe out only what you must.',a:{k:'hold',label:'Drink only a measure',q:'Press and hold to drink, and let go the moment the ring is full.',ms:3500}},
+ {p:2,t:'Waking on the Pyre',book:'At midnight there was thunder and an earthquake, and the souls shot up to their births like shooting stars. Er was not allowed to drink. He didn\'t know how he returned to his body; he only opened his eyes at dawn and found himself on the pyre.',
+  mean:'Every morning is a small version of this: we wake, and choose again.',
+  try:'Tomorrow, the first thing you do when you wake, choose on purpose.',sit:'Picture the souls rising like shooting stars.',a:{k:'hold',label:'Wake',q:'Press and hold, and open your eyes on the pyre.',ms:4000}}
+ ]};
+header({brand:WALK.brand,brandSub:WALK.brandSub,links:[['Many Doors','../../../many-doors/'],[WALK.manualName,WALK.manualUrl]]});
+walkLanding(WALK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>

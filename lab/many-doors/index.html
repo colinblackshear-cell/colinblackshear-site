@@ -1,0 +1,557 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Many Doors</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: a companion atlas to The Bardo Manual. Same safety-card look: thesis, the "days between" chart, shared motifs, a filterable catalog of traditions, then the shortlist of next books. */
+:root{
+  --cream:#F6EBD2; --parchment:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --teal:#1F5E63; --brown:#8A4B22; --lamp:#E8B13A; --rule:rgba(30,42,43,.18); --bar:#1F5E63; --chipon:#1E2A2B; --chiptext:#FBF3DF;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cream:#141B1C;--parchment:#1C2526;--ink:#F1E6CC;--ink-soft:#B4B9AE;--teal:#7FC1C4;--brown:#E0A16B;--lamp:#E8B13A;--rule:rgba(241,230,204,.18);--bar:#5FA8AC;--chipon:#F1E6CC;--chiptext:#141B1C;color-scheme:dark}}
+:root[data-theme="dark"]{--cream:#141B1C;--parchment:#1C2526;--ink:#F1E6CC;--ink-soft:#B4B9AE;--teal:#7FC1C4;--brown:#E0A16B;--lamp:#E8B13A;--rule:rgba(241,230,204,.18);--bar:#5FA8AC;--chipon:#F1E6CC;--chiptext:#141B1C;color-scheme:dark}
+html,body{min-height:100%}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+a{color:var(--teal)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--parchment)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill{font-family:var(--display);font-weight:700;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.wrap{max-width:1040px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:48px}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brown)}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2.1rem,5.4vw,3.4rem);line-height:1.02;text-wrap:balance}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(1.4rem,3vw,1.9rem);line-height:1.1;margin:4px 0 8px;text-wrap:balance}
+h3{font-family:var(--display);font-weight:800;margin:0;font-size:1.1rem;line-height:1.2}
+p{margin:0}
+.lede{font-size:1.1rem;max-width:60ch}
+.sub{color:var(--ink-soft);max-width:66ch}
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:start}
+.verdict{background:var(--parchment);border:2px solid var(--ink);border-radius:16px;padding:18px 20px;box-shadow:0 6px 0 var(--ink);display:flex;flex-direction:column;gap:10px}
+.verdict .big{font-family:var(--display);font-weight:800;font-size:1.5rem;line-height:1.1}
+.verdict ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:.95rem}
+.verdict i{font-style:italic}
+.stats{display:flex;flex-wrap:wrap;gap:22px;margin-top:18px}
+.stats div{border-top:3px solid var(--ink);padding-top:6px;min-width:110px}
+.stats b{display:block;font-family:var(--display);font-weight:800;font-size:1.9rem;line-height:1;font-variant-numeric:tabular-nums}
+.stats span{font-size:.85rem;color:var(--ink-soft)}
+@media (max-width:820px){.hero{grid-template-columns:1fr}}
+/* chart */
+.chart{background:var(--parchment);border:2px solid var(--ink);border-radius:16px;padding:18px 18px 14px;position:relative}
+.chart .head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;align-items:baseline;margin-bottom:12px}
+.chart .head b{font-family:var(--display);font-weight:800}
+.chart .head span{font-size:.85rem;color:var(--ink-soft)}
+.rows{position:relative;display:grid;grid-template-columns:minmax(96px,170px) minmax(0,1fr);row-gap:6px;column-gap:12px}
+.rl{font-size:.88rem;text-align:right;align-self:center;line-height:1.15}
+.track{position:relative;height:22px;align-self:center}
+.grid{position:absolute;inset:0;pointer-events:none}
+.grid i{position:absolute;top:-4px;bottom:-4px;border-left:1px solid var(--rule)}
+.b{position:absolute;left:0;top:3px;height:16px;border-radius:0 4px 4px 0;background:var(--bar);border:0;padding:0;cursor:pointer}
+.b.over{border-radius:0;background:repeating-linear-gradient(90deg,var(--bar) 0 calc(100% - 22px),transparent calc(100% - 22px) calc(100% - 18px),var(--bar) calc(100% - 18px) calc(100% - 12px),transparent calc(100% - 12px) calc(100% - 8px),var(--bar) calc(100% - 8px))}
+.b.zero{width:12px;height:12px;top:5px;border-radius:50%;background:transparent;border:2.5px solid var(--bar)}
+.b:hover,.b:focus-visible{filter:brightness(1.15)}
+.bv{position:absolute;top:1px;font-size:.78rem;font-family:var(--display);font-weight:700;color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums;pointer-events:none}
+.axis{display:grid;grid-template-columns:minmax(96px,170px) minmax(0,1fr);column-gap:12px;margin-top:6px}
+.ticks{position:relative;height:18px;font-size:.72rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.ticks span{position:absolute;transform:translateX(-50%)}
+.tip{position:absolute;z-index:5;max-width:280px;background:var(--ink);color:var(--parchment);border-radius:10px;padding:8px 11px;font-size:.84rem;line-height:1.35;pointer-events:none;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.tip b{font-family:var(--display);display:block}
+.chart .foot{margin-top:10px;font-size:.82rem;color:var(--ink-soft)}
+@media (max-width:520px){.rows,.axis{grid-template-columns:92px minmax(0,1fr)}.rl{font-size:.78rem}}
+/* motifs */
+.motifs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:14px}
+.motif{border-top:3px solid var(--ink);padding-top:8px;display:flex;flex-direction:column;gap:6px}
+.motif p{font-size:.93rem}
+.motif ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px;font-size:.88rem}
+.motif li b{font-weight:700}
+.motif li span{color:var(--ink-soft)}
+/* catalog */
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.chip{font-family:var(--display);font-weight:700;font-size:.8rem;border:2px solid var(--ink);background:transparent;border-radius:999px;padding:6px 12px;min-height:40px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--chipon);color:var(--chiptext)}
+.tools .sp{flex:1}
+.view{display:flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.view button{border:0;background:transparent;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;min-height:40px;cursor:pointer}
+.view button[aria-pressed=true]{background:var(--chipon);color:var(--chiptext)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:16px}
+.card{background:var(--parchment);border:2px solid var(--ink);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card .fam{font-family:var(--display);font-weight:700;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brown)}
+.card .one{font-size:.95rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:var(--display);font-weight:700;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--ink-soft);color:var(--ink-soft);border-radius:999px;padding:2px 8px}
+.card details summary{cursor:pointer;font-family:var(--display);font-weight:700;font-size:.85rem;min-height:36px;display:flex;align-items:center;color:var(--teal)}
+.card dl{margin:4px 0 0;display:flex;flex-direction:column;gap:8px}
+.card dt{font-family:var(--display);font-weight:700;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.card dd{margin:0;font-size:.92rem}
+.card.ref{box-shadow:0 5px 0 var(--lamp)}
+.tablewrap{overflow-x:auto;margin-top:16px;border:2px solid var(--ink);border-radius:14px;background:var(--parchment)}
+table{border-collapse:collapse;min-width:1100px;font-size:.86rem}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--rule)}
+th{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);position:sticky;top:0;background:var(--parchment)}
+td:first-child{font-family:var(--display);font-weight:700;min-width:150px}
+td{min-width:170px}
+/* shortlist */
+.picks{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.pick{display:grid;grid-template-columns:56px minmax(0,1fr) minmax(0,1fr);gap:16px;background:var(--parchment);border:2px solid var(--ink);border-radius:14px;padding:16px 18px}
+.pick .n{font-family:var(--display);font-weight:800;font-size:2.2rem;line-height:1;color:var(--brown);font-variant-numeric:tabular-nums}
+.pick h3{font-size:1.25rem}
+.pick .tr{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:2px}
+.pick p{font-size:.94rem;margin-top:6px}
+.pick .fmt{display:flex;flex-direction:column;gap:6px;font-size:.9rem;border-left:2px dashed var(--rule);padding-left:16px}
+.pick .fmt b{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.care{font-size:.86rem;color:var(--brown)}
+@media (max-width:760px){.pick{grid-template-columns:1fr}.pick .fmt{border-left:0;border-top:2px dashed var(--rule);padding-left:0;padding-top:10px}}
+.later{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px}
+.later div{border-top:3px solid var(--ink);padding-top:8px;font-size:.92rem}
+.later b{font-family:var(--display);font-weight:800;display:block}
+.stations{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;counter-reset:st}
+.st{background:var(--parchment);border:2px solid var(--ink);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.st .k{font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brown)}
+.st p{font-size:.93rem}
+.st .cc{font-size:.8rem;color:var(--ink-soft);margin-top:auto}
+.st.fork{grid-column:1/-1}
+.fork3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:4px}
+.fork3 div{border-top:3px solid var(--ink);padding-top:6px;font-size:.92rem}
+.fork3 b{font-family:var(--display);font-weight:800;display:block;font-size:1rem}
+@media (max-width:700px){.fork3{grid-template-columns:1fr}}
+.xsplit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center;margin-top:28px}
+.xnums{display:flex;flex-wrap:wrap;gap:18px}
+.xnums div{border-top:3px solid var(--ink);padding-top:6px;min-width:120px}
+.xnums b{display:block;font-family:var(--display);font-weight:800;font-size:1.7rem;line-height:1;font-variant-numeric:tabular-nums}
+.xnums span{font-size:.85rem;color:var(--ink-soft)}
+@media (max-width:760px){.xsplit{grid-template-columns:1fr}}
+.xtable{min-width:900px}
+.notes{font-size:.86rem;color:var(--ink-soft);border-top:2px dashed var(--rule);padding-top:14px;display:flex;flex-direction:column;gap:6px;max-width:80ch}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.later .open{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.later .open a{display:inline-block;padding:6px 12px;border-radius:999px;border:2px solid var(--ink);color:var(--ink);text-decoration:none;font-weight:700;font-size:.82rem;background:var(--parchment)}.later .open a:first-child{background:var(--chipon);color:var(--chiptext)}
+.pick .open{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.pick .open a{display:inline-block;padding:7px 14px;border-radius:999px;border:2px solid var(--ink);color:var(--ink);text-decoration:none;font-weight:700;font-size:.85rem;background:var(--parchment)}.pick .open a:first-child{background:var(--chipon);color:var(--chiptext)}.pick .open a:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+</style>
+
+<header class="bar">
+  <span class="brand">Many Doors<small>A companion atlas to the Tibetan Book of the Dead series</small></span>
+  <span class="sp"></span>
+  <a class="pill" href="../many-doors/tibetan/" target="_blank" rel="noopener">The Bardo Manual</a>
+  <a class="pill" href="../many-doors/tibetan/walk/" target="_blank" rel="noopener">The 49-Day Walk</a>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <span class="eyebrow">What happens when we die</span>
+      <h1>Every tradition draws a map of the same doorway.</h1>
+      <p class="lede">The Bardo Thödol is one map. This atlas lays twenty-five others beside it: what each says continues, what happens at the moment of death, how long the in-between lasts, who or what judges, and where the road ends.</p>
+      <div class="stats" id="stats"></div>
+    </div>
+    <aside class="verdict" aria-labelledby="vq">
+      <span class="eyebrow" id="vq">Is this a crazy idea?</span>
+      <span class="big">No. Several of these traditions already wrote the book.</span>
+      <p>The Tibetan text is part of a long line of guides written for the dying and the people sitting with them:</p>
+      <ul>
+        <li><i>Coming Forth by Day</i>, Egypt, c. 1550 BCE</li>
+        <li>The Orphic gold leaves, Greece, 4th c. BCE</li>
+        <li>The <i>Garuda Purana</i>, India, 1st millennium CE</li>
+        <li>Genshin's <i>Ōjōyōshū</i>, Japan, 985</li>
+        <li>The <i>Ars Moriendi</i>, Europe, c. 1415</li>
+        <li><i>Maavar Yabok</i>, Italy, 1626</li>
+      </ul>
+      <p>The name "Tibetan Book of the Dead" was itself borrowed from the Egyptian book by its 1927 translator. A series that sets them side by side is following a path that's already there.</p>
+    </aside>
+  </section>
+
+  <section aria-labelledby="wh">
+    <span class="eyebrow">Who holds these views</span>
+    <h2 id="wh">Most of the world expects a judgment and a resurrection</h2>
+    <p class="sub">Christians and Muslims together are a little over half of humanity, and both expect each person to be judged and the dead to rise. Hindus and Buddhists, about one in five people, expect rebirth instead.</p>
+    <div class="chart" id="pop">
+      <div class="head"><b>People by religion, 2020, in billions</b><span>Pew Research Center, 2025</span></div>
+      <div class="rows" id="poprows"></div>
+      <p class="foot">Being unaffiliated doesn't mean not believing in an afterlife. Many unaffiliated people believe in some kind of afterlife, and Pew found that 73% of all U.S. adults believe in heaven and 62% in hell (2021). "Other" includes Sikhs, Jains, Bahá'ís, Daoists, Shinto, folk and Indigenous religions.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="xh" class="xian">
+    <span class="eyebrow">Christianity, close up · about 2.3 billion people</span>
+    <h2 id="xh">What Catholics believe happens when you die</h2>
+    <p class="sub">The Catholic Church is the largest single Christian body, with about 1.4 billion members, and the most fully mapped. These are the stages in the order the Catechism of the Catholic Church (CCC) gives them, with paragraph numbers so they can be checked.</p>
+    <ol class="stations" id="stations"></ol>
+    <div class="xsplit">
+      <div class="xnums" id="xnums"></div>
+      <p class="sub">The other branches share the start (one life, then judgment) and the end (resurrection and final judgment). They split on what happens in between, which matters for a book because it changes what the reader does on each page.</p>
+    </div>
+    <div class="tablewrap"><table id="xtable" class="xtable"></table></div>
+  </section>
+
+  <section aria-labelledby="dh">
+    <span class="eyebrow">The in-between, counted</span>
+    <h2 id="dh">How long does the passage take?</h2>
+    <p class="sub">Many traditions give the journey a fixed number of days, and the living keep rites on that schedule. The Tibetan 49 sits in the middle of a crowded range. Gridlines fall every 7 days.</p>
+    <div class="chart" id="chart">
+      <div class="head"><b>Days between death and arrival (or the end of the key rites)</b><span>Hover or tap a bar for what the count marks</span></div>
+      <div class="rows" id="rows"></div>
+      <div class="axis"><span></span><div class="ticks" id="ticks"></div></div>
+      <p class="foot">A ring at zero means rebirth or release is instant. Broken bars run off the scale. Islam, Christianity, Bahá'í and most others have an open-ended wait until a final judgment, so they have no bar.</p>
+      <div class="tip" id="tip" hidden></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="mh">
+    <span class="eyebrow">Shared motifs</span>
+    <h2 id="mh">The same images keep turning up</h2>
+    <p class="sub">Traditions with no contact with each other keep reaching for the same props. These make natural cross-links between books in the series.</p>
+    <div class="motifs" id="motifs"></div>
+  </section>
+
+  <section aria-labelledby="ch">
+    <span class="eyebrow">The catalog</span>
+    <h2 id="ch">Twenty-six maps of death</h2>
+    <p class="sub">Each tradition is summarized in its own mainstream terms. All of them contain disagreement; the cards note the big splits. The Tibetan entry is highlighted as the reference point.</p>
+    <div class="tools" id="tools">
+      <div id="fams" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      <span class="sp"></span>
+      <div class="view" role="group" aria-label="View">
+        <button type="button" id="vCards" aria-pressed="true">Cards</button>
+        <button type="button" id="vTable" aria-pressed="false">Compare table</button>
+      </div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="tablewrap" id="tablewrap" hidden><table id="table"></table></div>
+  </section>
+
+  <section aria-labelledby="ph">
+    <span class="eyebrow">The books</span>
+    <h2 id="ph">The Tibetan book, and six built like it</h2>
+    <p class="sub">Each now has a narrated manual and a daily walk. They were chosen by how well each fits the format: a source text that speaks to the dead or dying, a journey with clear stages, and a day count that turns into a daily walk. Each gets a manual plus a walk, the same pair as the Bardo series.</p>
+    <div class="picks" id="picks"></div>
+    <h3 style="margin-top:28px">Five more books, also built</h3>
+    <div class="later" id="later"></div>
+  </section>
+
+  <section class="notes">
+    <b style="font-family:var(--display);color:var(--ink)">About these summaries</b>
+    <p>These are short, plain-language summaries of mainstream positions, drawn from each tradition's own core texts. Living traditions should be checked with practitioners before a full book is published, and Indigenous traditions in particular should only be built with the communities they belong to.</p>
+    <p>"Days" mean the count the tradition itself uses. Some are counts of the soul's journey (Tibetan, Zoroastrian, Aztec) and some are counts of mourning rites that track it (Jewish, Hindu, Orthodox).</p>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const FAMS=['Dharmic','Abrahamic','Persian','East Asian','Ancient','Indigenous','Modern'];
+const T=[
+{n:'Tibetan Buddhism',f:'Dharmic',ref:1,shape:'Rebirth',one:'A stream of mind passes through three bardos over up to 49 days, with a chance at liberation at every stage.',
+ self:'A continuing mindstream, not a permanent soul. Habits (karma) carry forward.',
+ moment:'The elements dissolve one into the next, three visions follow, then the Clear Light dawns: the mind\'s own nature, seen bare.',
+ between:'Bardo of dying, bardo of luminous visions (peaceful then wrathful deities), bardo of becoming. Up to 49 days.',
+ judge:'Yama, Lord of Death, holds the mirror of karma; white and black pebbles count deeds. Taught as your own projection.',
+ end:'Liberation, a pure land, or rebirth in one of six realms.',
+ rite:'The Bardo Thödol read aloud to the dying and the dead; phowa; sky burial; weekly rites for 49 days.',
+ text:'Bardo Thödol (revealed by Karma Lingpa, 14th c.)'},
+{n:'Theravada Buddhism',f:'Dharmic',shape:'Rebirth',one:'The last moment of mind conditions the first moment of the next life, with no gap between.',
+ self:'No soul (anattā). A causal stream of mind-moments continues.',
+ moment:'Signs appear to the dying mind: an image of a past deed or of the next destination. The death-consciousness (cuti-citta) is followed at once by rebirth-consciousness.',
+ between:'None in classical Abhidhamma. Rebirth is immediate. Some modern teachers allow a brief interval.',
+ judge:'No judge. Kamma ripens on its own.',
+ end:'Any of 31 planes of existence, or nibbāna, the end of rebirth.',
+ rite:'Monks chant, merit is dedicated to the dead; Thai and Lao families hold merit-making on the 7th, 50th and 100th days.',
+ text:'Abhidhamma; Visuddhimagga; Petavatthu (Stories of the Ghosts)',d:0,dn:'Rebirth consciousness arises in the very next mind-moment.'},
+{n:'Pure Land Buddhism',f:'Dharmic',shape:'Paradise',one:'Call the name of Amitābha at death and he comes to carry you to a land where awakening is guaranteed.',
+ self:'The same mindstream as other Buddhist schools.',
+ moment:'Amitābha appears with bodhisattvas to welcome the dying (raigō). Deathbed rites keep the mind fixed on him.',
+ between:'Japanese practice observes 49 days of memorial services and gives the dead a new Buddhist name.',
+ judge:'Amitābha\'s vow does the work. Faith and recitation matter more than merit.',
+ end:'Rebirth in Sukhāvatī, the Western Pure Land, then certain enlightenment.',
+ rite:'Nembutsu recited at the bedside; the dying holds cords tied to an image of Amitābha.',
+ text:'Sukhāvatīvyūha sūtras; Genshin\'s Ōjōyōshū (985), a deathbed manual'},
+{n:'Hinduism',f:'Dharmic',shape:'Rebirth',one:'The eternal self leaves the body; rites build it a new body for the road to Yama, then it is reborn or freed.',
+ self:'Ātman: eternal, unchanged, carried by a subtle body that holds karma.',
+ moment:'The last thought shapes the next birth (Gita 8.6). Ganga water, tulsi and God\'s name are given to the dying.',
+ between:'The dead is a preta (ghost) for about 10 to 13 days while rice offerings build a body. The Garuda Purana sets a year-long walk to Yama\'s city, crossing the Vaitaraṇī river.',
+ judge:'Yama, with Chitragupta reading the ledger of deeds.',
+ end:'Temporary heavens or hells, then rebirth; or moksha, release from the cycle.',
+ rite:'Antyeṣṭi cremation, the eldest son breaks the skull; 13 days of rites; śrāddha each year after.',
+ text:'Garuda Purana (Preta Khanda); Katha Upanishad; Bhagavad Gita 2 and 8',d:13,dn:'The preta becomes an ancestor (pitṛ) after the rites of the 12th and 13th days.'},
+{n:'Jainism',f:'Dharmic',shape:'Rebirth',one:'Karma is a fine matter stuck to the soul; once it is gone, the soul floats to the top of the universe.',
+ self:'Jīva: a real, eternal soul weighed down by karmic particles.',
+ moment:'The prepared may take sallekhana, a slow, vowed fast to a calm death. The Navkar mantra is recited.',
+ between:'The soul reaches its next body in at most four instants (samaya). No interim.',
+ judge:'No judge. Karma works like physics.',
+ end:'Heavenly, human, animal and plant, or hell births; or Siddhaśilā, the abode of liberated souls at the top of the cosmos.',
+ rite:'Cremation; no elaborate mourning, since attachment binds more karma.',
+ text:'Tattvārtha Sūtra; Ācārāṅga Sūtra',d:0,dn:'The soul moves to its next birth in at most four instants.'},
+{n:'Sikhism',f:'Dharmic',shape:'Union',one:'Death is God\'s will; the soul either returns to the cycle of births or merges into God like water into water.',
+ self:'Ātmā, a spark of the divine light (jot).',
+ moment:'Death is accepted as hukam (divine order). The family recites "Waheguru"; loud wailing is discouraged.',
+ between:'No interim is emphasized.',
+ judge:'Dharam Rāj keeps the account of deeds, but grace (nadar) decides.',
+ end:'Rebirth among the 8.4 million forms, or mukti: merging with Waheguru.',
+ rite:'Kirtan Sohila at cremation; a complete reading of the Guru Granth Sahib (sahaj path) over about ten days; Antim Ardās.',
+ text:'Guru Granth Sahib (Kirtan Sohila, Sukhmani Sahib)',d:10,dn:'A complete reading of the Guru Granth Sahib, usually finished within about ten days.'},
+{n:'Judaism',f:'Abrahamic',shape:'Resurrection',one:'This life is the focus; the soul is purified for up to a year and waits for the world to come.',
+ self:'Nefesh, ruach and neshamah, layers of one soul; later Kabbalah adds more.',
+ moment:'Viddui (confession) and the Shema as last words. The body is never left alone.',
+ between:'Gehinnom purifies for at most twelve months, which is why mourners say Kaddish for eleven.',
+ judge:'The heavenly court.',
+ end:'Gan Eden, then Olam Ha-Ba and the resurrection of the dead in the messianic age. Views range from literal to agnostic.',
+ rite:'Taharah washing by the chevra kadisha; burial within a day; shiva (7 days), shloshim (30), a year of Kaddish.',
+ text:'Talmud; Zohar; Maavar Yabok (1626), a Kabbalistic deathbed guide',d:7,dn:'Shiva, the first week of mourning. Shloshim runs to day 30 and Kaddish for about a year.'},
+{n:'Catholic Christianity',f:'Abrahamic',shape:'Resurrection',one:'Each soul is judged at death; some are purified in purgatory; all rise at the Last Judgment.',
+ self:'An immortal soul, reunited with a raised body at the end.',
+ moment:'Last rites: confession, anointing, and communion as viaticum, food for the journey.',
+ between:'Particular judgment at once. Purgatory for those still needing purification, helped by prayers of the living.',
+ judge:'Christ, at a particular judgment and again at the Last Judgment.',
+ end:'Heaven, hell, or heaven after purgatory; then a renewed creation.',
+ rite:'Requiem Mass; prayers and Masses for the dead; All Souls\' Day.',
+ text:'Bible; Ars Moriendi (c. 1415); Dante\'s Divine Comedy'},
+{n:'Eastern Orthodoxy',f:'Abrahamic',shape:'Resurrection',one:'A forty-day passage, marked by memorials on the 3rd, 9th and 40th days.',
+ self:'An immortal soul, reunited with a raised body at the end.',
+ moment:'Prayers for the departure of the soul; the dying confess and receive communion.',
+ between:'A widely held tradition: two days near earth, a rise through the aerial toll-houses, then visions of paradise and hell until day 40. The toll-houses are debated within the Church.',
+ judge:'A particular judgment on day 40 assigns a place to wait for the Last Judgment.',
+ end:'Paradise or hell; the final state comes with the resurrection.',
+ rite:'Panikhida memorial services on days 3, 9 and 40; kollyva (boiled wheat) shared.',
+ text:'Life of St. Basil the New (Theodora\'s toll-houses); Orthodox funeral service',d:40,dn:'The particular judgment, marked by the 40th-day memorial.'},
+{n:'Protestant Christianity',f:'Abrahamic',shape:'Resurrection',one:'Saved by faith, believers go to be with Christ at once and wait for the resurrection.',
+ self:'A soul and a future resurrection body. Some groups (Adventists) teach soul sleep until the resurrection.',
+ moment:'Prayer, scripture, assurance of salvation. No sacramental last rites in most churches.',
+ between:'No purgatory. Believers are "with Christ" immediately.',
+ judge:'Christ at the Last Judgment.',
+ end:'Heaven or hell; some teach annihilation of the lost.',
+ rite:'Funeral as a service of witness to the resurrection.',
+ text:'1 Corinthians 15; 1 Thessalonians 4; Jeremy Taylor\'s Holy Dying (1651)'},
+{n:'Islam',f:'Abrahamic',shape:'Resurrection',one:'The Angel of Death takes the soul, the grave questions it, and all are raised for the Day of Judgment.',
+ self:'Rūḥ, the soul, created by God and returned to Him.',
+ moment:'The dying face Mecca and say the shahada. The Angel of Death draws the soul out, gently for the righteous.',
+ between:'Barzakh, the barrier: two angels, Munkar and Nakīr, ask "Who is your Lord, your prophet, your religion?" The grave becomes a garden or a pit.',
+ judge:'God, on the Day of Resurrection: books of deeds, the scales (Mīzān), the bridge (Ṣirāṭ) over hell.',
+ end:'Jannah (paradise) or Jahannam; many hold that hell is not eternal for believers.',
+ rite:'Ghusl washing, a simple shroud, Janazah prayer, burial within a day; three days of mourning.',
+ text:'Qur\'an; hadith; al-Ghazālī, The Remembrance of Death and the Afterlife'},
+{n:'Bahá\'í Faith',f:'Abrahamic',shape:'Progress',one:'The soul keeps progressing through God\'s worlds; heaven and hell are nearness and distance, not places.',
+ self:'A rational soul, created at conception, eternal.',
+ moment:'Death is a "messenger of joy"; the soul is freed like a bird from a cage.',
+ between:'No fixed interval.',
+ judge:'The soul sees its own deeds; God\'s mercy and the prayers of others help it.',
+ end:'Endless progress toward God.',
+ rite:'The Prayer for the Dead; burial within an hour\'s journey of the place of death; no cremation.',
+ text:'Gleanings from the Writings of Bahá\'u\'lláh; Some Answered Questions'},
+{n:'Zoroastrianism',f:'Persian',shape:'Paradise',one:'The soul sits by the body three nights, then meets its own conscience at the Chinvat Bridge.',
+ self:'Urvan, the soul, and daēnā, its inner self or conscience.',
+ moment:'A corpse-demon (Nasu) seizes the body, so it is treated as impure at once.',
+ between:'Three nights beside the head, reliving its life. At dawn of the fourth day a wind carries it away.',
+ judge:'Mithra, Sraosha and Rashnu weigh deeds at the Chinvat Bridge. The daēnā appears as a beautiful maiden or a hag; the bridge widens or narrows.',
+ end:'House of Song, Hamistagan (a grey middle place), or House of Lies; all are purified at the final renewal (Frashokereti).',
+ rite:'A dog\'s gaze (sagdīd); exposure in a dakhma; prayers for three days; Uthamna on the fourth.',
+ text:'Arda Virāf Nāmag; Hadokht Nask; Bundahishn',d:3,dn:'The soul stays three nights by the body; at dawn on the fourth it crosses the bridge.'},
+{n:'Chinese folk and Daoist',f:'East Asian',shape:'Rebirth',one:'Two souls part; one rises, one stays; the dead pass through ten courts and drink the soup of forgetting.',
+ self:'Hun (yang soul, rises) and po (yin soul, stays with the body).',
+ moment:'The family keens and calls the soul back. Paper offerings begin.',
+ between:'Seven weeks: the soul returns home on the 7th day, rites every 7 days to the 49th. Ten courts of hell under Yanluo Wang; the Mirror of Retribution; Meng Po\'s soup at the Naihe Bridge.',
+ judge:'Ten kings in ten courts, each weighing a kind of wrong.',
+ end:'Rebirth; ancestorhood on the family altar; for Daoist adepts, immortality.',
+ rite:'Weekly rites for 49 days; ancestral tablets; Qingming tomb-sweeping; the Ghost Festival.',
+ text:'Scripture of the Ten Kings; Jade Records (Yuli)',d:49,dn:'Seven sevens of rites; the soul reaches its next birth by day 49.'},
+{n:'Shinto and Japanese',f:'East Asian',shape:'Ancestors',one:'The dead become ancestor spirits who protect the family, after a long purification.',
+ self:'Tama or mitama, the spirit.',
+ moment:'Death brings kegare (pollution), so funerals are usually Buddhist; Shinto funerals are held at home, not shrines.',
+ between:'Shinto rites every 10 days to the 50th, which ends mourning. Over 33 or 50 years the spirit joins the collective ancestors.',
+ judge:'None in early myth.',
+ end:'Ancestral kami. The old myth of Yomi, the land of the dead Izanami could not leave, sits in the background.',
+ rite:'Ancestral shelf (mitamaya); Obon, when the dead return each summer.',
+ text:'Kojiki (Izanami in Yomi)',d:50,dn:'The 50th-day rite closes mourning in a Shinto funeral.'},
+{n:'Ancient Egypt',f:'Ancient',shape:'Paradise',one:'The heart is weighed against a feather; the light-hearted reach the Field of Reeds.',
+ self:'Several parts: ka (life force), ba (personality, flies as a bird), akh (transfigured spirit), name, shadow and heart.',
+ moment:'Seventy days of embalming, then the Opening of the Mouth to restore the senses.',
+ between:'A journey through the Duat, with gates, guardians and serpents, using spells to pass.',
+ judge:'In the Hall of Two Truths the heart is weighed against Ma\'at\'s feather; the dead recite 42 denials of wrongdoing; Thoth records; Ammit eats the failed.',
+ end:'The Field of Reeds, or sailing in Ra\'s sun-boat.',
+ rite:'Mummification, tomb goods, the scroll placed with the body.',
+ text:'Book of Coming Forth by Day (Book of the Dead); Amduat; Book of Gates',d:70,dn:'Seventy days of embalming before burial and the journey.'},
+{n:'Ancient Greece',f:'Ancient',shape:'Underworld',one:'A shade crosses the river into Hades; initiates were told which spring to drink from.',
+ self:'Psychē, a pale shade; Plato and the Orphics made it immortal and reborn.',
+ moment:'Hermes leads the soul down. A coin pays Charon.',
+ between:'Crossing the Acheron or Styx; the gold leaves warn not to drink from Lethe (forgetting) but from Mnemosyne (memory).',
+ judge:'Minos, Rhadamanthys and Aeacus.',
+ end:'Asphodel for most, Elysium for heroes and the pure, Tartarus for the wicked; in Plato\'s Myth of Er, souls choose their next life.',
+ rite:'Rites on the 3rd, 9th and 30th days; offerings at the tomb.',
+ text:'Odyssey 11; Plato, Republic 10 (Myth of Er); Orphic gold leaves',d:30,dn:'Grave rites on the 3rd, 9th and 30th days.'},
+{n:'Mesopotamia',f:'Ancient',shape:'Underworld',one:'Everyone goes down to the House of Dust, where the dead eat clay; how you fare depends on who remembers you.',
+ self:'Gidim, a ghost.',
+ moment:'The ghost descends; the river Hubur must be crossed.',
+ between:'Seven gates, as in the Descent of Inanna, each taking something away.',
+ judge:'Ereshkigal\'s court records arrivals; little moral judgment.',
+ end:'Kur or Irkalla, a dim place for all. Those with many children and regular offerings live better.',
+ rite:'Kispum: food and water offered to the dead each month.',
+ text:'Descent of Inanna; Gilgamesh, Tablet XII'},
+{n:'Norse',f:'Ancient',shape:'Underworld',one:'Where you go depends on how you die: battle, drowning or old age each have their hall.',
+ self:'Hugr (mind), plus a fylgja (follower spirit) and hamingja (luck).',
+ moment:'Valkyries choose among the battle-slain.',
+ between:'The road to Hel crosses the Gjallarbrú bridge over the river Gjöll; the hound Garmr guards the gate.',
+ judge:'Not moral. Manner of death decides.',
+ end:'Valhöll (Odin) or Fólkvangr (Freyja) for warriors; Rán\'s hall for the drowned; Hel for most; some stay in the burial mound. All ends at Ragnarök.',
+ rite:'Ship and mound burials with grave goods; the sjaund funeral feast on the 7th day.',
+ text:'Poetic Edda (Völuspá, Baldrs draumar); Prose Edda; Ibn Faḍlān\'s account',d:7,dn:'The sjaund, the seventh-day funeral ale, when inheritance passed.'},
+{n:'Aztec (Mexica)',f:'Indigenous',shape:'Underworld',one:'Ordinary dead walk four years through nine levels of Mictlan, guided by a dog.',
+ self:'Teyolia (heart soul), tonalli (head soul) and ihiyotl (liver breath).',
+ moment:'Manner of death decides: warriors and women who died in childbirth join the sun.',
+ between:'Nine levels: clashing mountains, obsidian winds, a river crossed on a dog\'s back. Four years.',
+ judge:'No moral judgment. Mictlantecuhtli receives the dead.',
+ end:'The sun\'s company then life as hummingbirds; Tlālōcān for the drowned; a nursing tree for infants; Mictlan for the rest.',
+ rite:'Offerings for four years; burial with a dog. Echoes survive in Día de Muertos.',
+ text:'Florentine Codex, Book 3; Codex Vaticanus A',d:1460,dn:'Four years to reach the ninth level of Mictlan.'},
+{n:'Yoruba (West Africa)',f:'Indigenous',shape:'Ancestors',one:'Life is a trip to the marketplace; heaven is home. Good lives return as ancestors and are reborn into the family.',
+ self:'Orí (destiny, chosen before birth), èmí (breath).',
+ moment:'A good death comes in old age after a fulfilled destiny.',
+ between:'Return to Ọ̀run, the otherworld.',
+ judge:'Olódùmarè reviews how the chosen destiny was lived.',
+ end:'Ancestorhood, honored by Egúngún masquerades; rebirth within the lineage ("Babátúndé": father returns).',
+ rite:'Elaborate funerals for elders; Egúngún festivals.',
+ text:'Ifá oral corpus (odù)'},
+{n:'Lakota',f:'Indigenous',shape:'Ancestors',one:'The spirit travels the spirit road of the Milky Way; the family may keep a spirit for a year before release.',
+ self:'Nagi (spirit), among several soul aspects.',
+ moment:'Prayer and song for the departing.',
+ between:'Wanáǧi Thacháŋku, the spirit road across the sky to the south.',
+ judge:'Accounts describe an old woman who checks travelers on the road.',
+ end:'The spirit world with relatives.',
+ rite:'Wanáǧi Yuhápi, ghost or spirit keeping, often a year, ending in a release ceremony and giveaway.',
+ text:'Oral tradition; Black Elk, The Sacred Pipe (1953)',d:365,dn:'Spirit keeping, often about a year before the release ceremony.'},
+{n:'Aboriginal Australian',f:'Indigenous',shape:'Ancestors',one:'Hundreds of nations, many accounts; spirit often returns to its country and the Dreaming.',
+ self:'A spirit tied to country, often understood as coming from and returning to ancestral sites.',
+ moment:'Sorry business begins: the community gathers.',
+ between:'Practices differ by nation.',
+ judge:'Not a central idea in most accounts.',
+ end:'Return to country and the Dreaming; in some accounts, rebirth.',
+ rite:'Smoking ceremonies; the dead person\'s name is often not spoken; some burial is delayed or staged.',
+ text:'Oral tradition, held by each nation'},
+{n:'Swedenborg and Spiritualism',f:'Modern',shape:'Progress',one:'You wake in a world of spirits, your true loves surface, and you drift toward the heaven or hell that matches them.',
+ self:'A spiritual body, continuous with the person.',
+ moment:'Waking, often unaware of having died, attended by angels (Swedenborg).',
+ between:'The world of spirits, where outward manners fall away and the inner self shows.',
+ judge:'Self-judgment: each goes where their ruling love feels at home.',
+ end:'Heaven or hell (Swedenborg); the Summerland and further spheres (Spiritualism); reincarnation (Kardec).',
+ rite:'Séances and mediums in Spiritualism.',
+ text:'Swedenborg, Heaven and Hell (1758); Kardec, The Spirits\' Book (1857)'},
+{n:'Near-death accounts',f:'Modern',shape:'Open',one:'Reports from people revived after clinical death share a recognizable sequence across cultures.',
+ self:'Unclear; researchers disagree whether the reports show anything beyond the brain.',
+ moment:'Peace, leaving the body, a tunnel or passage, a being of light.',
+ between:'A life review, a border that cannot be crossed, a return.',
+ judge:'Often a life review felt from others\' point of view, without condemnation.',
+ end:'Unknown; the experiencer returns.',
+ rite:'None; studied in hospitals and hospices.',
+ text:'Moody, Life After Life (1975); Greyson, After (2021); van Lommel (Lancet, 2001)'},
+{n:'Secular and scientific',f:'Modern',shape:'Ending',one:'Consciousness stops when the brain does; what continues is matter, memory and influence.',
+ self:'Mind as brain activity.',
+ moment:'Circulation stops, then brain activity; a brief surge of gamma activity has been recorded in some dying brains.',
+ between:'None for the person; decomposition returns matter to the world.',
+ judge:'None.',
+ end:'Non-existence, which Epicurus argued is nothing to fear: "Where death is, I am not."',
+ rite:'Memorials, celebrations of life, green burial.',
+ text:'Epicurus, Letter to Menoeceus; Lucretius, On the Nature of Things'}
+];
+const MOTIFS=[
+ {t:'A crossing',p:'A river or bridge between the living and the dead.',l:[['Chinvat Bridge','Zoroastrian'],['Ṣirāṭ','Islam'],['Naihe Bridge','Chinese'],['Gjallarbrú','Norse'],['Vaitaraṇī river','Hindu'],['Styx and Charon','Greek'],['River on a dog\'s back','Aztec'],['Hubur river','Mesopotamia']]},
+ {t:'A weighing',p:'Deeds are measured, counted or shown.',l:[['Heart and feather','Egypt'],['Mīzān scales','Islam'],['Rashnu\'s scales','Zoroastrian'],['Mirror of karma','Tibetan'],['Mirror of Retribution','Chinese'],['Chitragupta\'s ledger','Hindu'],['Life review','Near-death']]},
+ {t:'A dog',p:'Dogs guard, guide or test the dead.',l:[['Yama\'s two four-eyed dogs','Rig Veda'],['Sagdīd, the dog\'s gaze','Zoroastrian'],['Xoloitzcuintli guide','Aztec'],['Cerberus','Greek'],['Garmr','Norse'],['Anubis, jackal-headed','Egypt']]},
+ {t:'A guide',p:'Someone comes to fetch or lead the dead.',l:[['Hermes','Greek'],['Anubis','Egypt'],['Valkyries','Norse'],['Angel of Death','Islam'],['Yamadūtas','Hindu'],['Amitābha\'s welcome','Pure Land'],['Sraosha','Zoroastrian']]},
+ {t:'Forgetting',p:'A drink or river wipes the past before a new life.',l:[['Lethe','Greek'],['Meng Po\'s soup','Chinese'],['The plain of Lethe','Plato\'s Myth of Er'],['Fainting before rebirth','Tibetan']]},
+ {t:'Your own face',p:'The judge turns out to be yourself.',l:[['The daēnā maiden or hag','Zoroastrian'],['Deities as projections','Tibetan'],['Ruling love','Swedenborg'],['Orí, the chosen destiny','Yoruba']]}
+];
+const PICKS=[
+ {t:'Tibetan Buddhism',name:'The Bardo Manual',murl:'../many-doors/tibetan/',wname:'The Forty-Nine Day Walk',wurl:'../many-doors/tibetan/walk/',why:'Where the series began. The Bardo Thödol is read aloud to the dying and the dead, telling them what they will see in the in-between and how to recognise it, which makes it the model for every book here.',man:'An illustrated flight through the bardos: the moment of death and the clear light, the peaceful and wrathful deities, and the pull toward a new birth.',walk:'The Forty-Nine Day Walk: one day at a time through the traditional forty-nine days between death and rebirth.'},
+ {t:'Christianity (Catholic)',name:'The Art of Dying Well',murl:'../many-doors/christian/',wname:'The Forty Days',wurl:'../many-doors/christian/walk/',why:'The biggest audience by far (about 2.3 billion Christians, 1.4 billion of them Catholic) and the closest match to the Bardo Manual. The Ars Moriendi was a bestselling 15th-century guide to the deathbed, with eleven public-domain woodcuts: five temptations, each answered by an inspiration from an angel.',man:'Five temptations (doubt, despair, impatience, pride, clinging to possessions) paired with their remedies, built on the original woodcuts, then the journey after: particular judgment, purgatory and the Last Judgment.',walk:'A Forty-Day Walk built on the Orthodox 3rd, 9th and 40th days, or a Catholic Novena for the Dead (nine days) for a shorter version.'},
+ {t:'Ancient Egypt',name:'The Hall of Two Truths',murl:'../many-doors/egypt/',wname:'The Forty-Two Day Walk',wurl:'../many-doors/egypt/walk/',why:'The closest relative of the Bardo Thödol: a text literally buried with the dead to be used on the journey, with gates to pass, passwords to speak and one big judgment scene. The art is iconic and public domain.',man:'The Duat as a map of gates and guardians, each with the spell that passes it; the weighing of the heart as the interactive climax.',walk:'The Forty-Two Day Walk: one negative confession per day ("I have not caused tears…"), reframed as a daily check on how you live.'},
+ {t:'Hinduism',name:'The Thirteen Days',murl:'../many-doors/hindu/',wname:'The Thirteen-Day Walk',wurl:'../many-doors/hindu/walk/',why:'Strong source text in the Garuda Purana, a clear day-by-day ritual schedule, and huge relevance to living families who still perform these rites.',man:'The preta\'s new body built offering by offering, the road to Yama\'s city, the Vaitaraṇī crossing, the Katha Upanishad\'s Nachiketa as the narrator.',walk:'A 13-day walk for mourners, one rite and one reflection per day, ending with the dead joining the ancestors.'},
+ {t:'Zoroastrianism',name:'Three Nights and a Bridge',murl:'../many-doors/zoro/',wname:'Nine Nights to the Bridge',wurl:'../many-doors/zoro/walk/',why:'The shortest, most dramatic story in the catalog. Three nights by the body, a dawn wind, then meeting your own conscience on a bridge that widens or narrows. Perfect for a single interactive piece.',man:'The Chinvat Bridge as the interface: your choices through the story set its width.',walk:'A three-night practice of reliving the day each evening, as the soul relives its life.'},
+ {t:'Chinese folk and Daoist',name:'The Ten Courts',murl:'../many-doors/chinese/',wname:'The Ten Kings\' Road',wurl:'../many-doors/chinese/walk/',why:'Shares the Tibetan 49 days, so it can reuse the walk structure. Vivid, visual courts, a mirror, a bridge and a bowl of forgetting soup.',man:'Seven weekly stations through ten courts, ending at Meng Po\'s bridge where the reader chooses whether to drink.',walk:'A 49-day walk built around the seven sevens, a direct sibling to the Tibetan one.'},
+ {t:'Aztec (Mexica)',name:'The Nine Levels of Mictlan',murl:'../many-doors/aztec/',wname:'The Road Down',wurl:'../many-doors/aztec/walk/',why:'The most game-like journey in the catalog: nine trials, a dog companion and a four-year road. Strong appeal for younger readers and a natural tie to Día de Muertos.',man:'Each level as a stage you clear with the right offering, with the xoloitzcuintli as guide.',walk:'Nine stations instead of days, one per level.',care:'Pair with Mexican and Nahua scholars or cultural advisors.'}
+];
+const LATER=[
+ ['Greek: The Gold Leaf','The Orphic gold tablets (which spring to drink from) plus Homer, Charon and the judges; the walk is Plato\'s Myth of Er in twelve days.',[['The Gold Leaf','../many-doors/greek/'],['The Twelve Days of Er','../many-doors/greek/walk/']]],
+ ['Islam: The Barzakh','From the last words to the questioning, the barzakh, the scales and the Sirat, drawn with geometry and calligraphy instead of figures. The walk is seven sayings of the Prophet on remembering death.',[['The Barzakh','../many-doors/islam/'],['Seven Days of Remembering','../many-doors/islam/walk/']]],
+ ['Judaism: The Bundle of Life','Keriah, tahara, the plain pine box, Kaddish and the World to Come. The walk follows the year of mourning, from the first hour to the yahrzeit.',[['The Bundle of Life','../many-doors/judaism/'],['A Year of Kaddish','../many-doors/judaism/walk/']]],
+ ['Pure Land: The Welcome','Amida\'s vow, Genshin\'s deathbed rites with five-coloured cords, the raigō and the opening lotus. The walk is the Contemplation Sutra\'s sixteen meditations.',[['The Welcome','../many-doors/pureland/'],['The Sixteen Contemplations','../many-doors/pureland/walk/']]],
+ ['Many Doors: one moment, all maps','The capstone: ten moments of the journey (last words, guides, crossings, weighings, forgetting, endings) with every tradition\'s answer behind its own door.',[['Many Doors','../many-doors/doors/']]]
+];
+// population (Pew Research Center, "How the Global Religious Landscape Changed From 2010 to 2020", 2025)
+const POP=[['Christians',2.30,'Judgment, then heaven, hell or purgatory; resurrection at the end.'],['Muslims',2.02,'Questioning in the grave, then resurrection and the Day of Judgment.'],['Unaffiliated',1.87,'No shared view; many still believe in some afterlife.'],['Hindus',1.17,'Rebirth guided by karma, or release (moksha).'],['Buddhists',0.32,'Rebirth guided by karma, or nirvana.'],['Other religions',0.17,'Sikh, Jain, Bahá\'í, Daoist, Shinto, folk and Indigenous views.'],['Jews',0.015,'Focus on this life; the world to come and resurrection.']];
+const PMAX=2.5;
+$('#poprows').innerHTML=POP.map(([n,v,d],i)=>`<div class="rl">${n}</div><div class="track"><div class="grid">${[0,.5,1,1.5,2,2.5].map(t=>`<i style="left:${t/PMAX*100}%"></i>`).join('')}</div><button class="b" style="width:${Math.max(v/PMAX*100,.6)}%" data-p="${i}" aria-label="${n}: ${v} billion"></button><span class="bv" style="left:calc(${v/PMAX*100}% + 6px)">${v<0.1?Math.round(v*1000)+' million':v.toFixed(2)+' bn'}</span></div>`).join('');
+const ptip=document.createElement('div');ptip.className='tip';ptip.hidden=true;$('#pop').appendChild(ptip);
+const showP=b=>{const [n,v,d]=POP[+b.dataset.p];const r=b.getBoundingClientRect(),c=$('#pop').getBoundingClientRect();ptip.innerHTML=`<b>${n}</b>${esc(d)}`;ptip.hidden=false;ptip.style.left=Math.max(8,Math.min(r.left-c.left+Math.min(r.width,200)/2,c.width-290))+'px';ptip.style.top=(r.bottom-c.top+8)+'px'};
+['pointerover','focusin','click'].forEach(ev=>$('#poprows').addEventListener(ev,e=>{const b=e.target.closest('.b');if(b)showP(b)}));
+['pointerout','focusout'].forEach(ev=>$('#poprows').addEventListener(ev,()=>ptip.hidden=true));
+// the Catholic passage
+const ST=[
+ {k:'Before death',t:'The last rites',p:'A priest hears confession, anoints the sick person with oil and gives communion as viaticum, "food for the journey." An apostolic pardon may be given. Medieval Christians had a whole manual for this hour, the Ars Moriendi, about resisting five temptations at the deathbed: doubt, despair, impatience, pride and clinging to possessions.',cc:'CCC 1499–1532, 1524–1525'},
+ {k:'The moment of death',t:'Soul and body part',p:'Death is the separation of the soul from the body. The body returns to the earth; the soul, which is immortal, does not die. There is one life only: no reincarnation, and no second chance after death.',cc:'CCC 997, 1005, 1013'},
+ {k:'Immediately after',t:'The particular judgment',p:'Each person is judged by Christ at the moment of death, on their faith and how they loved. Medieval writers pictured the archangel Michael weighing souls, but the Church teaches the judgment itself, not the image.',cc:'CCC 1021–1022'},
+ {fork:1,k:'Three outcomes',t:'Heaven, purgatory or hell',f:[['Heaven','Those who die in God\'s grace and are fully purified see God "face to face" (the beatific vision), together with the saints.','CCC 1023–1029'],['Purgatory','Those who die in God\'s grace but are not yet fully purified are cleansed before entering heaven. Everyone in purgatory is already saved, and the prayers and Masses of the living help them.','CCC 1030–1032'],['Hell','Those who die in mortal sin, refusing God\'s love, are separated from God forever. The Church describes this as self-exclusion that God does not force, and it has never declared any particular person to be in hell.','CCC 1033–1037']]},
+ {k:'While the world lasts',t:'The communion of saints',p:'The living, the souls in purgatory and the saints in heaven stay connected. The living pray for the dead (November 2, All Souls\' Day) and ask the saints to pray for them.',cc:'CCC 954–959'},
+ {k:'At the end of time',t:'Resurrection and the Last Judgment',p:'Christ returns, all the dead rise with their bodies, and every life is made fully known in a final, public judgment. The particular judgment is confirmed.',cc:'CCC 988–1004, 1038–1041'},
+ {k:'Forever',t:'New heavens and a new earth',p:'Creation itself is renewed. The end is the whole person, body and soul, in a transformed world, not only a soul in the clouds.',cc:'CCC 1042–1050'}
+];
+$('#stations').innerHTML=ST.map(s=>s.fork?`<li class="st fork"><span class="k">${s.k}</span><h3>${s.t}</h3><div class="fork3">${s.f.map(([a,b,c])=>`<div><b>${a}</b>${esc(b)}<div class="cc" style="font-size:.8rem;color:var(--ink-soft);margin-top:4px">${c}</div></div>`).join('')}</div></li>`:`<li class="st"><span class="k">${s.k}</span><h3>${s.t}</h3><p>${esc(s.p)}</p><span class="cc">${s.cc}</span></li>`).join('');
+$('#xnums').innerHTML=[['1.4 bn','Catholic'],['~0.9 bn','Protestant and independent'],['~0.26 bn','Orthodox']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+const XB=['Catholic','Orthodox','Protestant','Latter-day Saints','Jehovah\'s Witnesses'];
+const XR=[
+ ['Right after death','Particular judgment','A 40-day passage, then a particular judgment','With Christ at once (most); soul sleep (Adventists)','Spirit world: paradise or spirit prison','The soul is not immortal; the dead are unconscious'],
+ ['A middle state?','Purgatory','No purgatory, but souls can still be helped before the Last Judgment','No','Yes: the dead can still be taught the gospel','No'],
+ ['Pray for the dead?','Yes, especially at Mass','Yes, on days 3, 9 and 40 and each year','Generally no','Yes, through proxy temple ordinances','No'],
+ ['At the deathbed','Confession, anointing, viaticum','Confession, anointing, communion, prayers for the departing soul','Prayer and scripture; no sacrament','Priesthood blessing','Prayer'],
+ ['Hell','Eternal, self-chosen separation from God','Eternal; often described as God\'s love felt as fire by those who refuse it','Eternal (most); annihilation (some)','Rare; most people reach a degree of glory','None; the wicked simply are not raised'],
+ ['The end','Resurrection, Last Judgment, new creation','Resurrection, Last Judgment, union with God (theosis)','Resurrection, Last Judgment, new creation','Three degrees of glory: celestial, terrestrial, telestial','144,000 rule in heaven; the rest live forever on a paradise earth']
+];
+$('#xtable').innerHTML=`<thead><tr><th></th>${XB.map(b=>`<th>${b}</th>`).join('')}</tr></thead><tbody>${XR.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+// stats
+const withDays=T.filter(t=>t.d!=null);
+$('#stats').innerHTML=[[T.length,'traditions mapped'],[FAMS.length,'families'],[MOTIFS.length,'shared motifs'],[PICKS.length+LATER.length,'books built']].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+// chart
+const MAX=77, rows=$('#rows'), tip=$('#tip'), chart=$('#chart');
+const sorted=[...withDays].sort((a,b)=>a.d-b.d);
+const pct=v=>Math.min(v,MAX)/MAX*100;
+const ticks=[0,7,14,21,28,35,42,49,56,63,70,77];
+const gridHTML='<div class="grid">'+ticks.map(t=>`<i style="left:${pct(t)}%"></i>`).join('')+'</div>';
+rows.innerHTML=sorted.map((t,i)=>{
+  const over=t.d>MAX, zero=t.d===0;
+  const lab=t.d>=365?(t.d===1460?'4 years':'1 year'):zero?'instant':t.d+' days';
+  const w=over?100:pct(t.d);
+  const bar=zero?`<button class="b zero" data-i="${i}" aria-label="${esc(t.n)}: ${lab}"></button>`:`<button class="b${over?' over':''}" style="width:calc(${w}% - ${over?0:0}px)" data-i="${i}" aria-label="${esc(t.n)}: ${lab}"></button>`;
+  const vpos=zero?'left:18px':over?'right:4px;color:var(--parchment);top:2px':`left:calc(${w}% + 6px)`;
+  return `<div class="rl">${esc(t.n.replace(' Buddhism','').replace(' and Daoist','').replace(' and Japanese',''))}</div><div class="track">${gridHTML}${bar}<span class="bv" style="${vpos}">${lab}</span></div>`;
+}).join('');
+$('#ticks').innerHTML=ticks.map(t=>`<span style="left:${pct(t)}%">${t}</span>`).join('');
+function showTip(btn){const t=sorted[+btn.dataset.i];const r=btn.getBoundingClientRect(),c=chart.getBoundingClientRect();
+  tip.innerHTML=`<b>${esc(t.n)}</b>${esc(t.dn)}`;tip.hidden=false;
+  let x=Math.min(r.left-c.left+Math.min(r.width,200)/2, c.width-290);x=Math.max(8,x);
+  tip.style.left=x+'px';tip.style.top=(r.bottom-c.top+8)+'px';}
+rows.addEventListener('pointerover',e=>{const b=e.target.closest('.b');if(b)showTip(b)});
+rows.addEventListener('pointerout',e=>{if(e.target.closest('.b'))tip.hidden=true});
+rows.addEventListener('focusin',e=>{const b=e.target.closest('.b');if(b)showTip(b)});
+rows.addEventListener('focusout',()=>tip.hidden=true);
+rows.addEventListener('click',e=>{const b=e.target.closest('.b');if(b)showTip(b)});
+// motifs
+$('#motifs').innerHTML=MOTIFS.map(m=>`<div class="motif"><h3>${m.t}</h3><p>${m.p}</p><ul>${m.l.map(([a,b])=>`<li><b>${esc(a)}</b> <span>· ${esc(b)}</span></li>`).join('')}</ul></div>`).join('');
+// catalog
+let fam='All', view='cards';
+try{view=localStorage.getItem('md-view')||'cards'}catch(e){}
+const F=[['self','What continues'],['moment','At the moment of death'],['between','The in-between'],['judge','Judgment'],['end','Where it ends'],['rite','What the living do'],['text','Key texts']];
+function render(){
+  const list=T.filter(t=>fam==='All'||t.f===fam);
+  $('#cards').innerHTML=list.map(t=>`<article class="card${t.ref?' ref':''}"><span class="fam">${t.f}${t.ref?' · our reference':''}</span><h3>${esc(t.n)}</h3><p class="one">${esc(t.one)}</p><div class="tags"><span class="tag">${t.shape}</span>${t.d!=null?`<span class="tag">${t.d===0?'instant':t.d===1460?'4 years':t.d===365?'1 year':t.d+' days'}</span>`:''}</div><details><summary>Full entry</summary><dl>${F.map(([k,l])=>`<div><dt>${l}</dt><dd>${esc(t[k])}</dd></div>`).join('')}</dl></details></article>`).join('');
+  $('#table').innerHTML=`<thead><tr><th>Tradition</th><th>Ending shape</th>${F.map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead><tbody>${list.map(t=>`<tr><td>${esc(t.n)}</td><td>${t.shape}</td>${F.map(([k])=>`<td>${esc(t[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  $('#cards').hidden=view!=='cards';$('#tablewrap').hidden=view!=='table';
+  $('#vCards').setAttribute('aria-pressed',view==='cards');$('#vTable').setAttribute('aria-pressed',view==='table');
+  document.querySelectorAll('#fams .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.f===fam));
+}
+$('#fams').innerHTML=['All',...FAMS].map(f=>`<button type="button" class="chip" data-f="${f}">${f}${f==='All'?'':' ('+T.filter(t=>t.f===f).length+')'}</button>`).join('');
+$('#fams').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){fam=c.dataset.f;render()}});
+const setView=v=>{view=v;try{localStorage.setItem('md-view',v)}catch(e){}render()};
+$('#vCards').onclick=()=>setView('cards');$('#vTable').onclick=()=>setView('table');
+render();
+// picks
+$('#picks').innerHTML=PICKS.map((p,i)=>`<article class="pick"><span class="n">${i+1}</span><div><h3>${esc(p.name)}</h3><div class="tr">${esc(p.t)}</div><p>${esc(p.why)}</p>${p.care?`<p class="care">${esc(p.care)}</p>`:''}</div><div class="fmt"><b>The manual</b><span>${esc(p.man)}</span><b>The walk</b><span>${esc(p.walk)}</span>${p.murl?`<div class="open"><a href="${p.murl}" target="_blank" rel="noopener">Open ${esc(p.name)}</a><a href="${p.wurl}" target="_blank" rel="noopener">Open ${esc(p.wname)}</a></div>`:''}</div></article>`).join('');
+$('#later').innerHTML=LATER.map(([a,b,l])=>`<div><b>${esc(a)}</b>${esc(b)}${l?`<span class="open">${l.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">Open ${esc(t)}</a>`).join('')}</span>`:''}</div>`).join('');
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+<a href="../" style="position:fixed;left:12px;bottom:12px;z-index:50;font:500 12px/1 Jost,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1E2A2B;background:#FBF3DFe6;border:1px solid rgba(30,42,43,.25);border-radius:999px;padding:9px 13px;text-decoration:none">&larr; Interactive</a>
+</body></html>

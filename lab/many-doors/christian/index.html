@@ -1,0 +1,557 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Art of Dying Well</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* The Art of Dying Well: a hand-coloured 15th-century block book. Rag paper, black woodcut line, washes of red lake, verdigris and saffron. */
+:root{
+  --bg:#EFE4CC; --paper:#F8F0DD; --ink:#1B1A17; --ink-soft:#4E4840; --accent:#8E2A22; --accent2:#2F4A6E; --gold:#D9A93A; --night:#16130F; --nightink:#F8F0DD;
+  --display:'IM Fell English SC','IM Fell English','Garamond',serif;
+}
+h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);letter-spacing:.02em}
+h1{font-weight:400;font-size:clamp(2.2rem,5.4vw,3.4rem)}
+.brand{font-weight:400;letter-spacing:.08em;font-size:1rem}
+.btn,.sgo,.pill,.tog,.sbtn{font-family:'Jost','Futura',sans-serif}
+.cover{background:#F3E8CF}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
+function manualLanding(B){
+  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
+    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
+    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
+  $('#begin').onclick=()=>playManual(B,next);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
+  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+}
+async function playManual(B,start){
+  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
+  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
+  s.onclose=()=>manualLanding(B);
+  try{
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
+      await c.run(s);
+      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
+      if(SND.ctx) allOff(1.2); }
+    store.set(B.key+'-next','0'); alive(s);
+    await B.finale(s); closePlayer();
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* Woodcut kit for The Art of Dying Well: black line on rag paper, hand-tinted like the block books of the 1450s. */
+const INK='#1B1A17', RAG='#F3E8CF', RED='#B5483A', GREEN='#6E8B55', OCHRE='#D9A93A', BLUE='#4F6E96', BROWN='#8C5E35', SKIN='#EBCBA6';
+const WC_DEFS=`<defs><pattern id="hx" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line x1="0" y1="0" x2="0" y2="6" stroke="${INK}" stroke-width="1.1" opacity=".55"/></pattern>
+<pattern id="hx2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-40)"><line x1="0" y1="0" x2="0" y2="5" stroke="${INK}" stroke-width="1" opacity=".35"/></pattern>
+<radialGradient id="glory"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".6" stop-color="${OCHRE}" stop-opacity=".5"/><stop offset="1" stop-color="${OCHRE}" stop-opacity="0"/></radialGradient></defs>`;
+/* a woodcut page: paper, the cut border, and the picture */
+function wc(inner,{bg=RAG,floor=true}={}){ return `${WC_DEFS}<rect width="600" height="400" fill="${bg}"/>${floor?`<path d="M0 335 H600 V400 H0Z" fill="#E2D2AE"/><path d="M0 335 H600 V400 H0Z" fill="url(#hx2)"/><line x1="0" y1="335" x2="600" y2="335" stroke="${INK}" stroke-width="2.5"/>`:''}<clipPath id="wcclip"><rect x="16" y="16" width="568" height="368"/></clipPath><g clip-path="url(#wcclip)">${inner}</g><rect x="8" y="8" width="584" height="384" fill="none" stroke="${INK}" stroke-width="5"/><rect x="16" y="16" width="568" height="368" fill="none" stroke="${INK}" stroke-width="1.5"/>`; }
+function bed({x=0,glow=false}={}){ return `<g transform="translate(${x} 0)">
+  <rect x="140" y="92" width="350" height="26" fill="${GREEN}" stroke="${INK}" stroke-width="3"/><path d="M140 118 q20 18 40 0 q20 18 40 0 q20 18 40 0 q20 18 40 0 q20 18 40 0 q20 18 40 0 q20 18 40 0 q20 18 40 0 q15 14 30 0" fill="${GREEN}" stroke="${INK}" stroke-width="2.5"/>
+  <line x1="150" y1="118" x2="150" y2="335" stroke="${INK}" stroke-width="7"/><line x1="480" y1="118" x2="480" y2="335" stroke="${INK}" stroke-width="7"/>
+  <path d="M140 300 H490 V335 H140Z" fill="${BROWN}" stroke="${INK}" stroke-width="3"/><path d="M140 300 H490 V335 H140Z" fill="url(#hx)"/>
+  <path d="M152 300 Q156 252 215 246 L462 250 Q490 262 486 300Z" fill="${RED}" stroke="${INK}" stroke-width="3"/><path d="M230 300 Q236 262 260 252 M300 300 Q304 262 330 252 M380 300 Q384 262 410 254" fill="none" stroke="${INK}" stroke-width="2"/>
+  <ellipse cx="196" cy="246" rx="34" ry="14" fill="#FBF6EA" stroke="${INK}" stroke-width="2.5"/>
+  <circle cx="208" cy="230" r="15" fill="${SKIN}" stroke="${INK}" stroke-width="2.5"/><path d="M193 226 Q200 205 222 218 L214 222Z" fill="#FBF6EA" stroke="${INK}" stroke-width="2"/><path d="M216 228 l4 0 M214 236 q4 2 7 -1" stroke="${INK}" stroke-width="1.8" fill="none"/>
+  <path d="M240 250 q10 -12 20 0" fill="${SKIN}" stroke="${INK}" stroke-width="2"/>
+  ${glow?`<circle cx="210" cy="232" r="40" fill="url(#glory)" class="shine"/>`:''}</g>`; }
+function demon(x,y,s=1,{col=INK,flip=false,tint}={}){ const t=tint||col; return `<g transform="translate(${x} ${y}) scale(${flip?-s:s} ${s})">
+  <path d="M-10 -30 L-50 -56 L-42 -40 L-60 -36 L-44 -24 L-52 -10 L-12 -14Z M10 -30 L50 -56 L42 -40 L60 -36 L44 -24 L52 -10 L12 -14Z" fill="${t}" stroke="${INK}" stroke-width="2"/>
+  <path d="M-15 0 Q-20 -32 0 -40 Q20 -32 15 0 L9 30 L3 12 L-3 12 L-9 30Z" fill="${col}" stroke="${INK}" stroke-width="2"/>
+  <path d="M-5 -14 l3 5 l3 -5 M2 -22 l3 5 l3 -5 M-9 -26 l3 5 l3 -5" stroke="#F3E8CF" stroke-width="1.4" fill="none" opacity=".7"/>
+  <circle cx="0" cy="-48" r="12" fill="${col}" stroke="${INK}" stroke-width="2"/><path d="M-8 -56 L-15 -73 L-3 -58Z M8 -56 L15 -73 L3 -58Z" fill="${col}" stroke="${INK}" stroke-width="1.5"/>
+  <path d="M8 -47 L22 -43 L9 -41Z" fill="${col}" stroke="${INK}" stroke-width="1.5"/><circle cx="4" cy="-51" r="2.6" fill="#F8E36A"/><circle cx="-4" cy="-51" r="2.2" fill="#F8E36A"/>
+  <path d="M12 8 Q42 16 36 40 L46 34" fill="none" stroke="${INK}" stroke-width="3"/><path d="M-12 -18 L-26 -2 M12 -18 L24 -6" stroke="${INK}" stroke-width="3"/></g>`; }
+function angel(x,y,s=1,{robe='#FBF6EA',flip=false}={}){ return `<g transform="translate(${x} ${y}) scale(${flip?-s:s} ${s})">
+  <path d="M-6 -36 Q-46 -70 -58 -20 Q-40 -34 -34 -12 Q-24 -26 -8 -14Z" fill="${OCHRE}" stroke="${INK}" stroke-width="2"/><path d="M-50 -32 l12 8 M-44 -44 l14 10 M-36 -54 l12 12" stroke="${INK}" stroke-width="1.5"/>
+  <path d="M-16 -32 Q0 -42 16 -32 L26 40 H-26Z" fill="${robe}" stroke="${INK}" stroke-width="2.5"/><path d="M-6 -20 L-12 38 M6 -20 L10 38" stroke="${INK}" stroke-width="1.5"/>
+  <circle cx="0" cy="-48" r="17" fill="${OCHRE}" stroke="${INK}" stroke-width="2"/><circle cx="0" cy="-48" r="11" fill="${SKIN}" stroke="${INK}" stroke-width="2"/>
+  <path d="M-10 -54 q10 -9 20 0" stroke="${INK}" stroke-width="2" fill="#C98B3A"/></g>`; }
+function figure(x,y,s=1,{robe=BLUE,halo=false,head=SKIN,hood=false,flip=false,crown=false,hands='pray'}={}){ return `<g transform="translate(${x} ${y}) scale(${flip?-s:s} ${s})">
+  <path d="M-15 -30 Q0 -40 15 -30 L28 42 H-28Z" fill="${robe}" stroke="${INK}" stroke-width="2.5"/><path d="M-15 -30 Q0 -40 15 -30 L28 42 H-28Z" fill="url(#hx2)"/><path d="M-4 -20 L-10 40 M5 -18 L12 40" stroke="${INK}" stroke-width="1.5"/>
+  ${hands==='pray'?`<path d="M-4 -10 L0 -22 L4 -10Z" fill="${SKIN}" stroke="${INK}" stroke-width="1.6"/>`:hands==='point'?`<path d="M12 -18 L34 -26" stroke="${INK}" stroke-width="5"/><path d="M12 -18 L34 -26" stroke="${SKIN}" stroke-width="2.5"/>`:''}
+  ${halo?`<circle cx="0" cy="-47" r="17" fill="${OCHRE}" stroke="${INK}" stroke-width="2"/>`:''}<circle cx="0" cy="-47" r="11" fill="${head}" stroke="${INK}" stroke-width="2"/>
+  ${hood?`<path d="M-13 -44 Q0 -66 13 -44 L12 -34 Q0 -40 -12 -34Z" fill="${robe}" stroke="${INK}" stroke-width="2"/>`:''}${crown?`<path d="M-10 -56 l3 -10 l4 7 l3 -9 l3 9 l4 -7 l3 10Z" fill="${OCHRE}" stroke="${INK}" stroke-width="1.5"/>`:''}</g>`; }
+function scroll(x,y,w,text,{rot=0,size=13}={}){ const h=24; return `<g transform="translate(${x} ${y}) rotate(${rot})">
+  <path d="M${-w/2} ${-h/2} H${w/2} q10 0 10 ${h/2} q0 ${h/2} -10 ${h/2} H${-w/2} q-10 0 -10 ${-h/2} q0 ${-h/2} 10 ${-h/2}Z" fill="#FBF6EA" stroke="${INK}" stroke-width="2"/>
+  <path d="M${w/2} ${h/2} q8 0 10 8 l-6 -2 M${-w/2} ${-h/2} q-8 0 -10 -8 l6 2" fill="none" stroke="${INK}" stroke-width="2"/>
+  <text y="4.5" text-anchor="middle" font-size="${size}" font-style="italic" fill="${INK}" style="font-family:'IM Fell English',serif">${esc(text)}</text></g>`; }
+function crucifix(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-5 -80 H5 V60 H-5Z M-40 -56 H40 V-46 H-40Z" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/>
+  <path d="M-36 -52 Q-16 -46 0 -44 Q16 -46 36 -52 L34 -48 Q14 -42 4 -38 L4 8 L-4 8 L-4 -38 Q-14 -42 -34 -48Z" fill="${SKIN}" stroke="${INK}" stroke-width="1.8"/><path d="M-5 -6 H5 L6 6 H-6Z" fill="#FBF6EA" stroke="${INK}" stroke-width="1.5"/>
+  <circle cx="0" cy="-60" r="10" fill="${OCHRE}" stroke="${INK}" stroke-width="1.5"/><circle cx="0" cy="-58" r="6.5" fill="${SKIN}" stroke="${INK}" stroke-width="1.5"/></g>`; }
+function candle(x,y,s=1,lit=true){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="-34" width="8" height="34" fill="#FBF6EA" stroke="${INK}" stroke-width="2"/>${lit?`<circle cx="0" cy="-44" r="16" fill="url(#glory)" class="flick"/><path d="M0 -50 Q6 -42 0 -36 Q-6 -42 0 -50Z" fill="${OCHRE}" stroke="${INK}" stroke-width="1.2" class="flame"/>`:''}</g>`; }
+function crown(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-18 8 L-20 -12 L-10 -2 L0 -16 L10 -2 L20 -12 L18 8Z" fill="${OCHRE}" stroke="${INK}" stroke-width="2"/><circle cx="0" cy="-16" r="3" fill="${RED}" stroke="${INK}"/></g>`; }
+function soul(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-7 -6 Q0 -12 7 -6 L6 14 L2 26 L0 14 L-2 26 L-6 14Z" fill="#FBF6EA" stroke="${INK}" stroke-width="1.8"/><circle cx="0" cy="-14" r="6" fill="#FBF6EA" stroke="${INK}" stroke-width="1.8"/><path d="M-2 -2 L0 -10 L2 -2Z" fill="${INK}"/></g>`; }
+function house(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-30 0 V-34 L0 -58 L30 -34 V0Z" fill="${RED}" stroke="${INK}" stroke-width="2.5"/><path d="M-30 -34 L0 -58 L30 -34" fill="none" stroke="${INK}" stroke-width="2.5"/><path d="M-8 0 V-18 H8 V0" fill="${BROWN}" stroke="${INK}" stroke-width="2"/><rect x="-22" y="-30" width="10" height="10" fill="#F8E7A8" stroke="${INK}" stroke-width="1.5"/><rect x="12" y="-30" width="10" height="10" fill="#F8E7A8" stroke="${INK}" stroke-width="1.5"/></g>`; }
+function chest(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-26" y="-22" width="52" height="22" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/><path d="M-26 -22 Q0 -40 26 -22" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/>${[[-14,-28],[-4,-32],[8,-30],[16,-26],[0,-24]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="5" fill="${OCHRE}" stroke="${INK}" stroke-width="1.5"/>`).join('')}</g>`; }
+function barrel(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="-20" rx="22" ry="22" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/><path d="M-12 -40 V0 M12 -40 V0" stroke="${INK}" stroke-width="2"/></g>`; }
+function horse(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-30 -30 Q0 -38 26 -30 L38 -54 L50 -50 L44 -36 L34 -22 L30 0 L24 0 L22 -18 L-18 -18 L-22 0 L-28 0 L-30 -18 Q-44 -24 -40 -6" fill="#FBF6EA" stroke="${INK}" stroke-width="2.5"/><path d="M36 -54 l-4 -8 l8 4" fill="#FBF6EA" stroke="${INK}" stroke-width="2"/></g>`; }
+function scales(x,y,s=1,tilt=0){ return `<g transform="translate(${x} ${y}) scale(${s})"><line x1="0" y1="-60" x2="0" y2="20" stroke="${INK}" stroke-width="4"/><g transform="rotate(${tilt} 0 -50)"><line x1="-60" y1="-50" x2="60" y2="-50" stroke="${INK}" stroke-width="4"/>
+  <path d="M-60 -50 L-80 -10 M-60 -50 L-40 -10 M60 -50 L40 -10 M60 -50 L80 -10" stroke="${INK}" stroke-width="1.5"/><path d="M-84 -10 Q-60 8 -36 -10Z" fill="${OCHRE}" stroke="${INK}" stroke-width="2"/><path d="M36 -10 Q60 8 84 -10Z" fill="${OCHRE}" stroke="${INK}" stroke-width="2"/></g></g>`; }
+function flames(x,y,w,h=60,n=9,col=RED){ let o=''; const r=rnd(Math.round(x+w)); for(let i=0;i<n;i++){ const cx=x+(i+.5)*w/n, hh=h*(.6+r()*.5); o+=`<path class="flame" style="animation-delay:${(r()*.6).toFixed(2)}s" d="M${cx-w/n*.6} ${y} Q${cx-w/n*.4} ${y-hh*.5} ${cx} ${y-hh} Q${cx+w/n*.4} ${y-hh*.5} ${cx+w/n*.6} ${y}Z" fill="${i%2?OCHRE:col}" stroke="${INK}" stroke-width="1.8"/>`; } return o; }
+function hellmouth(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 0 Q-80 -70 -10 -80 Q50 -84 70 -40 L40 -30 Q10 -40 -20 -30 Q-40 -20 -40 0Z" fill="${GREEN}" stroke="${INK}" stroke-width="3"/><path d="M-40 0 Q-30 -26 0 -28 Q30 -28 40 -30" fill="none" stroke="${INK}" stroke-width="2"/>
+  <circle cx="20" cy="-58" r="8" fill="${OCHRE}" stroke="${INK}" stroke-width="2"/><circle cx="22" cy="-58" r="3" fill="${INK}"/><path d="M-30 -30 l6 12 l6 -12 M0 -32 l6 12 l6 -12 M24 -32 l6 12 l6 -12" fill="#FBF6EA" stroke="${INK}" stroke-width="1.5"/>${flames(-36,0,70,40,5)}</g>`; }
+function glory(cx,cy,r=150){ return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#glory)"/><g class="spin" style="transform-origin:${cx}px ${cy}px">${rays(cx,cy,r*1.4,28,.35,OCHRE)}</g>`; }
+function clouds(y,col='#FBF6EA'){ let o=''; for(let i=0;i<8;i++) o+=`<circle cx="${i*85+20}" cy="${y+(i%2)*10}" r="46" fill="${col}" stroke="${INK}" stroke-width="2.5"/>`; return o; }
+function grave(x,y,open=0){ return `<g transform="translate(${x} ${y})"><rect x="-34" y="-8" width="68" height="16" fill="#3B3329" stroke="${INK}" stroke-width="2"/><g transform="rotate(${-open*35} -34 -8)"><rect x="-36" y="-18" width="72" height="12" fill="#C9BFA6" stroke="${INK}" stroke-width="2.5"/><path d="M-6 -12 h12 M0 -17 v10" stroke="${INK}" stroke-width="1.5"/></g></g>`; }
+/* the cover: the bed, an angel at the head and a demon at the foot */
+function chCover(){ return wc(`${glory(300,60,120)}${bed()}${angel(115,230,1)}${demon(540,250,1,{flip:true,tint:GREEN})}${crucifix(300,190,.7)}${scroll(300,46,260,'Ars moriendi · the craft of dying',{size:15})}`); }
+
+/* The Art of Dying Well: the Ars moriendi's deathbed in eleven woodcuts, then what the Church teaches comes after. */
+const BED_L=b=>wc(`${bed()}${b||''}`);
+const BOOK={key:'adw',brand:'The Art of Dying Well',brandSub:'A Christian book of the dead',title:'The Art of Dying Well',eyebrow:'From the Ars moriendi, c. 1415',
+ lede:'After the Black Death there were too few priests to sit with every dying person, so the Church wrote a manual anyone could use. This is that manual, told again: five temptations at the deathbed, five answers, and what Catholic teaching says happens next.',
+ note:'About 40 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
+ walkUrl:'../../many-doors/christian/walk/', walkName:'The Forty Days',
+ how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['The woodcuts','The pictures follow the eleven woodcuts of the 1450s block book: a bed, a dying man, demons with scrolls, and angels answering them.'],['Your part','In each temptation you answer the demon yourself, the way the manual taught readers to.'],['What comes after','The last three chapters follow the Catechism of the Catholic Church, with paragraph numbers so you can check them.']],
+ sources:'Tractatus artis bene moriendi (c. 1415) and the illustrated short version (Netherlands or Germany, c. 1450); Catechism of the Catholic Church, §§ 988–1060, 1499–1532; Rite of Anointing and Viaticum; Psalm 90:12; 1 Corinthians 15; Revelation 21. Latin scroll texts are given in translation.',
+ cover:chCover,
+ chapters:[
+ {name:'Learning to Die',short:'Prologue',sub:'Why a manual for dying was written',col:'#8E2A22',run:async s=>{
+   art(wc(`${glory(300,170,180)}${scroll(300,70,300,'Teach us to number our days',{size:16})}${figure(300,250,1.2,{robe:BLUE,hood:true})}${candle(380,300)}${candle(220,300)}`));
+   if(SND.ctx){ pad('pad',[146.8,220,293.7],.035); bell(196,.12); }
+   await say(s,'In 1348 the plague reached Europe. Within a few years it had killed perhaps a third of the people, and a great many priests with them. Families watched loved ones die with no one there to help them die well.',{eye:'Prologue'});
+   await say(s,'Around 1415 a churchman, probably a Dominican, wrote a short treatise called the Ars moriendi: the craft of dying. Its idea was simple. Dying is something you can learn, and a friend, not only a priest, can help.');
+   art(BED_L(`${figure(530,290,1,{robe:'#FBF6EA',hood:true})}${scroll(300,60,320,'The death of the good is precious',{size:14})}`));
+   await say(s,'Thirty years later printers cut eleven pictures into wood and made it one of the most widely read books of the century. Every picture shows the same room: a man in his bed, at the edge of his life. His name in the book is Moriens, which simply means the one who is dying.');
+   await spots(s,{ask:'Tap the three things in the room.',items:[
+     {x:35,y:57,label:'Moriens',say:'Moriens is everyone. The book never tells you who he was, only how he dies.'},
+     {x:88,y:61,label:'The friend',say:'The friend at the bedside is the reader. The book was written so you could be this person for someone else.'},
+     {x:50,y:15,label:'The words',say:'Psalm 90 asks God to teach us to number our days. That is the whole purpose of the book: to number them now, not at the end.'}]});
+   await say(s,'The manual says the devil makes five attacks at the hour of death, and an angel answers each one. Let\'s sit with Moriens through all five.',{eye:'What comes next'});
+ }},
+ {name:'Faith',short:'Faith',sub:'The first temptation, and its answer',col:'#4F6E96',run:async s=>{
+   art(BED_L(`${demon(110,230,1,{tint:GREEN})}${demon(520,210,.9,{flip:true})}${demon(330,170,.8,{tint:RED})}${scroll(140,140,180,'There is nothing after this',{rot:-6})}${scroll(470,120,170,'Do as the pagans do',{rot:5})}${scroll(320,80,170,'Hell is already made',{rot:-2})}`));
+   if(SND.ctx){ noiseLoop('dread','lowpass',180,.08); }
+   await say(s,'The first temptation is against faith. Demons crowd the bed. One says there is nothing after death. Another says Moriens should live as the pagans did. A third says that hell is already made for him, so why bother?',{eye:'The first temptation'});
+   await say(s,'The book is honest that this is where most people start. In weakness and pain, the things you believed when you were well can suddenly feel thin.');
+   const i=await choose(s,'If you were Moriens, what would you say back?',['“I don\'t know anymore.”','“I hold on to what I believe.”','“Leave me alone.”'],{right:1,wrong:k=>k===0?'The book allows that feeling. But the angel\'s advice is not to argue, just to hold on. Try again.':'Sending them away doesn\'t work; the book says they keep coming. Try the angel\'s answer.'});
+   loopOff('dread'); if(SND.ctx) chime();
+   art(BED_L(`${angel(110,230,1.1)}${figure(470,240,1,{halo:true,robe:RED})}${figure(540,250,.9,{halo:true,robe:GREEN})}${crucifix(330,190,.6)}${scroll(150,120,170,'Be firm in faith',{rot:-4})}${demon(560,370,.5,{flip:true})}`));
+   await say(s,'The angel arrives with saints around it, and its scroll reads: be firm in faith. The demons slink off to the edge of the picture.',{eye:'The inspiration'});
+   await say(s,'The manual adds advice for the friend at the bedside: say the Creed aloud, slowly, so the dying person can follow it in their head even if they can\'t speak. Faith here isn\'t winning an argument. It\'s hearing familiar words and leaning on them.');
+ }},
+ {name:'Despair',short:'Despair',sub:'The second temptation, and its answer',col:'#2F4A6E',run:async s=>{
+   art(BED_L(`${demon(110,220,1)}${demon(520,220,.95,{flip:true,tint:BROWN})}${scroll(130,120,150,'You lied',{rot:-8})}${scroll(470,100,150,'You were greedy',{rot:6})}${scroll(300,60,170,'You were unfaithful',{rot:-3})}${scroll(320,170,160,'Look at your sins',{rot:3})}`));
+   if(SND.ctx) noiseLoop('dread','lowpass',160,.08);
+   await say(s,'The second temptation is despair. Now the demons hold up scrolls listing everything Moriens has done wrong. Look, they say. You lied. You cheated. You were unfaithful. Someone like you cannot be forgiven.',{eye:'The second temptation'});
+   await say(s,'The book calls this the most dangerous temptation of all, because it doesn\'t deny God. It just convinces you God couldn\'t possibly want you.');
+   art(BED_L(`${demon(110,250,.8)}${demon(520,250,.8,{flip:true,tint:BROWN})}${figure(90,140,.7,{halo:true,robe:RED})}${figure(510,140,.7,{halo:true,robe:GREEN})}${figure(180,92,.6,{halo:true,robe:'#FBF6EA'})}${figure(420,92,.6,{halo:true,robe:BLUE})}`));
+   await spots(s,{ask:'Four people appear who were forgiven for worse. Tap each one.',items:[
+     {x:15,y:27,label:'Peter',say:'Peter, who swore three times he had never known Jesus, and became the rock the Church was built on.'},
+     {x:85,y:27,label:'Mary Magdalene',say:'Mary Magdalene, whom the medieval Church remembered as a great sinner, and who was the first to see Christ risen.'},
+     {x:30,y:16,label:'The good thief',say:'The thief crucified beside Jesus, who asked at the very last minute and was told: today you will be with me in paradise.'},
+     {x:70,y:16,label:'Paul',say:'Paul, who hunted down Christians before he became one.'}],onTap:(i)=>{ if(SND.ctx) bell(330+i*40,.08); }});
+   loopOff('dread');
+   art(BED_L(`${angel(110,230,1.1)}${figure(470,240,1,{halo:true,robe:RED})}${figure(540,250,.9,{halo:true,robe:BLUE})}${figure(400,250,.9,{halo:true,robe:GREEN})}${scroll(150,120,170,'Do not despair',{rot:-4})}`));
+   await say(s,'The angel\'s scroll says: do not despair. The book\'s argument is almost a joke at the demon\'s expense. If God forgave these four, a list of your sins proves nothing.',{eye:'The inspiration'});
+ }},
+ {name:'Impatience',short:'Patience',sub:'The third temptation, and its answer',col:'#B5483A',run:async s=>{
+   art(BED_L(`${figure(470,250,1,{robe:BLUE})}${demon(120,230,.9,{tint:RED})}${scroll(150,130,180,'How well I have fooled him',{rot:-5})}<g transform="translate(420 320) rotate(-30)"><rect x="-20" y="-6" width="40" height="12" fill="${BROWN}" stroke="${INK}" stroke-width="2"/></g>`));
+   if(SND.ctx) noiseLoop('dread','lowpass',220,.07);
+   await say(s,'The third temptation is impatience. In the woodcut, Moriens has kicked the doctor away and knocked over the table. He\'s in pain, and he\'s furious with everyone who comes near.',{eye:'The third temptation'});
+   await say(s,'This is the most familiar picture in the book. Anyone who has sat with a dying person has seen it: the anger that pain makes, and the friends who don\'t know where to stand.');
+   await hold(s,{label:'Hold and breathe',ms:6000,ask:'Press and hold. Breathe slowly through the pain with him until the ring closes.',early:'The pain came back. Hold again, slowly.',onP:p=>{ if(SND.ctx&&p>0&&Math.random()<.02) drum(.25); }});
+   loopOff('dread'); if(SND.ctx) chime();
+   art(BED_L(`${angel(110,230,1.1)}${crucifix(470,210,.8)}${figure(540,250,.85,{halo:true,robe:RED})}${scroll(150,120,150,'Be patient',{rot:-4})}`));
+   await say(s,'The angel answers with the cross and with the saints who suffered. Its scroll says: be patient. The book is gentle here. It doesn\'t say pain should be hidden, only that it doesn\'t have to be passed on to the people who love you.',{eye:'The inspiration'});
+ }},
+ {name:'Pride',short:'Pride',sub:'The fourth temptation, and its answer',col:'#D9A93A',run:async s=>{
+   art(BED_L(`${demon(110,220,.9)}${demon(520,210,.9,{flip:true,tint:GREEN})}${demon(330,150,.8,{tint:BROWN})}${crown(200,140,1.3)}${crown(410,120,1.3)}${crown(300,70,1.1)}${scroll(120,110,150,'You earned this',{rot:-6})}${scroll(500,90,150,'Be proud',{rot:5})}`));
+   await say(s,'The fourth temptation is the cleverest. The demons stop accusing Moriens and start flattering him. They hold out crowns. You were a good man, they say. You earned this. Be proud.',{eye:'The fourth temptation'});
+   await say(s,'Despair says you\'re too bad to be saved. Pride says you\'re good enough not to need saving. The book treats them as two sides of the same mistake: looking only at yourself.');
+   const k=await duo(s,{ask:'Which do you choose?',a:{label:'Take the crown',svg:`<rect width="300" height="400" fill="${RAG}"/>${crown(150,180,3)}`},b:{label:'Set it down',svg:`<rect width="300" height="400" fill="${RAG}"/>${figure(150,240,2,{robe:BLUE,hood:true})}`},right:1,wrong:'In the woodcut, a crown taken leads straight into the mouth of hell at the bottom of the page. Try the other.'});
+   if(SND.ctx) chime();
+   art(BED_L(`${angel(110,230,1.1)}${figure(480,240,1,{halo:true,robe:BLUE})}${figure(540,250,.9,{halo:true,robe:RED,crown:true})}${hellmouth(300,335,.6)}${scroll(150,120,150,'Be humble',{rot:-4})}`));
+   await say(s,'The angel\'s answer is: be humble. Behind it stand the saints and the Trinity, and under the bed, a mouth of hell swallows the proud. The cure isn\'t thinking less of yourself. It\'s letting yourself be given what you can\'t earn.',{eye:'The inspiration'});
+ }},
+ {name:'Possessions',short:'Letting go',sub:'The fifth temptation, and its answer',col:'#6E8B55',run:async s=>{
+   art(BED_L(`${demon(560,220,.8,{flip:true})}${house(80,150,1.1)}${chest(80,250,1.1)}${barrel(530,320,1)}${horse(80,320,.9)}${figure(470,250,.8,{robe:RED})}${figure(420,260,.7,{robe:GREEN})}${scroll(440,100,200,'Think of your treasure',{rot:4})}${scroll(160,60,200,'Provide for your friends',{rot:-4})}`));
+   await say(s,'The last temptation is the simplest. The demons show Moriens his house, his money, his horse, his wine cellar, and his family at the foot of the bed. Think of all this, they say. Who will look after it?',{eye:'The fifth temptation'});
+   await say(s,'The book calls this avarice, but it\'s really clinging: the last grip on everything that made up a life.');
+   await release(s,{ask:'Tap each thing to let it go. Nothing is lost; it\'s handed on.',words:['My house','My money','My good name','My plans','My family']});
+   if(SND.ctx) chime();
+   art(BED_L(`${angel(110,230,1.1)}${crucifix(470,200,.8)}${figure(540,250,.85,{halo:true,robe:BLUE})}${scroll(150,120,200,'Do not cling',{rot:-4})}`));
+   await say(s,'The angel points to Christ on the cross, who gave up everything, and to Mary, who stood by and watched. The scroll says: do not cling. The family isn\'t abandoned. They are put into better hands than yours.',{eye:'The inspiration'});
+ }},
+ {name:'The Questions',short:'Questions',sub:'Five questions asked at the bedside',col:'#2F4A6E',run:async s=>{
+   art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA',hood:true,hands:'point'})}${candle(470,300)}`));
+   await say(s,'After the temptations, the manual gives the friend a short list of questions to ask the dying person, based on ones written by Saint Anselm in the eleventh century. They are meant to be answered simply.',{eye:'The questions'});
+   const Q=[['Are you glad to die in the faith of Christ?','Yes.'],['Do you admit that you have not lived as well as you ought?','Yes.'],['Are you sorry for it?','Yes.'],['If you had more time, would you live better?','Yes, with God\'s help.'],['Do you believe that Christ died for you, and that you cannot be saved except by his death?','Yes.']];
+   for(let i=0;i<Q.length;i++){ await choose(s,Q[i][0],[Q[i][1]]); if(SND.ctx) bell(392,.06); }
+   await say(s,'That\'s all. Five yeses. The manual says that if the dying person can\'t speak, a nod, a squeeze of the hand, or even a wish is enough.');
+   await say(s,'Then the friend says: while life is still in you, put all your trust in his death. Cover yourself with it, wrap yourself in it.');
+ }},
+ {name:'The Last Rites',short:'Last rites',sub:'Confession, anointing and the food for the journey',col:'#8E2A22',run:async s=>{
+   art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA',hood:false})}${candle(460,300)}${candle(570,300)}`));
+   if(SND.ctx) pad('pad',[130.8,196,261.6],.03);
+   await say(s,'Today a priest brings three sacraments to the dying. Catholics often call them the last rites. The first is confession: telling God what you regret, out loud, and hearing that you are forgiven.',{eye:'The last rites · CCC 1524–1525'});
+   await spots(s,{ask:'The second is anointing. The priest anoints with holy oil. Tap the forehead, then the hands.',items:[
+     {x:35,y:56,label:'Forehead',say:'"Through this holy anointing may the Lord in his love and mercy help you with the grace of the Holy Spirit."'},
+     {x:42,y:62,label:'Hands',say:'"May the Lord who frees you from sin save you and raise you up." Before 1972 the eyes, ears, nose, lips, hands and feet were all anointed, each for the sins that sense had committed.'}]});
+   await say(s,'The third is communion, given to the dying under an old name: viaticum, which means provisions for a journey. It\'s the last meal before travelling.');
+   await count(s,{ask:'Light the candle the friend will place in the dying person\'s hand.',n:1,label:'Light the candle',onTap:()=>{ if(SND.ctx) nz({freq:2400,peak:.06,d:.2}); }});
+   art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA'})}${candle(250,248,1)}`));
+   await say(s,'In the last woodcut, a monk puts a burning candle into Moriens\'s hand. It\'s the light of his baptism, given back at the end.');
+ }},
+ {name:'The Good Death',short:'Death',sub:'The soul goes out to meet its maker',col:'#D9A93A',run:async s=>{
+   art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA',hood:true})}${candle(250,248,1)}${demon(90,330,.7,{tint:GREEN})}${demon(580,350,.6,{flip:true})}${scroll(110,300,130,'We have lost him',{rot:-4})}${scroll(500,320,120,'No hope left',{rot:4,size:12})}`));
+   if(SND.ctx) pad('pad',[146.8,220,293.7],.03);
+   await say(s,'The friend says the prayer that has been said at Christian deathbeds for more than a thousand years: Go forth, Christian soul, out of this world, in the name of God the Father who created you, in the name of Jesus Christ who suffered for you, in the name of the Holy Spirit who was poured out on you.',{eye:'Go forth, Christian soul'});
+   await say(s,'Moriens\'s last words in the book are the last words of Jesus on the cross: Into your hands, Lord, I commend my spirit.');
+   await hold(s,{label:'Breathe out, slowly',ms:7000,ask:'Press and hold for his last breath.',early:'Slowly. Hold again.'});
+   if(SND.ctx){ bell(196,.18); setTimeout(()=>bell(196,.14),2600); setTimeout(()=>bell(196,.1),5200); }
+   art(wc(`${glory(300,70,150)}${bed()}${candle(250,248,1)}<g class="rise">${soul(240,170,1.6)}${angel(180,150,.8)}${angel(310,140,.8,{flip:true})}</g>${demon(90,330,.6,{tint:GREEN})}${demon(580,350,.55,{flip:true})}${scroll(110,300,130,'We have lost him',{rot:-4})}`));
+   await say(s,'In the woodcut, a tiny figure, the soul, comes out of his mouth and is taken up by angels. The demons at the bottom of the page howl that they have lost him.',{eye:'The soul goes out'});
+   await say(s,'The church bell tolls. In many places it still rings once for each year of the dead person\'s life, so the whole village knows to pray.');
+ }},
+ {name:'The Judgment',short:'Judgment',sub:'What happens straight after death',col:'#2F4A6E',run:async s=>{
+   art(wc(`${glory(300,90,170)}${clouds(330)}${figure(300,140,1.3,{halo:true,robe:RED})}${angel(160,280,1)}${scales(440,300,1,-8)}${soul(400,288,.8)}${soul(480,276,.8)}`,{floor:false}));
+   if(SND.ctx) pad('pad',[110,164.8,220],.03);
+   await say(s,'Here the old manual stops and the Church\'s teaching takes over. The Catechism says that at death the soul separates from the body, and each person is judged at once, by Christ. This is called the particular judgment.',{eye:'The particular judgment · CCC 1021–1022'});
+   await say(s,'Painters showed it as the archangel Michael weighing souls in a pair of scales, an image borrowed from far older religions. The Church teaches the judgment, not the scales. The question isn\'t a tally. The Catechism, quoting Saint John of the Cross, says: at the evening of life, we shall be judged on our love.');
+   art(wc(`<rect x="40" y="60" width="150" height="260" rx="75" fill="${OCHRE}" stroke="${INK}" stroke-width="3"/>${glory(115,170,90)}<rect x="225" y="60" width="150" height="260" rx="75" fill="#E7C08A" stroke="${INK}" stroke-width="3"/>${flames(235,320,130,90,7,OCHRE)}<rect x="410" y="60" width="150" height="260" rx="75" fill="#3B2622" stroke="${INK}" stroke-width="3"/>${flames(420,320,130,110,7)}`));
+   await spots(s,{ask:'There are three outcomes. Tap each door.',items:[
+     {x:19,y:45,label:'Heaven',say:'Heaven: those who die in God\'s grace and are fully purified see God face to face, with the saints, forever. The Catechism calls it the fulfilment of the deepest human longings. CCC 1023–1029.'},
+     {x:50,y:45,label:'Purgatory',say:'Purgatory: those who die in God\'s grace but are not yet fully purified are cleansed first. Everyone in purgatory is already saved. CCC 1030–1032.'},
+     {x:81,y:45,label:'Hell',say:'Hell: to die in serious sin without repenting is to choose to be separated from God forever. The Church has never said that any particular person is there. CCC 1033–1037.'}]});
+   await say(s,'Notice that two of the three doors lead to heaven. Purgatory isn\'t a second chance or a lesser hell. It\'s a finishing, for people already on their way home.');
+ }},
+ {name:'Purgatory and the Living',short:'Purgatory',sub:'What the living can still do',col:'#B5483A',run:async s=>{
+   art(wc(`${flames(40,335,520,120,16,OCHRE)}${[120,220,300,380,480].map((x,i)=>soul(x,280-(i%2)*12,1.1)).join('')}${angel(300,110,1)}${clouds(40)}`,{floor:false}));
+   if(SND.ctx) fireLoop();
+   await say(s,'The Catechism doesn\'t describe purgatory as a place or a length of time. It speaks of a cleansing fire, and theologians since have described it as God\'s love itself, felt as burning by anyone not yet ready to receive it fully.',{eye:'Purgatory · CCC 1030–1032'});
+   await say(s,'What makes purgatory matter to the living is this: they can help. Since the earliest centuries Christians have prayed for their dead, and the Church teaches that those prayers, and above all the Mass, reach them.');
+   loopOff('fire');
+   art(wc(`<rect x="60" y="250" width="480" height="20" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/>${crucifix(300,200,.8)}`));
+   const cs=[]; await count(s,{ask:'Light three candles for people you have lost.',n:3,label:'Light a candle',onTap:k=>{ cs.push(k); art(wc(`<rect x="60" y="250" width="480" height="20" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/>${crucifix(300,200,.8)}${cs.map((c,i)=>candle(140+i*60,250,1)).join('')}`)); if(SND.ctx) nz({freq:2400,peak:.05,d:.2}); }});
+   await say(s,'November 2 is All Souls\' Day, set aside for exactly this. In much of the world families visit graves, light candles, and have Masses said for their dead.',{eye:'The communion of saints · CCC 954–958'});
+   await say(s,'The Orthodox Church, which doesn\'t teach purgatory in the same way, keeps a forty-day passage with memorials on the third, ninth and fortieth days. Both traditions agree that love doesn\'t stop at the grave, and that the living and the dead still pray for each other.');
+ }},
+ {name:'The Last Day',short:'The end',sub:'Resurrection and a new creation',col:'#D9A93A',run:async s=>{
+   art(wc(`${glory(300,80,170)}${clouds(150)}${figure(300,90,1.2,{halo:true,robe:RED})}${angel(140,170,.9)}${angel(460,170,.9,{flip:true})}${[90,190,300,410,510].map(x=>grave(x,330,0)).join('')}`));
+   if(SND.ctx) pad('pad',[130.8,196,261.6,329.6],.035);
+   await say(s,'Christianity doesn\'t end with souls in heaven. The creed ends: I look for the resurrection of the dead, and the life of the world to come.',{eye:'The Last Day · CCC 988–1004'});
+   await say(s,'At the end of time, the Catechism says, Christ will return, and all the dead will rise with their own bodies, changed and glorified. Then comes the Last Judgment, when every life is seen whole, and everything hidden is made known.');
+   await hold(s,{label:'Sound the trumpet',ms:3000,ask:'Saint Paul says the trumpet will sound and the dead will be raised. Press and hold.',onP:p=>{}});
+   if(SND.ctx){ [261.6,329.6,392,523.3].forEach((f,i)=>tone(f,{type:'sawtooth',peak:.05,a:.05,d:1.8,at:i*.25})); }
+   art(wc(`${glory(300,80,170)}${clouds(150)}${figure(300,90,1.2,{halo:true,robe:RED})}${angel(140,170,.9)}${angel(460,170,.9,{flip:true})}${[90,190,300,410,510].map((x,i)=>grave(x,330,1)+`<g class="rise" style="animation-delay:${i*.3}s">${soul(x+10,300,1.3)}</g>`).join('')}`));
+   await say(s,'Then a new heaven and a new earth. The last pages of the Bible describe a city coming down from God, where he will wipe away every tear, and death will be no more, nor mourning, nor crying, nor pain.',{eye:'A new creation · CCC 1042–1050'});
+   await say(s,'This is the deepest difference between the Christian map and the Tibetan one. The goal isn\'t to escape the world or the body. It\'s to have both made new.');
+ }}],
+ finale:async s=>{
+   art(chCover()); if(SND.ctx){ chime(); }
+   await say(s,'That is the whole craft. Five temptations: doubt, despair, impatience, pride and clinging. Five answers: faith, hope, patience, humility and letting go.',{eye:'The end of the manual'});
+   await say(s,'The Ars moriendi closes by telling its readers to practise all this while they are well, because there may be no time when the hour comes. Teach us to number our days, the psalm says, so that we may gain a wise heart.');
+ }};
+header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
+manualLanding(BOOK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>

@@ -31,6 +31,8 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
 .station{position:relative;display:flex;flex-direction:column;align-items:center;gap:22px;min-width:0}
 .station.machine{flex:1.7}
 .station.book{flex:1.15}
+.station.doors{flex:1.3}
+.doors svg{display:block;width:100%;height:auto;overflow:visible}
 .station.card{flex:.8}
 /* a pool of light from above */
 .station::before{content:"";position:absolute;left:50%;bottom:58px;width:130%;aspect-ratio:2.2;transform:translateX(-50%);z-index:-1;pointer-events:none;
@@ -142,12 +144,36 @@ const BOOK = `<svg viewBox="0 0 660 270" role="img" aria-label="A Tibetan book, 
   <path d="M606 60 L640 66" stroke="#9c6a12" stroke-width="2"/>
 </svg>`;
 
+// a stone wall with one arched door per book, the first one ajar and lit
+function DOORS(n) {
+  const cols = ['#1F5E63', '#8A4B22', '#7c1f1c', '#2F6B2B', '#4a3a7a', '#b8892f', '#123D40', '#6b3a1c', '#5a6b7a', '#8d3b5c', '#3f5a2a', '#9a5a1a'];
+  const w = 620 / n, dw = w * .62;
+  const door = i => { const x = 20 + i * w + (w - dw) / 2, top = 70, h = 150, r = dw / 2, c = cols[i % cols.length];
+    const arch = `M${x} 220 V${top + r} A${r} ${r} 0 0 1 ${x + dw} ${top + r} V220 Z`;
+    return `<path d="${arch}" fill="#1a110b"/>` + (i === 0
+      ? `<path d="${arch}" fill="url(#light)"/><path d="M${x} 220 V${top + r} L${x + dw * .42} ${top + r + 8} V226 Z" fill="${c}" stroke="#0b0705" stroke-width="1.5"/>`
+      : `<path d="${arch}" fill="${c}" stroke="#0b0705" stroke-width="1.5"/><circle cx="${x + dw * .78}" cy="${top + h * .62}" r="${Math.max(1.6, dw * .05)}" fill="#e1b04a"/>`)
+      + `<path d="M${x - 4} 221 H${x + dw + 4}" stroke="#a89878" stroke-width="5" stroke-linecap="round"/>`; };
+  return `<svg viewBox="0 0 660 240" role="img" aria-label="A long stone wall with ${n} arched doors of different colors; the first stands open onto light">
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9ccb0"/><stop offset="1" stop-color="#a8977a"/></linearGradient>
+    <radialGradient id="light" cx=".5" cy=".7" r=".8"><stop offset="0" stop-color="#fff4d6"/><stop offset=".6" stop-color="#f2b640"/><stop offset="1" stop-color="#8a4b22"/></radialGradient>
+  </defs>
+  <rect x="8" y="40" width="644" height="190" rx="4" fill="url(#stone)"/>
+  <g stroke="#8f8068" stroke-width="1" opacity=".55">${Array.from({ length: 6 }, (_, r) => `<path d="M8 ${70 + r * 30} H652"/>` + Array.from({ length: 11 }, (_, c) => `<path d="M${8 + c * 64 + (r % 2) * 32} ${40 + r * 30} v30"/>`).join('')).join('')}</g>
+  <path d="M8 40 H652" stroke="#efe4c8" stroke-width="3"/>
+  ${Array.from({ length: n }, (_, i) => door(i)).join('')}
+  <text x="330" y="28" text-anchor="middle" font-family="Instrument Serif, Georgia, serif" font-style="italic" font-size="20" fill="#d9ccb0" opacity=".85">what happens after we die, door by door</text>
+</svg>`;
+}
+
 function station(x) {
   const live = x.status === 'live', el = document.createElement('div');
   el.className = 'station ' + (x.object || 'card');
   let obj;
   if (x.object === 'machine') obj = `<div class="mframe"><iframe src="${x.slug}/?embed" title="${x.title}, running" tabindex="-1" loading="eager" scrolling="no"></iframe></div>`;
   else if (x.object === 'book') obj = BOOK;
+  else if (x.object === 'doors') obj = DOORS(x.doors || 12);
   else obj = `<div class="tile">${live ? 'Enter' : 'Soon'}</div>`;
   el.innerHTML = `${live ? `<a class="obj" href="${x.slug}/" data-slug="${x.slug}" aria-label="Open ${x.title}">` : '<div class="obj">'}
       <div class="tilt">${obj}</div><span class="shadow"></span>${live ? '</a>' : '</div>'}
