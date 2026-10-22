@@ -41,11 +41,16 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   letter-spacing:.24em;line-height:1.15;color:#f4ecd8;
   text-shadow:1px 1px 0 #c9b893, 2px 2px 0 #b3a17b, 3px 3px 0 #9c8a65, 4px 4px 0 #85744f, 5px 5px 0 #6c5d3e, 6px 6px 0 #54472f,
     8px 10px 4px rgba(0,0,0,.45), 14px 20px 22px rgba(0,0,0,.5)}
-.name::before,.name::after{content:attr(data-text);position:absolute;inset:0;text-shadow:none;pointer-events:none;mix-blend-mode:screen;opacity:.55}
-.name::before{color:#3ff2ff;animation:prismA 7s ease-in-out infinite}
-.name::after{color:#ff3fd2;animation:prismB 7s ease-in-out infinite}
-@keyframes prismA{0%,100%{transform:translate(-1.5px,0)}50%{transform:translate(-3px,-1px)}}
-@keyframes prismB{0%,100%{transform:translate(1.5px,0)}50%{transform:translate(3px,1px)}}
+.name{transform-origin:0 50%;will-change:filter, transform;
+  animation:rackIn 2.6s cubic-bezier(.2,.7,.2,1) .5s both, breathe 9s ease-in-out 3.1s infinite}
+/* a lens pulling focus: in from soft on arrival, then a slow drift out of focus and back */
+@keyframes rackIn{0%{filter:blur(12px);opacity:0;transform:scale(1.07)}55%{filter:blur(2px);opacity:1}100%{filter:blur(0);opacity:1;transform:scale(1)}}
+@keyframes breathe{0%,40%,100%{filter:blur(0);transform:scale(1)}68%{filter:blur(1.4px);transform:scale(1.035)}84%{filter:blur(.3px);transform:scale(1.01)}}
+.name::before,.name::after{content:attr(data-text);position:absolute;inset:0;text-shadow:none;pointer-events:none;mix-blend-mode:screen;opacity:.22}
+.name::before{color:#3ff2ff;animation:prismA 9s ease-in-out 3.1s infinite}
+.name::after{color:#ff3fd2;animation:prismB 9s ease-in-out 3.1s infinite}
+@keyframes prismA{0%,40%,100%{transform:translate(-.6px,0);opacity:.22}68%{transform:translate(-3.5px,-1px);opacity:.6}}
+@keyframes prismB{0%,40%,100%{transform:translate(.6px,0);opacity:.22}68%{transform:translate(3.5px,1px);opacity:.6}}
 .disciplines{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--title-soft)}
 
 .bottom{display:grid;gap:12px;justify-items:center}
@@ -130,7 +135,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
   .readout small{font-size:.8rem}
 }
 @media (max-width:640px){ .readout{flex-basis:100%;max-width:none;order:-2} }
-@media (prefers-reduced-motion: reduce){ .name::before,.name::after{animation:none} .grain{animation:none} .pill.sound{animation:none!important} }
+@media (prefers-reduced-motion: reduce){ .name,.name::before,.name::after{animation:none} .grain{animation:none} .pill.sound{animation:none!important} }
 </style>
 </head><body>
 
