@@ -400,27 +400,11 @@ function snow(t) {
   g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.5, 'rgba(0,0,0,.4)'); g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g; ctx.fillRect(0, y - 50, W, 100);
 }
-function titleCard(main, sub, lt, dur, nameFace) {
+function titleCard(main, sub, lt, dur) {
   ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, W, H);
   ctx.globalAlpha = Math.max(0, Math.min(1, lt / .6, (dur - lt) / .5));
   ctx.fillStyle = '#f3efe4'; ctx.textAlign = 'center';
-  if (nameFace) {
-    // the same neon pen line as the wordmark, writing itself across the title card
-    const sc = (W - 90) / WORD.width, x0 = (W - WORD.width * sc) / 2, y0 = H / 2 - 50 * sc - 8, prog = Math.min(1, lt / (dur * .55));
-    ctx.save(); ctx.translate(x0, y0); ctx.scale(sc, sc); ctx.lineCap = ctx.lineJoin = 'round';
-    const n = WORD.glyphs.length;
-    WORD.glyphs.forEach(({ x, g }, i) => {
-      const k = Math.min(1, Math.max(0, (prog - i / n * .8) / .2)); if (!k) return;
-      const p = new Path2D(g.d);
-      ctx.save(); ctx.translate(x, 0); ctx.setLineDash([400 * k, 1000]);
-      ctx.shadowColor = `hsl(${i * 24},100%,60%)`; ctx.shadowBlur = 18;
-      ctx.strokeStyle = `hsla(${i * 24},100%,62%,.8)`; ctx.lineWidth = 7; ctx.stroke(p);
-      ctx.shadowBlur = 6; ctx.strokeStyle = '#fff3dc'; ctx.lineWidth = 3; ctx.stroke(p);
-      ctx.restore();
-    });
-    ctx.restore(); ctx.shadowBlur = 0; ctx.setLineDash([]); ctx.fillStyle = '#f3efe4';
-  }
-  else { ctx.font = 'italic 60px "Instrument Serif", Georgia, serif'; ctx.fillText(main, W / 2, H / 2 + 6); }
+  ctx.font = 'italic 60px "Instrument Serif", Georgia, serif'; ctx.fillText(main, W / 2, H / 2 + 6);
   ctx.font = '500 13px "IBM Plex Mono", monospace'; ctx.fillText(sub.split('').join('  '), W / 2, H / 2 + 44);
   ctx.globalAlpha = 1;
 }
@@ -429,9 +413,42 @@ function burnIn(text, a) {
   ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fillText(text, 52, H - 46);
   ctx.fillStyle = '#f6e7b8'; ctx.fillText(text, 50, H - 48); ctx.globalAlpha = 1;
 }
+/* the reel opens on a different line each time round, hand-lettered in the round like a mandala page */
+const SAYINGS = [
+  ['The film is already running.', 'You are the light', 'it passes through.'],
+  ['Every frame is a now.', 'Twenty-four of them a second,', 'and still we miss them.'],
+  ['Stillness, projected fast enough,', 'becomes motion.', 'So does a life.'],
+  ['The screen was never empty.', 'It was waiting', 'for the light.'],
+  ['Cut to:', 'this moment,', 'which was always the scene.'],
+];
+const RING = ' STILL · MOVING · PICTURE · LIGHT · TIME · ';
+function sayingCard(lines, lt, dur) {
+  ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, W, H);
+  const fade = Math.max(0, Math.min(1, lt / .8, (dur - lt) / .7));
+  const g = ctx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, 260);
+  g.addColorStop(0, `rgba(255,190,110,${.10 * fade})`); g.addColorStop(1, 'rgba(255,190,110,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // a slow-turning ring of words around the saying
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate(lt * .12);
+  ctx.font = '500 13px "IBM Plex Mono", monospace'; ctx.textAlign = 'center';
+  const ring = RING.repeat(2), step = Math.PI * 2 / ring.length;
+  for (let i = 0; i < ring.length; i++) {
+    ctx.save(); ctx.rotate(i * step); ctx.fillStyle = `hsla(${(i * 9 + lt * 40) % 360},80%,72%,${.55 * fade})`;
+    ctx.fillText(ring[i], 0, -212); ctx.restore();
+  }
+  ctx.restore();
+  ctx.textAlign = 'center';
+  lines.forEach((ln, i) => {
+    const a = Math.max(0, Math.min(1, (lt - .4 - i * .9) / .8)) * fade;
+    ctx.globalAlpha = a; ctx.fillStyle = '#f6eedb';
+    ctx.font = `italic ${i === 0 ? 32 : 28}px "Instrument Serif", Georgia, serif`;
+    ctx.fillText(ln, W / 2, H / 2 - 26 + i * 40 + (1 - a) * 8);
+  });
+  ctx.globalAlpha = 1;
+}
 function drawMontage(t) {
-  const intro = BEAT * 6, cut = BEAT * 2, cycle = intro + cut * 24, lt = t % cycle;
-  if (lt < intro) { titleCard('Colin Blackshear', 'SELECTED WORK', lt, intro, true); return; }
+  const intro = BEAT * 10, cut = BEAT * 2, cycle = intro + cut * 24, lt = t % cycle;
+  if (lt < intro) { sayingCard(SAYINGS[Math.floor(t / cycle) % SAYINGS.length], lt, intro); return; }
   const k = Math.floor((lt - intro) / cut), local = lt - intro - k * cut, w = WORKS[MONTAGE_ORDER[k % 6]];
   w.scene(t + k * 3.7);
   if (local < .07 && !reduce) { ctx.fillStyle = 'rgba(255,250,235,.5)'; ctx.fillRect(0, 0, W, H); }
