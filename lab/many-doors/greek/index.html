@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Gold Leaf</title>
+<title>The Gold Leaf · Many Doors</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
@@ -137,6 +137,49 @@ details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font
 details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* ---------- journeys: a full-bleed title, then the player at its biggest ---------- */
+body.jbody{background:var(--night)}
+body.jbody #bar{display:none}
+body.jbody .wrap{max-width:none;padding:0}
+.jsplash{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;color:var(--nightink);background:var(--night)}
+.jcover{position:absolute;inset:0;width:100%;height:100%;display:block;animation:jzoom 30s ease-out both}
+@keyframes jzoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.jshade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--night) 88%,transparent) 0%,color-mix(in srgb,var(--night) 60%,transparent) 45%,transparent 80%),linear-gradient(180deg,transparent 35%,var(--night) 100%)}
+@media (max-width:700px){.jshade{background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 55%,transparent) 30%,var(--night) 75%)}}
+.jback{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px));z-index:2;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:8px 14px;text-decoration:none}
+.jt{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:32vh max(16px,env(safe-area-inset-right,0px)) max(28px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.jdoor{display:inline-block;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;background:var(--c,var(--accent));color:#FFF6DE;border:2px solid #FFF6DE;border-radius:4px;padding:5px 10px}
+.jt h1{margin:12px 0 8px;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;color:#FFF6DE;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+.jtag{margin:0;font-size:clamp(1.05rem,2.6vw,1.4rem);max-width:36ch;line-height:1.35}
+.jt .cta{margin:22px 0 18px}
+.jt .btn{font-size:1.15rem;padding:13px 28px}
+.jt .btn.alt{background:transparent;color:#FFF6DE;border-color:#FFF6DE;box-shadow:none}
+.jstops{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.jstops button{display:flex;align-items:center;gap:8px;background:rgba(255,246,222,.08);border:1.5px solid rgba(255,246,222,.35);color:#FFF6DE;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.82rem;min-height:38px}
+.jstops button:hover{background:rgba(255,246,222,.2)}
+.jstops b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFF6DE;color:var(--night);font-size:.75rem}
+.jmeta{margin:16px 0 0;font-size:.85rem;color:rgba(255,246,222,.7)}
+.jmeta em{color:var(--gold);font-style:normal}
+
+.player.jplayer .stage{width:min(100%,1100px,calc(min(64vh,720px)*1.5))}
+@media (max-height:700px){.player.jplayer .stage{width:min(100%,calc(54vh*1.5))}}
+/* keep 3:2 on phones so tap spots stay on what they point at */
+@media (max-width:600px) and (orientation:portrait){.player.jplayer .stage{width:100%;aspect-ratio:3/2;max-height:none}.player.jplayer .scap p{font-size:1.08rem}}
+.player.jplayer .scap{min-height:0}
+.player.jplayer .scap p{font-size:clamp(1.08rem,2.4vw,1.32rem);min-height:1.5em}
+.gnote{margin-right:auto;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed var(--ink-soft);background:transparent;color:var(--ink-soft);border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
+.gnote[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--bg)}
+.gtext{margin:8px 0 0!important;font-size:.95rem!important;line-height:1.45;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:10px;min-height:0!important}
+a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.jend{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.7) 40%)}
+.jend>span{flex-basis:100%;text-align:center;font-family:var(--display);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFF6DE}
+.jend a,.jend button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;text-align:left}
+.jend small{font-family:var(--body);font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.dtrack{position:absolute;height:0;border-top:4px dashed rgba(255,246,222,.6);transform-origin:0 0}
+.dknob{position:absolute;transform:translate(-50%,-50%);width:clamp(54px,10%,78px);aspect-ratio:1;border-radius:50%;border:3px solid var(--ink);background:var(--gold);cursor:grab;touch-action:none;padding:0;box-shadow:0 0 0 8px rgba(255,246,222,.25)}
+.dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
+.dknob:active{cursor:grabbing}
 
 /* The Gold Leaf: a black-figure vase. Terracotta, black glaze, cream slip and a little gold. */
 :root{
@@ -315,33 +358,67 @@ function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
 function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+/* The journey: a short click-through trip behind one door. One picture, one line, one thing to do.
+   Data: const J={key,tradition,title,tag,mins,col,cover,stops:[{name,run}],end:{line,book,bookUrl,walk,walkUrl},review}. */
+const HUB=window.MD_HUB||'../#doors';
+/* the pages live in folders; anywhere but the site itself, spell out index.html */
+if(!/colinblackshear\.com$/.test(location.hostname)) document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const m=a.getAttribute('href').match(/^([^:#]*\/)(#.*)?$/); if(m) a.setAttribute('href',m[1]+'index.html'+(m[2]||'')); },true);
+function journeySplash(J){
+  document.body.classList.add('jbody');
+  const next=Math.min(+store.get(J.key+'-next')||0,J.stops.length-1);
+  $('#wrap').innerHTML=`<section class="jsplash" style="--c:${J.col}">
+    <svg class="jcover" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${J.cover()}</svg>
+    <div class="jshade"></div>
+    <a class="jback" href="${HUB}">← All doors</a>
+    <div class="jt">
+      <span class="jdoor">Door: ${esc(J.tradition)}</span>
+      <h1>${esc(J.title)}</h1>
+      <p class="jtag">${esc(J.tag)}</p>
+      <div class="cta"><button type="button" class="btn gold" id="jgo">${next?'Carry on':'Step through'} <span aria-hidden="true">→</span></button>${next?`<button type="button" class="btn alt" id="jre">Start over</button>`:''}</div>
+      <ol class="jstops">${J.stops.map((c,i)=>`<li><button type="button" data-i="${i}"><b>${i+1}</b>${esc(c.name)}</button></li>`).join('')}</ol>
+      <p class="jmeta">${J.mins} minutes · tap to move on · sound optional${J.review?` · <em>${esc(J.review)}</em>`:''}</p>
+    </div></section>`;
+  $('#jgo').onclick=()=>playJourney(J,next);
+  const r=$('#jre'); if(r) r.onclick=()=>{ store.set(J.key+'-next','0'); playJourney(J,0); };
+  document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
 }
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
+/* one short line with Continue, and an optional Guide note the curious can open */
+async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+  if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
+    n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
+    setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
+  await waitTap(s,spoke); const d=$('#pNote'); if(d) d.remove(); }
+
+async function playJourney(J,start){
+  const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
+  const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
+  s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+      s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
+      await c.run(s); if(SND.ctx) allOff(1.2); }
+    store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
+    await journeyEnd(s,J);
   }catch(e){ if(!(e instanceof Abort)) console.error(e); }
 }
+function journeyEnd(s,J){ alive(s); art(J.cover()); if(SND.ctx) chime(); eyebrow('End of the line');
+  s.el.querySelector('.ptitle').innerHTML=`<b>Arrived</b>${esc(J.title)}`;
+  $('#pText').textContent=J.end.line; narrate(J.end.line);
+  const E=J.end; $('#pRow').innerHTML=`<a class="sgo" href="${HUB}">Pick another door <span aria-hidden="true">→</span></a>`;
+  layer().innerHTML=`<div class="jend"><span>Want more than the short version?</span>${E.bookUrl?`<a href="${E.bookUrl}">${esc(E.book)}<small>the full illustrated book</small></a>`:''}${E.walkUrl?`<a href="${E.walkUrl}">${esc(E.walk)}<small>a few minutes a day</small></a>`:''}<button type="button" id="jagain">Ride again<small>from the first stop</small></button></div>`;
+  $('#jagain').onclick=()=>playJourney(J,0);
+  return new Promise(()=>{}); }
+/* drag a token along a path to a target, e.g. across a bridge: returns when it arrives */
+function drag(s,{ask:q,from,to,label='Drag',onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="dtrack" style="left:${from[0]}%;top:${from[1]}%;width:${Math.hypot(to[0]-from[0],(to[1]-from[1])*2/3)}%;transform:rotate(${Math.atan2((to[1]-from[1])*2/3,to[0]-from[0])}rad)"></div><button type="button" class="dknob" style="left:${from[0]}%;top:${from[1]}%" aria-label="${esc(label)}. Use the arrow keys."><span>${esc(label)}</span></button>`;
+  const k=l.querySelector('.dknob'); let p=0,on=false,done=false;
+  const set=v=>{ p=Math.max(0,Math.min(1,v)); k.style.left=(from[0]+(to[0]-from[0])*p)+'%'; k.style.top=(from[1]+(to[1]-from[1])*p)+'%'; onP&&onP(p); if(p>=.98&&!done){ done=true; l.innerHTML=''; res(); } };
+  const proj=e=>{ const r=l.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100; const dx=to[0]-from[0], dy=to[1]-from[1]; const ax=dx*r.width, ay=dy*r.height; return ((x-from[0])*r.width*ax+(y-from[1])*r.height*ay)/(ax*ax+ay*ay); };
+  k.addEventListener('pointerdown',e=>{ on=true; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+  k.addEventListener('pointermove',e=>{ if(on) set(proj(e)); });
+  k.addEventListener('pointerup',()=>{ on=false; }); k.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key===' '){ e.preventDefault(); set(p+.1); } if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); set(p-.1); } });
+  k.focus({preventScroll:true}); }); }
+/* a big tap-anywhere moment with a label, for drama (knock, ring, open) */
+function tapIt(s,{ask:q,label='Tap'}){ return count(s,{ask:q,n:1,label}); }
 
 /* Black-figure kit for The Gold Leaf: black silhouettes on terracotta, incised lines in clay colour, a meander band above and below. */
 const K='#1A1410', CLAY='#C8642E', CLAYL='#E08A50', CREAM='#F3E3C3', GOLDL='#E3B341', NIGHTG='#141826', WINE='#6A1E1E', OLIVE='#5E6A32', ASH='#8A8478', SKYG='#DCE6EA';
@@ -380,113 +457,61 @@ function amphora(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s}
 function pomegranate(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="26" fill="${WINE}" stroke="${K}" stroke-width="2.5"/><path d="M-8 -24 l4 -10 l4 6 l4 -6 l4 10" fill="${WINE}" stroke="${K}" stroke-width="2"/><path d="M-12 -6 Q0 -16 12 -6" stroke="#E86A6A" stroke-width="2" fill="none"/></g>`; }
 function gkCover(){ return gk(`${line(330)}${whiteCypress(110,330,.9)}${spring(180,330,.6)}${spring(430,330,.8,{glow:true})}${gfig(300,330,1.1,{arms:'fwd'})}${tablet(470,140,.5)}`); }
 
-/* The Gold Leaf: the Greek passage, from Homer to the Orphic gold tablets and Plato. */
-const BOOK={key:'goldleaf',brand:'The Gold Leaf',brandSub:'A Greek book of the dead',title:'The Gold Leaf',eyebrow:'From Homer, the Orphic gold tablets and Plato',
- lede:'Some Greeks were buried with a thin leaf of gold on their chest, inscribed with directions for the dead: which spring to avoid, which to drink from, and exactly what to say. It is the closest thing the Greeks had to a book of the dead.',
- note:'About 30 minutes in eleven chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../many-doors/greek/walk/',walkName:'The Twelve Days of Er',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['Many voices','There was no single Greek view. Homer\'s gloomy shades, the hopeful mystery cults and Plato\'s philosophy all coexisted, and they don\'t always agree. This book walks through them in roughly historical order.'],['Your part','You pay the ferryman, get past the dog, face the judges and choose the right spring.'],['The texts','Quotations are adapted from published translations of Homer, Hesiod, the gold tablets and Plato.']],
- sources:'Homer, Iliad 23 and Odyssey 11 and 24; Hesiod, Theogony; the Homeric Hymn to Demeter; Pindar, Olympian 2; the Orphic gold tablets from Hipponion, Petelia and Pelinna, tr. Fritz Graf and Sarah Iles Johnston, Ritual Texts for the Afterlife (2007); Plato, Gorgias 523–527, Apology 40–41, Phaedo 118 and Republic 10 (the Myth of Er); Virgil, Aeneid 6.',
+/* The Greek door: the coin, Hermes, Charon, Cerberus, the judges, the two springs and Plato's choice of lives, in seven stops. After Homer, the Orphic gold tablets and Plato. */
+const J={key:'j-greek',tradition:'Ancient Greece',title:'The Gold Leaf',col:'#C8642E',mins:6,
+ tag:'Bring exact change for the ferry. And whatever you do, don\'t drink from the first spring.',
  cover:gkCover,
- chapters:[
- {name:'Like Smoke',short:'Shades',sub:'Homer\'s dead',col:'#8A8478',run:async s=>{
-   art(gk(`${line(330)}${gfig(200,330,1.1,{arms:'up'})}<g class="drift">${shade(400,300,1)}</g>`,{bg:'night'}));
-   if(SND.ctx){ windLoop(); }
-   await say(s,'The oldest Greek picture of death is Homer\'s, from around 700 BCE. When the hero Patroclus dies, his soul, his psyche, goes down beneath the earth like smoke, gibbering.',{eye:'Homer, Iliad 23'});
-   await say(s,'In the Odyssey, Odysseus visits the dead and sees his mother. Three times he tries to embrace her, and three times she slips through his arms like a shadow or a dream.');
-   await count(s,{ask:'Reach for her. Tap three times.',n:3,label:'Embrace',onTap:()=>{ if(SND.ctx) nz({freq:600,peak:.04,d:.3}); }});
-   loopOff('wind');
-   await say(s,'Homer\'s dead are faint and sad. The great Achilles tells Odysseus: I would rather be a hired hand for a poor man on earth than king over all the dead. Everything that came later in Greek thought was, in a way, an answer to that line.');
+ end:{line:'That\'s the Greek map: a ferry, a dog, three judges, and a gold leaf that tells you which water to drink. Memory is the thing worth keeping.',
+  book:'The Gold Leaf',bookUrl:'../../many-doors/greek/book/',walk:'The Twelve Days of Er',walkUrl:'../../many-doors/greek/walk/'},
+ stops:[
+ {name:'The coin',short:'The rites',col:'#A8461E',run:async s=>{
+   art(gk(`${line(330)}<rect x="170" y="270" width="260" height="14" fill="${K}"/><path d="M180 270 Q176 252 200 250 L400 252 Q424 256 420 270Z" fill="${CREAM}" stroke="${K}" stroke-width="2"/>${gfig(150,330,.9,{arms:'mourn',hat:'veil'})}${gfig(450,330,.9,{arms:'mourn',hat:'veil',flip:true})}${amphora(540,330,.5)}${coin(300,200,1)}`));
+   if(SND.ctx) pad('pad',[110,165,220],.03);
+   await tell(s,'Your family washes you, crowns you with flowers, and wails. Loudly. That\'s the polite thing to do.',{eye:'The rites',note:'Greek ideas changed a lot over a thousand years. This journey mixes Homer\'s underworld, the Orphic gold tablets (4th century BCE) and Plato\'s Myth of Er.'});
+   await tapIt(s,{ask:'One last thing: a coin, for the ferryman. Tap it.',label:'Take the obol'});
+   if(SND.ctx) bell(880,.06);
+   await tell(s,'Exact change. The ferryman doesn\'t do refunds.');
  }},
- {name:'The Rites',short:'Rites',sub:'Washing, lament and a coin',col:'#A8461E',run:async s=>{
-   art(gk(`${line(330)}<rect x="170" y="270" width="260" height="14" fill="${K}"/><path d="M180 270 Q176 252 200 250 L400 252 Q424 256 420 270Z" fill="${CREAM}" stroke="${K}" stroke-width="2"/>${gfig(150,330,.9,{arms:'mourn',hat:'veil'})}${gfig(450,330,.9,{arms:'mourn',hat:'veil',flip:true})}${amphora(540,330,.5)}`));
-   await say(s,'When someone died, the women of the family closed the eyes, washed and anointed the body, dressed it in white and crowned it with a wreath. It lay in state for a day, the prothesis, while the family sang laments, tore their hair and beat their breasts.',{eye:'The prothesis'});
-   await spots(s,{ask:'Tap what the dead need for the journey.',items:[
-     {x:50,y:63,label:'A coin',say:'A small coin, an obol, was often placed in the mouth: the fare for Charon, the ferryman of the dead.'},
-     {x:90,y:72,label:'Oil jars',say:'Slender oil jars called lekythoi, painted with scenes of the dead, were left at the grave.'},
-     {x:25,y:60,label:'Lament',say:'Lament mattered so much that Solon, the lawgiver of Athens, passed laws limiting how loud and how long it could be.'}]});
-   await say(s,'Before dawn on the third day, the body was carried out to be buried or burned. And meals were held for the dead on the third, the ninth and the thirtieth days. Burial was essential. In the Iliad, the ghost of Patroclus begs Achilles: bury me quickly, so I can pass through the gates of Hades.');
- }},
- {name:'The Guide',short:'Hermes',sub:'Hermes leads the souls',col:'#5E6A32',run:async s=>{
+ {name:'The guide',short:'Hermes',col:'#5E6A32',run:async s=>{
    art(gk(`${line(330)}${gfig(170,330,1.1,{hat:'petasos',staff:'kerykeion',arms:'fwd'})}${shade(300,320,.7)}${shade(380,320,.7)}${shade(460,320,.7)}`));
-   if(SND.ctx) pad('pad',[110,165,220],.03);
-   await say(s,'The soul doesn\'t find its own way. Hermes, messenger of the gods, comes in his wide traveller\'s hat with his golden wand and leads it down. The Greeks called him Psychopompos, the guide of souls.',{eye:'Hermes Psychopompos'});
-   await say(s,'At the start of Odyssey 24 he leads the souls of the dead suitors, and they follow him squeaking, like bats in a cave.');
-   await hold(s,{label:'Follow Hermes',ms:5000,ask:'Press and hold to follow him down.'});
-   await say(s,'Down past the streams of Ocean, past the White Rock, past the gates of the Sun and the land of dreams, to the meadow of asphodel.');
+   await tell(s,'Hermes shows up: winged hat, magic staff. Among his many jobs, he leads the dead down.',{eye:'Hermes, guide of souls'});
+   await hold(s,{label:'Follow Hermes',ms:3500,ask:'The dead follow him squeaking like bats, says Homer. Press and hold to follow.'});
  }},
- {name:'The Ferryman',short:'Charon',sub:'The crossing of the Acheron',col:'#2A3A3A',run:async s=>{
-   art(gk(`${water(270)}<g class="drift">${boat(300,290,1)}${gfig(220,272,.8,{staff:'pole',hat:'petasos'})}</g>${coin(470,150,1.2)}`,{bg:'night'}));
-   if(SND.ctx){ waterLoop(); }
-   await say(s,'At the river Acheron, the river of woe, waits Charon the ferryman, old and grim, in a dark boat. He takes the souls of the buried across. The unburied, Virgil says, must wander the bank for a hundred years.',{eye:'Charon'});
-   await count(s,{ask:'Pay the ferryman. Tap the coin.',n:1,label:'Pay the obol',onTap:()=>{ if(SND.ctx) bell(880,.06); }});
-   await hold(s,{label:'Cross the river',ms:6000,ask:'Press and hold while Charon poles you across.',early:'Stay in the boat. Hold again.'});
+ {name:'The ferry',short:'Charon',col:'#2A3A3A',run:async s=>{
+   art(gk(`${water(270)}<g class="drift">${boat(300,290,1)}${gfig(220,272,.8,{staff:'pole',hat:'petasos'})}</g>`,{bg:'night'}));
+   if(SND.ctx) waterLoop();
+   await tell(s,'Charon, the ferryman, waits at the river. You pay. He poles.',{eye:'The river'});
+   await hold(s,{label:'Cross the river',ms:4500,ask:'Press and hold while he takes you across.',early:'Stay in the boat. Hold again.'});
    loopOff('water');
-   await say(s,'In Aristophanes\' comedy The Frogs, the god Dionysus rows himself across and complains about the fare the whole way. Even death, for the Greeks, could be funny.');
- }},
- {name:'The Dog',short:'Cerberus',sub:'In, but never out',col:'#1A1410',run:async s=>{
    art(gk(`${line(330)}<rect x="440" y="120" width="120" height="210" fill="${K}"/><rect x="452" y="132" width="96" height="198" fill="${NIGHTG}"/>${cerberus(300,330,1.3)}`));
-   if(SND.ctx) drum();
-   await say(s,'At the gates of Hades lies Cerberus, the monstrous dog with three heads. Hesiod says he fawns on everyone who comes in, wagging his tail. But he eats anyone who tries to leave.',{eye:'Hesiod, Theogony'});
-   await choose(s,'How do the living get past him?',['A honey cake, drugged with sleep','Fighting him','Sneaking past at night'],{right:0,wrong:'Only Heracles ever managed that. Try another way.'});
-   await say(s,'In Virgil\'s Aeneid, the Sibyl throws him a honey cake laced with sleep, and all three heads drop. Heracles dragged him up into the daylight as one of his labours. Orpheus charmed him with music. For the dead, though, the gate opens only one way.');
+   if(SND.ctx) drum(.4);
+   await tell(s,'On the other side, Cerberus: three heads, one job. He lets everyone in. He lets no one out.',{eye:'Cerberus'});
  }},
- {name:'The Judges',short:'Judges',sub:'Minos, Rhadamanthys and Aeacus',col:'#6A1E1E',run:async s=>{
+ {name:'The judges',short:'Judges',col:'#6A1E1E',run:async s=>{
    art(gk(`${line(330)}${throne(150,330,1)}${gfig(150,300,.9,{staff:'sceptre'})}${throne(300,330,1)}${gfig(300,300,.9,{staff:'sceptre'})}${throne(450,330,1)}${gfig(450,300,.9,{staff:'sceptre'})}${shade(300,380,.4)}`));
-   await say(s,'Homer mentions Minos giving judgments among the dead. Plato, in the Gorgias, turns this into a proper court: three judges, Minos, Rhadamanthys and Aeacus, sitting in a meadow where the road divides.',{eye:'Plato, Gorgias'});
-   await say(s,'Plato\'s Socrates says the dead are judged naked, stripped of body, wealth and family. That way the judge sees only the soul, and every wrong a person did is left on it, like scars on a body.');
-   await still(s,{ask:'Stand before the judges with nothing but your soul.',ms:8000});
-   await say(s,'One road leads to the Isles of the Blessed. The other leads down to Tartarus.');
- }},
- {name:'Three Fields',short:'Fields',sub:'Asphodel, Elysium and Tartarus',col:'#5E6A32',run:async s=>{
+   await tell(s,'Three judges: Minos, Rhadamanthys and Aeacus. In Plato\'s telling, you stand before them naked, so nobody can be fooled by fine clothes.',{eye:'The judges'});
    art(gk(`${meadow(250)}<rect x="0" y="20" width="600" height="230" fill="${NIGHTG}"/>${stars(40,5,230,'#E8E0D0')}<circle cx="480" cy="100" r="40" fill="url(#glowG)"/><path d="M420 160 Q480 120 560 160Z" fill="${OLIVE}" stroke="${K}" stroke-width="2"/>${[100,170,240].map(x=>shade(x,320,.6)).join('')}<path d="M260 250 L300 380 L340 250Z" fill="${K}"/>`));
-   await say(s,'Where do the dead go? Over the centuries the Greek answers piled up into a kind of map.',{eye:'The geography of Hades'});
-   await spots(s,{ask:'Tap each of the three places.',items:[
-     {x:28,y:76,label:'Asphodel',say:'The Asphodel Meadow, where Homer\'s ordinary dead drift: not punished, not happy, just faint.'},
-     {x:80,y:30,label:'Elysium',say:'The Elysian Fields, or the Isles of the Blessed, at the western edge of the world. Homer says there is no snow or storm there, only the cool west wind. Pindar says the good live there without toil or tears.'},
-     {x:50,y:80,label:'Tartarus',say:'Tartarus, a pit as far below Hades as the sky is above the earth. There Sisyphus pushes his stone forever, and Tantalus stands in water he can never drink.'}]});
-   await say(s,'At first, Elysium was only for heroes related to the gods. Over time, more and more people hoped to get there. The question was how.');
+   await spots(s,{ask:'Three places you might be sent. Tap each.',items:[
+     {x:28,y:75,label:'Asphodel',say:'The Asphodel Meadows, for most people. Grey, quiet, forever. Not bad, not good.'},
+     {x:80,y:28,label:'Elysium',say:'Elysium, for heroes and the good. Sunshine, games and music.'},
+     {x:50,y:80,label:'Tartarus',say:'Tartarus, for the truly wicked. A pit as far below Hades as the sky is above the earth.'}]});
  }},
- {name:'The Gold Leaf',short:'Gold leaf',sub:'Two springs and a password',col:'#E3B341',run:async s=>{
+ {name:'The two springs',short:'Gold leaf',col:'#E3B341',run:async s=>{
    art(gk(`${line(330)}${whiteCypress(110,330,.9)}${spring(170,340,.6)}${spring(440,340,.9,{glow:true})}${shade(300,320,.8)}`,{bg:'night'}));
-   if(SND.ctx){ pad('pad',[130.8,196,261.6],.03); chime(); }
-   await say(s,'From about 400 BCE, followers of the Orphic and Bacchic mysteries were buried with tiny sheets of gold, inscribed with instructions. Archaeologists have found them in southern Italy, Crete and Thessaly.',{eye:'The Orphic gold tablets'});
-   await say(s,'The tablet from Hipponion says: In the house of Hades you will find a spring, and beside it a white cypress. The souls of the dead go down to it to cool themselves. Do not go near that spring. Further on you will find cold water flowing from the Lake of Memory.');
-   const k=await choose(s,'You are terribly thirsty. Which spring do you drink from?',['The spring by the white cypress','The Lake of Memory, further on'],{right:1,wrong:'That is the spring of forgetting. The tablet says: do not go near it.'});
-   await say(s,'Guards stand at the Lake of Memory. The tablet tells you exactly what to say to them.');
-   await hold(s,{label:'Speak the password',ms:6000,ask:'Press and hold and say: I am a child of Earth and starry Sky. I am parched with thirst and perishing. Give me quickly cold water from the Lake of Memory.'});
+   await tell(s,'But some Greeks were buried with a cheat sheet: a tiny leaf of gold with directions.',{eye:'The Orphic gold leaf',note:'About forty of these tablets have been found in graves from Italy to Crete, some folded into the dead person\'s mouth.'});
+   await choose(s,'You\'re desperately thirsty. Which spring do you drink from?',['The one by the white cypress','The Lake of Memory, further on'],{right:1,wrong:'That\'s the spring of Forgetting. The gold leaf says: don\'t even go near it.'});
+   await hold(s,{label:'Say the password',ms:4500,ask:'Tell the guards: "I am a child of Earth and starry Sky. Give me water from the Lake of Memory." Press and hold.'});
    if(SND.ctx) chime();
-   await say(s,'And they let you drink, and you go on to rule among the heroes. Another tablet, from Pelinna, greets the dead with joy: Now you have died, and now you have been born, thrice blessed, on this very day.');
+   await tell(s,'Remember who you are, and you can escape the cycle. Forget, and around you go again.');
  }},
- {name:'The Mysteries',short:'Eleusis',sub:'Persephone\'s return',col:'#6A1E1E',run:async s=>{
-   art(gk(`${line(330)}${gfig(220,330,1.1,{hat:'veil'})}${gfig(380,330,1.1,{hat:'wreath',arms:'fwd',flip:true})}${pomegranate(300,200,1.2)}`));
-   if(SND.ctx) pad('pad',[110,165,220],.03);
-   await say(s,'The best-known hope came from Eleusis, near Athens. Its mysteries told the story of Persephone, carried off to the underworld by Hades. Her mother Demeter searched the earth for her, and nothing grew.',{eye:'The Eleusinian Mysteries'});
-   await say(s,'Persephone came back, but because she had eaten pomegranate seeds below, she must return to Hades for part of every year. Winter is her absence; spring is her return.');
-   await count(s,{ask:'Persephone ate the seeds. Tap to count them.',n:4,label:'A seed',onTap:()=>{ if(SND.ctx) plop(); }});
-   await say(s,'Initiates were sworn to secrecy, and kept it for nearly two thousand years. But the Homeric Hymn to Demeter tells us what they hoped: blessed is the one who has seen these rites. The one who has not will not have the same lot after death, down in the darkness.');
- }},
- {name:'The Choice of Lives',short:'Er',sub:'Plato\'s Myth of Er',col:'#8AA0C8',run:async s=>{
+ {name:'Choose a life',short:'Er',col:'#8AA0C8',run:async s=>{
    art(gk(`${lightPillar()}${spindle(300,200,.9)}${lots(300,350,.9)}`,{bg:'night'}));
-   if(SND.ctx){ pad('pad',[130.8,196,261.6,329.6],.03); }
-   await say(s,'Plato ends his Republic with a story. A soldier named Er is killed in battle, but on the twelfth day he wakes on his funeral pyre and tells what he saw. After a thousand years of reward or punishment, souls come to the spindle of Necessity, and choose their next life.',{eye:'Plato, Republic 10'});
-   await say(s,'Lots are thrown to set the order, and the lives are laid out on the ground: tyrants, beggars, athletes, animals. A herald says: The responsibility is the chooser\'s. God is blameless.');
-   const k=await choose(s,'Which life would you choose?',['A tyrant\'s, with power over all','A famous hero\'s','A quiet, ordinary life'],{});
-   await say(s,['The first soul to choose did exactly that, and only then saw that he would eat his own children. He wailed and blamed everyone but himself.','Ajax chose to be a lion and Agamemnon an eagle, because they were tired of being human. Hero\'s lives were heavy.','That is what Odysseus chose. He came last, cured of ambition, and searched a long time for the life of a private man with no cares. He said he\'d have chosen it even if he\'d gone first.'][k]+' Plato\'s point: the one thing worth learning in life is how to choose well.');
- }},
- {name:'Socrates',short:'Socrates',sub:'Death is either sleep or a journey',col:'#A8461E',run:async s=>{
-   art(gk(`${line(330)}${gfig(260,330,1.1,{arms:'fwd'})}<path d="M310 258 Q318 250 326 258 L322 280 H314Z" fill="${CREAM}" stroke="${K}" stroke-width="2"/>${gfig(420,330,.9,{arms:'mourn',flip:true})}`));
-   if(SND.ctx){ allOff(1); pad('pad',[110,165,220],.03); }
-   await say(s,'In 399 BCE, Athens sentenced Socrates to death. At his trial, he told the jury he wasn\'t afraid. Death, he said, is one of two things.',{eye:'Plato, Apology'});
-   await say(s,'Either it is a dreamless sleep, and what could be better than one long, untroubled night? Or it is a journey to another place, where you can talk with Homer and Hesiod and the heroes. Either way, he said, it is a good thing.');
-   await hold(s,{label:'Drink calmly',ms:5000,ask:'Socrates drank the hemlock without hesitating. Press and hold.'});
-   await say(s,'His friends wept. His last words were practical: Crito, we owe a rooster to Asclepius. Please don\'t forget to pay it. Then he was still.');
- }}],
- finale:async s=>{ art(gkCover()); if(SND.ctx) chime();
-   await say(s,'That is the Greek passage: a soul like smoke, a coin for the ferryman, a dog that only lets you in, judges who see the soul naked, two springs, and a choice.',{eye:'The end of the book'});
-   await say(s,'The gold leaf said: remember. Don\'t drink from forgetting. Say who you are: a child of Earth and starry Sky.'); }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+   await tell(s,'Plato tells a story about a soldier named Er who died, came back, and reported: souls get to choose their next life.',{eye:'Plato\'s Myth of Er'});
+   const k=await choose(s,'The lives are laid out on the ground. Which do you pick?',['A tyrant\'s','A famous hero\'s','A quiet, ordinary life'],{});
+   await tell(s,k===2?'That\'s exactly what Odysseus picked, after a lifetime of adventures. Wise choice.':'Careful. In Plato\'s story, the first soul grabbed a tyrant\'s life and found out too late it included eating his own children. Odysseus took the quiet one.');
+   await tell(s,'Then everyone drinks from the River of Forgetting and is born again. Except Er, who was told not to drink, so he could tell us.');
+ }}]};
+journeySplash(J);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>

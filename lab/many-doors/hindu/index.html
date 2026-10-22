@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Thirteen Days</title>
+<title>The Thirteen Days · Many Doors</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
@@ -137,6 +137,49 @@ details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font
 details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* ---------- journeys: a full-bleed title, then the player at its biggest ---------- */
+body.jbody{background:var(--night)}
+body.jbody #bar{display:none}
+body.jbody .wrap{max-width:none;padding:0}
+.jsplash{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;color:var(--nightink);background:var(--night)}
+.jcover{position:absolute;inset:0;width:100%;height:100%;display:block;animation:jzoom 30s ease-out both}
+@keyframes jzoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.jshade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--night) 88%,transparent) 0%,color-mix(in srgb,var(--night) 60%,transparent) 45%,transparent 80%),linear-gradient(180deg,transparent 35%,var(--night) 100%)}
+@media (max-width:700px){.jshade{background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 55%,transparent) 30%,var(--night) 75%)}}
+.jback{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px));z-index:2;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:8px 14px;text-decoration:none}
+.jt{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:32vh max(16px,env(safe-area-inset-right,0px)) max(28px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.jdoor{display:inline-block;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;background:var(--c,var(--accent));color:#FFF6DE;border:2px solid #FFF6DE;border-radius:4px;padding:5px 10px}
+.jt h1{margin:12px 0 8px;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;color:#FFF6DE;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+.jtag{margin:0;font-size:clamp(1.05rem,2.6vw,1.4rem);max-width:36ch;line-height:1.35}
+.jt .cta{margin:22px 0 18px}
+.jt .btn{font-size:1.15rem;padding:13px 28px}
+.jt .btn.alt{background:transparent;color:#FFF6DE;border-color:#FFF6DE;box-shadow:none}
+.jstops{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.jstops button{display:flex;align-items:center;gap:8px;background:rgba(255,246,222,.08);border:1.5px solid rgba(255,246,222,.35);color:#FFF6DE;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.82rem;min-height:38px}
+.jstops button:hover{background:rgba(255,246,222,.2)}
+.jstops b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFF6DE;color:var(--night);font-size:.75rem}
+.jmeta{margin:16px 0 0;font-size:.85rem;color:rgba(255,246,222,.7)}
+.jmeta em{color:var(--gold);font-style:normal}
+
+.player.jplayer .stage{width:min(100%,1100px,calc(min(64vh,720px)*1.5))}
+@media (max-height:700px){.player.jplayer .stage{width:min(100%,calc(54vh*1.5))}}
+/* keep 3:2 on phones so tap spots stay on what they point at */
+@media (max-width:600px) and (orientation:portrait){.player.jplayer .stage{width:100%;aspect-ratio:3/2;max-height:none}.player.jplayer .scap p{font-size:1.08rem}}
+.player.jplayer .scap{min-height:0}
+.player.jplayer .scap p{font-size:clamp(1.08rem,2.4vw,1.32rem);min-height:1.5em}
+.gnote{margin-right:auto;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed var(--ink-soft);background:transparent;color:var(--ink-soft);border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
+.gnote[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--bg)}
+.gtext{margin:8px 0 0!important;font-size:.95rem!important;line-height:1.45;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:10px;min-height:0!important}
+a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.jend{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.7) 40%)}
+.jend>span{flex-basis:100%;text-align:center;font-family:var(--display);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFF6DE}
+.jend a,.jend button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;text-align:left}
+.jend small{font-family:var(--body);font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.dtrack{position:absolute;height:0;border-top:4px dashed rgba(255,246,222,.6);transform-origin:0 0}
+.dknob{position:absolute;transform:translate(-50%,-50%);width:clamp(54px,10%,78px);aspect-ratio:1;border-radius:50%;border:3px solid var(--ink);background:var(--gold);cursor:grab;touch-action:none;padding:0;box-shadow:0 0 0 8px rgba(255,246,222,.25)}
+.dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
+.dknob:active{cursor:grabbing}
 
 /* The Thirteen Days: the ghats at dusk. Sandstone, marigold, saffron and vermilion, with a peacock-teal river. */
 :root{
@@ -315,33 +358,67 @@ function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
 function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+/* The journey: a short click-through trip behind one door. One picture, one line, one thing to do.
+   Data: const J={key,tradition,title,tag,mins,col,cover,stops:[{name,run}],end:{line,book,bookUrl,walk,walkUrl},review}. */
+const HUB=window.MD_HUB||'../#doors';
+/* the pages live in folders; anywhere but the site itself, spell out index.html */
+if(!/colinblackshear\.com$/.test(location.hostname)) document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const m=a.getAttribute('href').match(/^([^:#]*\/)(#.*)?$/); if(m) a.setAttribute('href',m[1]+'index.html'+(m[2]||'')); },true);
+function journeySplash(J){
+  document.body.classList.add('jbody');
+  const next=Math.min(+store.get(J.key+'-next')||0,J.stops.length-1);
+  $('#wrap').innerHTML=`<section class="jsplash" style="--c:${J.col}">
+    <svg class="jcover" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${J.cover()}</svg>
+    <div class="jshade"></div>
+    <a class="jback" href="${HUB}">← All doors</a>
+    <div class="jt">
+      <span class="jdoor">Door: ${esc(J.tradition)}</span>
+      <h1>${esc(J.title)}</h1>
+      <p class="jtag">${esc(J.tag)}</p>
+      <div class="cta"><button type="button" class="btn gold" id="jgo">${next?'Carry on':'Step through'} <span aria-hidden="true">→</span></button>${next?`<button type="button" class="btn alt" id="jre">Start over</button>`:''}</div>
+      <ol class="jstops">${J.stops.map((c,i)=>`<li><button type="button" data-i="${i}"><b>${i+1}</b>${esc(c.name)}</button></li>`).join('')}</ol>
+      <p class="jmeta">${J.mins} minutes · tap to move on · sound optional${J.review?` · <em>${esc(J.review)}</em>`:''}</p>
+    </div></section>`;
+  $('#jgo').onclick=()=>playJourney(J,next);
+  const r=$('#jre'); if(r) r.onclick=()=>{ store.set(J.key+'-next','0'); playJourney(J,0); };
+  document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
 }
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
+/* one short line with Continue, and an optional Guide note the curious can open */
+async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+  if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
+    n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
+    setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
+  await waitTap(s,spoke); const d=$('#pNote'); if(d) d.remove(); }
+
+async function playJourney(J,start){
+  const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
+  const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
+  s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+      s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
+      await c.run(s); if(SND.ctx) allOff(1.2); }
+    store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
+    await journeyEnd(s,J);
   }catch(e){ if(!(e instanceof Abort)) console.error(e); }
 }
+function journeyEnd(s,J){ alive(s); art(J.cover()); if(SND.ctx) chime(); eyebrow('End of the line');
+  s.el.querySelector('.ptitle').innerHTML=`<b>Arrived</b>${esc(J.title)}`;
+  $('#pText').textContent=J.end.line; narrate(J.end.line);
+  const E=J.end; $('#pRow').innerHTML=`<a class="sgo" href="${HUB}">Pick another door <span aria-hidden="true">→</span></a>`;
+  layer().innerHTML=`<div class="jend"><span>Want more than the short version?</span>${E.bookUrl?`<a href="${E.bookUrl}">${esc(E.book)}<small>the full illustrated book</small></a>`:''}${E.walkUrl?`<a href="${E.walkUrl}">${esc(E.walk)}<small>a few minutes a day</small></a>`:''}<button type="button" id="jagain">Ride again<small>from the first stop</small></button></div>`;
+  $('#jagain').onclick=()=>playJourney(J,0);
+  return new Promise(()=>{}); }
+/* drag a token along a path to a target, e.g. across a bridge: returns when it arrives */
+function drag(s,{ask:q,from,to,label='Drag',onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="dtrack" style="left:${from[0]}%;top:${from[1]}%;width:${Math.hypot(to[0]-from[0],(to[1]-from[1])*2/3)}%;transform:rotate(${Math.atan2((to[1]-from[1])*2/3,to[0]-from[0])}rad)"></div><button type="button" class="dknob" style="left:${from[0]}%;top:${from[1]}%" aria-label="${esc(label)}. Use the arrow keys."><span>${esc(label)}</span></button>`;
+  const k=l.querySelector('.dknob'); let p=0,on=false,done=false;
+  const set=v=>{ p=Math.max(0,Math.min(1,v)); k.style.left=(from[0]+(to[0]-from[0])*p)+'%'; k.style.top=(from[1]+(to[1]-from[1])*p)+'%'; onP&&onP(p); if(p>=.98&&!done){ done=true; l.innerHTML=''; res(); } };
+  const proj=e=>{ const r=l.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100; const dx=to[0]-from[0], dy=to[1]-from[1]; const ax=dx*r.width, ay=dy*r.height; return ((x-from[0])*r.width*ax+(y-from[1])*r.height*ay)/(ax*ax+ay*ay); };
+  k.addEventListener('pointerdown',e=>{ on=true; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+  k.addEventListener('pointermove',e=>{ if(on) set(proj(e)); });
+  k.addEventListener('pointerup',()=>{ on=false; }); k.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key===' '){ e.preventDefault(); set(p+.1); } if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); set(p-.1); } });
+  k.focus({preventScroll:true}); }); }
+/* a big tap-anywhere moment with a label, for drama (knock, ring, open) */
+function tapIt(s,{ask:q,label='Tap'}){ return count(s,{ask:q,n:1,label}); }
 
 /* Folk-painting kit for The Thirteen Days: bold outline, flat colour, marigold garlands, the ghats of Kashi at dusk. */
 const K='#2A1A12', SAND='#EBD3A6', MARI='#F2A007', SAFF='#E86A17', VERM='#B8321C', TURM='#E9B92F', TEAL='#136F75', LEAF='#4C8C3A', WHITE='#FBF4E6', SKIN='#C98A5A', DARK='#3C3A6A', INDIGO='#1D1A3A';
@@ -389,131 +466,70 @@ function portrait(x,y,s=1){ let g=''; for(let i=0;i<15;i++){ const t=i/14, gx=-6
   return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-60" y="-80" width="120" height="150" fill="#8C5A30" stroke="${K}" stroke-width="3"/><rect x="-48" y="-68" width="96" height="126" fill="#D8C7A4" stroke="${K}" stroke-width="2"/><circle cx="0" cy="-20" r="22" fill="#8A7A66"/><path d="M-36 58 Q-36 14 0 10 Q36 14 36 58Z" fill="#8A7A66"/><circle cx="0" cy="-48" r="4" fill="${VERM}"/><g transform="translate(0 -6)">${g}</g></g>`; }
 function wall(){ return `<rect x="0" y="0" width="600" height="262" fill="#6A3A2A"/><rect x="0" y="0" width="600" height="262" fill="url(#glow)" opacity=".15"/><path d="M0 250 H600" stroke="${K}" stroke-width="3"/>`; }
 
-/* The Thirteen Days: the Hindu passage from the last breath to the ancestors, after the Upanishads, the Gita and the Garuda Purana. */
-const BOOK={key:'t13',brand:'The Thirteen Days',brandSub:'A Hindu book of the dead',title:'The Thirteen Days',eyebrow:'From the Upanishads, the Gita and the Garuda Purana',
- lede:'In many Hindu homes, the Garuda Purana is read aloud in the days after a death, while the family performs rites that build the dead a new body and send them on to the ancestors. This is that passage, told again: the boy who questioned Death, the self that cannot burn, the fire, the river and the thirteenth day.',
- note:'About 40 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../many-doors/hindu/walk/',walkName:'The Thirteen-Day Walk',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['Many traditions','Hindu practice varies widely by region, caste, sect and family. This follows the widely shared North Indian pattern and says where others differ.'],['Your part','You make the offerings: water, rice, a lamp, a cow, and the names of the ancestors.'],['Two voices','The Upanishads and the Gita speak of a self beyond death. The Garuda Purana describes a vivid journey. Both are part of the tradition, and both are here.']],
- sources:'Katha Upanishad; Bhagavad Gita 2, 8 and 9; Garuda Purana, Preta Khanda (Saroddhara); Bhagavata Purana 6.1–2 (Ajamila); Manusmriti 5 on impurity; household manuals of antyeṣṭi and śrāddha. Translations after Patrick Olivelle (Upaniṣads, 1996) and Eknath Easwaran (Gita, 1985), lightly simplified. See also J. P. Parry, Death in Banaras (1994).',
+/* The Hindu door: the last thought, the fire, the rice body, the river and the wheel, in seven stops. After the Gita, the Katha Upanishad and the Garuda Purana. */
+const J={key:'j-hindu',tradition:'Hinduism',title:'The Thirteen Days',col:'#E86A17',mins:6,
+ tag:'Your body is about to be swapped like an old shirt. The self inside it isn\'t going anywhere. Well, it is. Just not away.',
  cover:hiCover,
- chapters:[
- {name:'The Boy Who Asked Death',short:'Nachiketa',sub:'Three nights at Yama\'s door',col:'#B8321C',run:async s=>{
-   art(scene(`<rect x="0" y="300" width="600" height="100" fill="#4A3020"/>${gate(400,300,1)}${person(200,300,1,{cloth:WHITE,thread:true,arms:'pray'})}`,{sky:'dusk'}));
-   if(SND.ctx) pad('pad',[110,165,220],.035);
-   await say(s,'The oldest Hindu story about death is in the Katha Upanishad, about 2,500 years old. A priest is giving away his possessions in a great sacrifice, but only his old, worn-out cows. His young son Nachiketa is ashamed, and keeps asking: father, to whom will you give me?',{eye:'Katha Upanishad'});
-   await say(s,'At last the father snaps: I give you to Death. And the boy goes. He travels to the house of Yama, the lord of death, finds him away, and waits at the door for three nights without food.');
-   art(scene(`<rect x="0" y="300" width="600" height="100" fill="#4A3020"/>${yama(420,300,.9)}${person(170,300,1,{cloth:WHITE,thread:true,arms:'pray'})}`,{sky:'dusk'}));
-   await say(s,'Yama comes home, troubled that a guest has gone hungry, and offers three wishes, one for each night. For the third, Nachiketa asks: when a person dies, some say they still exist, others say they do not. Teach me which is true.');
-   await say(s,'Yama tries to talk him out of it. Ask for anything else, he says.');
-   await release(s,{ask:'Yama offers everything. Tap each offer to refuse it, as Nachiketa did.',words:['Sons and grandsons','Herds of cattle','Gold and horses','A great kingdom','A hundred years of life','Music and dancers']});
-   await say(s,'Nachiketa says: all these last only until tomorrow. Keep your horses, your songs and your dances. What use is wealth to someone who has seen you? Yama is delighted. Only now will he teach.');
- }},
- {name:'What Cannot Burn',short:'The self',sub:'The ātman',col:'#F2A007',run:async s=>{
+ end:{line:'That\'s the Hindu map: an eternal self, a new body, and another life shaped by what you did, until the day you step off the wheel altogether.',
+  book:'The Thirteen Days',bookUrl:'../../many-doors/hindu/book/',walk:'The Thirteen-Day Walk',walkUrl:'../../many-doors/hindu/walk/'},
+ stops:[
+ {name:'The old clothes',short:'The self',col:'#F2A007',run:async s=>{
    art(scene(`${tiny(300,240,2.2)}`,{sky:INDIGO}));
-   if(SND.ctx) pad('pad',[130.8,196,261.6],.035);
-   await say(s,'Yama\'s teaching, repeated almost word for word in the Bhagavad Gita, is the foundation of Hindu thought about death. The true self, the ātman, is not born and does not die. It is not killed when the body is killed.',{eye:'The ātman · Gita 2.20'});
-   await say(s,'Weapons cannot cut it, says the Gita. Fire cannot burn it, water cannot wet it, wind cannot dry it. It is eternal, everywhere, unmoving, ancient.');
-   await say(s,'The Upanishad gives it a size: a person no bigger than a thumb, living in the heart, like a flame without smoke.');
-   await hold(s,{label:'Change your clothes',ms:4500,ask:'The Gita says: as a person throws off worn-out clothes and puts on new ones, so the self throws off worn-out bodies and takes on new ones. Press and hold.'});
-   await say(s,'This is why Hindu mourning, however painful, is framed differently from many others. Krishna tells the grieving warrior Arjuna: for the born, death is certain; for the dead, birth is certain. Do not grieve over what cannot be avoided.');
- }},
- {name:'The Last Thought',short:'The last thought',sub:'Ganga water, tulsi and the name',col:'#4C8C3A',run:async s=>{
-   art(scene(`<rect x="0" y="270" width="600" height="130" fill="#C9A26E"/>${shroud(300,300,1)}${tulsi(110,330,1)}${pot(480,330,1)}${diya(380,320,1)}${person(200,270,.8,{sari:true,cloth:'#E9D6B0',arms:'offer'})}`,{sky:'#5A3A2A'}));
-   if(SND.ctx) bowl(220,.12);
-   await say(s,'The Gita says something with huge consequences for the dying: whatever a person remembers at the moment of leaving the body, that is what they become. Whoever remembers God at the end goes to God.',{eye:'Gita 8.5–6'});
-   await say(s,'So families try to fill the last moments with the sacred. The dying person is often moved to the floor, closer to the earth, with their head to the north or east.');
-   await spots(s,{ask:'Three things are given at the end. Tap each one.',items:[
-     {x:80,y:72,label:'Ganga water',say:'A few drops of water from the Ganga, the holy river, are placed in the mouth. Families keep sealed pots of it at home for this moment.'},
-     {x:18,y:70,label:'Tulsi',say:'A leaf of tulsi, holy basil, sacred to Vishnu, is laid on the tongue.'},
-     {x:33,y:44,label:'The name',say:'And the name of God is spoken into the ear: Rama, Krishna, Shiva, or simply Om, so that the last thought is of the divine.'}]});
-   await say(s,'Bhagavata Purana tells of Ajamila, a man who lived badly but had named his youngest son Narayana, a name of Vishnu. Dying, he called for his son, and Vishnu\'s messengers came instead of Yama\'s, because he had said the name. Even said by accident, the story goes, it works.');
- }},
- {name:'Leaving the Body',short:'Leaving',sub:'The subtle body and the crown',col:'#136F75',run:async s=>{
-   art(scene(`${shroud(300,320,1)}<g class="rise">${tiny(300,230,1.6)}</g>`,{sky:INDIGO}));
-   await say(s,'At death the gross body, made of food, is left behind. What travels on is the subtle body: mind, senses, breath, and the karma of everything done, carried like seeds.',{eye:'The subtle body'});
-   await say(s,'The Katha Upanishad says the heart has a hundred and one channels. One of them rises to the crown of the head. Leaving by that one, a person goes up to immortality. Leaving by the others, they go in every other direction, back into the world.');
-   await hold(s,{label:'Rise through the crown',ms:6000,ask:'Press and hold. Let the breath leave upward, as the yogis train to.',early:'The breath slipped sideways. Hold again.'});
-   if(SND.ctx) chime();
-   await say(s,'In the holy city of Varanasi, also called Kashi, there is a belief that anyone who dies there is freed at once: Shiva himself whispers the mantra of crossing into their ear. People come there to die, and some hospices exist just for them.');
- }},
- {name:'The Last Sacrifice',short:'Fire',sub:'Cremation',col:'#E86A17',run:async s=>{
-   art(GHAT(`${pyre(300,290,.8)}${person(470,290,.75,{shaved:true,thread:true,arms:'down'})}`));
-   if(SND.ctx){ allOff(1); fireLoop(); }
-   await say(s,'Cremation is called antyeṣṭi, the last sacrifice. The body itself is the final offering into the sacred fire. It usually happens within a day, often by a river.',{eye:'Antyeṣṭi'});
-   await say(s,'The body is washed, dressed in white, or red for a married woman, garlanded, and carried on a bamboo bier while the bearers chant: Rāma nāma satya hai. The name of Rama is truth.');
-   await count(s,{ask:'The chief mourner, usually the eldest son, walks around the pyre carrying a pot of water. Circle it three times.',n:3,label:'Walk around the pyre',onTap:()=>{ if(SND.ctx) plop(); }});
-   art(GHAT(`${pyre(300,290,.8)}${person(470,290,.75,{shaved:true,thread:true,arms:'down'})}${pot(410,300,.8,{broken:true})}`));
-   if(SND.ctx) thud();
-   await say(s,'Then he breaks the pot on the ground behind him, without looking back. In many regions, water pours out through a hole in it as he walks: a picture of life running out, and the bond being released.');
-   await hold(s,{label:'Light the pyre',ms:3500,ask:'Press and hold to light the fire.'});
-   art(GHAT(`${pyre(300,290,.8,{lit:true})}${person(470,290,.75,{shaved:true,thread:true,arms:'pray'})}${pot(410,300,.8,{broken:true})}`));
-   await say(s,'As the fire burns, the chief mourner performs kapāla kriyā, cracking the skull with a bamboo pole, to release the soul. At Manikarnika Ghat in Varanasi, pyres have burned without stopping, day and night, for centuries.');
- }},
- {name:'A Body of Rice',short:'The preta',sub:'Ten days of offerings',col:'#E9B92F',run:async s=>{
-   art(scene(`${wall()}${portrait(300,140,.95)}<rect x="0" y="260" width="600" height="140" fill="#C9A26E"/>${leaf(300,320,1.6,0)}${diya(470,310,1.2)}${person(140,300,.85,{shaved:true,thread:true,arms:'offer'})}`,{sky:'#4A2A22'}));
-   if(SND.ctx){ allOff(1); pad('pad',[110,165,220],.03); }
-   await say(s,'After the fire, the dead person is a preta: a ghost, a departed one, with no body at all. In this state, the Garuda Purana says, they are hungry, thirsty and lost.',{eye:'Garuda Purana · the preta'});
-   await say(s,'So for ten days the family offers piṇḍas: balls of cooked rice, mixed with sesame, ghee and honey. Each day\'s offering builds a part of a new, subtle body. First the head, then the neck and shoulders, then the heart, and so on, until on the tenth day it can feel hunger and thirst, and so be fed.');
-   const P=[]; await count(s,{ask:'Place the ten piṇḍas, one for each day.',n:10,label:'Offer a piṇḍa',onTap:k=>{ art(scene(`${wall()}${portrait(300,140,.95)}<rect x="0" y="260" width="600" height="140" fill="#C9A26E"/>${leaf(300,320,1.6,k)}${diya(470,310,1.2)}${person(140,300,.85,{shaved:true,thread:true,arms:'offer'})}`,{sky:'#4A2A22'})); if(SND.ctx) plop(); }});
-   await say(s,'During these days the family is ritually impure. They stay home, don\'t cook, and are fed by neighbours and relatives. A lamp burns, a pot of water hangs for the preta to drink, and in many homes, a priest reads the Garuda Purana aloud.');
- }},
- {name:'The Road South',short:'The road',sub:'A year-long walk to Yama\'s city',col:'#3C3A6A',run:async s=>{
-   art(scene(`<path d="M0 360 Q300 240 600 300 V400 H0Z" fill="#8C6A4A"/>${gate(500,280,.6)}${person(170,340,.6,{cloth:'#9A9AB0',skin:'#A08A9A'})}${person(110,345,.65,{cloth:K,skin:'#3E6E5A',arms:'offer'})}${person(230,335,.65,{cloth:K,skin:'#3E6E5A',arms:'offer'})}`,{sky:'#3A2A3A'}));
-   if(SND.ctx) windLoop();
-   await say(s,'With its new body complete, the Garuda Purana says, the dead person is led south by Yama\'s messengers, the Yamadūtas. The road to Yama\'s city is eighty-six thousand leagues long, and the journey takes a year.',{eye:'Garuda Purana'});
-   await say(s,'For the wicked it is a road of burning sand, thorns and storms, with no shade and no water. For the good it\'s easier, with food, shade and pleasant company. Along the way are sixteen cities, and in each one, the family\'s monthly offerings reach the traveller as food.');
-   await hold(s,{label:'Keep walking',ms:5000,ask:'Press and hold to keep walking south.',early:'The wind pushes back. Hold again.'});
-   loopOff('wind');
-   await say(s,'Many Hindus read these descriptions as moral teaching rather than geography, and many have never read them at all. But they explain why the monthly and yearly rites matter to families: they are feeding someone on a long road.');
- }},
- {name:'The River Vaitaraṇī',short:'Vaitaraṇī',sub:'Crossing with the cow',col:'#8E1E1A',run:async s=>{
-   art(scene(`${bloodRiver(260)}<path d="M0 260 Q60 230 120 260Z" fill="#6A4A30"/><path d="M480 260 Q540 230 600 260Z" fill="#6A4A30"/>`,{sky:'#2A1414'}));
-   if(SND.ctx) noiseLoop('river','lowpass',400,.1);
-   await say(s,'Before Yama\'s city runs the Vaitaraṇī, the most frightening image in the Garuda Purana: a river a hundred leagues wide, flowing with blood, pus and bone, full of creatures, roaring.',{eye:'The Vaitaraṇī'});
-   await say(s,'The wicked are swept away in it. But there is a way across.');
-   const k=await duo(s,{ask:'How will you cross?',a:{label:'Swim',svg:`${HI_DEFS}${bloodRiver(0)}`},b:{label:'Hold the cow\'s tail',svg:`${HI_DEFS}<rect width="300" height="400" fill="#F3E2C1"/>${cow(150,260,1.4)}`},right:1,wrong:'No one swims the Vaitaraṇī. The Garuda Purana offers another way.'});
-   art(scene(`${bloodRiver(260)}<g class="drift">${cow(260,300,.9)}${person(170,300,.55,{cloth:WHITE,arms:'offer'})}</g>`,{sky:'#2A1414'}));
-   await say(s,'Someone who gave a cow in life, or whose family gives one in their name, crosses holding the cow\'s tail, and the river parts for them. This is godāna, the gift of a cow, still made at deathbeds and on the eleventh or twelfth day, often to a priest.');
-   loopOff('river');
-   await say(s,'The deeper point is generosity. What you gave away in life is what carries you across.');
- }},
- {name:'The Ledger',short:'Judgment',sub:'Yama and Chitragupta',col:'#B8321C',run:async s=>{
-   art(scene(`<rect x="0" y="300" width="600" height="100" fill="#4A3020"/>${yama(420,300,.95)}${person(270,300,.7,{cloth:WHITE,skin:'#B8A090',arms:'pray'})}${person(120,300,.85,{cloth:'#F7E2B0',arms:'offer'})}<rect x="90" y="215" width="54" height="34" fill="${WHITE}" stroke="${K}" stroke-width="2"/><path d="M96 224 h40 M96 232 h40 M96 240 h30" stroke="${K}"/>`,{sky:'#5A2A22'}));
-   if(SND.ctx) pad('pad',[98,147,196],.03);
-   await say(s,'In Yama\'s city the dead stand before him. Here Yama is called Dharmarāja, the king of righteousness. He isn\'t a devil. He is the first mortal who died, and he judges fairly.',{eye:'Yama\'s court'});
-   await say(s,'Beside him sits Chitragupta, his scribe, who keeps a ledger of every deed of every person. Messengers called Śravaṇas have heard everything, and the sun, the moon, the wind and fire are witnesses.');
-   const i=await choose(s,'Chitragupta opens the book at your name. What do you hope he reads first?',['A kindness no one saw','A duty done well','Something I gave away','A promise I kept'],{});
-   await say(s,'In the Hindu picture, every action leaves a trace, and that trace becomes your next experience. Yama doesn\'t invent a sentence. He reads out what you have already written.');
- }},
- {name:'Heavens and Hells',short:'Rebirth',sub:'Every reward runs out',col:'#3C3A6A',run:async s=>{
-   art(scene(`${wheel(300,200,140)}`,{sky:INDIGO}));
-   if(SND.ctx) pad('pad',[110,165,220,277],.03);
-   await say(s,'The Garuda Purana describes heavens of pleasure and many hells, each matched to a wrong. But neither lasts forever. The Gita says: having enjoyed the vast world of heaven, they return to the mortal world when their merit is spent.',{eye:'Gita 9.21'});
-   await say(s,'After heaven or hell comes rebirth: as a human, an animal, a plant, a god, depending on karma. This is saṃsāra, the wheel of birth and death, turning without end.');
-   await release(s,{ask:'Every reward runs out. Tap each one to watch it end.',words:['A heaven of pleasure','A hell of suffering','A royal birth','A poor birth','A long life','A short life']});
-   await say(s,'So the real question isn\'t which heaven, but how to get off the wheel.');
- }},
- {name:'The Thirteenth Day',short:'Ancestors',sub:'Joining the pitṛs',col:'#4C8C3A',run:async s=>{
-   art(scene(`<rect x="0" y="260" width="600" height="140" fill="#C9A26E"/>${leaf(300,320,1.6,4)}${crow(470,250,1.4)}${crow(520,270,1.2)}${person(140,300,.85,{shaved:true,thread:true,arms:'offer'})}`,{sky:'day'}));
    if(SND.ctx) pad('pad',[146.8,220,293.7],.03);
-   await say(s,'On the twelfth day comes the rite that ends the preta\'s homelessness: sapiṇḍīkaraṇa. One large piṇḍa for the dead person is cut into three and mixed into three others, for their father, grandfather and great-grandfather.',{eye:'Sapiṇḍīkaraṇa'});
-   await count(s,{ask:'Join the piṇḍa to the three ancestors. Tap once for each.',n:3,label:'Join the ancestor',onTap:()=>{ if(SND.ctx) bell(330,.07); }});
-   await say(s,'With that, the preta becomes a pitṛ, an ancestor. They move to the world of the fathers, and will be fed every year at the anniversary and during Pitṛ Paksha, the fortnight of the ancestors in autumn. Crows, thought to carry offerings to the dead, are given the first share.');
-   await say(s,'On the thirteenth day the family bathes, the priests and relatives are fed, and the mourning ends. The house becomes pure again. Life starts up.');
+   await tell(s,'First, the good news. The real you, the ātman, can\'t be burned, drowned, cut or dried out. Death doesn\'t touch it.',{eye:'Bhagavad Gita 2',note:'Hindu traditions differ on how the self relates to God. This journey follows the shared outline and the Garuda Purana\'s account of the road.'});
+   await hold(s,{label:'Change your clothes',ms:4000,ask:'"As a person throws off worn-out clothes and puts on new ones, so the self throws off worn-out bodies." Press and hold.'});
+   await tell(s,'The body is the shirt. You are the one wearing it.');
  }},
- {name:'Release',short:'Moksha',sub:'Getting off the wheel',col:'#F2A007',run:async s=>{
-   art(scene(`<circle cx="300" cy="200" r="190" fill="url(#glow)"/>${lotus(300,260,1.6)}`,{sky:INDIGO}));
-   if(SND.ctx) pad('pad',[130.8,196,261.6,329.6],.035);
-   await say(s,'Beyond heaven, hell and rebirth is mokṣa: release. The Katha Upanishad says: when all the desires that live in the heart are let go, the mortal becomes immortal, and reaches Brahman, the infinite, here and now.',{eye:'Mokṣa'});
-   await say(s,'Hindu schools picture it differently. For some, the self dissolves into the infinite like a river into the sea. For others, the soul lives forever in the presence of a loving God, Vishnu or Shiva or the Goddess. The Gita promises: those who come to me do not return to birth.');
-   await say(s,'That is the answer Nachiketa got from Death. What you really are was never born and will never die. The rest is clothing.');
- }}],
- finale:async s=>{ art(hiCover()); if(SND.ctx) chime();
-   await say(s,'That is the passage: a last thought turned to God, a body given to fire, ten days of rice building a new one, a long road, a river crossed with a cow, and a place among the ancestors on the thirteenth day.',{eye:'The end of the book'});
-   await say(s,'For the dead, the rites are a road. For the living, they are thirteen days of something to do with grief. The Thirteen-Day Walk goes through them one at a time.'); }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+ {name:'The last thought',short:'Last thought',col:'#4C8C3A',run:async s=>{
+   art(scene(`<rect x="0" y="270" width="600" height="130" fill="#C9A26E"/>${shroud(300,300,1)}${tulsi(110,330,1)}${pot(480,330,1)}${diya(380,320,1)}${person(200,270,.8,{sari:true,cloth:'#E9D6B0',arms:'offer'})}`,{sky:'#5A3A2A'}));
+   await tell(s,'Here\'s the catch. Krishna says whatever you think of at the very end, that\'s where you go next. So the family helps you aim.',{eye:'Bhagavad Gita 8.6'});
+   await spots(s,{ask:'Tap the three things they give you.',items:[
+     {x:80,y:80,label:'Ganga water',say:'A few drops of water from the Ganges on the lips.'},
+     {x:18,y:80,label:'Tulsi leaf',say:'A leaf of holy basil, sacred to Vishnu.'},
+     {x:46,y:58,label:'God\'s name',say:'Someone says God\'s name in your ear, so it is your last thought: Rama, Krishna, Shiva.'}]});
+   await tell(s,'Think of God at the end and you go to God. No pressure.');
+ }},
+ {name:'The fire',short:'Fire',col:'#E86A17',run:async s=>{
+   art(GHAT(`${pyre(300,290,.8)}${person(470,290,.75,{shaved:true,thread:true,arms:'down'})}`));
+   if(SND.ctx) waterLoop();
+   await tell(s,'Cremation, by the river. The body is the last offering, given to Agni, the fire.',{eye:'Antyeṣṭi, the last sacrifice'});
+   await count(s,{ask:'Your eldest son walks around the pyre with a pot of water. Circle it three times.',n:3,label:'Walk around',onTap:()=>{ if(SND.ctx) plop(); }});
+   loopOff('water');
+   await hold(s,{label:'Light the pyre',ms:3000,ask:'Press and hold to light the fire.'});
+   art(GHAT(`${pyre(300,290,.8,{lit:true})}${person(470,290,.75,{shaved:true,thread:true,arms:'pray'})}${pot(410,300,.8,{broken:true})}`));
+   if(SND.ctx) fireLoop();
+   await tell(s,'The fire frees the self from the body. You\'re now a preta: a ghost without a body, waiting.');
+   loopOff('fire');
+ }},
+ {name:'A body of rice',short:'Rice body',col:'#E9B92F',run:async s=>{
+   const sc=k=>scene(`${wall()}${portrait(300,140,.95)}<rect x="0" y="260" width="600" height="140" fill="#C9A26E"/>${leaf(300,320,1.6,k)}${diya(470,310,1.2)}${person(140,300,.85,{shaved:true,thread:true,arms:'offer'})}`,{sky:'#4A2A22'});
+   art(sc(0));
+   await tell(s,'You need a new body for the road. Your family builds it out of rice balls, called piṇḍas, one part a day.',{eye:'Garuda Purana',note:'The Garuda Purana says the first day\'s offering makes the head, the next the neck and shoulders, and so on, until on the tenth day the body can feel hunger.'});
+   await count(s,{ask:'Offer ten piṇḍas: head, neck, heart, back, belly, legs… Tap ten times.',n:10,label:'Offer a piṇḍa',onTap:k=>{ art(sc(Math.min(k,4))); if(SND.ctx) plop(); }});
+   await tell(s,'Day ten: you have a body again, and it\'s hungry. Time to walk.');
+ }},
+ {name:'The river',short:'The river',col:'#8E1E1A',run:async s=>{
+   art(scene(`${bloodRiver(260)}<path d="M0 260 Q60 230 120 260Z" fill="#6A4A30"/><path d="M480 260 Q540 230 600 260Z" fill="#6A4A30"/>`,{sky:'#2A1414'}));
+   await tell(s,'The road to Yama\'s city runs south, and there\'s a river in the way: the Vaitaraṇī. It is not a nice river.',{eye:'The Vaitaraṇī'});
+   await duo(s,{ask:'How will you cross?',a:{label:'Swim',svg:`${HI_DEFS}${bloodRiver(0)}`},b:{label:'Hold the cow\'s tail',svg:`${HI_DEFS}<rect width="300" height="400" fill="#F3E2C1"/>${cow(150,260,1.4)}`},right:1,wrong:'Nobody swims the Vaitaraṇī. The Garuda Purana suggests another way.'});
+   art(scene(`${bloodRiver(260)}<g class="drift">${cow(260,300,.9)}${person(170,300,.55,{cloth:WHITE,arms:'offer'})}</g>`,{sky:'#2A1414'}));
+   await tell(s,'A cow given to the poor in your name carries you over. Generosity is the ferry.');
+ }},
+ {name:'The ledger',short:'Judgment',col:'#B8321C',run:async s=>{
+   art(scene(`<rect x="0" y="300" width="600" height="100" fill="#4A3020"/>${yama(420,300,.95)}${person(270,300,.7,{cloth:WHITE,skin:'#B8A090',arms:'pray'})}${person(120,300,.85,{cloth:'#F7E2B0',arms:'offer'})}<rect x="90" y="215" width="54" height="34" fill="${WHITE}" stroke="${K}" stroke-width="2"/><path d="M96 224 h40 M96 232 h40 M96 240 h30" stroke="${K}"/>`,{sky:'#5A2A22'}));
+   await tell(s,'Yama, lord of death, on his throne. Beside him Chitragupta, who has written down everything you ever did.',{eye:'Yama and Chitragupta'});
+   await choose(s,'He opens the book at your name. What do you hope he reads first?',['A kindness no one saw','A duty done well','Something I gave away'],{});
+   await tell(s,'Good deeds earn a stay in a heaven, bad ones a hell. Both run out, like a holiday or a sentence.');
+ }},
+ {name:'The wheel',short:'Rebirth',col:'#3C3A6A',run:async s=>{
+   art(scene(`${wheel(300,200,140)}`,{sky:INDIGO}));
+   if(SND.ctx) pad('pad',[110,164.8,220],.03);
+   await tell(s,'Then you\'re born again: a person, an animal, a god, depending on your karma. Around and around.',{eye:'Saṃsāra'});
+   await release(s,{ask:'Every reward ends. Tap each to watch it pass.',words:['A heaven','A hell','A royal birth','A long life']});
+   art(scene(`<circle cx="300" cy="200" r="190" fill="url(#glow)"/>${lotus(300,260,1.6)}`,{sky:INDIGO})); if(SND.ctx) chime();
+   await tell(s,'Unless you get off. Moksha is release from the wheel: no more births, the self free in God. That\'s the real destination.',{eye:'Moksha',note:'Back home, on the thirteenth day, the family joins you to the ancestors, and keeps feeding you once a year in the rite called śrāddha.'});
+ }}]};
+journeySplash(J);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>

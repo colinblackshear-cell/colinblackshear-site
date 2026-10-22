@@ -1,0 +1,471 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Welcome</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* The Welcome: a raigō painting. Gold on indigo silk, purple cloud, lotus pink and sunset. */
+:root{
+  --bg:#F6EEDC; --paper:#FBF6EA; --ink:#14182C; --ink-soft:#4A4E66; --accent:#8A6AA8; --accent2:#B84A3A; --gold:#D8B25A; --night:#10142A; --nightink:#FBF6EA;
+  --display:'Shippori Mincho','Georgia',serif;
+}
+h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);font-weight:700}
+.brand{letter-spacing:.08em;font-size:1rem}
+.cover{background:#1C2340}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
+function manualLanding(B){
+  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
+    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
+    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
+  $('#begin').onclick=()=>playManual(B,next);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
+  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+}
+async function playManual(B,start){
+  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
+  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
+  s.onclose=()=>manualLanding(B);
+  try{
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
+      await c.run(s);
+      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
+      if(SND.ctx) allOff(1.2); }
+    store.set(B.key+'-next','0'); alive(s);
+    await B.finale(s); closePlayer();
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* Raigō kit for The Welcome: gold on indigo silk, purple clouds descending from the upper left, lotus pink and sunset, after Heian and Kamakura welcome paintings. */
+const K='#14182C', INDIGOP='#1C2340', GOLDP='#D8B25A', PURP='#8A6AA8', CINNP='#B84A3A', LOTUS='#E8A8B8', WHITEP='#F6F0E2', GREENP='#4A7A5A', SUNSET='#E87A3A', JADEP='#5AA8A0';
+const PL_DEFS=`<defs><radialGradient id="halo"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".5" stop-color="${GOLDP}" stop-opacity=".6"/><stop offset="1" stop-color="${GOLDP}" stop-opacity="0"/></radialGradient>
+<linearGradient id="silk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#151A32"/><stop offset="1" stop-color="#2A2E50"/></linearGradient>
+<linearGradient id="westSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A2450"/><stop offset=".55" stop-color="#C85A5A"/><stop offset="1" stop-color="#F2B05A"/></linearGradient>
+<linearGradient id="landSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6E6C0"/><stop offset="1" stop-color="#FBF4E2"/></linearGradient><clipPath id="plclip"><rect width="600" height="400"/></clipPath></defs>`;
+function pl(inner,{bg='silk',border=true}={}){ const f=bg==='silk'?'url(#silk)':bg==='west'?'url(#westSky)':bg==='land'?'url(#landSky)':bg;
+  return `${PL_DEFS}<g clip-path="url(#plclip)"><rect width="600" height="400" fill="${f}"/>${bg==='silk'?stars(40,31,300,'#E8D8B0'):''}${inner}${border?`<rect x="6" y="6" width="588" height="388" fill="none" stroke="${GOLDP}" stroke-width="3"/><rect x="12" y="12" width="576" height="376" fill="none" stroke="${GOLDP}" stroke-width="1"/>`:''}</g>`; }
+function kanji(x,y,t,{size=34,col=GOLDP,vertical=true}={}){ return vertical?`<text x="${x}" y="${y}" font-family="'Shippori Mincho','Noto Serif JP',serif" font-size="${size}" fill="${col}" text-anchor="middle" style="writing-mode:vertical-rl" font-weight="700">${t}</text>`:`<text x="${x}" y="${y}" font-family="'Shippori Mincho','Noto Serif JP',serif" font-size="${size}" fill="${col}" text-anchor="middle" font-weight="700">${t}</text>`; }
+function cloudP(x,y,s=1,col=PURP){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 10 Q-80 -14 -54 -18 Q-46 -40 -20 -30 Q-4 -48 18 -32 Q44 -40 50 -16 Q74 -10 66 10 Z" fill="${col}" stroke="${GOLDP}" stroke-width="1.5"/><path d="M-50 4 q10 -12 22 -2 M0 -10 q12 -12 22 0" stroke="${GOLDP}" stroke-width="1.2" fill="none"/><path d="M66 10 Q100 20 140 4" stroke="${col}" stroke-width="10" fill="none" stroke-linecap="round" opacity=".7"/></g>`; }
+function lotusP(x,y,s=1,{open=1,col=LOTUS}={}){ const p=(a,l)=>`<path d="M0 0 Q${-14*open} ${-l*.6} 0 ${-l} Q${14*open} ${-l*.6} 0 0Z" transform="rotate(${a*open})" fill="${col}" stroke="${CINNP}" stroke-width="1.2"/>`; return `<g transform="translate(${x} ${y}) scale(${s})">${p(-70,30)}${p(70,30)}${p(-45,38)}${p(45,38)}${p(-20,44)}${p(20,44)}${p(0,48)}</g>`; }
+function pedestal(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse rx="70" ry="12" fill="${GOLDP}" stroke="${K}" stroke-width="1.5"/>${Array.from({length:9},(_,i)=>`<path d="M${-64+i*16} 0 q8 -22 16 0" fill="${LOTUS}" stroke="${CINNP}" stroke-width="1"/>`).join('')}<path d="M-50 10 Q0 30 50 10" fill="${GOLDP}"/></g>`; }
+/* Amida, gold, with a halo: seated on a lotus, or standing for the welcome. */
+function amida(x,y,s=1,{stand=false,glow=true}={}){ const body=stand?`<path d="M-30 0 Q-36 -80 -26 -150 Q0 -168 26 -150 Q36 -80 30 0Z" fill="${GOLDP}" stroke="#8A6A2A" stroke-width="2"/><path d="M-24 -140 Q0 -100 24 -140 M-26 -60 Q0 -40 26 -60" stroke="#8A6A2A" stroke-width="1.5" fill="none"/><path d="M20 -110 L34 -86" stroke="${GOLDP}" stroke-width="10" stroke-linecap="round"/><path d="M-20 -110 L-30 -130" stroke="${GOLDP}" stroke-width="10" stroke-linecap="round"/><circle cx="36" cy="-84" r="5" fill="${GOLDP}" stroke="#8A6A2A"/>`
+  :`<path d="M-60 0 Q-64 -20 -40 -26 Q-34 -80 -24 -110 Q0 -124 24 -110 Q34 -80 40 -26 Q64 -20 60 0Z" fill="${GOLDP}" stroke="#8A6A2A" stroke-width="2"/><path d="M-30 -22 Q0 -8 30 -22" stroke="#8A6A2A" stroke-width="1.5" fill="none"/><ellipse cx="0" cy="-30" rx="18" ry="7" fill="#C89A40"/>`;
+  const hy=stand?-178:-138;
+  return `<g transform="translate(${x} ${y}) scale(${s})">${glow?`<circle cy="${hy+20}" r="${stand?140:110}" fill="url(#halo)" class="flick"/>${rays(0,hy+20,stand?150:120,24,.25,'#FFF2C8')}`:''}<circle cy="${hy}" r="34" fill="none" stroke="${GOLDP}" stroke-width="3"/>${body}<circle cy="${hy}" r="20" fill="${GOLDP}" stroke="#8A6A2A" stroke-width="2"/><path d="M-16 ${hy-10} Q0 ${hy-34} 16 ${hy-10}" fill="#3A3A6A"/><circle cy="${hy-22}" r="8" fill="#3A3A6A"/><path d="M-7 ${hy+2} q3 2 6 0 M2 ${hy+2} q3 2 6 0" stroke="#8A6A2A" stroke-width="1.5" fill="none"/><circle cy="${hy-6}" r="2" fill="${WHITEP}"/></g>`; }
+function bodhi(x,y,s=1,{hold='lotus'}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle cy="-120" r="28" fill="none" stroke="${GOLDP}" stroke-width="2.5"/><path d="M-22 0 Q-26 -60 -18 -100 Q0 -112 18 -100 Q26 -60 22 0Z" fill="${GOLDP}" stroke="#8A6A2A" stroke-width="2"/><path d="M-30 -60 Q-40 -20 -34 0 M30 -60 Q40 -20 34 0" stroke="${CINNP}" stroke-width="3" fill="none"/><circle cy="-118" r="15" fill="${GOLDP}" stroke="#8A6A2A" stroke-width="2"/><path d="M-12 -126 L-6 -144 L0 -130 L6 -144 L12 -126" fill="${GOLDP}" stroke="#8A6A2A" stroke-width="1.2"/>${hold==='lotus'?`<g transform="translate(0 -70)">${pedestal(0,0,.45)}</g><path d="M-18 -78 L-28 -66 M18 -78 L28 -66" stroke="${GOLDP}" stroke-width="7" stroke-linecap="round"/>`:`<path d="M-6 -82 L0 -96 L6 -82Z" fill="${GOLDP}" stroke="#8A6A2A"/><path d="M-16 -76 Q0 -70 16 -76" stroke="${GOLDP}" stroke-width="7" stroke-linecap="round" fill="none"/>`}</g>`; }
+function mountainsP(y=320){ return `<path d="M0 ${y} Q60 ${y-120} 140 ${y-70} Q200 ${y-150} 280 ${y-60} Q360 ${y-140} 440 ${y-70} Q520 ${y-130} 600 ${y-60} V400 H0Z" fill="#2E5A4E" stroke="${GOLDP}" stroke-width="1.5"/><path d="M0 ${y+20} Q150 ${y-40} 300 ${y+10} T600 ${y} V400 H0Z" fill="#244A40"/>`; }
+function setSun(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="120" fill="url(#halo)" opacity=".7"/><circle r="50" fill="${SUNSET}" stroke="${GOLDP}" stroke-width="2"/></g>`; }
+function pondP(y=300){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${JADEP}"/>`; for(let k=0;k<3;k++){ let d=`M0 ${y+16+k*24}`; for(let x=0;x<600;x+=40) d+=` q20 -8 40 0`; o+=`<path d="${d}" stroke="#A8E0D8" stroke-width="2" fill="none" opacity=".8"/>`; } return o+[80,200,330,460,540].map((x,i)=>lotusP(x,y+40+(i%2)*20,.7)).join(''); }
+function jewelTree(x,y,s=1){ const C=[GOLDP,'#C8D8E8',LOTUS,JADEP,'#E8C8F0','#F0E080','#E8A060']; return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 V-90" stroke="${GOLDP}" stroke-width="8"/>${Array.from({length:14},(_,i)=>{ const a=i/14*Math.PI*2; return `<circle cx="${Math.cos(a)*(30+i%3*14)}" cy="${-120+Math.sin(a)*(26+i%3*10)}" r="10" fill="${C[i%7]}" stroke="#8A6A2A" stroke-width="1"/>`; }).join('')}<circle cy="-120" r="12" fill="${WHITEP}"/></g>`; }
+function birdP(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})" class="bob"><path d="M-20 0 Q-6 -16 14 -8 L26 -12 L18 -2 Q4 10 -20 0Z" fill="${WHITEP}" stroke="${K}" stroke-width="1.2"/><path d="M-8 -6 Q-20 -30 -30 -24 Q-18 -14 -10 -2" fill="${LOTUS}" stroke="${K}" stroke-width="1"/><circle cx="14" cy="-8" r="1.6" fill="${K}"/></g>`; }
+function petals(n=18,seed=4){ const r=rnd(seed); return Array.from({length:n},()=>{ const x=30+r()*540,y=30+r()*300; return `<path class="drift" style="animation-duration:${4+r()*6}s" d="M${x} ${y} q6 -8 12 0 q-6 6 -12 0Z" fill="${LOTUS}" opacity=".85"/>`; }).join(''); }
+function liePerson(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-120" y="-10" width="240" height="14" fill="#6A4A2A"/><path d="M-100 -10 Q-110 -30 -84 -34 L80 -32 Q100 -28 96 -10Z" fill="#7A6A8A" stroke="${K}" stroke-width="1.5"/><circle cx="-96" cy="-34" r="14" fill="#E0B890" stroke="${K}" stroke-width="1.5"/><path d="M-40 -32 L-60 -60" stroke="#E0B890" stroke-width="6" stroke-linecap="round"/></g>`; }
+function cords(x1,y1,x2,y2){ const C=['#3A6AB8','#E8D040','#C83A3A','#F6F0E2','#2A2A2A']; return C.map((c,i)=>`<path d="M${x1} ${y1+i*2} Q${(x1+x2)/2} ${(y1+y2)/2+30+i*4} ${x2} ${y2+i*2}" stroke="${c}" stroke-width="2.5" fill="none"/>`).join(''); }
+function plCover(){ return pl(`${mountainsP(330)}<g transform="translate(0 0)">${cloudP(250,250,1.6)}${amida(260,236,.7,{stand:true})}${bodhi(150,250,.55)}${bodhi(360,256,.55,{hold:'join'})}</g>${petals(14)}`,{bg:'silk'}); }
+
+/* The Welcome: Pure Land Buddhism's passage at death, after the three Pure Land sutras, Genshin and Shinran. */
+const BOOK={key:'welcome',brand:'The Welcome',brandSub:'A Pure Land book of the dead',title:'The Welcome',eyebrow:'From the Pure Land sutras, Genshin and Shinran',
+ lede:'In Pure Land Buddhism, the dying are not alone. A Buddha named Amida vowed to come for anyone who calls his name, and to carry them on a lotus to a land in the west where awakening is easy. This book follows that welcome, from the deathbed to the opening of the lotus.',
+ note:'About 30 minutes in eleven chapters. Turn the sound on; a narrator reads each page.',
+ walkUrl:'../../../many-doors/pureland/walk/',walkName:'The Sixteen Contemplations',
+ how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['A companion','Pure Land is the most widely practised form of Buddhism in East Asia, in China, Japan, Korea, Taiwan and Vietnam. It is a gentle companion to the Tibetan Bardo series.'],['Different schools','Chinese Pure Land, and Japanese Jōdo-shū and Jōdo Shinshū, all honour Amida but differ, especially on whether deathbed practice matters. The book notes where.'],['Your part','You call the name, hold the five-coloured cords, receive the welcome and wait for the lotus to open.']],
+ sources:'The Larger Sutra of Immeasurable Life (Sukhāvatīvyūha), the Amida Sutra and the Contemplation Sutra, tr. Hisao Inagaki (2003); Genshin, Ōjōyōshū (985); Yoshishige no Yasutane, Nihon ōjō gokuraku ki (c. 985); Hōnen, One-Sheet Document (1212); Shinran and Yuien, Tannishō; Jacqueline Stone, Right Thoughts at the Last Moment (2016).',
+ cover:plCover,
+ chapters:[
+ {name:'The Vow',short:'The vow',sub:'A monk named Dharmākara',col:'#D8B25A',run:async s=>{
+   art(pl(`${mountainsP(340)}${amida(300,320,.9)}${pedestal(300,326,1.2)}`));
+   if(SND.ctx) pad('pad',[110,165,220],.03);
+   await say(s,'The Larger Sutra tells of a king who heard the Buddha teach, gave up his throne and became a monk named Dharmākara. He studied every Buddha-land in the universe, and then made forty-eight vows to create a land better than all of them.',{eye:'The Larger Sutra'});
+   await say(s,'The eighteenth vow became the heart of Pure Land Buddhism. If, when I attain Buddhahood, beings in the ten directions who sincerely entrust themselves to me, wish to be born in my land, and call my name even ten times, should not be born there, may I not attain perfect enlightenment.');
+   await hold(s,{label:'Make the vow',ms:5000,ask:'Press and hold while Dharmākara makes his vow.'});
+   if(SND.ctx) bowl();
+   await say(s,'The sutra says he did attain enlightenment, ten aeons ago. So the vow has already been fulfilled. He is Amida, the Buddha of Infinite Light and Infinite Life.');
+ }},
+ {name:'Infinite Light',short:'The west',sub:'The setting sun',col:'#E87A3A',run:async s=>{
+   art(pl(`${setSun(300,290,1)}${mountainsP(340)}`,{bg:'west'}));
+   await say(s,'His land lies in the west, far beyond countless worlds, where the sun goes down. That is why so many Pure Land temples face west, and why practitioners turn to the sunset.',{eye:'Amitābha, Amitāyus'});
+   await say(s,'In Sanskrit he is Amitābha, Infinite Light, and Amitāyus, Infinite Life. In Chinese, Āmítuófó. In Japanese, Amida. Chinese Buddhists greet each other with his name: Āmítuófó.');
+   await still(s,{ask:'Face west. Watch the sun go down.',ms:9000});
+   await say(s,'The first of the sixteen contemplations in the Contemplation Sutra is exactly this: sit facing west and fix your mind on the setting sun, until you can see it with eyes closed.');
+ }},
+ {name:'The Name',short:'Nembutsu',sub:'Namu Amida Butsu',col:'#D8B25A',run:async s=>{
+   art(pl(`${kanji(300,180,'南無阿弥陀仏',{size:42})}${lotusP(300,360,1.2)}`));
+   if(SND.ctx) pad('pad',[98,147,196],.03);
+   await say(s,'The practice at the heart of it all is the nembutsu: calling the Buddha\'s name. In Japanese: Namu Amida Butsu. In Chinese: Námó Āmítuófó. It means: I take refuge in Amida Buddha.',{eye:'The nembutsu'});
+   await count(s,{ask:'The vow says: even ten times. Tap ten times, saying the name.',n:10,label:'Namu Amida Butsu',onTap:k=>{ if(SND.ctx) bell(330+(k%2)*60,.05); }});
+   await say(s,'Hōnen, who founded the Jōdo school in twelfth-century Japan, is said to have recited it sixty thousand times a day. He taught that this simple practice was enough for anyone, monk or fisherman, scholar or sinner.');
+ }},
+ {name:'The Deathbed',short:'Deathbed',sub:'Five-coloured cords',col:'#8A6AA8',run:async s=>{
+   art(pl(`${amida(170,330,.7,{stand:true})}${liePerson(400,340,1)}${cords(196,240,340,330)}`,{bg:'#241E3A'}));
+   if(SND.ctx) pad('pad',[110,165,220],.025);
+   await say(s,'In 985, the Japanese monk Genshin wrote a guide called the Essentials of Birth in the Pure Land. It describes how to die.',{eye:'Genshin, Ōjōyōshū'});
+   await spots(s,{ask:'Tap each part of the deathbed.',items:[
+     {x:28,y:50,label:'The image',say:'A standing image of Amida is placed facing west, with the dying person behind it, as if following the Buddha.'},
+     {x:45,y:72,label:'The cords',say:'Five-coloured cords are tied to the Buddha\'s hand. The dying person holds the other end.'},
+     {x:67,y:80,label:'The friends',say:'Companions sit with the dying, burn incense, scatter flowers, and chant the nembutsu with them, so their last thought is of Amida. Genshin founded a society of 25 monks who promised to do this for each other.'}]});
+   await hold(s,{label:'Hold the cords',ms:6000,ask:'Press and hold the five-coloured cords, and keep your mind on the Buddha.'});
+   await say(s,'Genshin believed the last thought mattered enormously. A calm mind fixed on Amida at death, he wrote, was the doorway.');
+ }},
+ {name:'The Welcome',short:'Raigō',sub:'Amida comes',col:'#D8B25A',run:async s=>{
+   art(pl(`${mountainsP(340)}${liePerson(470,370,.6)}<g class="fadein">${cloudP(220,240,1.6)}${amida(230,226,.7,{stand:true})}${bodhi(120,240,.55)}${bodhi(330,246,.55,{hold:'join'})}</g>${petals(20)}`));
+   if(SND.ctx){ allOff(1); pad('pad',[130.8,196,261.6,329.6],.035); chime(); }
+   await say(s,'Then the welcome, the raigō. The Amida Sutra promises that when a person who has held the name dies, Amida and his holy company will appear before them.',{eye:'Raigō'});
+   await say(s,'Japanese painters showed it again and again: Amida descending on a purple cloud, surrounded by bodhisattvas playing music and scattering flowers. Kannon, the bodhisattva of compassion, holds out a golden lotus seat. Seishi, the bodhisattva of wisdom, joins his hands.');
+   await hold(s,{label:'Receive the welcome',ms:6000,ask:'Press and hold, and let them come for you.'});
+   if(SND.ctx) chime();
+   await say(s,'Stories of the time report signs at good deaths: purple clouds over the house, a strange fragrance, music no one could place.');
+ }},
+ {name:'The Lotus Bud',short:'The lotus',sub:'Nine grades of birth',col:'#E8A8B8',run:async s=>{
+   art(pl(`${pondP(260)}<g id="bud">${lotusP(300,250,2,{open:.15})}</g>`,{bg:'land'}));
+   if(SND.ctx) waterLoop();
+   await say(s,'Kannon places the soul on the lotus seat, and it is carried to the Pure Land. There, the Contemplation Sutra says, it is born inside a lotus flower.',{eye:'The Contemplation Sutra'});
+   await say(s,'The sutra describes nine grades of birth, high to low. For the best, the lotus opens at once. For those who did great wrong but called the name at the end, it may stay closed for an unimaginably long time. But it always opens.');
+   const B=$('#pArt');
+   await hold(s,{label:'Wait for the lotus',ms:7000,ask:'Press and hold, and wait for the lotus to open.',onP:p=>{ const g=B.querySelector('#bud'); if(g) g.innerHTML=lotusP(300,250,2,{open:.15+p*.85}); }});
+   loopOff('water'); if(SND.ctx) chime();
+   await say(s,'And inside, you see the Buddha, and hear the teaching.');
+ }},
+ {name:'The Land of Bliss',short:'The land',sub:'Jewelled trees and singing birds',col:'#5AA8A0',run:async s=>{
+   art(pl(`${pondP(270)}${jewelTree(90,270,1)}${jewelTree(510,270,1)}${birdP(220,120,1.2)}${birdP(380,90,1)}${petals(14,9)}<path d="M200 270 H400" stroke="${GOLDP}" stroke-width="5"/>`,{bg:'land'}));
+   if(SND.ctx){ pad('pad',[130.8,196,261.6],.03); waterLoop(); }
+   await say(s,'The Amida Sutra describes Sukhāvatī, the Land of Bliss. Its ground is gold. It has seven rows of railings and seven rows of jewelled trees. Its ponds are made of seven jewels and filled with water of eight excellent qualities, over sand of gold.',{eye:'The Amida Sutra'});
+   await spots(s,{ask:'Tap to see.',items:[{x:15,y:40,label:'Jewel trees',say:'When the breeze moves through the jewel trees and nets, they make music like a hundred thousand instruments.'},{x:37,y:30,label:'The birds',say:'White cranes, peacocks and parrots sing the Buddha\'s teaching six times a day. The sutra says they are not real birds: Amida made them to teach.'},{x:50,y:85,label:'The lotuses',say:'Lotuses as large as cartwheels: blue ones shine blue, yellow ones yellow, red ones red, white ones white.'}]});
+   loopOff('water');
+   await say(s,'Everyone who hears the music, the sutra says, thinks of the Buddha, the teaching and the community. It\'s a land designed so that awakening is easy.');
+ }},
+ {name:'Other Power',short:'Shinran',sub:'Even the wicked',col:'#B84A3A',run:async s=>{
+   art(pl(`${kanji(300,180,'他力',{size:80})}${lotusP(300,360,1)}`));
+   await say(s,'Hōnen\'s student Shinran took the idea further. Birth in the Pure Land, he said, doesn\'t depend on your own effort at all, not even on calling the name the right number of times. It depends entirely on Amida\'s vow: on Other Power, tariki.',{eye:'Shinran, Tannishō'});
+   await choose(s,'Shinran said something that shocked people. Which?',['Only the good will be born in the Pure Land','Even a good person is born there, so how much more an evil person'],{right:1,wrong:'That\'s what most people expected. Shinran said the opposite.'});
+   await say(s,'Even a good person attains birth, so how much more so an evil person. Those who know they can\'t save themselves are exactly the ones Amida\'s vow was made for.');
+   await say(s,'For Shinran\'s school, Jōdo Shinshū, now the largest Buddhist denomination in Japan, birth in the Pure Land is settled the moment you truly entrust yourself. Deathbed rites don\'t matter; the nembutsu is simply gratitude.');
+ }},
+ {name:'Not the End',short:'Return',sub:'Coming back to help',col:'#4A7A5A',run:async s=>{
+   art(pl(`${mountainsP(380)}${amida(300,200,.7)}${cloudP(300,290,1.4)}<g class="rise">${bodhi(300,370,.6)}</g>`));
+   if(SND.ctx) pad('pad',[110,165,220,277.2],.03);
+   await say(s,'The Pure Land is not the final goal. It\'s the best place to finish the journey to awakening, with nothing in the way.',{eye:'Returning'});
+   await say(s,'And once awakened, Pure Land teachers say, you return to this world, as a bodhisattva, to help others the way Amida helped you. Shinran called it the returning aspect. The welcome is passed on.');
+   await count(s,{ask:'Pass it on. Tap to send the welcome back into the world.',n:3,label:'Return',onTap:()=>{ if(SND.ctx) bell(523,.05); }});
+ }},
+ {name:'At Home and in the Temple',short:'Rites',sub:'What families do',col:'#8A6AA8',run:async s=>{
+   art(pl(`<rect x="0" y="300" width="600" height="100" fill="#3A2A22"/><rect x="200" y="140" width="200" height="160" fill="#2A1E1A" stroke="${GOLDP}" stroke-width="3"/>${amida(300,290,.45)}${lotusP(230,300,.5)}${lotusP(370,300,.5)}`));
+   await say(s,'In Japan and China, families who follow Pure Land keep a home altar with an image or scroll of Amida, or the name written out. The nembutsu is chanted at funerals and at the memorial services that follow.',{eye:'Remembering the dead'});
+   await say(s,'Many still hold rites every seventh day for forty-nine days, and on anniversaries for years after. In Jōdo Shinshū these services are understood less as helping the dead, who are already in Amida\'s care, and more as a chance for the living to hear the teaching.');
+   await count(s,{ask:'Light incense and bow, three times.',n:3,label:'Bow',onTap:()=>{ if(SND.ctx) bowl(); }});
+ }}],
+ finale:async s=>{ art(plCover()); if(SND.ctx) chime();
+   await say(s,'That is the welcome: a vow made long ago, a name said ten times, a hand on five-coloured cords, a Buddha descending on a purple cloud, and a lotus that, sooner or later, always opens.',{eye:'The end of the book'});
+   await say(s,'Namu Amida Butsu.'); }};
+header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
+manualLanding(BOOK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>

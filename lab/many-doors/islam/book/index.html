@@ -1,0 +1,481 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Barzakh</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* The Barzakh: a night mosque. Lapis, turquoise tile, gold lamplight and ivory. */
+:root{
+  --bg:#F2ECDD; --paper:#FBF8F0; --ink:#0E1A2A; --ink-soft:#44546A; --accent:#14315A; --accent2:#2A9D9A; --gold:#D4A645; --night:#081428; --nightink:#FBF8F0;
+  --display:'Amiri','Georgia',serif;
+}
+h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);font-weight:700}
+.brand{letter-spacing:.06em;font-size:1.05rem}
+.cover{background:#081428}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
+function manualLanding(B){
+  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
+    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
+    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
+  $('#begin').onclick=()=>playManual(B,next);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
+  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+}
+async function playManual(B,start){
+  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
+  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
+  s.onclose=()=>manualLanding(B);
+  try{
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
+      await c.run(s);
+      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
+      if(SND.ctx) allOff(1.2); }
+    store.set(B.key+'-next','0'); alive(s);
+    await B.finale(s); closePlayer();
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* Geometric kit for The Barzakh: no figures, as much of the tradition prefers. Eight-point stars, arches, lamps, gardens and light, with Arabic set in Amiri. */
+const K='#0E1A2A', LAPIS='#14315A', TURQ='#2A9D9A', GOLDI='#D4A645', IVORY='#F7F3EA', GREEN='#2E7D4F', EARTH='#6A4E36', CLAYI='#A8643A', FIREI='#D9542A', SKYI='#BFD8E0';
+const IS_DEFS=`<defs><pattern id="star8" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="${LAPIS}"/><path d="M20 4 L24 16 L36 20 L24 24 L20 36 L16 24 L4 20 L16 16Z" fill="${GOLDI}"/><rect x="14" y="14" width="12" height="12" transform="rotate(45 20 20)" fill="${TURQ}"/><circle cx="20" cy="20" r="3" fill="${IVORY}"/></pattern>
+<pattern id="tilesI" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#E8E0CC"/><path d="M30 0 L38 22 L60 30 L38 38 L30 60 L22 38 L0 30 L22 22Z" fill="none" stroke="${TURQ}" stroke-width="2"/><circle cx="30" cy="30" r="6" fill="${LAPIS}" opacity=".6"/></pattern>
+<radialGradient id="noor"><stop offset="0" stop-color="#FFFBE8"/><stop offset=".45" stop-color="${GOLDI}" stop-opacity=".55"/><stop offset="1" stop-color="${GOLDI}" stop-opacity="0"/></radialGradient>
+<linearGradient id="nightI" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#081428"/><stop offset="1" stop-color="#1E3A5E"/></linearGradient>
+<linearGradient id="dawnI" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7E6C0"/><stop offset="1" stop-color="#F7F3EA"/></linearGradient><clipPath id="isclip"><rect width="600" height="400"/></clipPath></defs>`;
+function isl(inner,{bg='night',border=true}={}){ const f=bg==='night'?'url(#nightI)':bg==='dawn'?'url(#dawnI)':bg==='tile'?'url(#tilesI)':bg;
+  return `${IS_DEFS}<g clip-path="url(#isclip)"><rect width="600" height="400" fill="${f}"/>${bg==='night'?stars(70,17,280,'#F7F3EA'):''}${inner}${border?`<rect width="600" height="18" fill="url(#star8)"/><rect y="382" width="600" height="18" fill="url(#star8)"/>`:''}</g>`; }
+function cal(x,y,t,{size=40,col=GOLDI,stroke=''}={}){ return `<text x="${x}" y="${y}" text-anchor="middle" direction="rtl" font-family="Amiri,'Noto Naskh Arabic',serif" font-size="${size}" fill="${col}" ${stroke?`stroke="${stroke}" stroke-width="1"`:''}>${t}</text>`; }
+function crescent(x,y,s=1,col=GOLDI){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="30" fill="${col}"/><circle cx="12" cy="-6" r="26" fill="#0C1A30"/><path d="M34 -24 l3 8 l8 1 l-6 5 l2 8 l-7 -4 l-7 4 l2 -8 l-6 -5 l8 -1Z" fill="${col}"/></g>`; }
+function arch(x,y,w=200,h=260,{fill='url(#star8)',inner=''}={}){ const hw=w/2; return `<g transform="translate(${x} ${y})"><path d="M${-hw} 0 V${-h*.6} Q${-hw} ${-h} 0 ${-h} Q${hw} ${-h} ${hw} ${-h*.6} V0Z" fill="${fill}" stroke="${GOLDI}" stroke-width="4"/><path d="M${-hw+18} 0 V${-h*.58} Q${-hw+18} ${-h+22} 0 ${-h+22} Q${hw-18} ${-h+22} ${hw-18} ${-h*.58} V0Z" fill="#0C1A30" stroke="${GOLDI}" stroke-width="1.5"/>${inner}</g>`; }
+function lampI(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 -120 V-40" stroke="${GOLDI}" stroke-width="2"/><circle cy="0" r="60" fill="url(#noor)" class="flick"/><path d="M-20 -40 H20 L26 -20 Q30 10 0 24 Q-30 10 -26 -20Z" fill="${TURQ}" stroke="${GOLDI}" stroke-width="2.5" opacity=".92"/><path d="M-24 -18 H24 M-18 4 H18" stroke="${GOLDI}" stroke-width="2"/><circle cy="-6" r="6" fill="#FFF6D0"/></g>`; }
+function shroud(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-110 0 Q-122 -22 -96 -30 L96 -26 Q120 -20 110 0Z" fill="${IVORY}" stroke="${K}" stroke-width="2"/><path d="M-80 -28 V-2 M10 -28 V-2 M80 -26 V-2" stroke="${K}" stroke-width="1.5" opacity=".6"/><path d="M-96 -30 q-8 15 0 30 M96 -26 q8 13 0 26" stroke="${K}" stroke-width="1.5" fill="none"/></g>`; }
+/* A cutaway grave: earth above, a niche (lahd) on the qibla side, lit or narrow. */
+function grave(state='plain'){ const w=state==='wide'?220:state==='narrow'?120:170; return `<rect x="0" y="120" width="600" height="280" fill="${EARTH}"/>${Array.from({length:30},(_,i)=>`<circle cx="${(i*97)%600}" cy="${140+(i*53)%230}" r="${2+i%3}" fill="#4A3624"/>`).join('')}<path d="M0 120 H600" stroke="${GREEN}" stroke-width="8"/>
+  ${state==='wide'?`<circle cx="300" cy="280" r="190" fill="url(#noor)" opacity=".8"/>`:''}<path d="M${300-w} 340 V230 Q300 ${state==='narrow'?200:170} ${300+w} 230 V340Z" fill="${state==='wide'?'#FBF3DA':'#2A1E14'}" stroke="${K}" stroke-width="2"/>${shroud(300,330,state==='narrow'?.85:1)}${state==='wide'?`<rect x="470" y="190" width="70" height="90" rx="35" fill="${GREEN}" stroke="${GOLDI}" stroke-width="3"/><path d="M480 270 q25 -50 50 0" fill="#5AAE6A"/>`:''}`; }
+function garden(y=300,{rivers=true}={}){ const palm=(x,h)=>`<g transform="translate(${x} ${y})"><path d="M-4 0 Q0 ${-h*.5} 4 ${-h}" stroke="#7A5A3A" stroke-width="8" fill="none"/>${[-60,-25,10,45,80].map(a=>`<path d="M4 ${-h} q${Math.cos(a*Math.PI/180)*40} ${-20+Math.abs(a)/3} ${Math.cos(a*Math.PI/180)*70} ${10+Math.abs(a)/4}" stroke="${GREEN}" stroke-width="8" fill="none" stroke-linecap="round"/>`).join('')}</g>`;
+  return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="#3E8E5A"/>${rivers?[[-40,'#BFE4F0'],[40,IVORY],[120,'#E8C878']].map(([dx,c])=>`<path d="M${300+dx} 400 Q${300+dx*.4} ${y+40} ${300+dx*.1} ${y}" stroke="${c}" stroke-width="12" fill="none" opacity=".9"/>`).join(''):''}${palm(80,140)}${palm(150,110)}${palm(470,130)}${palm(540,150)}`; }
+function scalesI(x,y,s=1,tilt=0){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-4" y="-150" width="8" height="150" fill="${GOLDI}"/><circle cy="-158" r="10" fill="${GOLDI}"/><g class="beam" style="transform:rotate(${tilt}deg);transform-origin:0 -146px;transition:transform 1.4s"><rect x="-110" y="-150" width="220" height="7" fill="${GOLDI}"/><path d="M-104 -146 L-130 -80 M-104 -146 L-78 -80 M104 -146 L78 -80 M104 -146 L130 -80" stroke="${GOLDI}" stroke-width="2"/><path d="M-136 -80 H-72 Q-104 -54 -136 -80Z M72 -80 H136 Q104 -54 72 -80Z" fill="${GOLDI}"/><circle cx="-104" cy="-92" r="16" fill="url(#noor)"/></g><path d="M-40 0 H40 L30 -10 H-30Z" fill="${GOLDI}"/></g>`; }
+function sirat(){ return `<rect x="0" y="240" width="600" height="160" fill="#2A0E08"/>${Array.from({length:14},(_,i)=>`<path class="flame" style="animation-delay:${i*.09}s" d="M${i*45-10} 400 Q${i*45+8} ${300-i%3*20} ${i*45+22} ${250+i%4*15} Q${i*45+30} ${320} ${i*45+50} 400Z" fill="${i%2?FIREI:'#F2A03A'}" opacity=".85"/>`).join('')}<rect x="0" y="210" width="40" height="190" fill="#1A2A3A"/><rect x="560" y="210" width="40" height="190" fill="#1A2A3A"/><path d="M40 212 H560" stroke="${IVORY}" stroke-width="2"/>`; }
+function book(x,y,s=1,{right=true}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="80" fill="url(#noor)" opacity="${right?1:.2}"/><path d="M0 -10 Q-40 -30 -80 -16 V40 Q-40 26 0 46Z M0 -10 Q40 -30 80 -16 V40 Q40 26 0 46Z" fill="${right?IVORY:'#6A6A6A'}" stroke="${K}" stroke-width="2.5"/>${[0,1,2,3].map(i=>`<path d="M-70 ${-4+i*11} Q-40 ${-14+i*11} -10 ${-2+i*11} M10 ${-2+i*11} Q40 ${-14+i*11} 70 ${-4+i*11}" stroke="${K}" stroke-width="1.2" fill="none" opacity=".5"/>`).join('')}</g>`; }
+function trumpet(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle cx="80" r="120" fill="url(#noor)" class="flick"/><path d="M-120 -4 L60 -16 Q90 -60 110 -60 V60 Q90 60 60 16 L-120 4Z" fill="${GOLDI}" stroke="${K}" stroke-width="2"/>${[0,1,2].map(i=>`<path d="M${130+i*30} -60 Q${150+i*30} 0 ${130+i*30} 60" stroke="${IVORY}" stroke-width="3" fill="none" opacity="${.7-i*.2}"/>`).join('')}</g>`; }
+function pool(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse rx="200" ry="50" fill="#E8F4F8" stroke="${GOLDI}" stroke-width="5"/><ellipse rx="170" ry="38" fill="#CDEAF2"/>${Array.from({length:12},(_,i)=>{ const a=i/12*Math.PI*2; return `<g transform="translate(${Math.cos(a)*205} ${Math.sin(a)*54})"><path d="M-7 -10 H7 L5 4 H-5Z" fill="${GOLDI}" stroke="${K}" stroke-width="1"/></g>`; }).join('')}</g>`; }
+function lightOrb(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})" class="bob"><circle r="70" fill="url(#noor)"/><path d="M0 -30 L8 -8 L30 0 L8 8 L0 30 L-8 8 L-30 0 L-8 -8Z" fill="#FFF8DE"/></g>`; }
+function minaretSky(){ return `<path d="M0 330 H600 V400 H0Z" fill="#0C1A30"/><path d="M60 330 V200 h10 v-20 h-6 l10 -30 l10 30 h-6 v20 h10 V330Z M200 330 V270 Q260 200 320 270 V330Z M460 330 V210 h10 v-20 h-6 l10 -30 l10 30 h-6 v20 h10 V330Z" fill="#0C1A30"/><circle cx="260" cy="226" r="4" fill="${GOLDI}"/>`; }
+function isCover(){ return isl(`${minaretSky()}${crescent(470,90,1.2)}${arch(300,330,180,230,{inner:lampI(0,-120,.8)})}`); }
+
+/* The Barzakh: the Islamic passage, from the deathbed to the Garden, after the Qur'an, the hadith and al-Ghazali. */
+const BOOK={key:'barzakh',brand:'The Barzakh',brandSub:'An Islamic book of death and what follows',title:'The Barzakh',eyebrow:'From the Qur\'an, the hadith and al-Ghazali',
+ lede:'Islam teaches that after death the soul waits in the barzakh, a barrier between this world and the next, until the Day of Resurrection. This book follows the journey as the Qur\'an and the sayings of the Prophet describe it, from the last breath to the Garden.',
+ note:'About 35 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
+ walkUrl:'../../../many-doors/islam/walk/',walkName:'Seven Days of Remembering',
+ how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['No figures','Following a widespread Muslim preference, this book shows no people, prophets or angels. The art is geometry, architecture, light and Arabic script.'],['Many schools','This follows mainstream Sunni teaching. Shi\'a, Sufi and other Muslims share most of it and add their own emphases. Details in the hadith are understood differently by different scholars.'],['A first draft','It should be read by Muslim scholars and readers before it is shared widely.']],
+ sources:'The Qur\'an, esp. 2:156, 3:185, 20:55, 23:99–100, 32:11, 36:51, 47:15, 69:19–26, 101:6–9; hadith collections of al-Bukhari, Muslim, Abu Dawud, al-Tirmidhi and Ahmad (the hadith of al-Bara\' ibn \'Azib); al-Ghazali, The Remembrance of Death and the Afterlife (Ihya\' \'ulum al-din, Book 40), tr. T. J. Winter (1989); Ibn al-Qayyim, Kitab al-Ruh. Qur\'an quotations adapted from published English translations.',
+ cover:isCover,
+ chapters:[
+ {name:'Every Soul Shall Taste Death',short:'Remember',sub:'Why Muslims remember death',col:'#D4A645',run:async s=>{
+   art(isl(`${cal(300,190,'كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ',{size:46})}${crescent(470,90,.8)}${minaretSky()}`));
+   if(SND.ctx) pad('pad',[110,165,220],.03);
+   await say(s,'The Qur\'an says it plainly: every soul shall taste death. And you will be paid your full reward only on the Day of Resurrection.',{eye:'Qur\'an 3:185'});
+   await say(s,'Death in Islam isn\'t a taboo. The Prophet Muhammad told his companions: remember often the destroyer of pleasures. The great scholar al-Ghazali wrote a whole book on the remembrance of death, because, he said, the one who remembers death lives more wisely.');
+   await still(s,{ask:'Be still for a moment, and remember that this life ends.',ms:8000});
+   await say(s,'That remembrance isn\'t meant to frighten. It is meant to wake you up.');
+ }},
+ {name:'The Last Words',short:'Last words',sub:'Facing the qibla',col:'#2E7D4F',run:async s=>{
+   art(isl(`${arch(300,330,260,280,{fill:'url(#tilesI)'})}${cal(300,190,'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ',{size:44,col:IVORY})}${lampI(120,120,.7)}${lampI(480,120,.7)}`));
+   await say(s,'When someone is dying, family gather close. If it can be done, the dying person is turned to face the qibla, the direction of Mecca. Someone may recite the Qur\'an, often the chapter Ya-Sin.',{eye:'At the deathbed'});
+   await say(s,'Those present gently remind the dying person of the testimony of faith: there is no god but God. The Prophet said: whoever\'s last words are there is no god but God will enter Paradise.');
+   await hold(s,{label:'Say the words',ms:5000,ask:'Press and hold, and say: lā ilāha illā Allāh, there is no god but God.'});
+   await say(s,'When the person has died, those present close the eyes and say: to God we belong, and to Him we return. Inna lillāhi wa inna ilayhi rāji\'ūn.');
+ }},
+ {name:'The Angel of Death',short:'The soul',sub:'How the soul is taken',col:'#BFD8E0',run:async s=>{
+   art(isl(`${lightOrb(300,180,1.4)}${[[140,120],[460,110],[200,260],[420,250]].map(([x,y])=>lightOrb(x,y,.5)).join('')}`));
+   if(SND.ctx){ pad('pad',[130.8,196,261.6],.03); chime(); }
+   await say(s,'The Qur\'an says: the angel of death, who is put in charge of you, will take your soul, then to your Lord you will be returned. Tradition names him Azrael.',{eye:'Qur\'an 32:11'});
+   await say(s,'A long hadith, narrated by al-Bara\' ibn \'Azib, describes the moment. For a believer, angels with faces bright as the sun come down with a shroud and perfume from Paradise. The soul is told: come out to God\'s forgiveness and pleasure. It flows out as easily as a drop of water from a waterskin.');
+   await hold(s,{label:'Let the soul go',ms:5000,ask:'Press and hold, and let go as gently as a drop of water.'});
+   await say(s,'The angels carry it up through the heavens, and at each gate the angels ask: whose is this good soul? Then it is returned to the earth, to await the questioning. The same hadith describes a very different, painful end for those who rejected God.');
+ }},
+ {name:'Washing and Shroud',short:'Washing',sub:'Simple, quick and equal',col:'#F7F3EA',run:async s=>{
+   art(isl(`<rect x="0" y="300" width="600" height="100" fill="#E8E0CC"/>${shroud(300,300,1.4)}${lampI(300,110,.8)}`,{bg:'tile'}));
+   if(SND.ctx) waterLoop();
+   await say(s,'Burial comes quickly, usually within a day. Family members of the same sex wash the body, an odd number of times, starting on the right side, with water and sometimes lotus leaves and camphor.',{eye:'Ghusl and kafan'});
+   await count(s,{ask:'Wash three times. Tap three times.',n:3,label:'Pour water',onTap:()=>{ if(SND.ctx) plop(); }});
+   loopOff('water');
+   await say(s,'Then the body is wrapped in plain white cloth: traditionally three sheets for a man, five for a woman. No fine clothes, no jewellery. Rich and poor are buried the same way.');
+ }},
+ {name:'The Funeral Prayer',short:'Janaza',sub:'Standing together',col:'#14315A',run:async s=>{
+   art(isl(`${arch(300,330,300,300,{fill:'url(#tilesI)',inner:shroud(0,-20,.7)})}${Array.from({length:3},(_,r)=>Array.from({length:9},(_,i)=>`<rect x="${90+i*48}" y="${340+r*12}" width="30" height="8" rx="3" fill="${IVORY}" opacity="${.9-r*.25}"/>`).join('')).join('')}`));
+   await say(s,'The community prays the funeral prayer, the salat al-janaza, standing in rows facing the qibla, with the body in front. There is no bowing and no prostration. Just four declarations of God is greatest, with prayers between them.',{eye:'Salat al-janaza'});
+   await count(s,{ask:'Say Allāhu akbar, God is greatest, four times.',n:4,label:'Allāhu akbar',onTap:k=>{ if(SND.ctx) bell(330,.05); }});
+   await say(s,'One of the prayers asks: O God, forgive him and have mercy on him, give him rest and pardon him, make his entry generous and his grave wide, and wash him with water, snow and hail. Joining a funeral prayer is counted a great good deed, even for a stranger.');
+ }},
+ {name:'Into the Earth',short:'Burial',sub:'From it We created you',col:'#6A4E36',run:async s=>{
+   art(isl(grave('plain'),{bg:'#2A3A4A'}));
+   await say(s,'The body is laid in the grave on its right side, facing the qibla. Each mourner throws three handfuls of earth.',{eye:'Qur\'an 20:55'});
+   await count(s,{ask:'Throw three handfuls of earth, and say the verse with each.',n:3,label:'A handful of earth',onTap:k=>{ if(SND.ctx) thud(); }});
+   await say(s,'The verse is: From it We created you. Into it We return you. And from it We will bring you out once again. Many mourners stay a while at the graveside and pray for the person to be firm when the questioning comes.');
+ }},
+ {name:'The Questioning',short:'Questions',sub:'Munkar and Nakir',col:'#2A9D9A',run:async s=>{
+   art(isl(`${grave('plain')}${lightOrb(170,200,.6)}${lightOrb(430,200,.6)}`,{bg:'#2A3A4A'}));
+   if(SND.ctx) pad('pad',[98,147,196],.03);
+   await say(s,'The hadith say that when the mourners have left, the dead person hears their footsteps walking away. Then two angels come, named in tradition Munkar and Nakir, and sit the person up, and ask three questions.',{eye:'The questioning in the grave'});
+   await choose(s,'Who is your Lord?',['My Lord is God','I don\'t know'],{right:0,wrong:'Try again. The believer answers without hesitation.'});
+   await choose(s,'What is your religion?',['My religion is Islam','I don\'t know'],{right:0,wrong:'Try again.'});
+   await choose(s,'Who is this man who was sent among you?',['He is the Messenger of God','I don\'t know'],{right:0,wrong:'Try again.'});
+   await say(s,'Al-Ghazali stresses that these aren\'t answers you can memorise at the last minute. They are answered by the whole life: the person you have become answers for you.');
+ }},
+ {name:'The Barzakh',short:'The barzakh',sub:'A garden, or a pit',col:'#2E7D4F',run:async s=>{
+   art(isl(grave('wide'),{bg:'#2A3A4A'}));
+   if(SND.ctx){ pad('pad',[130.8,196,261.6],.035); chime(); }
+   await say(s,'Then the soul enters the barzakh. The Qur\'an says: behind them is a barrier, a barzakh, until the day they are raised. It is a waiting place between death and the Resurrection.',{eye:'Qur\'an 23:100'});
+   await say(s,'The hadith say the grave of a believer is widened as far as the eye can see and filled with light, with a window opening onto Paradise. The person is told: sleep, like a bride whom no one wakes except the one dearest to her. For the wicked, the grave closes in.');
+   await spots(s,{ask:'Tap to see.',items:[{x:84,y:58,label:'A window',say:'A window to the Garden, through which its breeze and fragrance come.'},{x:50,y:78,label:'The grave',say:'The Prophet said: the grave is either one of the gardens of Paradise, or one of the pits of Hell.'}]});
+   await say(s,'How long does it feel? Some scholars point to the Qur\'an, where the risen dead say they stayed only a day, or part of a day.');
+ }},
+ {name:'What the Living Send',short:'Prayers',sub:'Three things that continue',col:'#D4A645',run:async s=>{
+   art(isl(`${minaretSky()}${lampI(150,150,.8)}${lampI(300,130,1)}${lampI(450,150,.8)}`));
+   await say(s,'The Prophet said: when a person dies, their deeds come to an end, except for three. Ongoing charity. Knowledge that benefits others. And a righteous child who prays for them.',{eye:'Sahih Muslim'});
+   await spots(s,{ask:'Tap each of the three.',items:[{x:25,y:38,label:'Ongoing charity',say:'Sadaqa jariya: a well dug, a tree planted, a school built. As long as people benefit, the reward continues.'},{x:50,y:33,label:'Useful knowledge',say:'Something you taught that others keep using and passing on.'},{x:75,y:38,label:'A child\'s prayer',say:'Children, and anyone who loved them, pray for the dead and give charity in their name.'}]});
+   await say(s,'Mourning for a relative lasts three days, with a longer period for a widow. Neighbours bring food to the bereaved family, because the Prophet asked people to cook for the family of Ja\'far when he died.');
+ }},
+ {name:'The Trumpet',short:'Resurrection',sub:'The Day of Rising',col:'#D9542A',run:async s=>{
+   art(isl(`${trumpet(220,180,1)}`,{bg:'#0C1A30'}));
+   if(SND.ctx){ allOff(1); drum(); }
+   await say(s,'At the end of time the trumpet is blown, by the angel tradition calls Israfil. Everything living dies. Then it is blown again.',{eye:'Qur\'an 36:51'});
+   await hold(s,{label:'The trumpet sounds',ms:5000,ask:'Press and hold as the trumpet sounds.',onP:p=>{ if(SND.ctx&&Math.random()<.03) tone(110+p*110,{type:'sawtooth',peak:.02,d:.3}); }});
+   await say(s,'And the Qur\'an says: the trumpet will be blown, and at once they will rush out from their graves to their Lord. Every person is raised, in body and soul, and gathered on a vast plain.');
+ }},
+ {name:'The Book and the Scales',short:'The scales',sub:'Every atom\'s weight',col:'#14315A',run:async s=>{
+   art(isl(`${book(140,200,.9)}${scalesI(400,320,1)}`,{bg:'#0C1A30'}));
+   await say(s,'Each person is given the book of their deeds. The Qur\'an says: whoever is given their book in their right hand will say, here, read my book! Whoever is given it in their left will say: I wish I had never been given my book.',{eye:'Qur\'an 69'});
+   await say(s,'Then the scales. Whoever does an atom\'s weight of good will see it, and whoever does an atom\'s weight of evil will see it. Whose scales are heavy will be in a pleasing life.');
+   const B=$('#pArt');
+   await hold(s,{label:'Weigh the deeds',ms:5000,ask:'Press and hold while your deeds are weighed.',onP:p=>{ const b=B.querySelector('.beam'); if(b) b.style.transform=`rotate(${-p*8}deg)`; }});
+   await say(s,'And there is mercy over all of it. The Prophet said that God divided mercy into a hundred parts, and sent only one into the world. All the kindness on earth comes from that one part.');
+ }},
+ {name:'The Bridge and the Garden',short:'The Garden',sub:'Thinner than a hair',col:'#3E8E5A',run:async s=>{
+   art(isl(sirat(),{bg:'#0C1A30'}));
+   if(SND.ctx) fireLoop();
+   await say(s,'Last comes the Sirat, a bridge stretched over Hell. Some hadith say it is thinner than a hair and sharper than a sword. People cross according to their deeds: some like lightning, some like the wind, some running, some crawling.',{eye:'The Sirat'});
+   await count(s,{ask:'Cross the bridge. Tap five times.',n:5,label:'Step',onTap:k=>{ if(SND.ctx) bell(392+k*40,.06); }});
+   loopOff('fire'); art(isl(`${garden(250)}${pool(300,320,.6)}`,{bg:'dawn'})); if(SND.ctx){ waterLoop(); chime(); }
+   await say(s,'Beyond it is the Garden, Jannah: gardens beneath which rivers flow, rivers of water, of milk, of honey. The Prophet described it in God\'s words: I have prepared for My righteous servants what no eye has seen, no ear has heard, and no heart has imagined.');
+   await say(s,'And the greatest joy of the Garden, the scholars agree, is not its rivers but seeing God.');
+   loopOff('water');
+ }}],
+ finale:async s=>{ art(isl(`${cal(300,200,'إِنَّا لِلَّٰهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ',{size:40})}${minaretSky()}${crescent(500,80,.7)}`)); if(SND.ctx) chime();
+   await say(s,'That is the journey: the last words, the gentle drop of water, the white shroud, three questions, the long waiting in the barzakh, the trumpet, the book, the scales and the bridge.',{eye:'The end of the book'});
+   await say(s,'And the words Muslims say at every death: to God we belong, and to Him we return.'); }};
+header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
+manualLanding(BOOK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>

@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Three Nights and a Bridge</title>
+<title>Three Nights and a Bridge · Many Doors</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Forum&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
@@ -137,6 +137,49 @@ details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font
 details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* ---------- journeys: a full-bleed title, then the player at its biggest ---------- */
+body.jbody{background:var(--night)}
+body.jbody #bar{display:none}
+body.jbody .wrap{max-width:none;padding:0}
+.jsplash{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;color:var(--nightink);background:var(--night)}
+.jcover{position:absolute;inset:0;width:100%;height:100%;display:block;animation:jzoom 30s ease-out both}
+@keyframes jzoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.jshade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--night) 88%,transparent) 0%,color-mix(in srgb,var(--night) 60%,transparent) 45%,transparent 80%),linear-gradient(180deg,transparent 35%,var(--night) 100%)}
+@media (max-width:700px){.jshade{background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 55%,transparent) 30%,var(--night) 75%)}}
+.jback{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px));z-index:2;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:8px 14px;text-decoration:none}
+.jt{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:32vh max(16px,env(safe-area-inset-right,0px)) max(28px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.jdoor{display:inline-block;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;background:var(--c,var(--accent));color:#FFF6DE;border:2px solid #FFF6DE;border-radius:4px;padding:5px 10px}
+.jt h1{margin:12px 0 8px;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;color:#FFF6DE;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+.jtag{margin:0;font-size:clamp(1.05rem,2.6vw,1.4rem);max-width:36ch;line-height:1.35}
+.jt .cta{margin:22px 0 18px}
+.jt .btn{font-size:1.15rem;padding:13px 28px}
+.jt .btn.alt{background:transparent;color:#FFF6DE;border-color:#FFF6DE;box-shadow:none}
+.jstops{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.jstops button{display:flex;align-items:center;gap:8px;background:rgba(255,246,222,.08);border:1.5px solid rgba(255,246,222,.35);color:#FFF6DE;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.82rem;min-height:38px}
+.jstops button:hover{background:rgba(255,246,222,.2)}
+.jstops b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFF6DE;color:var(--night);font-size:.75rem}
+.jmeta{margin:16px 0 0;font-size:.85rem;color:rgba(255,246,222,.7)}
+.jmeta em{color:var(--gold);font-style:normal}
+
+.player.jplayer .stage{width:min(100%,1100px,calc(min(64vh,720px)*1.5))}
+@media (max-height:700px){.player.jplayer .stage{width:min(100%,calc(54vh*1.5))}}
+/* keep 3:2 on phones so tap spots stay on what they point at */
+@media (max-width:600px) and (orientation:portrait){.player.jplayer .stage{width:100%;aspect-ratio:3/2;max-height:none}.player.jplayer .scap p{font-size:1.08rem}}
+.player.jplayer .scap{min-height:0}
+.player.jplayer .scap p{font-size:clamp(1.08rem,2.4vw,1.32rem);min-height:1.5em}
+.gnote{margin-right:auto;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed var(--ink-soft);background:transparent;color:var(--ink-soft);border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
+.gnote[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--bg)}
+.gtext{margin:8px 0 0!important;font-size:.95rem!important;line-height:1.45;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:10px;min-height:0!important}
+a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.jend{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.7) 40%)}
+.jend>span{flex-basis:100%;text-align:center;font-family:var(--display);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFF6DE}
+.jend a,.jend button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;text-align:left}
+.jend small{font-family:var(--body);font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.dtrack{position:absolute;height:0;border-top:4px dashed rgba(255,246,222,.6);transform-origin:0 0}
+.dknob{position:absolute;transform:translate(-50%,-50%);width:clamp(54px,10%,78px);aspect-ratio:1;border-radius:50%;border:3px solid var(--ink);background:var(--gold);cursor:grab;touch-action:none;padding:0;box-shadow:0 0 0 8px rgba(255,246,222,.25)}
+.dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
+.dknob:active{cursor:grabbing}
 
 /* Three Nights and a Bridge: a Persian night. Lapis sky, the fire's gold, white cotton and turquoise tile. */
 :root{
@@ -315,33 +358,67 @@ function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
 function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+/* The journey: a short click-through trip behind one door. One picture, one line, one thing to do.
+   Data: const J={key,tradition,title,tag,mins,col,cover,stops:[{name,run}],end:{line,book,bookUrl,walk,walkUrl},review}. */
+const HUB=window.MD_HUB||'../#doors';
+/* the pages live in folders; anywhere but the site itself, spell out index.html */
+if(!/colinblackshear\.com$/.test(location.hostname)) document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const m=a.getAttribute('href').match(/^([^:#]*\/)(#.*)?$/); if(m) a.setAttribute('href',m[1]+'index.html'+(m[2]||'')); },true);
+function journeySplash(J){
+  document.body.classList.add('jbody');
+  const next=Math.min(+store.get(J.key+'-next')||0,J.stops.length-1);
+  $('#wrap').innerHTML=`<section class="jsplash" style="--c:${J.col}">
+    <svg class="jcover" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${J.cover()}</svg>
+    <div class="jshade"></div>
+    <a class="jback" href="${HUB}">← All doors</a>
+    <div class="jt">
+      <span class="jdoor">Door: ${esc(J.tradition)}</span>
+      <h1>${esc(J.title)}</h1>
+      <p class="jtag">${esc(J.tag)}</p>
+      <div class="cta"><button type="button" class="btn gold" id="jgo">${next?'Carry on':'Step through'} <span aria-hidden="true">→</span></button>${next?`<button type="button" class="btn alt" id="jre">Start over</button>`:''}</div>
+      <ol class="jstops">${J.stops.map((c,i)=>`<li><button type="button" data-i="${i}"><b>${i+1}</b>${esc(c.name)}</button></li>`).join('')}</ol>
+      <p class="jmeta">${J.mins} minutes · tap to move on · sound optional${J.review?` · <em>${esc(J.review)}</em>`:''}</p>
+    </div></section>`;
+  $('#jgo').onclick=()=>playJourney(J,next);
+  const r=$('#jre'); if(r) r.onclick=()=>{ store.set(J.key+'-next','0'); playJourney(J,0); };
+  document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
 }
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
+/* one short line with Continue, and an optional Guide note the curious can open */
+async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+  if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
+    n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
+    setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
+  await waitTap(s,spoke); const d=$('#pNote'); if(d) d.remove(); }
+
+async function playJourney(J,start){
+  const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
+  const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
+  s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+      s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
+      await c.run(s); if(SND.ctx) allOff(1.2); }
+    store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
+    await journeyEnd(s,J);
   }catch(e){ if(!(e instanceof Abort)) console.error(e); }
 }
+function journeyEnd(s,J){ alive(s); art(J.cover()); if(SND.ctx) chime(); eyebrow('End of the line');
+  s.el.querySelector('.ptitle').innerHTML=`<b>Arrived</b>${esc(J.title)}`;
+  $('#pText').textContent=J.end.line; narrate(J.end.line);
+  const E=J.end; $('#pRow').innerHTML=`<a class="sgo" href="${HUB}">Pick another door <span aria-hidden="true">→</span></a>`;
+  layer().innerHTML=`<div class="jend"><span>Want more than the short version?</span>${E.bookUrl?`<a href="${E.bookUrl}">${esc(E.book)}<small>the full illustrated book</small></a>`:''}${E.walkUrl?`<a href="${E.walkUrl}">${esc(E.walk)}<small>a few minutes a day</small></a>`:''}<button type="button" id="jagain">Ride again<small>from the first stop</small></button></div>`;
+  $('#jagain').onclick=()=>playJourney(J,0);
+  return new Promise(()=>{}); }
+/* drag a token along a path to a target, e.g. across a bridge: returns when it arrives */
+function drag(s,{ask:q,from,to,label='Drag',onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="dtrack" style="left:${from[0]}%;top:${from[1]}%;width:${Math.hypot(to[0]-from[0],(to[1]-from[1])*2/3)}%;transform:rotate(${Math.atan2((to[1]-from[1])*2/3,to[0]-from[0])}rad)"></div><button type="button" class="dknob" style="left:${from[0]}%;top:${from[1]}%" aria-label="${esc(label)}. Use the arrow keys."><span>${esc(label)}</span></button>`;
+  const k=l.querySelector('.dknob'); let p=0,on=false,done=false;
+  const set=v=>{ p=Math.max(0,Math.min(1,v)); k.style.left=(from[0]+(to[0]-from[0])*p)+'%'; k.style.top=(from[1]+(to[1]-from[1])*p)+'%'; onP&&onP(p); if(p>=.98&&!done){ done=true; l.innerHTML=''; res(); } };
+  const proj=e=>{ const r=l.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100; const dx=to[0]-from[0], dy=to[1]-from[1]; const ax=dx*r.width, ay=dy*r.height; return ((x-from[0])*r.width*ax+(y-from[1])*r.height*ay)/(ax*ax+ay*ay); };
+  k.addEventListener('pointerdown',e=>{ on=true; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+  k.addEventListener('pointermove',e=>{ if(on) set(proj(e)); });
+  k.addEventListener('pointerup',()=>{ on=false; }); k.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key===' '){ e.preventDefault(); set(p+.1); } if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); set(p-.1); } });
+  k.focus({preventScroll:true}); }); }
+/* a big tap-anywhere moment with a label, for drama (knock, ring, open) */
+function tapIt(s,{ask:q,label='Tap'}){ return count(s,{ask:q,n:1,label}); }
 
 /* Miniature kit for Three Nights and a Bridge: lapis night, fire-gold, white cotton, turquoise tile borders. */
 const K='#141C2E', LAPIS='#14213D', NIGHT='#0B1020', FIRE='#E8A93A', EMBER='#B04A1E', WHITE='#F6F1E4', TURQ='#2E8B8B', SAND='#D9C7A0', STONE='#8C8577', SKIN='#C9926A', ROSE='#C46A6A';
@@ -372,117 +449,66 @@ function faravahar(x,y,s=1){ let w=''; for(let i=0;i<5;i++) w+=`<path d="M${-30-
 function metalRiver(y=260){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="#E07A1E"/>`; for(let k=0;k<5;k++){ let d=`M0 ${y+12+k*22}`; for(let x=0;x<600;x+=40) d+=` q20 -10 40 0`; o+=`<path d="${d}" stroke="#FFD27A" stroke-width="3" fill="none"/>`; } return o; }
 function zoCover(){ return zo(`${bridge(40)}<g transform="translate(300 176)">${maiden(0,0,.55)}</g>${dog(200,180,.5)}${dog(400,170,.5,{flip:true})}<circle cx="300" cy="80" r="60" fill="url(#fire)"/>`); }
 
-/* Three Nights and a Bridge: the Zoroastrian passage, from the Avesta's Hadokht Nask, the Videvdad and the Book of Arda Viraf. */
-const BOOK={key:'tnb',brand:'Three Nights and a Bridge',brandSub:'A Zoroastrian book of the dead',title:'Three Nights and a Bridge',eyebrow:'From the Avesta and the Book of Arda Viraf',
- lede:'Zoroastrians teach that the soul stays beside the body for three nights, reliving its life. At dawn on the fourth day it meets a figure who is its own conscience, and walks out onto a bridge that widens or narrows depending on how it lived.',
- note:'About 30 minutes in eleven chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../many-doors/zoro/walk/',walkName:'Nine Nights to the Bridge',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['A living faith','Zoroastrianism is one of the world\'s oldest religions, still practised today, mostly by Parsis in India and Zoroastrians in Iran and abroad. Practice varies; this follows the classical texts.'],['Your part','You keep the three nights, face your own conscience and walk the bridge yourself.'],['One idea','Good thoughts, good words, good deeds. Everything in this book comes back to those three.']],
- sources:'The Gathas of Zarathustra (Yasna 28–53), especially Yasna 30; Hadokht Nask (Yasht 22); Videvdad 7, 8 and 19; the Book of Arda Viraf (Arda Wiraz Namag, 9th–10th c. CE); Dadestan i Denig; Bundahishn 34. Translations after James Darmesteter (1880s), Fereydun Vahman (1986), and Mary Boyce, Textual Sources for the Study of Zoroastrianism (1984).',
+/* The Zoroastrian door: the dog, three nights, the dawn wind, your own conscience, the scales and the bridge, in seven stops. After the Avesta, the Hadokht Nask and the Book of Arda Viraf. */
+const J={key:'j-zoro',tradition:'Zoroastrianism',title:'Three Nights and a Bridge',col:'#1E5E78',mins:6,
+ tag:'The oldest bridge in the afterlife business. How wide it is depends on you.',
  cover:zoCover,
- chapters:[
- {name:'The Choice',short:'Choice',sub:'Two spirits, and you between them',col:'#E8A93A',run:async s=>{
+ end:{line:'That\'s the Zoroastrian map: good thoughts, good words, good deeds, a bridge that answers to them, and in the end, everything made new.',
+  book:'Three Nights and a Bridge',bookUrl:'../../many-doors/zoro/book/',walk:'Nine Nights to the Bridge',walkUrl:'../../many-doors/zoro/walk/'},
+ stops:[
+ {name:'The choice',short:'Choice',col:'#E8A93A',run:async s=>{
    art(zo(`${altar(300,330,1.2)}${zfig(160,340,1,{priest:true,arms:'pray'})}`));
-   if(SND.ctx){ fireLoop(); pad('pad',[110,165,220],.03); }
-   await say(s,'Zarathustra lived in what is now Iran or Central Asia, probably between 1500 and 1000 BCE. His hymns, the Gathas, are among the oldest religious poetry in the world, and they are still recited in fire temples today.',{eye:'The Gathas'});
-   await say(s,'His great idea was choice. There are two spirits at the beginning of things, he sang: one chose truth and goodness, the other chose the lie. Every person stands between them, and must choose too. Hear the best things with your ears, he says. Look at them with a clear mind, and decide, each person for themselves.');
-   await choose(s,'Two paths lie open. Which will you walk?',['Asha: truth, order, the good','Druj: the lie'],{right:0,wrong:'Zarathustra leaves the choice to you, but this book follows the path of truth. Try again.'});
-   await say(s,'Everything that happens after death in Zoroastrianism follows from this. There is no outside verdict imposed on you. What you meet at the end is the shape of what you chose.');
- }},
- {name:'The Body',short:'The body',sub:'The corpse demon and the dog',col:'#8C8577',run:async s=>{
-   art(zo(`${slab(300,320,1.1)}${dog(470,330,.9,{flip:true})}${altar(130,330,.7)}`));
-   if(SND.ctx) fireLoop();
-   await say(s,'The moment someone dies, the Videvdad says, the corpse demon Nasu rushes in from the north like a fly, and the body becomes the most impure thing in the world. That\'s not contempt for the dead. Death is the work of the evil spirit, and its touch has to be kept from the good creation.',{eye:'Videvdad 7'});
-   await spots(s,{ask:'Three things stand guard. Tap each one.',items:[
-     {x:78,y:72,label:'The dog',say:'A dog is brought to look at the body: the sagdīd, the dog\'s gaze. Tradition prefers a "four-eyed" dog, with two spots above its eyes. Its look is said to drive Nasu away.'},
-     {x:22,y:60,label:'The fire',say:'A fire is kept burning near the body, fed with sandalwood and frankincense. Fire is the son of Ahura Mazda and the symbol of truth.'},
-     {x:50,y:72,label:'The body',say:'The body is washed, dressed in clean white, and laid on stone, never on the earth, which must not be polluted. Only trained corpse-bearers touch it.'}]});
-   await say(s,'Prayers begin at once and continue in shifts. And the family turns its attention to something it can\'t see: the soul, which hasn\'t gone anywhere yet.');
- }},
- {name:'Three Nights',short:'Three nights',sub:'The soul beside the head',col:'#2E8B8B',run:async s=>{
-   art(zo(`${slab(300,320,1.1)}${urvan(185,284,1)}${altar(480,330,.6)}`));
-   if(SND.ctx){ allOff(1); pad('pad',[98,147,196],.03); }
-   await say(s,'The Hadokht Nask, a fragment of the Avesta, says that for three nights after death the soul sits near the head of the body. It sings a verse from the Gathas: happiness to the one through whom happiness comes to others.',{eye:'Hadokht Nask'});
-   await say(s,'Through those nights the soul relives its life. A good soul, the text says, feels as much joy as all the living world feels. A wicked one feels as much grief. The family keeps a lamp burning and prays to Sraosha, the angel who guards the soul until the third dawn.');
-   for(let i=1;i<=3;i++){ await count(s,{ask:`Night ${['one','two','three'][i-1]}. Sit with the soul. Tap once to keep watch until morning.`,n:1,label:`Keep watch, night ${i}`}); if(SND.ctx) bell(330,.07); art(zo(`${slab(300,320,1.1)}${urvan(185,284,1+i*.08)}${altar(480,330,.6)}`,{sky:i===3?'dawn':'night'})); }
-   await say(s,'Three nights is also how long the living have to take in what has happened. Many Zoroastrian families hold the Uthamna ceremony on the afternoon of the third day, and the Chahrum at dawn on the fourth.');
- }},
- {name:'The Prayer',short:'Prayer',sub:'Ashem Vohu',col:'#1E5E78',run:async s=>{
-   art(zo(`${altar(300,330,1.3)}${zfig(150,340,1,{priest:true,arms:'pray'})}${zfig(450,340,1,{arms:'pray'})}`));
-   if(SND.ctx) fireLoop();
-   await say(s,'The prayer most often said, by the dying, at the bedside, and for the dead, is the shortest: the Ashem Vohu. It is the first prayer a Zoroastrian child learns.',{eye:'Ashem Vohu'});
-   await say(s,'In English: Truth is the best good. It is happiness. Happiness to the one who is truthful for the sake of the best truth.');
-   await hold(s,{label:'Pray the Ashem Vohu',ms:6000,ask:'Press and hold while the prayer is said three times.',early:'Begin again, slowly.'});
-   await say(s,'The prayer doesn\'t ask for anything. It states what the whole religion rests on: that truth and happiness are the same thing in the end.');
- }},
- {name:'The Dawn Wind',short:'The wind',sub:'The fourth morning',col:'#C46A6A',run:async s=>{
-   art(zo(`${peaks()}<g class="drift">${[0,1,2,3,4].map(i=>`<path d="M${40+i*100} ${120+i*20} q30 -10 60 0 q30 10 60 0" stroke="${WHITE}" stroke-width="3" fill="none" opacity=".6"/>`).join('')}</g>${urvan(300,250,1.4)}`,{sky:'dawn'}));
-   if(SND.ctx){ allOff(1); windLoop(); }
-   await say(s,'At the end of the third night, as dawn breaks, a wind comes from the south. The Hadokht Nask says that to a righteous soul it is sweet-smelling, more fragrant than any wind it has ever known. To the wicked it comes from the north, and stinks.',{eye:'The fourth dawn'});
-   await still(s,{ask:'Be still, and feel the wind arrive.',ms:8000});
-   await say(s,'The soul breathes it in and turns to see who is coming toward it on the wind.');
- }},
- {name:'Your Own Conscience',short:'Conscience',sub:'Who comes to meet you',col:'#E8A93A',run:async s=>{
-   art(zo(`${peaks()}${urvan(180,270,1.2)}<g class="fadein">${maiden(400,340,1.1)}</g>${dog(500,340,.6,{flip:true})}${dog(300,340,.6)}`,{sky:'dawn'}));
-   if(SND.ctx){ loopOff('wind'); pad('pad',[130.8,196,261.6],.035); chime(); }
-   await say(s,'On the wind comes a young woman, the most beautiful the soul has ever seen: radiant, tall, strong, like a girl of fifteen. The Videvdad says dogs walk beside her.',{eye:'Hadokht Nask'});
-   await say(s,'The soul asks: who are you? And she answers: I am your own daēnā, your own self. I was lovely, and you made me lovelier by your good thoughts, your good words and your good deeds.');
-   await say(s,'For a wicked soul, later texts say, she appears as an old, foul hag, and gives the same answer. You meet yourself.');
-   const k=await choose(s,'She asks you to remember. Which made her loveliest?',['My good thoughts','My good words','My good deeds'],{});
-   await say(s,['Humata, good thoughts. Zarathustra put thought first, because every word and deed begins there.','Hukhta, good words. Truthful speech was the first thing Persian children were taught, according to Herodotus, after riding and archery.','Hvarshta, good deeds. In the end the daēnā is made of what you did.'][k]);
- }},
- {name:'The Scales',short:'The judges',sub:'Mithra, Sraosha and Rashnu',col:'#3E5C8A',run:async s=>{
-   art(zo(`${judge(140,340,1,{robe:'#6A3E8A'})}${judge(460,340,1,{robe:'#3E5C8A',arms:'pray'})}${scalesZ(300,340,1.2)}${judge(300,220,.6,{robe:'#B04A1E'})}`));
-   if(SND.ctx) pad('pad',[98,147,196],.03);
-   await say(s,'At the head of the bridge, three judges wait. Mithra, guardian of covenants. Sraosha, whose name means listening, who has guarded the soul for three nights. And Rashnu, the just, holding golden scales.',{eye:'The judges'});
-   await say(s,'The Book of Arda Viraf says Rashnu\'s scales favour no one, not the righteous, not the wicked, not lords nor rulers. They do not bend by a hair\'s breadth.');
-   const B=$('#pArt');
-   await hold(s,{label:'Keep the scales still',ms:6000,ask:'Your thoughts, words and deeds are weighed. Press and hold.',onP:p=>{ const b=B.querySelector('.beam'); if(b) b.style.transform=`rotate(${(1-p)*Math.sin(performance.now()/280)*9}deg)`; }});
-   await say(s,'Good outweighs bad. If they had balanced exactly, there is a place for that too, which we\'ll come to.');
- }},
- {name:'The Bridge',short:'The bridge',sub:'Chinvat, the bridge of the separator',col:'#C9A15A',run:async s=>{
-   art(zo(`${bridge(10)}${urvan(160,176,.7)}`));
-   if(SND.ctx){ allOff(1); windLoop(); }
-   await say(s,'Then the Chinvat Bridge, the bridge of the separator. It runs from the peak of the world mountain across a chasm, and below it is hell. Every soul must cross.',{eye:'The Chinvat Bridge'});
-   await say(s,'Later texts say it is like a beam with many sides. For the wicked it turns its razor edge upward, and they fall. For the righteous it turns its broad side, nine spears wide, and they walk across with ease.');
-   const W=[6,14,26,40];
-   await count(s,{ask:'Your daēnā leads you. Take the four steps across: good thoughts, good words, good deeds, and the last step into endless light.',n:4,label:'Take a step',onTap:k=>{ art(zo(`${bridge(W[k-1]+10)}<g transform="translate(${160+k*60} ${176-k*2})">${urvan(0,0,.7)}</g>${maiden(Math.min(430,200+k*60),176,.45)}`)); if(SND.ctx) bell(330+k*60,.08); }});
-   loopOff('wind'); if(SND.ctx) chime();
-   await say(s,'The Hadokht Nask names the steps: the first into the heaven of good thought, the second into good word, the third into good deed, and the fourth into the Endless Lights. You are across.');
- }},
- {name:'Three Houses',short:'Three houses',sub:'Song, the in-between, and the lie',col:'#1E5E78',run:async s=>{
-   art(zo(`${sunMoonStar()}${[0,1,2,3].map(i=>`<ellipse cx="${80+i*35}" cy="${330-(i%2)*14}" rx="46" ry="22" fill="#8A8A96" opacity=".75"/>`).join('')}<path d="M420 372 Q430 320 495 316 Q560 320 570 372Z" fill="#1A0A0A" stroke="${K}" stroke-width="2"/>${[450,480,510,540].map((x,i)=>`<circle cx="${x}" cy="${352-i%2*8}" r="3" fill="#E0501E"/>`).join('')}`));
    if(SND.ctx) pad('pad',[146.8,220,293.7],.03);
-   await say(s,'In the Book of Arda Viraf, a righteous priest is chosen to drink a potion and visit the afterlife for seven days, so he can report back. He describes three destinations.',{eye:'The Book of Arda Viraf'});
-   await spots(s,{ask:'Tap each one.',items:[
-     {x:77,y:25,label:'House of Song',say:'Garōdmān, the House of Song, reached through the stations of the stars, the moon and the sun. It is all light and music, in the presence of Ahura Mazda.'},
-     {x:19,y:86,label:'Hamistagān',say:'Hamistagān, the place of the mixed, for those whose good and bad were exactly equal. It is grey, neither punishment nor reward, with only the changes of heat and cold.'},
-     {x:82,y:86,label:'House of Lies',say:'The House of Lies, dark and cramped, so crowded that each soul feels alone. Arda Viraf describes its punishments at great length.'}]});
-   await say(s,'But none of these is forever. This is one of the most hopeful ideas in any religion.');
+   await tell(s,'Three thousand years ago the prophet Zarathustra said life is a choice between truth and the lie, and you make it every day.',{eye:'The Gathas',note:'Zoroastrianism is one of the oldest living religions. About 100,000 to 200,000 people practise it today, many of them Parsis in India.'});
+   await choose(s,'Which path will you walk?',['Asha: truth, the good','Druj: the lie'],{right:0,wrong:'The choice is yours, but this journey follows the path of truth. Try again.'});
+   await tell(s,'Good thoughts, good words, good deeds. Remember those three. They come up again.');
  }},
- {name:'The Towers',short:'The towers',sub:'What the living do',col:'#8C8577',run:async s=>{
-   art(zo(`<rect x="0" y="300" width="600" height="100" fill="#8C7A5A"/>${dakhma(300,300,1.2)}`,{sky:'#E8D8B0'}));
-   if(SND.ctx){ allOff(1); windLoop(); }
-   await say(s,'Because a corpse would pollute earth, fire and water, all of which are sacred, Zoroastrians traditionally neither buried nor burned their dead. Bodies were laid on the top of a dakhma, a tower of silence, open to the sun and to vultures.',{eye:'The dakhma'});
-   await say(s,'The towers are still used in Mumbai, though vultures have almost vanished from India, and solar reflectors now help. Many Zoroastrians in Iran and abroad now use cement-lined graves or cremation. Communities still debate it.');
-   await say(s,'What hasn\'t changed is the prayers. They continue on the fourth day, the tenth, the thirtieth and every year after. And during the last ten days of the Zoroastrian year, the fravashis, the guardian spirits of the dead, are believed to come home, and families welcome them with fire, flowers and food.');
+ {name:'The dog',short:'The dog',col:'#8C8577',run:async s=>{
+   art(zo(`${slab(300,320,1.1)}${dog(470,330,.9,{flip:true})}${altar(130,330,.7)}`));
+   await tell(s,'At death, a demon of decay rushes into the body. So the body is kept apart, and a fire is kept burning.',{eye:'The body'});
+   await tapIt(s,{ask:'Then a dog is brought in to look at the body. Its gaze drives the demon off. Tap the dog.',label:'Bring the dog'});
+   if(SND.ctx) chime();
+   await tell(s,'The sagdīd, the dog\'s look. Best job description in this entire guide.');
+ }},
+ {name:'Three nights',short:'Three nights',col:'#2E8B8B',run:async s=>{
+   art(zo(`${slab(300,320,1.1)}${urvan(185,284,1)}${altar(480,330,.6)}`));
+   await tell(s,'Your soul doesn\'t leave yet. It sits beside your head for three nights, reliving your life.',{eye:'Three nights'});
+   for(let i=1;i<=3;i++){ await tapIt(s,{ask:`Night ${['one','two','three'][i-1]}. Keep watch until morning.`,label:`Keep watch, night ${i}`}); if(SND.ctx) bell(330,.07); art(zo(`${slab(300,320,1.1)}${urvan(185,284,1+i*.08)}${altar(480,330,.6)}`,{sky:i===3?'dawn':'night'})); }
+   art(zo(`${peaks()}<g class="drift">${[0,1,2,3,4].map(i=>`<path d="M${40+i*100} ${120+i*20} q30 -10 60 0 q30 10 60 0" stroke="${WHITE}" stroke-width="3" fill="none" opacity=".6"/>`).join('')}</g>${urvan(300,250,1.4)}`,{sky:'dawn'}));
+   if(SND.ctx) windLoop();
+   await tell(s,'On the fourth dawn a wind comes. For the good, it smells of flowers.');
    loopOff('wind');
  }},
- {name:'Making Wonderful',short:'Renewal',sub:'The end of evil',col:'#E07A1E',run:async s=>{
-   art(zo(`${metalRiver(260)}${[110,220,330,440].map((x,i)=>`<g class="rise" style="animation-delay:${i*.3}s">${zfig(x,300,.6,{robe:WHITE})}</g>`).join('')}`,{sky:'dawn'}));
-   if(SND.ctx){ pad('pad',[130.8,196,261.6,329.6],.035); }
-   await say(s,'At the end of time comes Frashōkereti, the making wonderful. A saviour, the Saoshyant, will be born, the dead will rise in their bodies, and the whole world will be made new.',{eye:'The making wonderful'});
-   await say(s,'Every person, living and risen, will pass through a river of molten metal. To the wicked it will burn. To the righteous, the Bundahishn says, it will feel like walking through warm milk. And everyone comes out purified.');
-   await hold(s,{label:'Walk through the river',ms:5000,ask:'Press and hold to walk through the molten river.',early:'Keep walking. Hold again.'});
-   art(zo(`${faravahar(300,190,1.4)}<circle cx="300" cy="200" r="190" fill="url(#fire)" opacity=".5"/>`,{sky:'dawn'}));
+ {name:'Who meets you',short:'Conscience',col:'#E8A93A',run:async s=>{
+   art(zo(`${peaks()}${urvan(180,270,1.2)}<g class="fadein">${maiden(400,340,1.1)}</g>${dog(500,340,.6,{flip:true})}${dog(300,340,.6)}`,{sky:'dawn'}));
    if(SND.ctx) chime();
-   await say(s,'Even hell is emptied and cleansed, and the evil spirit is defeated for good. In the end, every soul reaches the House of Song. Zoroastrianism is the only religion in this series where everyone is saved and evil itself is destroyed.');
- }}],
- finale:async s=>{ art(zoCover()); if(SND.ctx) chime();
-   await say(s,'That is the passage: three nights of remembering, a fragrant wind, your own self coming to meet you, judges who cannot be bribed, and a bridge whose width you built yourself.',{eye:'The end of the book'});
-   await say(s,'Zarathustra\'s teaching fits on a single line, and Zoroastrians still tie it into the sacred cord around their waists every day: good thoughts, good words, good deeds.'); }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+   await tell(s,'Out of the wind walks a figure. She is your daēnā: your own conscience, wearing the face your life gave her.',{eye:'The daēnā',note:'In the Hadokht Nask she says: "I was lovely, and you made me lovelier." For the wicked she appears as a hag.'});
+   await choose(s,'She asks what made her so beautiful.',['My good thoughts','My good words','My good deeds'],{});
+   await tell(s,'"I was lovely, and you made me lovelier." You turn out to be the person who meets you.');
+ }},
+ {name:'The scales',short:'The judges',col:'#3E5C8A',run:async s=>{
+   art(zo(`${judge(140,340,1,{robe:'#6A3E8A'})}${judge(460,340,1,{robe:'#3E5C8A',arms:'pray'})}${scalesZ(300,340,1.2)}${judge(300,220,.6,{robe:'#B04A1E'})}`));
+   await tell(s,'Three judges wait. Rashnu holds the scales, and is famous for not tipping them even a hair.',{eye:'Mithra, Sraosha and Rashnu'});
+   const B=$('#pArt');
+   await hold(s,{label:'Keep the scales still',ms:4000,ask:'Your thoughts, words and deeds are weighed. Press and hold.',onP:p=>{ const b=B.querySelector('.beam'); if(b) b.style.transform=`rotate(${(1-p)*Math.sin(performance.now()/280)*9}deg)`; }});
+ }},
+ {name:'The bridge',short:'The bridge',col:'#C9A15A',run:async s=>{
+   art(zo(`${bridge(10)}${urvan(160,176,.7)}`));
+   if(SND.ctx) windLoop();
+   await tell(s,'The Chinvat Bridge. For the wicked it turns its razor edge up. For the good, it turns flat and wide.',{eye:'The Chinvat Bridge'});
+   let last=-1; await drag(s,{ask:'Your daēnā leads you. Drag yourself across and watch it widen.',from:[27,42],to:[72,40],label:'Cross',onP:p=>{ const w=Math.round(6+p*36); if(Math.abs(w-last)<3) return; last=w; art(zo(`${bridge(w)}${maiden(Math.min(430,200+p*230),176,.45)}`)); if(SND.ctx&&Math.random()<.2) bell(330+p*240,.05); }});
+   loopOff('wind'); if(SND.ctx) chime();
+   art(zo(`${sunMoonStar()}`));
+   await tell(s,'Four steps: good thought, good word, good deed, and the last one into Endless Light. You\'re home, in the House of Song.');
+ }},
+ {name:'The renewal',short:'Renewal',col:'#E07A1E',run:async s=>{
+   art(zo(`${metalRiver(260)}${[110,220,330,440].map((x,i)=>`<g class="rise" style="animation-delay:${i*.3}s">${zfig(x,300,.6,{robe:WHITE})}</g>`).join('')}`,{sky:'dawn'}));
+   await tell(s,'And here\'s the twist: hell isn\'t forever. At the end of time everyone walks through a river of molten metal.',{eye:'Frashokereti, the making wonderful'});
+   await hold(s,{label:'Walk through',ms:4000,ask:'To the good it feels like warm milk. Press and hold to walk through.'});
+   art(zo(`${faravahar(300,190,1.4)}<circle cx="300" cy="200" r="190" fill="url(#fire)" opacity=".5"/>`,{sky:'dawn'})); if(SND.ctx) chime();
+   await tell(s,'Evil is gone. The dead rise. The world is made wonderful. Everybody, eventually, gets home.');
+ }}]};
+journeySplash(J);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>

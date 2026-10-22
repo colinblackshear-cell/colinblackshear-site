@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Art of Dying Well</title>
+<title>The Last Day · Many Doors</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
@@ -137,6 +137,49 @@ details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font
 details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* ---------- journeys: a full-bleed title, then the player at its biggest ---------- */
+body.jbody{background:var(--night)}
+body.jbody #bar{display:none}
+body.jbody .wrap{max-width:none;padding:0}
+.jsplash{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;color:var(--nightink);background:var(--night)}
+.jcover{position:absolute;inset:0;width:100%;height:100%;display:block;animation:jzoom 30s ease-out both}
+@keyframes jzoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.jshade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--night) 88%,transparent) 0%,color-mix(in srgb,var(--night) 60%,transparent) 45%,transparent 80%),linear-gradient(180deg,transparent 35%,var(--night) 100%)}
+@media (max-width:700px){.jshade{background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 55%,transparent) 30%,var(--night) 75%)}}
+.jback{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px));z-index:2;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:8px 14px;text-decoration:none}
+.jt{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:32vh max(16px,env(safe-area-inset-right,0px)) max(28px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.jdoor{display:inline-block;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;background:var(--c,var(--accent));color:#FFF6DE;border:2px solid #FFF6DE;border-radius:4px;padding:5px 10px}
+.jt h1{margin:12px 0 8px;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;color:#FFF6DE;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+.jtag{margin:0;font-size:clamp(1.05rem,2.6vw,1.4rem);max-width:36ch;line-height:1.35}
+.jt .cta{margin:22px 0 18px}
+.jt .btn{font-size:1.15rem;padding:13px 28px}
+.jt .btn.alt{background:transparent;color:#FFF6DE;border-color:#FFF6DE;box-shadow:none}
+.jstops{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.jstops button{display:flex;align-items:center;gap:8px;background:rgba(255,246,222,.08);border:1.5px solid rgba(255,246,222,.35);color:#FFF6DE;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.82rem;min-height:38px}
+.jstops button:hover{background:rgba(255,246,222,.2)}
+.jstops b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFF6DE;color:var(--night);font-size:.75rem}
+.jmeta{margin:16px 0 0;font-size:.85rem;color:rgba(255,246,222,.7)}
+.jmeta em{color:var(--gold);font-style:normal}
+
+.player.jplayer .stage{width:min(100%,1100px,calc(min(64vh,720px)*1.5))}
+@media (max-height:700px){.player.jplayer .stage{width:min(100%,calc(54vh*1.5))}}
+/* keep 3:2 on phones so tap spots stay on what they point at */
+@media (max-width:600px) and (orientation:portrait){.player.jplayer .stage{width:100%;aspect-ratio:3/2;max-height:none}.player.jplayer .scap p{font-size:1.08rem}}
+.player.jplayer .scap{min-height:0}
+.player.jplayer .scap p{font-size:clamp(1.08rem,2.4vw,1.32rem);min-height:1.5em}
+.gnote{margin-right:auto;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed var(--ink-soft);background:transparent;color:var(--ink-soft);border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
+.gnote[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--bg)}
+.gtext{margin:8px 0 0!important;font-size:.95rem!important;line-height:1.45;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:10px;min-height:0!important}
+a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.jend{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.7) 40%)}
+.jend>span{flex-basis:100%;text-align:center;font-family:var(--display);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFF6DE}
+.jend a,.jend button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;text-align:left}
+.jend small{font-family:var(--body);font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.dtrack{position:absolute;height:0;border-top:4px dashed rgba(255,246,222,.6);transform-origin:0 0}
+.dknob{position:absolute;transform:translate(-50%,-50%);width:clamp(54px,10%,78px);aspect-ratio:1;border-radius:50%;border:3px solid var(--ink);background:var(--gold);cursor:grab;touch-action:none;padding:0;box-shadow:0 0 0 8px rgba(255,246,222,.25)}
+.dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
+.dknob:active{cursor:grabbing}
 
 /* The Art of Dying Well: a hand-coloured 15th-century block book. Rag paper, black woodcut line, washes of red lake, verdigris and saffron. */
 :root{
@@ -316,33 +359,67 @@ function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
 function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+/* The journey: a short click-through trip behind one door. One picture, one line, one thing to do.
+   Data: const J={key,tradition,title,tag,mins,col,cover,stops:[{name,run}],end:{line,book,bookUrl,walk,walkUrl},review}. */
+const HUB=window.MD_HUB||'../#doors';
+/* the pages live in folders; anywhere but the site itself, spell out index.html */
+if(!/colinblackshear\.com$/.test(location.hostname)) document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const m=a.getAttribute('href').match(/^([^:#]*\/)(#.*)?$/); if(m) a.setAttribute('href',m[1]+'index.html'+(m[2]||'')); },true);
+function journeySplash(J){
+  document.body.classList.add('jbody');
+  const next=Math.min(+store.get(J.key+'-next')||0,J.stops.length-1);
+  $('#wrap').innerHTML=`<section class="jsplash" style="--c:${J.col}">
+    <svg class="jcover" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${J.cover()}</svg>
+    <div class="jshade"></div>
+    <a class="jback" href="${HUB}">← All doors</a>
+    <div class="jt">
+      <span class="jdoor">Door: ${esc(J.tradition)}</span>
+      <h1>${esc(J.title)}</h1>
+      <p class="jtag">${esc(J.tag)}</p>
+      <div class="cta"><button type="button" class="btn gold" id="jgo">${next?'Carry on':'Step through'} <span aria-hidden="true">→</span></button>${next?`<button type="button" class="btn alt" id="jre">Start over</button>`:''}</div>
+      <ol class="jstops">${J.stops.map((c,i)=>`<li><button type="button" data-i="${i}"><b>${i+1}</b>${esc(c.name)}</button></li>`).join('')}</ol>
+      <p class="jmeta">${J.mins} minutes · tap to move on · sound optional${J.review?` · <em>${esc(J.review)}</em>`:''}</p>
+    </div></section>`;
+  $('#jgo').onclick=()=>playJourney(J,next);
+  const r=$('#jre'); if(r) r.onclick=()=>{ store.set(J.key+'-next','0'); playJourney(J,0); };
+  document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
 }
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
+/* one short line with Continue, and an optional Guide note the curious can open */
+async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+  if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
+    n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
+    setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
+  await waitTap(s,spoke); const d=$('#pNote'); if(d) d.remove(); }
+
+async function playJourney(J,start){
+  const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
+  const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
+  s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+      s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
+      await c.run(s); if(SND.ctx) allOff(1.2); }
+    store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
+    await journeyEnd(s,J);
   }catch(e){ if(!(e instanceof Abort)) console.error(e); }
 }
+function journeyEnd(s,J){ alive(s); art(J.cover()); if(SND.ctx) chime(); eyebrow('End of the line');
+  s.el.querySelector('.ptitle').innerHTML=`<b>Arrived</b>${esc(J.title)}`;
+  $('#pText').textContent=J.end.line; narrate(J.end.line);
+  const E=J.end; $('#pRow').innerHTML=`<a class="sgo" href="${HUB}">Pick another door <span aria-hidden="true">→</span></a>`;
+  layer().innerHTML=`<div class="jend"><span>Want more than the short version?</span>${E.bookUrl?`<a href="${E.bookUrl}">${esc(E.book)}<small>the full illustrated book</small></a>`:''}${E.walkUrl?`<a href="${E.walkUrl}">${esc(E.walk)}<small>a few minutes a day</small></a>`:''}<button type="button" id="jagain">Ride again<small>from the first stop</small></button></div>`;
+  $('#jagain').onclick=()=>playJourney(J,0);
+  return new Promise(()=>{}); }
+/* drag a token along a path to a target, e.g. across a bridge: returns when it arrives */
+function drag(s,{ask:q,from,to,label='Drag',onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="dtrack" style="left:${from[0]}%;top:${from[1]}%;width:${Math.hypot(to[0]-from[0],(to[1]-from[1])*2/3)}%;transform:rotate(${Math.atan2((to[1]-from[1])*2/3,to[0]-from[0])}rad)"></div><button type="button" class="dknob" style="left:${from[0]}%;top:${from[1]}%" aria-label="${esc(label)}. Use the arrow keys."><span>${esc(label)}</span></button>`;
+  const k=l.querySelector('.dknob'); let p=0,on=false,done=false;
+  const set=v=>{ p=Math.max(0,Math.min(1,v)); k.style.left=(from[0]+(to[0]-from[0])*p)+'%'; k.style.top=(from[1]+(to[1]-from[1])*p)+'%'; onP&&onP(p); if(p>=.98&&!done){ done=true; l.innerHTML=''; res(); } };
+  const proj=e=>{ const r=l.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100; const dx=to[0]-from[0], dy=to[1]-from[1]; const ax=dx*r.width, ay=dy*r.height; return ((x-from[0])*r.width*ax+(y-from[1])*r.height*ay)/(ax*ax+ay*ay); };
+  k.addEventListener('pointerdown',e=>{ on=true; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+  k.addEventListener('pointermove',e=>{ if(on) set(proj(e)); });
+  k.addEventListener('pointerup',()=>{ on=false; }); k.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key===' '){ e.preventDefault(); set(p+.1); } if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); set(p-.1); } });
+  k.focus({preventScroll:true}); }); }
+/* a big tap-anywhere moment with a label, for drama (knock, ring, open) */
+function tapIt(s,{ask:q,label='Tap'}){ return count(s,{ask:q,n:1,label}); }
 
 /* Woodcut kit for The Art of Dying Well: black line on rag paper, hand-tinted like the block books of the 1450s. */
 const INK='#1B1A17', RAG='#F3E8CF', RED='#B5483A', GREEN='#6E8B55', OCHRE='#D9A93A', BLUE='#4F6E96', BROWN='#8C5E35', SKIN='#EBCBA6';
@@ -402,155 +479,83 @@ function grave(x,y,open=0){ return `<g transform="translate(${x} ${y})"><rect x=
 /* the cover: the bed, an angel at the head and a demon at the foot */
 function chCover(){ return wc(`${glory(300,60,120)}${bed()}${angel(115,230,1)}${demon(540,250,1,{flip:true,tint:GREEN})}${crucifix(300,190,.7)}${scroll(300,46,260,'Ars moriendi · the craft of dying',{size:15})}`); }
 
-/* The Art of Dying Well: the Ars moriendi's deathbed in eleven woodcuts, then what the Church teaches comes after. */
-const BED_L=b=>wc(`${bed()}${b||''}`);
-const BOOK={key:'adw',brand:'The Art of Dying Well',brandSub:'A Christian book of the dead',title:'The Art of Dying Well',eyebrow:'From the Ars moriendi, c. 1415',
- lede:'After the Black Death there were too few priests to sit with every dying person, so the Church wrote a manual anyone could use. This is that manual, told again: five temptations at the deathbed, five answers, and what Catholic teaching says happens next.',
- note:'About 40 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../many-doors/christian/walk/', walkName:'The Forty Days',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['The woodcuts','The pictures follow the eleven woodcuts of the 1450s block book: a bed, a dying man, demons with scrolls, and angels answering them.'],['Your part','In each temptation you answer the demon yourself, the way the manual taught readers to.'],['What comes after','The last three chapters follow the Catechism of the Catholic Church, with paragraph numbers so you can check them.']],
- sources:'Tractatus artis bene moriendi (c. 1415) and the illustrated short version (Netherlands or Germany, c. 1450); Catechism of the Catholic Church, §§ 988–1060, 1499–1532; Rite of Anointing and Viaticum; Psalm 90:12; 1 Corinthians 15; Revelation 21. Latin scroll texts are given in translation.',
+/* The Christian door: the Ars moriendi deathbed, then the Catholic map of what follows, in seven stops. */
+const BED_L=b=>wc(`${bed()}${b||""}`);
+const J={key:'j-christian',tradition:'Christianity',title:'The Last Day',col:'#8E2A22',mins:6,
+ tag:'You are dying. Don\'t panic: in 1415 the Church wrote a manual for exactly this.',
  cover:chCover,
- chapters:[
- {name:'Learning to Die',short:'Prologue',sub:'Why a manual for dying was written',col:'#8E2A22',run:async s=>{
-   art(wc(`${glory(300,170,180)}${scroll(300,70,300,'Teach us to number our days',{size:16})}${figure(300,250,1.2,{robe:BLUE,hood:true})}${candle(380,300)}${candle(220,300)}`));
-   if(SND.ctx){ pad('pad',[146.8,220,293.7],.035); bell(196,.12); }
-   await say(s,'In 1348 the plague reached Europe. Within a few years it had killed perhaps a third of the people, and a great many priests with them. Families watched loved ones die with no one there to help them die well.',{eye:'Prologue'});
-   await say(s,'Around 1415 a churchman, probably a Dominican, wrote a short treatise called the Ars moriendi: the craft of dying. Its idea was simple. Dying is something you can learn, and a friend, not only a priest, can help.');
-   art(BED_L(`${figure(530,290,1,{robe:'#FBF6EA',hood:true})}${scroll(300,60,320,'The death of the good is precious',{size:14})}`));
-   await say(s,'Thirty years later printers cut eleven pictures into wood and made it one of the most widely read books of the century. Every picture shows the same room: a man in his bed, at the edge of his life. His name in the book is Moriens, which simply means the one who is dying.');
-   await spots(s,{ask:'Tap the three things in the room.',items:[
-     {x:35,y:57,label:'Moriens',say:'Moriens is everyone. The book never tells you who he was, only how he dies.'},
-     {x:88,y:61,label:'The friend',say:'The friend at the bedside is the reader. The book was written so you could be this person for someone else.'},
-     {x:50,y:15,label:'The words',say:'Psalm 90 asks God to teach us to number our days. That is the whole purpose of the book: to number them now, not at the end.'}]});
-   await say(s,'The manual says the devil makes five attacks at the hour of death, and an angel answers each one. Let\'s sit with Moriens through all five.',{eye:'What comes next'});
- }},
- {name:'Faith',short:'Faith',sub:'The first temptation, and its answer',col:'#4F6E96',run:async s=>{
-   art(BED_L(`${demon(110,230,1,{tint:GREEN})}${demon(520,210,.9,{flip:true})}${demon(330,170,.8,{tint:RED})}${scroll(140,140,180,'There is nothing after this',{rot:-6})}${scroll(470,120,170,'Do as the pagans do',{rot:5})}${scroll(320,80,170,'Hell is already made',{rot:-2})}`));
-   if(SND.ctx){ noiseLoop('dread','lowpass',180,.08); }
-   await say(s,'The first temptation is against faith. Demons crowd the bed. One says there is nothing after death. Another says Moriens should live as the pagans did. A third says that hell is already made for him, so why bother?',{eye:'The first temptation'});
-   await say(s,'The book is honest that this is where most people start. In weakness and pain, the things you believed when you were well can suddenly feel thin.');
-   const i=await choose(s,'If you were Moriens, what would you say back?',['“I don\'t know anymore.”','“I hold on to what I believe.”','“Leave me alone.”'],{right:1,wrong:k=>k===0?'The book allows that feeling. But the angel\'s advice is not to argue, just to hold on. Try again.':'Sending them away doesn\'t work; the book says they keep coming. Try the angel\'s answer.'});
+ end:{line:'That\'s the Christian map: one life, one judgment, and a resurrection at the end. The world isn\'t escaped. It\'s made new.',
+  book:'The Art of Dying Well',bookUrl:'../../many-doors/christian/book/',walk:'The Forty Days',walkUrl:'../../many-doors/christian/walk/'},
+ stops:[
+ {name:'The deathbed',short:'Deathbed',col:'#8E2A22',run:async s=>{
+   art(BED_L(`${figure(530,290,1,{robe:'#FBF6EA',hood:true})}`));
+   if(SND.ctx){ pad('pad',[146.8,220,293.7],.03); bell(196,.1); }
+   await tell(s,'This is you. The book calls you Moriens, which just means "the one who is dying." Everyone gets the part eventually.',{eye:'The Art of Dying Well, c. 1415',note:'After the Black Death killed many of Europe\'s priests, the Ars moriendi taught ordinary people to sit with the dying. It was one of the bestsellers of the fifteenth century.'});
+   art(BED_L(`${demon(110,230,1,{tint:GREEN})}${demon(520,210,.9,{flip:true})}${demon(330,150,.8,{tint:RED})}${demon(200,120,.6,{tint:BROWN})}${demon(430,110,.6)}`));
+   if(SND.ctx) noiseLoop('dread','lowpass',180,.08);
+   await tell(s,'Bad news: five demons have shown up, each with a sales pitch. Good news: the manual has an answer for every one.');
+   await spots(s,{ask:'Tap each demon to hear its pitch, and the angel\'s answer.',items:[
+     {x:18,y:50,label:'Doubt',say:'"There\'s nothing after this." Answer: hold on to what you believe. You don\'t have to win the argument.'},
+     {x:55,y:30,label:'Despair',say:'"Look at your sins. You can\'t be forgiven." Answer: Peter, Paul and the thief on the cross did worse, and were.'},
+     {x:86,y:46,label:'Impatience',say:'"Lash out. It hurts." Answer: be patient. Pain doesn\'t have to be passed on to the people who love you.'},
+     {x:33,y:24,label:'Pride',say:'"You were good. You earned heaven." Answer: be humble. It\'s a gift, not a wage.'},
+     {x:72,y:22,label:'Clinging',say:'"Who\'ll look after your house, your money, your family?" Answer: let go. They go into better hands than yours.'}],onTap:i=>{ if(SND.ctx) bell(330+i*40,.07); }});
    loopOff('dread'); if(SND.ctx) chime();
-   art(BED_L(`${angel(110,230,1.1)}${figure(470,240,1,{halo:true,robe:RED})}${figure(540,250,.9,{halo:true,robe:GREEN})}${crucifix(330,190,.6)}${scroll(150,120,170,'Be firm in faith',{rot:-4})}${demon(560,370,.5,{flip:true})}`));
-   await say(s,'The angel arrives with saints around it, and its scroll reads: be firm in faith. The demons slink off to the edge of the picture.',{eye:'The inspiration'});
-   await say(s,'The manual adds advice for the friend at the bedside: say the Creed aloud, slowly, so the dying person can follow it in their head even if they can\'t speak. Faith here isn\'t winning an argument. It\'s hearing familiar words and leaning on them.');
+   art(BED_L(`${angel(110,230,1.1)}${crucifix(470,200,.8)}${figure(540,250,.85,{halo:true,robe:BLUE})}${scroll(150,120,170,'Be firm in faith',{rot:-4})}`));
+   await tell(s,'Five temptations, five answers: faith, hope, patience, humility, letting go. That\'s the whole craft of dying well.');
  }},
- {name:'Despair',short:'Despair',sub:'The second temptation, and its answer',col:'#2F4A6E',run:async s=>{
-   art(BED_L(`${demon(110,220,1)}${demon(520,220,.95,{flip:true,tint:BROWN})}${scroll(130,120,150,'You lied',{rot:-8})}${scroll(470,100,150,'You were greedy',{rot:6})}${scroll(300,60,170,'You were unfaithful',{rot:-3})}${scroll(320,170,160,'Look at your sins',{rot:3})}`));
-   if(SND.ctx) noiseLoop('dread','lowpass',160,.08);
-   await say(s,'The second temptation is despair. Now the demons hold up scrolls listing everything Moriens has done wrong. Look, they say. You lied. You cheated. You were unfaithful. Someone like you cannot be forgiven.',{eye:'The second temptation'});
-   await say(s,'The book calls this the most dangerous temptation of all, because it doesn\'t deny God. It just convinces you God couldn\'t possibly want you.');
-   art(BED_L(`${demon(110,250,.8)}${demon(520,250,.8,{flip:true,tint:BROWN})}${figure(90,140,.7,{halo:true,robe:RED})}${figure(510,140,.7,{halo:true,robe:GREEN})}${figure(180,92,.6,{halo:true,robe:'#FBF6EA'})}${figure(420,92,.6,{halo:true,robe:BLUE})}`));
-   await spots(s,{ask:'Four people appear who were forgiven for worse. Tap each one.',items:[
-     {x:15,y:27,label:'Peter',say:'Peter, who swore three times he had never known Jesus, and became the rock the Church was built on.'},
-     {x:85,y:27,label:'Mary Magdalene',say:'Mary Magdalene, whom the medieval Church remembered as a great sinner, and who was the first to see Christ risen.'},
-     {x:30,y:16,label:'The good thief',say:'The thief crucified beside Jesus, who asked at the very last minute and was told: today you will be with me in paradise.'},
-     {x:70,y:16,label:'Paul',say:'Paul, who hunted down Christians before he became one.'}],onTap:(i)=>{ if(SND.ctx) bell(330+i*40,.08); }});
-   loopOff('dread');
-   art(BED_L(`${angel(110,230,1.1)}${figure(470,240,1,{halo:true,robe:RED})}${figure(540,250,.9,{halo:true,robe:BLUE})}${figure(400,250,.9,{halo:true,robe:GREEN})}${scroll(150,120,170,'Do not despair',{rot:-4})}`));
-   await say(s,'The angel\'s scroll says: do not despair. The book\'s argument is almost a joke at the demon\'s expense. If God forgave these four, a list of your sins proves nothing.',{eye:'The inspiration'});
- }},
- {name:'Impatience',short:'Patience',sub:'The third temptation, and its answer',col:'#B5483A',run:async s=>{
-   art(BED_L(`${figure(470,250,1,{robe:BLUE})}${demon(120,230,.9,{tint:RED})}${scroll(150,130,180,'How well I have fooled him',{rot:-5})}<g transform="translate(420 320) rotate(-30)"><rect x="-20" y="-6" width="40" height="12" fill="${BROWN}" stroke="${INK}" stroke-width="2"/></g>`));
-   if(SND.ctx) noiseLoop('dread','lowpass',220,.07);
-   await say(s,'The third temptation is impatience. In the woodcut, Moriens has kicked the doctor away and knocked over the table. He\'s in pain, and he\'s furious with everyone who comes near.',{eye:'The third temptation'});
-   await say(s,'This is the most familiar picture in the book. Anyone who has sat with a dying person has seen it: the anger that pain makes, and the friends who don\'t know where to stand.');
-   await hold(s,{label:'Hold and breathe',ms:6000,ask:'Press and hold. Breathe slowly through the pain with him until the ring closes.',early:'The pain came back. Hold again, slowly.',onP:p=>{ if(SND.ctx&&p>0&&Math.random()<.02) drum(.25); }});
-   loopOff('dread'); if(SND.ctx) chime();
-   art(BED_L(`${angel(110,230,1.1)}${crucifix(470,210,.8)}${figure(540,250,.85,{halo:true,robe:RED})}${scroll(150,120,150,'Be patient',{rot:-4})}`));
-   await say(s,'The angel answers with the cross and with the saints who suffered. Its scroll says: be patient. The book is gentle here. It doesn\'t say pain should be hidden, only that it doesn\'t have to be passed on to the people who love you.',{eye:'The inspiration'});
- }},
- {name:'Pride',short:'Pride',sub:'The fourth temptation, and its answer',col:'#D9A93A',run:async s=>{
-   art(BED_L(`${demon(110,220,.9)}${demon(520,210,.9,{flip:true,tint:GREEN})}${demon(330,150,.8,{tint:BROWN})}${crown(200,140,1.3)}${crown(410,120,1.3)}${crown(300,70,1.1)}${scroll(120,110,150,'You earned this',{rot:-6})}${scroll(500,90,150,'Be proud',{rot:5})}`));
-   await say(s,'The fourth temptation is the cleverest. The demons stop accusing Moriens and start flattering him. They hold out crowns. You were a good man, they say. You earned this. Be proud.',{eye:'The fourth temptation'});
-   await say(s,'Despair says you\'re too bad to be saved. Pride says you\'re good enough not to need saving. The book treats them as two sides of the same mistake: looking only at yourself.');
-   const k=await duo(s,{ask:'Which do you choose?',a:{label:'Take the crown',svg:`<rect width="300" height="400" fill="${RAG}"/>${crown(150,180,3)}`},b:{label:'Set it down',svg:`<rect width="300" height="400" fill="${RAG}"/>${figure(150,240,2,{robe:BLUE,hood:true})}`},right:1,wrong:'In the woodcut, a crown taken leads straight into the mouth of hell at the bottom of the page. Try the other.'});
-   if(SND.ctx) chime();
-   art(BED_L(`${angel(110,230,1.1)}${figure(480,240,1,{halo:true,robe:BLUE})}${figure(540,250,.9,{halo:true,robe:RED,crown:true})}${hellmouth(300,335,.6)}${scroll(150,120,150,'Be humble',{rot:-4})}`));
-   await say(s,'The angel\'s answer is: be humble. Behind it stand the saints and the Trinity, and under the bed, a mouth of hell swallows the proud. The cure isn\'t thinking less of yourself. It\'s letting yourself be given what you can\'t earn.',{eye:'The inspiration'});
- }},
- {name:'Possessions',short:'Letting go',sub:'The fifth temptation, and its answer',col:'#6E8B55',run:async s=>{
-   art(BED_L(`${demon(560,220,.8,{flip:true})}${house(80,150,1.1)}${chest(80,250,1.1)}${barrel(530,320,1)}${horse(80,320,.9)}${figure(470,250,.8,{robe:RED})}${figure(420,260,.7,{robe:GREEN})}${scroll(440,100,200,'Think of your treasure',{rot:4})}${scroll(160,60,200,'Provide for your friends',{rot:-4})}`));
-   await say(s,'The last temptation is the simplest. The demons show Moriens his house, his money, his horse, his wine cellar, and his family at the foot of the bed. Think of all this, they say. Who will look after it?',{eye:'The fifth temptation'});
-   await say(s,'The book calls this avarice, but it\'s really clinging: the last grip on everything that made up a life.');
-   await release(s,{ask:'Tap each thing to let it go. Nothing is lost; it\'s handed on.',words:['My house','My money','My good name','My plans','My family']});
-   if(SND.ctx) chime();
-   art(BED_L(`${angel(110,230,1.1)}${crucifix(470,200,.8)}${figure(540,250,.85,{halo:true,robe:BLUE})}${scroll(150,120,200,'Do not cling',{rot:-4})}`));
-   await say(s,'The angel points to Christ on the cross, who gave up everything, and to Mary, who stood by and watched. The scroll says: do not cling. The family isn\'t abandoned. They are put into better hands than yours.',{eye:'The inspiration'});
- }},
- {name:'The Questions',short:'Questions',sub:'Five questions asked at the bedside',col:'#2F4A6E',run:async s=>{
-   art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA',hood:true,hands:'point'})}${candle(470,300)}`));
-   await say(s,'After the temptations, the manual gives the friend a short list of questions to ask the dying person, based on ones written by Saint Anselm in the eleventh century. They are meant to be answered simply.',{eye:'The questions'});
-   const Q=[['Are you glad to die in the faith of Christ?','Yes.'],['Do you admit that you have not lived as well as you ought?','Yes.'],['Are you sorry for it?','Yes.'],['If you had more time, would you live better?','Yes, with God\'s help.'],['Do you believe that Christ died for you, and that you cannot be saved except by his death?','Yes.']];
-   for(let i=0;i<Q.length;i++){ await choose(s,Q[i][0],[Q[i][1]]); if(SND.ctx) bell(392,.06); }
-   await say(s,'That\'s all. Five yeses. The manual says that if the dying person can\'t speak, a nod, a squeeze of the hand, or even a wish is enough.');
-   await say(s,'Then the friend says: while life is still in you, put all your trust in his death. Cover yourself with it, wrap yourself in it.');
- }},
- {name:'The Last Rites',short:'Last rites',sub:'Confession, anointing and the food for the journey',col:'#8E2A22',run:async s=>{
-   art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA',hood:false})}${candle(460,300)}${candle(570,300)}`));
+ {name:'The last rites',short:'Last rites',col:'#B5483A',run:async s=>{
+   art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA'})}${candle(460,300)}${candle(570,300)}`));
    if(SND.ctx) pad('pad',[130.8,196,261.6],.03);
-   await say(s,'Today a priest brings three sacraments to the dying. Catholics often call them the last rites. The first is confession: telling God what you regret, out loud, and hearing that you are forgiven.',{eye:'The last rites · CCC 1524–1525'});
-   await spots(s,{ask:'The second is anointing. The priest anoints with holy oil. Tap the forehead, then the hands.',items:[
-     {x:35,y:56,label:'Forehead',say:'"Through this holy anointing may the Lord in his love and mercy help you with the grace of the Holy Spirit."'},
-     {x:42,y:62,label:'Hands',say:'"May the Lord who frees you from sin save you and raise you up." Before 1972 the eyes, ears, nose, lips, hands and feet were all anointed, each for the sins that sense had committed.'}]});
-   await say(s,'The third is communion, given to the dying under an old name: viaticum, which means provisions for a journey. It\'s the last meal before travelling.');
-   await count(s,{ask:'Light the candle the friend will place in the dying person\'s hand.',n:1,label:'Light the candle',onTap:()=>{ if(SND.ctx) nz({freq:2400,peak:.06,d:.2}); }});
+   await tell(s,'A priest arrives with three things for the road: confession, anointing, and communion.',{eye:'The last rites',note:'Catechism of the Catholic Church §§ 1524–1525. Communion given to the dying is called viaticum, Latin for provisions for a journey.'});
+   await spots(s,{ask:'Anointing: tap the forehead, then the hands.',items:[
+     {x:35,y:56,label:'Forehead',say:'"May the Lord in his love and mercy help you with the grace of the Holy Spirit."'},
+     {x:42,y:62,label:'Hands',say:'"May the Lord who frees you from sin save you and raise you up."'}]});
+   await tapIt(s,{ask:'Last, a lit candle goes into your hand: the light of your baptism, handed back.',label:'Take the candle'});
+   if(SND.ctx) nz({freq:2400,peak:.06,d:.2});
    art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA'})}${candle(250,248,1)}`));
-   await say(s,'In the last woodcut, a monk puts a burning candle into Moriens\'s hand. It\'s the light of his baptism, given back at the end.');
+   await tell(s,'Packed lunch for eternity. You\'re ready.');
  }},
- {name:'The Good Death',short:'Death',sub:'The soul goes out to meet its maker',col:'#D9A93A',run:async s=>{
-   art(BED_L(`${figure(520,250,1,{robe:'#FBF6EA',hood:true})}${candle(250,248,1)}${demon(90,330,.7,{tint:GREEN})}${demon(580,350,.6,{flip:true})}${scroll(110,300,130,'We have lost him',{rot:-4})}${scroll(500,320,120,'No hope left',{rot:4,size:12})}`));
-   if(SND.ctx) pad('pad',[146.8,220,293.7],.03);
-   await say(s,'The friend says the prayer that has been said at Christian deathbeds for more than a thousand years: Go forth, Christian soul, out of this world, in the name of God the Father who created you, in the name of Jesus Christ who suffered for you, in the name of the Holy Spirit who was poured out on you.',{eye:'Go forth, Christian soul'});
-   await say(s,'Moriens\'s last words in the book are the last words of Jesus on the cross: Into your hands, Lord, I commend my spirit.');
-   await hold(s,{label:'Breathe out, slowly',ms:7000,ask:'Press and hold for his last breath.',early:'Slowly. Hold again.'});
-   if(SND.ctx){ bell(196,.18); setTimeout(()=>bell(196,.14),2600); setTimeout(()=>bell(196,.1),5200); }
-   art(wc(`${glory(300,70,150)}${bed()}${candle(250,248,1)}<g class="rise">${soul(240,170,1.6)}${angel(180,150,.8)}${angel(310,140,.8,{flip:true})}</g>${demon(90,330,.6,{tint:GREEN})}${demon(580,350,.55,{flip:true})}${scroll(110,300,130,'We have lost him',{rot:-4})}`));
-   await say(s,'In the woodcut, a tiny figure, the soul, comes out of his mouth and is taken up by angels. The demons at the bottom of the page howl that they have lost him.',{eye:'The soul goes out'});
-   await say(s,'The church bell tolls. In many places it still rings once for each year of the dead person\'s life, so the whole village knows to pray.');
+ {name:'The last breath',short:'Death',col:'#D9A93A',run:async s=>{
+   await tell(s,'Your friend says the oldest deathbed prayer in the Church: "Go forth, Christian soul, out of this world."',{eye:'Go forth, Christian soul'});
+   await hold(s,{label:'Breathe out, slowly',ms:6000,ask:'Your last words are Jesus\'s: "Into your hands I commend my spirit." Press and hold.',early:'Slowly. Hold again.'});
+   if(SND.ctx){ bell(196,.18); setTimeout(()=>bell(196,.12),2600); }
+   art(wc(`${glory(300,70,150)}${bed()}${candle(250,248,1)}<g class="rise">${soul(240,170,1.6)}${angel(180,150,.8)}${angel(310,140,.8,{flip:true})}</g>${demon(90,330,.6,{tint:GREEN})}${demon(580,350,.55,{flip:true})}${scroll(110,300,130,'We lost him',{rot:-4})}`));
+   await tell(s,'Your soul leaves your body, here drawn as a tiny you. The demons at the bottom are not happy about it.');
  }},
- {name:'The Judgment',short:'Judgment',sub:'What happens straight after death',col:'#2F4A6E',run:async s=>{
-   art(wc(`${glory(300,90,170)}${clouds(330)}${figure(300,140,1.3,{halo:true,robe:RED})}${angel(160,280,1)}${scales(440,300,1,-8)}${soul(400,288,.8)}${soul(480,276,.8)}`,{floor:false}));
+ {name:'The judgment',short:'Judgment',col:'#2F4A6E',run:async s=>{
+   art(wc(`${glory(300,90,170)}${clouds(330)}${figure(300,140,1.3,{halo:true,robe:RED})}${angel(160,280,1)}${scales(440,300,1,-8)}${soul(400,288,.8)}`,{floor:false}));
    if(SND.ctx) pad('pad',[110,164.8,220],.03);
-   await say(s,'Here the old manual stops and the Church\'s teaching takes over. The Catechism says that at death the soul separates from the body, and each person is judged at once, by Christ. This is called the particular judgment.',{eye:'The particular judgment · CCC 1021–1022'});
-   await say(s,'Painters showed it as the archangel Michael weighing souls in a pair of scales, an image borrowed from far older religions. The Church teaches the judgment, not the scales. The question isn\'t a tally. The Catechism, quoting Saint John of the Cross, says: at the evening of life, we shall be judged on our love.');
+   await tell(s,'Straight away, you meet Christ. This is the particular judgment: just you, at once.',{eye:'The particular judgment',note:'CCC §§ 1021–1022. Painters showed the archangel Michael weighing souls in scales, an image borrowed from older religions. The Church teaches the judgment, not the scales.'});
+   await choose(s,'What does the judgment look at?',['Your bank balance','How you loved','Your church attendance'],{right:1,wrong:k=>k===0?'It turns out you can\'t take it with you. Try again.':'Closer, but the Catechism quotes Saint John of the Cross: "At the evening of life, we shall be judged on our love."'});
+   if(SND.ctx) chime();
+   await tell(s,'"At the evening of life, we shall be judged on our love." Saint John of the Cross, quoted by the Catechism.');
+ }},
+ {name:'Three doors',short:'Three doors',col:'#B5483A',run:async s=>{
    art(wc(`<rect x="40" y="60" width="150" height="260" rx="75" fill="${OCHRE}" stroke="${INK}" stroke-width="3"/>${glory(115,170,90)}<rect x="225" y="60" width="150" height="260" rx="75" fill="#E7C08A" stroke="${INK}" stroke-width="3"/>${flames(235,320,130,90,7,OCHRE)}<rect x="410" y="60" width="150" height="260" rx="75" fill="#3B2622" stroke="${INK}" stroke-width="3"/>${flames(420,320,130,110,7)}`));
-   await spots(s,{ask:'There are three outcomes. Tap each door.',items:[
-     {x:19,y:45,label:'Heaven',say:'Heaven: those who die in God\'s grace and are fully purified see God face to face, with the saints, forever. The Catechism calls it the fulfilment of the deepest human longings. CCC 1023–1029.'},
-     {x:50,y:45,label:'Purgatory',say:'Purgatory: those who die in God\'s grace but are not yet fully purified are cleansed first. Everyone in purgatory is already saved. CCC 1030–1032.'},
-     {x:81,y:45,label:'Hell',say:'Hell: to die in serious sin without repenting is to choose to be separated from God forever. The Church has never said that any particular person is there. CCC 1033–1037.'}]});
-   await say(s,'Notice that two of the three doors lead to heaven. Purgatory isn\'t a second chance or a lesser hell. It\'s a finishing, for people already on their way home.');
+   await spots(s,{ask:'There are three ways out of the judgment. Tap each door.',items:[
+     {x:19,y:45,label:'Heaven',say:'Heaven: you see God face to face, with everyone who got there before you, forever.'},
+     {x:50,y:45,label:'Purgatory',say:'Purgatory: a cleansing for the saved who aren\'t quite finished. Think of it as getting dressed for the wedding feast.'},
+     {x:81,y:45,label:'Hell',say:'Hell: refusing God to the very end, and getting what you chose. The Church has never named anyone who is there.'}]});
+   await tell(s,'Notice that two of the three doors lead to heaven. Purgatory is a finishing school, not a lesser hell.',{note:'CCC §§ 1023–1037. The Catechism doesn\'t describe purgatory as a place or a length of time.'});
  }},
- {name:'Purgatory and the Living',short:'Purgatory',sub:'What the living can still do',col:'#B5483A',run:async s=>{
-   art(wc(`${flames(40,335,520,120,16,OCHRE)}${[120,220,300,380,480].map((x,i)=>soul(x,280-(i%2)*12,1.1)).join('')}${angel(300,110,1)}${clouds(40)}`,{floor:false}));
-   if(SND.ctx) fireLoop();
-   await say(s,'The Catechism doesn\'t describe purgatory as a place or a length of time. It speaks of a cleansing fire, and theologians since have described it as God\'s love itself, felt as burning by anyone not yet ready to receive it fully.',{eye:'Purgatory · CCC 1030–1032'});
-   await say(s,'What makes purgatory matter to the living is this: they can help. Since the earliest centuries Christians have prayed for their dead, and the Church teaches that those prayers, and above all the Mass, reach them.');
-   loopOff('fire');
-   art(wc(`<rect x="60" y="250" width="480" height="20" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/>${crucifix(300,200,.8)}`));
-   const cs=[]; await count(s,{ask:'Light three candles for people you have lost.',n:3,label:'Light a candle',onTap:k=>{ cs.push(k); art(wc(`<rect x="60" y="250" width="480" height="20" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/>${crucifix(300,200,.8)}${cs.map((c,i)=>candle(140+i*60,250,1)).join('')}`)); if(SND.ctx) nz({freq:2400,peak:.05,d:.2}); }});
-   await say(s,'November 2 is All Souls\' Day, set aside for exactly this. In much of the world families visit graves, light candles, and have Masses said for their dead.',{eye:'The communion of saints · CCC 954–958'});
-   await say(s,'The Orthodox Church, which doesn\'t teach purgatory in the same way, keeps a forty-day passage with memorials on the third, ninth and fortieth days. Both traditions agree that love doesn\'t stop at the grave, and that the living and the dead still pray for each other.');
+ {name:'The people left behind',short:'The living',col:'#6E8B55',run:async s=>{
+   const base=`<rect x="60" y="250" width="480" height="20" fill="${BROWN}" stroke="${INK}" stroke-width="2.5"/>${crucifix(300,200,.8)}`;
+   art(wc(base));
+   await tell(s,'Meanwhile, back on earth, your family isn\'t done with you. They can still help.',{eye:'The communion of saints'});
+   const cs=[]; await count(s,{ask:'Light three candles. Catholics pray and have Masses said for their dead.',n:3,label:'Light a candle',onTap:k=>{ cs.push(k); art(wc(base+cs.map((c,i)=>candle(140+i*60,250,1)).join(''))); if(SND.ctx) nz({freq:2400,peak:.05,d:.2}); }});
+   await tell(s,'November 2 is All Souls\' Day, set aside for exactly this.',{note:'The Orthodox Church keeps a forty-day passage instead, with memorials on the third, ninth and fortieth days. Most Protestant churches teach that believers are with Christ at once, with no purgatory.'});
  }},
- {name:'The Last Day',short:'The end',sub:'Resurrection and a new creation',col:'#D9A93A',run:async s=>{
+ {name:'The last day',short:'The end',col:'#D9A93A',run:async s=>{
    art(wc(`${glory(300,80,170)}${clouds(150)}${figure(300,90,1.2,{halo:true,robe:RED})}${angel(140,170,.9)}${angel(460,170,.9,{flip:true})}${[90,190,300,410,510].map(x=>grave(x,330,0)).join('')}`));
    if(SND.ctx) pad('pad',[130.8,196,261.6,329.6],.035);
-   await say(s,'Christianity doesn\'t end with souls in heaven. The creed ends: I look for the resurrection of the dead, and the life of the world to come.',{eye:'The Last Day · CCC 988–1004'});
-   await say(s,'At the end of time, the Catechism says, Christ will return, and all the dead will rise with their own bodies, changed and glorified. Then comes the Last Judgment, when every life is seen whole, and everything hidden is made known.');
-   await hold(s,{label:'Sound the trumpet',ms:3000,ask:'Saint Paul says the trumpet will sound and the dead will be raised. Press and hold.',onP:p=>{}});
+   await tell(s,'Plot twist: heaven isn\'t the end. At the end of time, Christ returns, and the dead get their bodies back.',{eye:'The resurrection',note:'CCC §§ 988–1004. The Creed ends: "I look for the resurrection of the dead, and the life of the world to come."'});
+   await hold(s,{label:'Sound the trumpet',ms:3000,ask:'"The trumpet will sound, and the dead will be raised." Press and hold.'});
    if(SND.ctx){ [261.6,329.6,392,523.3].forEach((f,i)=>tone(f,{type:'sawtooth',peak:.05,a:.05,d:1.8,at:i*.25})); }
    art(wc(`${glory(300,80,170)}${clouds(150)}${figure(300,90,1.2,{halo:true,robe:RED})}${angel(140,170,.9)}${angel(460,170,.9,{flip:true})}${[90,190,300,410,510].map((x,i)=>grave(x,330,1)+`<g class="rise" style="animation-delay:${i*.3}s">${soul(x+10,300,1.3)}</g>`).join('')}`));
-   await say(s,'Then a new heaven and a new earth. The last pages of the Bible describe a city coming down from God, where he will wipe away every tear, and death will be no more, nor mourning, nor crying, nor pain.',{eye:'A new creation · CCC 1042–1050'});
-   await say(s,'This is the deepest difference between the Christian map and the Tibetan one. The goal isn\'t to escape the world or the body. It\'s to have both made new.');
- }}],
- finale:async s=>{
-   art(chCover()); if(SND.ctx){ chime(); }
-   await say(s,'That is the whole craft. Five temptations: doubt, despair, impatience, pride and clinging. Five answers: faith, hope, patience, humility and letting go.',{eye:'The end of the manual'});
-   await say(s,'The Ars moriendi closes by telling its readers to practise all this while they are well, because there may be no time when the hour comes. Teach us to number our days, the psalm says, so that we may gain a wise heart.');
- }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+   await tell(s,'A new heaven and a new earth, where "death will be no more, nor mourning, nor crying, nor pain."',{eye:'A new creation'});
+ }}]};
+journeySplash(J);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>

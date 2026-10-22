@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Welcome</title>
+<title>The Welcome · Many Doors</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
@@ -137,6 +137,49 @@ details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font
 details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* ---------- journeys: a full-bleed title, then the player at its biggest ---------- */
+body.jbody{background:var(--night)}
+body.jbody #bar{display:none}
+body.jbody .wrap{max-width:none;padding:0}
+.jsplash{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;color:var(--nightink);background:var(--night)}
+.jcover{position:absolute;inset:0;width:100%;height:100%;display:block;animation:jzoom 30s ease-out both}
+@keyframes jzoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.jshade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--night) 88%,transparent) 0%,color-mix(in srgb,var(--night) 60%,transparent) 45%,transparent 80%),linear-gradient(180deg,transparent 35%,var(--night) 100%)}
+@media (max-width:700px){.jshade{background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 55%,transparent) 30%,var(--night) 75%)}}
+.jback{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px));z-index:2;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:8px 14px;text-decoration:none}
+.jt{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:32vh max(16px,env(safe-area-inset-right,0px)) max(28px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.jdoor{display:inline-block;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;background:var(--c,var(--accent));color:#FFF6DE;border:2px solid #FFF6DE;border-radius:4px;padding:5px 10px}
+.jt h1{margin:12px 0 8px;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;color:#FFF6DE;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+.jtag{margin:0;font-size:clamp(1.05rem,2.6vw,1.4rem);max-width:36ch;line-height:1.35}
+.jt .cta{margin:22px 0 18px}
+.jt .btn{font-size:1.15rem;padding:13px 28px}
+.jt .btn.alt{background:transparent;color:#FFF6DE;border-color:#FFF6DE;box-shadow:none}
+.jstops{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.jstops button{display:flex;align-items:center;gap:8px;background:rgba(255,246,222,.08);border:1.5px solid rgba(255,246,222,.35);color:#FFF6DE;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.82rem;min-height:38px}
+.jstops button:hover{background:rgba(255,246,222,.2)}
+.jstops b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFF6DE;color:var(--night);font-size:.75rem}
+.jmeta{margin:16px 0 0;font-size:.85rem;color:rgba(255,246,222,.7)}
+.jmeta em{color:var(--gold);font-style:normal}
+
+.player.jplayer .stage{width:min(100%,1100px,calc(min(64vh,720px)*1.5))}
+@media (max-height:700px){.player.jplayer .stage{width:min(100%,calc(54vh*1.5))}}
+/* keep 3:2 on phones so tap spots stay on what they point at */
+@media (max-width:600px) and (orientation:portrait){.player.jplayer .stage{width:100%;aspect-ratio:3/2;max-height:none}.player.jplayer .scap p{font-size:1.08rem}}
+.player.jplayer .scap{min-height:0}
+.player.jplayer .scap p{font-size:clamp(1.08rem,2.4vw,1.32rem);min-height:1.5em}
+.gnote{margin-right:auto;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed var(--ink-soft);background:transparent;color:var(--ink-soft);border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
+.gnote[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--bg)}
+.gtext{margin:8px 0 0!important;font-size:.95rem!important;line-height:1.45;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:10px;min-height:0!important}
+a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.jend{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.7) 40%)}
+.jend>span{flex-basis:100%;text-align:center;font-family:var(--display);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFF6DE}
+.jend a,.jend button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;text-align:left}
+.jend small{font-family:var(--body);font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.dtrack{position:absolute;height:0;border-top:4px dashed rgba(255,246,222,.6);transform-origin:0 0}
+.dknob{position:absolute;transform:translate(-50%,-50%);width:clamp(54px,10%,78px);aspect-ratio:1;border-radius:50%;border:3px solid var(--ink);background:var(--gold);cursor:grab;touch-action:none;padding:0;box-shadow:0 0 0 8px rgba(255,246,222,.25)}
+.dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
+.dknob:active{cursor:grabbing}
 
 /* The Welcome: a raigō painting. Gold on indigo silk, purple cloud, lotus pink and sunset. */
 :root{
@@ -314,33 +357,67 @@ function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
 function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+/* The journey: a short click-through trip behind one door. One picture, one line, one thing to do.
+   Data: const J={key,tradition,title,tag,mins,col,cover,stops:[{name,run}],end:{line,book,bookUrl,walk,walkUrl},review}. */
+const HUB=window.MD_HUB||'../#doors';
+/* the pages live in folders; anywhere but the site itself, spell out index.html */
+if(!/colinblackshear\.com$/.test(location.hostname)) document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const m=a.getAttribute('href').match(/^([^:#]*\/)(#.*)?$/); if(m) a.setAttribute('href',m[1]+'index.html'+(m[2]||'')); },true);
+function journeySplash(J){
+  document.body.classList.add('jbody');
+  const next=Math.min(+store.get(J.key+'-next')||0,J.stops.length-1);
+  $('#wrap').innerHTML=`<section class="jsplash" style="--c:${J.col}">
+    <svg class="jcover" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${J.cover()}</svg>
+    <div class="jshade"></div>
+    <a class="jback" href="${HUB}">← All doors</a>
+    <div class="jt">
+      <span class="jdoor">Door: ${esc(J.tradition)}</span>
+      <h1>${esc(J.title)}</h1>
+      <p class="jtag">${esc(J.tag)}</p>
+      <div class="cta"><button type="button" class="btn gold" id="jgo">${next?'Carry on':'Step through'} <span aria-hidden="true">→</span></button>${next?`<button type="button" class="btn alt" id="jre">Start over</button>`:''}</div>
+      <ol class="jstops">${J.stops.map((c,i)=>`<li><button type="button" data-i="${i}"><b>${i+1}</b>${esc(c.name)}</button></li>`).join('')}</ol>
+      <p class="jmeta">${J.mins} minutes · tap to move on · sound optional${J.review?` · <em>${esc(J.review)}</em>`:''}</p>
+    </div></section>`;
+  $('#jgo').onclick=()=>playJourney(J,next);
+  const r=$('#jre'); if(r) r.onclick=()=>{ store.set(J.key+'-next','0'); playJourney(J,0); };
+  document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
 }
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
+/* one short line with Continue, and an optional Guide note the curious can open */
+async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+  if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
+    n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
+    setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
+  await waitTap(s,spoke); const d=$('#pNote'); if(d) d.remove(); }
+
+async function playJourney(J,start){
+  const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
+  const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
+  s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+      s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
+      await c.run(s); if(SND.ctx) allOff(1.2); }
+    store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
+    await journeyEnd(s,J);
   }catch(e){ if(!(e instanceof Abort)) console.error(e); }
 }
+function journeyEnd(s,J){ alive(s); art(J.cover()); if(SND.ctx) chime(); eyebrow('End of the line');
+  s.el.querySelector('.ptitle').innerHTML=`<b>Arrived</b>${esc(J.title)}`;
+  $('#pText').textContent=J.end.line; narrate(J.end.line);
+  const E=J.end; $('#pRow').innerHTML=`<a class="sgo" href="${HUB}">Pick another door <span aria-hidden="true">→</span></a>`;
+  layer().innerHTML=`<div class="jend"><span>Want more than the short version?</span>${E.bookUrl?`<a href="${E.bookUrl}">${esc(E.book)}<small>the full illustrated book</small></a>`:''}${E.walkUrl?`<a href="${E.walkUrl}">${esc(E.walk)}<small>a few minutes a day</small></a>`:''}<button type="button" id="jagain">Ride again<small>from the first stop</small></button></div>`;
+  $('#jagain').onclick=()=>playJourney(J,0);
+  return new Promise(()=>{}); }
+/* drag a token along a path to a target, e.g. across a bridge: returns when it arrives */
+function drag(s,{ask:q,from,to,label='Drag',onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="dtrack" style="left:${from[0]}%;top:${from[1]}%;width:${Math.hypot(to[0]-from[0],(to[1]-from[1])*2/3)}%;transform:rotate(${Math.atan2((to[1]-from[1])*2/3,to[0]-from[0])}rad)"></div><button type="button" class="dknob" style="left:${from[0]}%;top:${from[1]}%" aria-label="${esc(label)}. Use the arrow keys."><span>${esc(label)}</span></button>`;
+  const k=l.querySelector('.dknob'); let p=0,on=false,done=false;
+  const set=v=>{ p=Math.max(0,Math.min(1,v)); k.style.left=(from[0]+(to[0]-from[0])*p)+'%'; k.style.top=(from[1]+(to[1]-from[1])*p)+'%'; onP&&onP(p); if(p>=.98&&!done){ done=true; l.innerHTML=''; res(); } };
+  const proj=e=>{ const r=l.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100; const dx=to[0]-from[0], dy=to[1]-from[1]; const ax=dx*r.width, ay=dy*r.height; return ((x-from[0])*r.width*ax+(y-from[1])*r.height*ay)/(ax*ax+ay*ay); };
+  k.addEventListener('pointerdown',e=>{ on=true; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+  k.addEventListener('pointermove',e=>{ if(on) set(proj(e)); });
+  k.addEventListener('pointerup',()=>{ on=false; }); k.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key===' '){ e.preventDefault(); set(p+.1); } if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); set(p-.1); } });
+  k.focus({preventScroll:true}); }); }
+/* a big tap-anywhere moment with a label, for drama (knock, ring, open) */
+function tapIt(s,{ask:q,label='Tap'}){ return count(s,{ask:q,n:1,label}); }
 
 /* Raigō kit for The Welcome: gold on indigo silk, purple clouds descending from the upper left, lotus pink and sunset, after Heian and Kamakura welcome paintings. */
 const K='#14182C', INDIGOP='#1C2340', GOLDP='#D8B25A', PURP='#8A6AA8', CINNP='#B84A3A', LOTUS='#E8A8B8', WHITEP='#F6F0E2', GREENP='#4A7A5A', SUNSET='#E87A3A', JADEP='#5AA8A0';
@@ -370,101 +447,54 @@ function liePerson(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${
 function cords(x1,y1,x2,y2){ const C=['#3A6AB8','#E8D040','#C83A3A','#F6F0E2','#2A2A2A']; return C.map((c,i)=>`<path d="M${x1} ${y1+i*2} Q${(x1+x2)/2} ${(y1+y2)/2+30+i*4} ${x2} ${y2+i*2}" stroke="${c}" stroke-width="2.5" fill="none"/>`).join(''); }
 function plCover(){ return pl(`${mountainsP(330)}<g transform="translate(0 0)">${cloudP(250,250,1.6)}${amida(260,236,.7,{stand:true})}${bodhi(150,250,.55)}${bodhi(360,256,.55,{hold:'join'})}</g>${petals(14)}`,{bg:'silk'}); }
 
-/* The Welcome: Pure Land Buddhism's passage at death, after the three Pure Land sutras, Genshin and Shinran. */
-const BOOK={key:'welcome',brand:'The Welcome',brandSub:'A Pure Land book of the dead',title:'The Welcome',eyebrow:'From the Pure Land sutras, Genshin and Shinran',
- lede:'In Pure Land Buddhism, the dying are not alone. A Buddha named Amida vowed to come for anyone who calls his name, and to carry them on a lotus to a land in the west where awakening is easy. This book follows that welcome, from the deathbed to the opening of the lotus.',
- note:'About 30 minutes in eleven chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../many-doors/pureland/walk/',walkName:'The Sixteen Contemplations',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['A companion','Pure Land is the most widely practised form of Buddhism in East Asia, in China, Japan, Korea, Taiwan and Vietnam. It is a gentle companion to the Tibetan Bardo series.'],['Different schools','Chinese Pure Land, and Japanese Jōdo-shū and Jōdo Shinshū, all honour Amida but differ, especially on whether deathbed practice matters. The book notes where.'],['Your part','You call the name, hold the five-coloured cords, receive the welcome and wait for the lotus to open.']],
- sources:'The Larger Sutra of Immeasurable Life (Sukhāvatīvyūha), the Amida Sutra and the Contemplation Sutra, tr. Hisao Inagaki (2003); Genshin, Ōjōyōshū (985); Yoshishige no Yasutane, Nihon ōjō gokuraku ki (c. 985); Hōnen, One-Sheet Document (1212); Shinran and Yuien, Tannishō; Jacqueline Stone, Right Thoughts at the Last Moment (2016).',
+/* The Pure Land door: a vow, a name, a deathbed with coloured cords, the welcome, and a lotus that opens, in six stops. After the Pure Land sutras, Genshin and Shinran. */
+const J={key:'j-pureland',tradition:'Pure Land Buddhism',title:'The Welcome',col:'#8A6AA8',mins:5,
+ tag:'Good news: someone is coming to pick you up. All you have to do is call.',
  cover:plCover,
- chapters:[
- {name:'The Vow',short:'The vow',sub:'A monk named Dharmākara',col:'#D8B25A',run:async s=>{
+ end:{line:'That\'s the Pure Land map: not a judgment but a welcome. Call the name, and the Buddha of Infinite Light carries you somewhere awakening is guaranteed.',
+  book:'The Welcome',bookUrl:'../../many-doors/pureland/book/',walk:'The Sixteen Contemplations',walkUrl:'../../many-doors/pureland/walk/'},
+ stops:[
+ {name:'The promise',short:'The vow',col:'#D8B25A',run:async s=>{
    art(pl(`${mountainsP(340)}${amida(300,320,.9)}${pedestal(300,326,1.2)}`));
-   if(SND.ctx) pad('pad',[110,165,220],.03);
-   await say(s,'The Larger Sutra tells of a king who heard the Buddha teach, gave up his throne and became a monk named Dharmākara. He studied every Buddha-land in the universe, and then made forty-eight vows to create a land better than all of them.',{eye:'The Larger Sutra'});
-   await say(s,'The eighteenth vow became the heart of Pure Land Buddhism. If, when I attain Buddhahood, beings in the ten directions who sincerely entrust themselves to me, wish to be born in my land, and call my name even ten times, should not be born there, may I not attain perfect enlightenment.');
-   await hold(s,{label:'Make the vow',ms:5000,ask:'Press and hold while Dharmākara makes his vow.'});
-   if(SND.ctx) bowl();
-   await say(s,'The sutra says he did attain enlightenment, ten aeons ago. So the vow has already been fulfilled. He is Amida, the Buddha of Infinite Light and Infinite Life.');
- }},
- {name:'Infinite Light',short:'The west',sub:'The setting sun',col:'#E87A3A',run:async s=>{
-   art(pl(`${setSun(300,290,1)}${mountainsP(340)}`,{bg:'west'}));
-   await say(s,'His land lies in the west, far beyond countless worlds, where the sun goes down. That is why so many Pure Land temples face west, and why practitioners turn to the sunset.',{eye:'Amitābha, Amitāyus'});
-   await say(s,'In Sanskrit he is Amitābha, Infinite Light, and Amitāyus, Infinite Life. In Chinese, Āmítuófó. In Japanese, Amida. Chinese Buddhists greet each other with his name: Āmítuófó.');
-   await still(s,{ask:'Face west. Watch the sun go down.',ms:9000});
-   await say(s,'The first of the sixteen contemplations in the Contemplation Sutra is exactly this: sit facing west and fix your mind on the setting sun, until you can see it with eyes closed.');
- }},
- {name:'The Name',short:'Nembutsu',sub:'Namu Amida Butsu',col:'#D8B25A',run:async s=>{
-   art(pl(`${kanji(300,180,'南無阿弥陀仏',{size:42})}${lotusP(300,360,1.2)}`));
-   if(SND.ctx) pad('pad',[98,147,196],.03);
-   await say(s,'The practice at the heart of it all is the nembutsu: calling the Buddha\'s name. In Japanese: Namu Amida Butsu. In Chinese: Námó Āmítuófó. It means: I take refuge in Amida Buddha.',{eye:'The nembutsu'});
-   await count(s,{ask:'The vow says: even ten times. Tap ten times, saying the name.',n:10,label:'Namu Amida Butsu',onTap:k=>{ if(SND.ctx) bell(330+(k%2)*60,.05); }});
-   await say(s,'Hōnen, who founded the Jōdo school in twelfth-century Japan, is said to have recited it sixty thousand times a day. He taught that this simple practice was enough for anyone, monk or fisherman, scholar or sinner.');
- }},
- {name:'The Deathbed',short:'Deathbed',sub:'Five-coloured cords',col:'#8A6AA8',run:async s=>{
-   art(pl(`${amida(170,330,.7,{stand:true})}${liePerson(400,340,1)}${cords(196,240,340,330)}`,{bg:'#241E3A'}));
-   if(SND.ctx) pad('pad',[110,165,220],.025);
-   await say(s,'In 985, the Japanese monk Genshin wrote a guide called the Essentials of Birth in the Pure Land. It describes how to die.',{eye:'Genshin, Ōjōyōshū'});
-   await spots(s,{ask:'Tap each part of the deathbed.',items:[
-     {x:28,y:50,label:'The image',say:'A standing image of Amida is placed facing west, with the dying person behind it, as if following the Buddha.'},
-     {x:45,y:72,label:'The cords',say:'Five-coloured cords are tied to the Buddha\'s hand. The dying person holds the other end.'},
-     {x:67,y:80,label:'The friends',say:'Companions sit with the dying, burn incense, scatter flowers, and chant the nembutsu with them, so their last thought is of Amida. Genshin founded a society of 25 monks who promised to do this for each other.'}]});
-   await hold(s,{label:'Hold the cords',ms:6000,ask:'Press and hold the five-coloured cords, and keep your mind on the Buddha.'});
-   await say(s,'Genshin believed the last thought mattered enormously. A calm mind fixed on Amida at death, he wrote, was the doorway.');
- }},
- {name:'The Welcome',short:'Raigō',sub:'Amida comes',col:'#D8B25A',run:async s=>{
-   art(pl(`${mountainsP(340)}${liePerson(470,370,.6)}<g class="fadein">${cloudP(220,240,1.6)}${amida(230,226,.7,{stand:true})}${bodhi(120,240,.55)}${bodhi(330,246,.55,{hold:'join'})}</g>${petals(20)}`));
-   if(SND.ctx){ allOff(1); pad('pad',[130.8,196,261.6,329.6],.035); chime(); }
-   await say(s,'Then the welcome, the raigō. The Amida Sutra promises that when a person who has held the name dies, Amida and his holy company will appear before them.',{eye:'Raigō'});
-   await say(s,'Japanese painters showed it again and again: Amida descending on a purple cloud, surrounded by bodhisattvas playing music and scattering flowers. Kannon, the bodhisattva of compassion, holds out a golden lotus seat. Seishi, the bodhisattva of wisdom, joins his hands.');
-   await hold(s,{label:'Receive the welcome',ms:6000,ask:'Press and hold, and let them come for you.'});
+   if(SND.ctx) pad('pad',[146.8,220,293.7],.03);
+   await tell(s,'Ages ago a monk named Dharmākara made a promise: if I become a Buddha, anyone who calls my name will be born in my land.',{eye:'The Larger Sutra, the 18th vow'});
+   await hold(s,{label:'Make the vow',ms:3500,ask:'Press and hold while he makes it.'});
    if(SND.ctx) chime();
-   await say(s,'Stories of the time report signs at good deaths: purple clouds over the house, a strange fragrance, music no one could place.');
+   await tell(s,'He became a Buddha. So the promise holds. He\'s called Amida: Infinite Light, Infinite Life.');
  }},
- {name:'The Lotus Bud',short:'The lotus',sub:'Nine grades of birth',col:'#E8A8B8',run:async s=>{
+ {name:'The name',short:'Nembutsu',col:'#D8B25A',run:async s=>{
+   art(pl(`${kanji(300,180,'南無阿弥陀仏',{size:42})}${lotusP(300,360,1.2)}`));
+   await tell(s,'The whole practice fits in six syllables: Namu Amida Butsu. "I take refuge in Amida Buddha."',{eye:'The nembutsu',note:'In Chinese: Nāmó Āmítuófó. Chinese Buddhists even greet each other with "Āmítuófó."'});
+   await count(s,{ask:'The vow says even ten times is enough. Tap ten times.',n:10,label:'Namu Amida Butsu',onTap:k=>{ if(SND.ctx) bell(330+(k%2)*60,.05); }});
+   await tell(s,'That\'s it. Easiest entrance exam in the whole hall of doors.');
+ }},
+ {name:'The cords',short:'Deathbed',col:'#8A6AA8',run:async s=>{
+   art(pl(`${amida(170,330,.7,{stand:true})}${liePerson(400,340,1)}${cords(196,240,340,330)}`,{bg:'#241E3A'}));
+   await tell(s,'In 985 a monk named Genshin wrote a deathbed manual. Put an image of Amida to the west, facing the dying.',{eye:'Genshin\'s Ōjōyōshū'});
+   await hold(s,{label:'Hold the cords',ms:4500,ask:'Five-coloured cords run from the Buddha\'s hand to yours. Press and hold, and keep your mind on him.'});
+   await tell(s,'Friends sit with you and keep saying the name, so you don\'t lose the thread. Literally.');
+ }},
+ {name:'The welcome',short:'Raigō',col:'#D8B25A',run:async s=>{
+   art(pl(`${mountainsP(340)}${liePerson(470,370,.6)}<g class="fadein">${cloudP(220,240,1.6)}${amida(230,226,.7,{stand:true})}${bodhi(120,240,.55)}${bodhi(330,246,.55,{hold:'join'})}</g>${petals(20)}`));
+   if(SND.ctx){ pad('choir',[220,277.2,329.6,440],.04); chime(); }
+   await tell(s,'And then they come: Amida on a purple cloud, with bodhisattvas, music and falling petals. This is the raigō, the welcome.',{eye:'The welcome'});
+   await hold(s,{label:'Receive the welcome',ms:4000,ask:'One of them holds out a lotus seat for you. Press and hold to step on.'});
+   loopOff('choir');
+ }},
+ {name:'The lotus',short:'The lotus',col:'#E8A8B8',run:async s=>{
    art(pl(`${pondP(260)}<g id="bud">${lotusP(300,250,2,{open:.15})}</g>`,{bg:'land'}));
-   if(SND.ctx) waterLoop();
-   await say(s,'Kannon places the soul on the lotus seat, and it is carried to the Pure Land. There, the Contemplation Sutra says, it is born inside a lotus flower.',{eye:'The Contemplation Sutra'});
-   await say(s,'The sutra describes nine grades of birth, high to low. For the best, the lotus opens at once. For those who did great wrong but called the name at the end, it may stay closed for an unimaginably long time. But it always opens.');
+   await tell(s,'You\'re reborn inside a closed lotus bud on a jewelled pond in the West.',{eye:'The Pure Land'});
    const B=$('#pArt');
-   await hold(s,{label:'Wait for the lotus',ms:7000,ask:'Press and hold, and wait for the lotus to open.',onP:p=>{ const g=B.querySelector('#bud'); if(g) g.innerHTML=lotusP(300,250,2,{open:.15+p*.85}); }});
-   loopOff('water'); if(SND.ctx) chime();
-   await say(s,'And inside, you see the Buddha, and hear the teaching.');
+   await hold(s,{label:'Wait for it to open',ms:5000,ask:'Press and hold. Some buds open at once, some take longer.',onP:p=>{ const g=B.querySelector('#bud'); if(g) g.innerHTML=lotusP(300,250,2,{open:.15+p*.85}); }});
+   if(SND.ctx) chime();
+   await tell(s,'The petals open, and you see the Buddha for yourself.');
  }},
- {name:'The Land of Bliss',short:'The land',sub:'Jewelled trees and singing birds',col:'#5AA8A0',run:async s=>{
+ {name:'The land',short:'The land',col:'#5AA8A0',run:async s=>{
    art(pl(`${pondP(270)}${jewelTree(90,270,1)}${jewelTree(510,270,1)}${birdP(220,120,1.2)}${birdP(380,90,1)}${petals(14,9)}<path d="M200 270 H400" stroke="${GOLDP}" stroke-width="5"/>`,{bg:'land'}));
-   if(SND.ctx){ pad('pad',[130.8,196,261.6],.03); waterLoop(); }
-   await say(s,'The Amida Sutra describes Sukhāvatī, the Land of Bliss. Its ground is gold. It has seven rows of railings and seven rows of jewelled trees. Its ponds are made of seven jewels and filled with water of eight excellent qualities, over sand of gold.',{eye:'The Amida Sutra'});
-   await spots(s,{ask:'Tap to see.',items:[{x:15,y:40,label:'Jewel trees',say:'When the breeze moves through the jewel trees and nets, they make music like a hundred thousand instruments.'},{x:37,y:30,label:'The birds',say:'White cranes, peacocks and parrots sing the Buddha\'s teaching six times a day. The sutra says they are not real birds: Amida made them to teach.'},{x:50,y:85,label:'The lotuses',say:'Lotuses as large as cartwheels: blue ones shine blue, yellow ones yellow, red ones red, white ones white.'}]});
-   loopOff('water');
-   await say(s,'Everyone who hears the music, the sutra says, thinks of the Buddha, the teaching and the community. It\'s a land designed so that awakening is easy.');
- }},
- {name:'Other Power',short:'Shinran',sub:'Even the wicked',col:'#B84A3A',run:async s=>{
-   art(pl(`${kanji(300,180,'他力',{size:80})}${lotusP(300,360,1)}`));
-   await say(s,'Hōnen\'s student Shinran took the idea further. Birth in the Pure Land, he said, doesn\'t depend on your own effort at all, not even on calling the name the right number of times. It depends entirely on Amida\'s vow: on Other Power, tariki.',{eye:'Shinran, Tannishō'});
-   await choose(s,'Shinran said something that shocked people. Which?',['Only the good will be born in the Pure Land','Even a good person is born there, so how much more an evil person'],{right:1,wrong:'That\'s what most people expected. Shinran said the opposite.'});
-   await say(s,'Even a good person attains birth, so how much more so an evil person. Those who know they can\'t save themselves are exactly the ones Amida\'s vow was made for.');
-   await say(s,'For Shinran\'s school, Jōdo Shinshū, now the largest Buddhist denomination in Japan, birth in the Pure Land is settled the moment you truly entrust yourself. Deathbed rites don\'t matter; the nembutsu is simply gratitude.');
- }},
- {name:'Not the End',short:'Return',sub:'Coming back to help',col:'#4A7A5A',run:async s=>{
-   art(pl(`${mountainsP(380)}${amida(300,200,.7)}${cloudP(300,290,1.4)}<g class="rise">${bodhi(300,370,.6)}</g>`));
-   if(SND.ctx) pad('pad',[110,165,220,277.2],.03);
-   await say(s,'The Pure Land is not the final goal. It\'s the best place to finish the journey to awakening, with nothing in the way.',{eye:'Returning'});
-   await say(s,'And once awakened, Pure Land teachers say, you return to this world, as a bodhisattva, to help others the way Amida helped you. Shinran called it the returning aspect. The welcome is passed on.');
-   await count(s,{ask:'Pass it on. Tap to send the welcome back into the world.',n:3,label:'Return',onTap:()=>{ if(SND.ctx) bell(523,.05); }});
- }},
- {name:'At Home and in the Temple',short:'Rites',sub:'What families do',col:'#8A6AA8',run:async s=>{
-   art(pl(`<rect x="0" y="300" width="600" height="100" fill="#3A2A22"/><rect x="200" y="140" width="200" height="160" fill="#2A1E1A" stroke="${GOLDP}" stroke-width="3"/>${amida(300,290,.45)}${lotusP(230,300,.5)}${lotusP(370,300,.5)}`));
-   await say(s,'In Japan and China, families who follow Pure Land keep a home altar with an image or scroll of Amida, or the name written out. The nembutsu is chanted at funerals and at the memorial services that follow.',{eye:'Remembering the dead'});
-   await say(s,'Many still hold rites every seventh day for forty-nine days, and on anniversaries for years after. In Jōdo Shinshū these services are understood less as helping the dead, who are already in Amida\'s care, and more as a chance for the living to hear the teaching.');
-   await count(s,{ask:'Light incense and bow, three times.',n:3,label:'Bow',onTap:()=>{ if(SND.ctx) bowl(); }});
- }}],
- finale:async s=>{ art(plCover()); if(SND.ctx) chime();
-   await say(s,'That is the welcome: a vow made long ago, a name said ten times, a hand on five-coloured cords, a Buddha descending on a purple cloud, and a lotus that, sooner or later, always opens.',{eye:'The end of the book'});
-   await say(s,'Namu Amida Butsu.'); }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+   await spots(s,{ask:'Look around. Tap to see.',items:[{x:15,y:40,label:'Jewel trees',say:'When the breeze moves the jewel trees, they make music like a hundred thousand instruments.'},{x:37,y:30,label:'The birds',say:'The birds sing the Buddha\'s teaching. The sutra admits they aren\'t real birds. Amida made them to teach.'},{x:50,y:85,label:'The lotuses',say:'Lotuses as big as cartwheels, each shining its own colour.'}]});
+   await tell(s,'Here, nothing gets in the way, so awakening is certain. And the awakened don\'t stay. They come back to help everyone else.',{note:'Shinran, the 13th-century founder of the True Pure Land school, taught that it all rests on Amida\'s "other power", not your own effort: "Even a good person is born there, so how much more an evil person."'});
+ }}]};
+journeySplash(J);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
