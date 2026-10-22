@@ -103,7 +103,18 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
 .key[aria-pressed="true"]::after{background:#e2361f;box-shadow:0 0 5px #e2361f}
 .key.dead{color:#7d7566}
 @media (max-width:520px){ .hint{display:none} }
-@media (max-width:640px){ .presets{flex-wrap:wrap;justify-content:center} .readout{flex-basis:100%;max-width:none;order:-1} }
+/* phones: three compact rows (readout, a full row of channel keys, then buttons) */
+@media (max-width:640px){
+  .deck{padding-block:8px calc(8px + env(safe-area-inset-bottom, 0px))}
+  .deck-in{gap:8px;padding:8px}
+  .presets{order:-1;flex:1 1 100%;gap:4px;padding:2px 0 5px;overflow:visible}
+  .key{flex:1 1 0;min-width:0;width:auto;height:34px;font-size:.68rem;border-radius:3px}
+  .key::after{top:3px;width:4px;height:4px;margin-left:-2px}
+  .dk{padding:8px 10px;font-size:.6rem;letter-spacing:.12em}
+  .readout{font-size:1.05rem;padding:5px 10px}
+  .readout small{font-size:.8rem}
+}
+@media (max-width:640px){ .readout{flex-basis:100%;max-width:none;order:-2} }
 @media (prefers-reduced-motion: reduce){ .grain{animation:none} .pill.sound{animation:none!important} }
 </style>
 </head><body>
@@ -146,7 +157,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
     <div class="presets" id="presets" aria-label="Channels"></div>
     <div class="transport" id="transport" hidden>
       <button class="dk" id="dtPrev" aria-label="Previous track">◂◂</button>
-      <button class="dk" id="dtPlay" aria-label="Play or pause">▶ Play</button>
+      <button class="dk" id="dtPlay" aria-label="Play or pause">▶</button>
       <button class="dk" id="dtNext" aria-label="Next track">▸▸</button>
     </div>
     <button class="dk" id="dvol" aria-pressed="false"><span class="led"></span>Sound</button>
@@ -646,7 +657,6 @@ function setZoom(on) {
   zoomFrom = zoomProgress(now); zoomTo = on ? 1 : 0; zoomAt = now;
   document.body.classList.toggle('zoomed', on);
   $('deck').setAttribute('aria-hidden', !on);
-  if (on) setTimeout(() => $('back').focus({ preventScroll: true }), 900);
   if (on && !soundOn) setSound(true);  // stepping in to watch turns the sound up
 }
 const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -772,7 +782,7 @@ function updateDeck() {
   const sub = k === 'montage' ? 'Reel · cut to music' : k === 'music' ? `${soundOn ? '▶' : '❚❚'} ${TRACKS[trackIdx].title} · ${trackIdx + 1}/${TRACKS.length}` : w ? metaOf(w) || 'Details to come' : k === 'bars' ? 'More films coming' : 'Keep turning';
   $('readout').innerHTML = `CH ${String(cur).padStart(2, '0')} · ${name.toUpperCase()}<small>${sub}</small>`;
   $('transport').hidden = k !== 'music'; $('trPrev').hidden = $('trNext').hidden = k !== 'music';
-  $('dtPlay').textContent = soundOn ? '❚❚ Pause' : '▶ Play';
+  $('dtPlay').textContent = soundOn ? '❚❚' : '▶';
   document.querySelectorAll('#presets .key').forEach((b, i) => b.setAttribute('aria-pressed', i + 2 === cur));
 }
 function setChannel(c) {
