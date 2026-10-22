@@ -11,18 +11,9 @@ window.EXPERIMENTS = [
     blurb: 'A sixteen-step drum machine in the spirit of the 808, with a sampler for your own sounds.',
   },
   {
-    slug: 'bardo',
-    title: 'The Bardo Manual',
-    no: '02',
-    status: 'live',
-    object: 'book',
-    blurb: 'The Tibetan Book of the Dead, told as an illustrated flight through the in-between.',
-    also: [{ label: 'The Forty-Nine Day Walk', href: 'bardo/49-days/', note: 'the slip in the book: walk all forty-nine days, one stone at a time' }],
-  },
-  {
     slug: 'many-doors',
     title: 'Many Doors',
-    no: '03',
+    no: '02',
     status: 'live',
     object: 'doors',
     doors: 12, // one per book in the series, the Bardo included

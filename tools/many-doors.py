@@ -7,7 +7,7 @@ and lays it out on the site:
   lab/many-doors/                  the atlas (hub)
   lab/many-doors/<folder>/         a book's manual
   lab/many-doors/<folder>/walk/    a book's walk
-  lab/bardo/, lab/bardo/49-days/   the Tibetan pair, already on the site
+  lab/many-doors/tibetan/          the Tibetan pair, kept by hand (not built in the Spirit Project)
 
 To add a book: rebuild in the Spirit Project, then run
   python3 tools/many-doors.py /path/to/spirit-books
@@ -35,8 +35,8 @@ def main(src):
 
     # site path (from lab/) for every claude.ai artifact the pages link to
     where = {m['atlas']['artifact']: 'many-doors/'}
-    where[m['tibetan']['manual']] = 'bardo/'
-    where[m['tibetan']['walk']] = 'bardo/49-days/'
+    where[m['tibetan']['manual']] = 'many-doors/tibetan/'
+    where[m['tibetan']['walk']] = 'many-doors/tibetan/walk/'
     jobs = [(m['atlas']['file'], 'many-doors/')]
     for b in m['books']:
         for kind in ('manual', 'walk'):
