@@ -69,7 +69,9 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
 .sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--night), 0 0 0 3.5px var(--title)}
 .vbox{position:fixed;left:0;top:0;width:0;height:0;overflow:hidden;background:#000;pointer-events:none;transform-origin:0 0;
   display:flex;align-items:center;z-index:0}
-.vbox iframe{position:absolute;display:block;border:0;filter:contrast(1.06) saturate(.88) sepia(.08) brightness(1.04)}
+.vbox iframe{position:absolute;left:0;top:0;display:block;border:0;transform-origin:0 0;filter:contrast(1.06) saturate(.88) sepia(.08) brightness(1.04)}
+/* phones: a filter on a playing video makes the browser redraw every frame by hand, which stalls playback */
+@media (pointer: coarse){ .vbox iframe{filter:none} }
 .vbox::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:var(--crt,1);
   background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, rgba(0,0,0,0) 1px 3px),
     radial-gradient(55% 35% at 30% 18%, rgba(255,255,255,.10), rgba(255,255,255,0) 70%),
@@ -590,7 +592,7 @@ const canvas = $('gl');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); }
 catch (e) { document.body.insertAdjacentHTML('beforeend', '<div class="nogl">This browser can’t show the 3D set (WebGL is off).</div>'); return; }
-renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = .9;
@@ -1169,7 +1171,7 @@ if (document.fullscreenEnabled && fsEl.requestFullscreen) {
   $('tvfFull').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : fsEl.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}));
 }
 tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
-function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
+function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; laid = null; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
 function makeVimeo(id) {
   vFrame = document.createElement('iframe');
   vFrame.src = `https://player.vimeo.com/video/${id}?autoplay=1&muted=${soundOn ? 0 : 1}&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0`;
@@ -1197,10 +1199,7 @@ function syncVimeo(now) {
   const zp = zoomProgress(now), deckH = zp > 0 ? $('deck').offsetHeight : 0;
   const L = (a, b) => a + (b - a) * zp;
   let bx = L(x0, 0), by = L(y0, 0), bw = L(x1 - x0, innerWidth), bh = L(y1 - y0, innerHeight - deckH);
-  vbox.style.transform = `translate(${bx}px, ${by}px)`;
-  vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px';
-  vbox.style.borderRadius = L(.045 / SW * (x1 - x0), 0) + 'px';
-  vbox.style.setProperty('--crt', 1 - zp * .75);
+  let radius = L(.045 / SW * (x1 - x0), 0), crt = 1 - zp * .75;
   // phone turned sideways: the film takes the whole screen, edge to edge
   const full = landscapePhone.matches;
   const dt = Math.min(.1, (now - (syncVimeo.last || now)) / 1000); syncVimeo.last = now;
@@ -1211,10 +1210,7 @@ function syncVimeo(now) {
   if (fullP > .001) {
     const F = (a, b) => a + (b - a) * fullP, T = tvLayout(w.aspect || 16 / 9);
     bx = F(bx, T.x); by = F(by, T.y); bw = F(bw, T.w); bh = F(bh, T.h);
-    vbox.style.transform = `translate(${bx}px, ${by}px)`;
-    vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px';
-    vbox.style.borderRadius = F(parseFloat(vbox.style.borderRadius), 14) + 'px';
-    vbox.style.setProperty('--crt', F(1 - zp * .75, .3));
+    radius = F(radius, 14); crt = F(crt, .3);
     const bz = $('tvfBezel').style, sd = $('tvfSide').style;
     bz.left = T.x - 8 + 'px'; bz.top = T.y - 8 + 'px'; bz.width = T.w + 16 + 'px'; bz.height = T.h + 16 + 'px';
     sd.left = T.side.x + 'px'; sd.top = T.side.y + 'px'; sd.width = T.side.w + 'px'; sd.height = T.side.h + 'px';
@@ -1228,7 +1224,6 @@ function syncVimeo(now) {
   const ar = w.aspect || 16 / 9, pa = w.picture || ar, open = Math.max(zp, fullP);
   const fwRoom = Math.max(bw, bh * pa), fwFull = Math.max(bw, bh * ar);
   const fw = fwRoom + (fwFull - fwRoom) * open, fh = fw / ar;
-  vFrame.style.width = fw + 'px'; vFrame.style.height = fh + 'px';
   // where the film overflows its window (upright phones, mostly), a drag slides it to choose the frame
   const live = zp * (1 - fullP);
   vOver.x = (fw - bw) * live; vOver.y = (fh - bh) * live;
@@ -1236,7 +1231,23 @@ function syncVimeo(now) {
   if (!dragHinted && zp === 1 && fullP === 0 && vOver.x + vOver.y > 40 && now - vAt > 1800 && matchMedia('(pointer: coarse)').matches) {
     dragHinted = true; $('draghint').classList.add('on'); setTimeout(() => $('draghint').classList.remove('on'), 2800);
   }
-  vFrame.style.left = (bw - fw) / 2 + pan.x * vOver.x / 2 + 'px'; vFrame.style.top = (bh - fh) / 2 + pan.y * vOver.y / 2 + 'px';
+  placeFilm(bx, by, bw, bh, fw, fh, (bw - fw) / 2 + pan.x * vOver.x / 2, (bh - fh) / 2 + pan.y * vOver.y / 2, radius, crt);
+}
+// Resizing the player restarts its layout and can make it switch video quality, which stalls playback on phones.
+// So the player keeps one size while the set drifts and sways, and small changes are made with a transform;
+// it is only resized when the shape really changes (stepping in, turning the phone).
+let laid = null;
+function placeFilm(bx, by, bw, bh, fw, fh, fl, ft, radius, crt) {
+  const off = (a, b) => Math.abs(a - b) / Math.max(1, b) > .04;
+  if (!laid || laid.f !== vFrame || off(bw, laid.bw) || off(bh, laid.bh) || off(fw, laid.fw)) {
+    laid = { f: vFrame, bw, bh, fw, fh };
+    vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px';
+    vFrame.style.width = fw + 'px'; vFrame.style.height = fh + 'px';
+  }
+  const sx = bw / laid.bw, sy = bh / laid.bh, k = fw / laid.fw;
+  vbox.style.transform = `translate(${bx}px, ${by}px) scale(${sx}, ${sy})`;
+  vFrame.style.transform = `translate(${fl / sx}px, ${ft / sy}px) scale(${k / sx}, ${k / sy})`;
+  vbox.style.borderRadius = radius + 'px'; vbox.style.setProperty('--crt', crt);
 }
 
 /* --- psychedelic layer: light trails, energy waves, prism light --- */
@@ -1311,10 +1322,16 @@ function drawPsy(now, zp) {
 
 const born = performance.now();
 const ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+let idleN = 0, psyClear = false;
 function loop(now) {
   requestAnimationFrame(loop);
   const life = (now - born) / 1000;
   const ps = powerState(now);
+  // while a film fills the view (stepped in, or the sideways set), the 3D room behind it is hidden: draw it only now and then,
+  // so the phone's processor is free to play the video
+  const covered = vFrame && (fullP > .99 || zoomTo === 1 && zoomProgress(now) > .999);
+  if (covered && ++idleN % 20) { if (!psyClear) { pctx.clearRect(0, 0, psyW, psyH); psyClear = true; } syncVimeo(now); return; }
+  psyClear = false;
   if (powered || ps.vis > 0) { renderPicture(now); drawOSD(now); picTex.needsUpdate = true; if (++frameN % 5 === 0) sampleScreen(); }
   Object.assign(tubeUniforms.sx, { value: ps.sx }); tubeUniforms.sy.value = ps.sy; tubeUniforms.bright.value = ps.b;
   tubeUniforms.sat.value = ps.sat; tubeUniforms.vis.value = ps.vis; tubeUniforms.glow.value = ps.glow; tubeUniforms.time.value = life;
