@@ -349,11 +349,14 @@ const WORKS = [
 ];
 const MUSIC_CH = 9;
 /* placeholder songs, synthesized live; real tracks would be audio files */
+/* placeholder tracks, synthesized live in the underground style of the intro; real tracks would be audio files.
+   key: semitones from F minor. kick: 'four' to the floor or broken 'electro'. */
 const TRACKS = [
-  { title: 'Late Bloom',   bpm: 96,  chords: [[53, 57, 60, 64], [53, 59, 64, 67], [52, 55, 59, 62], [55, 60, 64, 71]], roots: [38, 43, 36, 45] },
-  { title: 'Avocado Sun',  bpm: 104, chords: [[55, 59, 62, 66], [57, 60, 64, 67], [52, 55, 59, 64], [54, 57, 61, 64]], roots: [43, 45, 40, 42] },
-  { title: 'Night Static', bpm: 84,  chords: [[50, 53, 57, 60], [48, 52, 55, 59], [46, 50, 53, 57], [45, 49, 52, 57]], roots: [38, 36, 34, 33] },
+  { title: 'Basement Hours',  bpm: 120, key: -2, kick: 'four',   acid: false, stab: 'dub',    sub: true },
+  { title: 'Concrete Garden', bpm: 132, key: 3,  kick: 'electro', acid: true,  stab: 'sparse', snare: true },
+  { title: 'Night Static',    bpm: 112, key: -5, kick: 'four',   acid: false, stab: 'none',   sub: true, bleeps: true, crackle: true },
 ];
+const INTRO = { bpm: 124, key: 0, kick: 'four', acid: true, stab: 'sparse' };
 let trackIdx = 0, trackAt = 0;
 const kindOf = c => c === 2 ? 'montage' : c === 13 ? 'bars' : c === MUSIC_CH ? 'music' : (WORKS.find(w => w.ch === c) ? 'work' : 'snow');
 const metaOf = w => [w.kind, w.year, w.role].filter(Boolean).join(' · ');
@@ -578,7 +581,7 @@ function drawMusic(t) {
   ctx.fillText(`MUSIC  ·  TRACK ${trackIdx + 1}/${TRACKS.length}`, 60, 58);
   ctx.fillStyle = '#f3efe4'; ctx.font = 'italic 46px "Instrument Serif", Georgia, serif'; ctx.fillText(tr.title, 60, 262);
   ctx.font = '500 13px "IBM Plex Mono", monospace'; ctx.fillStyle = 'rgba(243,239,228,.6)';
-  if (soundOn) { const e = Math.max(0, (performance.now() - trackAt) / 1000); ctx.fillText(`▶ ${Math.floor(e / 60)}:${String(Math.floor(e % 60)).padStart(2, '0')}  ·  ${tr.bpm} BPM  ·  PLACEHOLDER TRACK`, 62, 290); }
+  if (soundOn) { const e = Math.max(0, (performance.now() - trackAt) / 1000); ctx.fillText(`▶ ${Math.floor(e / 60)}:${String(Math.floor(e % 60)).padStart(2, '0')}  ·  ${tr.bpm} BPM  ·  UNDERGROUND`, 62, 290); }
   else { ctx.globalAlpha = .5 + .5 * Math.sin(t * 3); ctx.fillText('TURN UP THE VOLUME TO LISTEN', 62, 290); ctx.globalAlpha = 1; }
 }
 /* film print look: gate weave, diffusion, halation */
@@ -975,7 +978,7 @@ function caption() {
   const k = kindOf(cur), w = WORKS.find(w => w.ch === cur);
   $('lNum').textContent = `Channel ${cur}`;
   if (k === 'montage') { $('lTitle').innerHTML = 'Selected <em>Work</em>'; $('lMeta').textContent = 'Be here. Now playing.'; }
-  else if (k === 'music') { $('lTitle').innerHTML = '<em>Music</em>'; $('lMeta').textContent = `${TRACKS[trackIdx].title} · track ${trackIdx + 1} of ${TRACKS.length} · placeholder`; }
+  else if (k === 'music') { $('lTitle').innerHTML = '<em>Music</em>'; $('lMeta').textContent = `${TRACKS[trackIdx].title} · track ${trackIdx + 1} of ${TRACKS.length}`; }
   else if (k === 'work') { $('lTitle').innerHTML = `<em>${w.title}</em>`; $('lMeta').textContent = metaOf(w) + (w.vimeo ? ' · via Vimeo' : ''); }
   else if (k === 'bars') { $('lTitle').textContent = 'Please stand by'; $('lMeta').textContent = 'More films coming soon'; }
   else { $('lTitle').textContent = 'No signal'; $('lMeta').textContent = 'Nothing on this channel. Keep turning.'; }
@@ -1038,35 +1041,15 @@ function stopChannelAudio() {
   if (bus) { const old = bus; old.gain.setTargetAtTime(0, actx.currentTime, .05); setTimeout(() => old.disconnect(), 700); bus = null; }
   held.forEach(n => { try { n.stop(actx.currentTime + .6); } catch (e) {} }); held = [];
 }
-const BASS = { 0: 0, 6: 0, 7: 12, 10: 7, 14: 10 };
-function startGroove(b, tr, syncToPicture) {
-  const STEP = 60 / tr.bpm / 4, CHORDS = tr.chords, ROOTS = tr.roots;
-  const trem = actx.createGain(); trem.gain.value = .75;
-  const lfo = actx.createOscillator(), lg = actx.createGain(); lfo.frequency.value = 4.6; lg.gain.value = .25;
-  lfo.connect(lg); lg.connect(trem.gain); lfo.start(); held.push(lfo); trem.connect(b);
-  const bassF = actx.createBiquadFilter(); bassF.type = 'lowpass'; bassF.frequency.value = 520; bassF.connect(b);
-  const elapsed = syncToPicture ? (performance.now() - chStart) / 1000 : 0;
-  let step = Math.max(0, Math.ceil(elapsed / STEP)), next = actx.currentTime + (step * STEP - elapsed) + .02;
-  const play = (s, time) => {
-    const bar = Math.floor(s / 16) % 4, p = s % 16, sw = (p % 2 === 1) ? STEP * .18 : 0;
-    if (p === 0 || p === 10) tone('sine', 140, time, .28, .55, b).frequency.exponentialRampToValueAtTime(42, time + .12);
-    if (p === 4 || p === 12) { noise(time, .16, 'bandpass', 1700, .22, b); tone('triangle', 190, time, .07, .08, b); }
-    if (p % 2 === 0 || p === 15) noise(time + sw, .035, 'highpass', 7200, p % 4 === 2 ? .07 : .04, b);
-    if (p in BASS) tone('triangle', mtof(ROOTS[bar] + BASS[p]), time, .32, .3, bassF, .01);
-    if (p === 0 || p === 10) CHORDS[bar].forEach((m, i) => {
-      const t0 = time + i * .012;
-      tone('sine', mtof(m), t0, p === 0 ? 1.7 : .7, .05, trem, .008);
-      tone('sine', mtof(m) * 2.002, t0, .5, .012, trem, .004);
-    });
-  };
-  const tk = () => { while (next < actx.currentTime + .15) { play(step, next); next += STEP; step++; } };
-  tk(); grooveTimer = setInterval(tk, 25);
-}
-/* The intro: dark, minimal warehouse techno in F minor. Four-to-the-floor kick with a dubby rumble,
-   off-beat hats, an acid line whose filter slowly opens and closes, and a chord stab lost in delay. */
+/* Underground electronic, synthesized live. The intro is dark, minimal warehouse techno in F minor: four-to-the-floor
+   kick with a dubby rumble, off-beat hats, an acid line whose filter slowly opens and closes, a chord stab lost in delay.
+   The music channel's tracks are variations on it (see TRACKS): dub chords, a sub bass, broken electro drums, bleeps. */
 const ACID = [41, 41, 53, 41, 44, 41, 48, 41, 41, 51, 41, 44, 41, 53, 46, 41], ACID_ON = [1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1], ACID_ACC = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0];
-function startUnderground(b) {
-  const STEP = 60 / 124 / 4;
+function startUnderground(b, st = INTRO) {
+  const STEP = 60 / st.bpm / 4, K = st.key, CH = [65, 68, 72, 75].map(m => m + K), PENTA = [77, 80, 82, 84, 87, 89].map(m => m + K);
+  // vinyl crackle, for the late-night one
+  if (st.crackle) { const c = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+    c.buffer = noiseBuf; c.loop = true; f.type = 'highpass'; f.frequency.value = 3500; g.gain.value = .012; c.connect(f); f.connect(g); g.connect(b); c.start(); held.push(c); }
   // rumble: the kick sent into a dark, feeding-back delay
   const rumble = actx.createDelay(1), rfb = actx.createGain(), rlp = actx.createBiquadFilter(), rIn = actx.createGain();
   rumble.delayTime.value = STEP * 2; rfb.gain.value = .55; rlp.type = 'lowpass'; rlp.frequency.value = 180; rIn.gain.value = .5;
@@ -1087,8 +1070,8 @@ function startUnderground(b) {
   const play = (n, time) => {
     const bar = Math.floor(n / 16) % 16, p = n % 16;
     cut = 260 + 900 * (.5 - .5 * Math.cos((n % 256) / 256 * Math.PI * 2));   // the filter breathes over 16 bars
-    const kick = bar >= 2 && bar !== 15;
-    if (kick && p % 4 === 0) {
+    const kick = bar >= 2 && bar !== 15, hit = st.kick === 'electro' ? [0, 6, 10].includes(p) || (p === 13 && bar % 2) : p % 4 === 0;
+    if (kick && hit) {
       const k = tone('sine', 150, time, .34, .9, b); k.frequency.exponentialRampToValueAtTime(44, time + .09);
       tone('sine', 150, time, .06, .25, rIn).frequency.exponentialRampToValueAtTime(44, time + .09);
       noise(time, .012, 'highpass', 3000, .12, b);
@@ -1096,8 +1079,12 @@ function startUnderground(b) {
     if (p % 4 === 2) noise(time, .09, 'highpass', 8200, bar < 2 ? .05 : .09, b, .7);              // open hat on the off-beat
     if (bar >= 4 && p % 2 === 1) noise(time, .02, 'highpass', 10000, p % 4 === 3 ? .03 : .018, b);  // ticking sixteenths
     if (bar >= 4 && (p === 4 || p === 12)) { noise(time, .2, 'bandpass', 1300, .1, b, 1.4); noise(time + .012, .14, 'bandpass', 1100, .06, dub, 1.2); }
-    if (ACID_ON[p] && bar !== 15) acidF(time, ACID[p] - (bar % 8 >= 6 ? 2 : 0), ACID_ACC[p]);
-    if (p === 6 && bar % 2 === 1) [65, 68, 72, 75].forEach(m => tone('sawtooth', mtof(m), time, .12, .018, dub, .004));
+    if (st.snare && bar >= 1 && (p === 4 || p === 12)) { noise(time, .14, 'bandpass', 2100, .16, b, .9); tone('triangle', 210, time, .06, .12, b); }
+    if (st.acid && ACID_ON[p] && bar !== 15) acidF(time, ACID[p] + K - (bar % 8 >= 6 ? 2 : 0), ACID_ACC[p]);
+    if (st.sub && bar >= 2 && p % 4 === 2) tone('sine', mtof(29 + K + (bar % 8 >= 6 ? -2 : 0)), time, .2, .32, b, .01);   // sub bass between the kicks
+    if (st.stab === 'sparse' && p === 6 && bar % 2 === 1) CH.forEach(m => tone('sawtooth', mtof(m), time, .12, .018, dub, .004));
+    if (st.stab === 'dub' && (p === 2 || (p === 10 && bar % 2))) CH.forEach((m, i) => tone(i % 2 ? 'sawtooth' : 'square', mtof(m - (bar % 4 === 3 ? 2 : 0)), time, .16, .016, dub, .006));
+    if (st.bleeps && bar >= 1 && (p === 3 || p === 11 || (p === 14 && bar % 2))) tone('sine', mtof(PENTA[(n * 7 + bar) % PENTA.length]), time, .09, .05, dub);
   };
   const tk = () => { while (next < actx.currentTime + .15) { play(step, next); next += STEP; step++; } };
   tk(); grooveTimer = setInterval(tk, 25);
@@ -1119,8 +1106,8 @@ function startChannelAudio() {
   if (!soundOn || !powered) return;
   bus = actx.createGain(); bus.connect(master);
   const b = bus, k = kindOf(cur);
-  if (k === 'montage') startUnderground(b);
-  else if (k === 'music') { trackAt = performance.now(); startGroove(b, TRACKS[trackIdx], false); }
+  if (k === 'montage') startUnderground(b, INTRO);
+  else if (k === 'music') { trackAt = performance.now(); startUnderground(b, TRACKS[trackIdx]); }
   else if (k === 'work') { const w = WORKS.find(w => w.ch === cur); if (!w.vimeo || vimeoBlocked) startPad(b, w.root); }
   else if (k === 'bars') { const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = 1000; g.gain.value = .03; o.connect(g); g.connect(b); o.start(); held.push(o); }
   else { const s = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain(); s.buffer = noiseBuf; s.loop = true; f.type = 'highpass'; f.frequency.value = 900; g.gain.value = .05; s.connect(f); f.connect(g); g.connect(b); s.start(); held.push(s); }
