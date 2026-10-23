@@ -1188,8 +1188,14 @@ function vSend(m) { if (vFrame && vFrame.contentWindow) vFrame.contentWindow.pos
 addEventListener('message', e => {
   if (!vFrame || e.source !== vFrame.contentWindow || e.origin !== 'https://player.vimeo.com') return;
   let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
-  if (d.event === 'ready') vSend({ method: 'getDuration' });
+  if (d.event === 'ready') {
+    // the player can ignore sound and play until it's ready, so say them again now, then check they stuck
+    vSend({ method: 'getDuration' }); vKick();
+    const f = vFrame; [700, 1600, 3200].forEach(t => setTimeout(() => { if (vFrame === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
+  }
   else if (d.method === 'getDuration' && d.value > 0) { vDur = d.value; snipAt = 0; }
+  else if (d.method === 'getMuted' && d.value !== !soundOn) vimeoSound();
+  else if (d.method === 'getPaused' && d.value === true && powered) vSend({ method: 'play' });
 });
 function snippets(now) {
   const inRoom = zoomTo < 1 && fullP < .01;
@@ -1202,6 +1208,9 @@ function snippets(now) {
     setTimeout(() => vbox.classList.remove('cut'), 160);
   }
 }
+function vKick() { vimeoSound(); vSend({ method: 'play' }); }
+// any tap while a film is on gives the player another go at sound, in case the browser held it back
+addEventListener('pointerdown', () => { if (vFrame && soundOn) setTimeout(vKick, 0); }, true);
 function vimeoSound() {
   if (!vFrame || !vFrame.contentWindow) return;
   const send = m => vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
