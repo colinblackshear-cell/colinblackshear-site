@@ -74,7 +74,7 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
 @media (pointer: coarse){
   .vbox iframe{filter:none}
   /* phones: no live blending or blurring over the moving 3D set, which makes the browser recomposite the whole screen every frame */
-  .grain{mix-blend-mode:normal;opacity:.05}
+  .grain{mix-blend-mode:normal;opacity:.05;animation:none}
   .psy{mix-blend-mode:normal}
   .pill,body .scrub{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(10,10,9,.72)}
 }
@@ -645,7 +645,7 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = .9;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = PHONE ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;   // soft shadows cost a phone many lookups per pixel
 renderer.shadowMap.autoUpdate = false;   // the set doesn't move, so its shadows are drawn once (see loop)
 
 const scene = new THREE.Scene();
@@ -1246,7 +1246,7 @@ if (document.fullscreenEnabled && fsEl.requestFullscreen) {
 tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
 /* One Vimeo player serves every channel. Between films it is paused and hidden rather than thrown away,
    and the next film is loaded into it, so it starts at once and keeps the sound the browser has already allowed. */
-let vLoaded = null, vReady = false, needTap = false, vAdvAt = 0;
+let vLoaded = null, vReady = false, needTap = false, lastCheck = false;
 function tapHint(on) { needTap = on; $('taphint').classList.toggle('on', on); }
 function dropVimeo() { killVimeo(); if (vFrame) vFrame.remove(); vFrame = null; vLoaded = null; vReady = false; }
 function filmState() { tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
@@ -1266,14 +1266,10 @@ function makeVimeo(id) {
 function filmStarted() {
   // the player can ignore sound and play until it's ready, so say them now, then check they stuck
   vSend({ method: 'getDuration' }); vSend({ method: 'disableTextTrack' }); vKick();   // no captions over the picture
-  const f = vId; vAdvAt = performance.now();
+  const f = vId;
   [800, 2000].forEach(t => setTimeout(() => { if (vId === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
-  // a film still loading looks paused too, so only once it has had time and still isn't moving is the sound taken to be blocked:
-  // then the picture carries on silently and a tap brings the sound in
-  setTimeout(() => {
-    if (vId !== f || !soundOn || userPaused || needTap || performance.now() - vAdvAt < 2500) return;
-    tapHint(true); vSend({ method: 'setMuted', value: true }); vSend({ method: 'play' });
-  }, 5000);
+  // if it still hasn't started after a few seconds, the browser is holding it back until you touch the page: say so
+  setTimeout(() => { if (vId === f) { lastCheck = true; vSend({ method: 'getPaused' }); } }, 5000);
 }
 /* In the room the set plays a loop of random sections of the film; stepping in plays it whole, from the top. */
 let vDur = 0, snipAt = 0, snipping = false;
@@ -1291,8 +1287,12 @@ addEventListener('message', e => {
   else if (!vId) return;
   else if (d.method === 'getDuration' && d.value > 0) { vDur = d.value; snipAt = 0; }
   else if (d.method === 'getMuted' && d.value !== !soundOn && !needTap) vimeoSound();
-  else if (d.method === 'getPaused' && d.value === true && powered && !userPaused) vSend({ method: 'play' });
-  else if (d.event === 'timeupdate' && d.data) { if (d.data.seconds !== vTime) vAdvAt = performance.now(); if (!scrubbing) vTime = d.data.seconds; if (d.data.duration > 0) vDur = d.data.duration; }
+  else if (d.method === 'getPaused') {
+    if (d.value === true && powered && !userPaused) { vSend({ method: 'play' }); if (lastCheck && soundOn) tapHint(true); }
+    lastCheck = false;
+  }
+  else if (d.event === 'play' && needTap) tapHint(false);
+  else if (d.event === 'timeupdate' && d.data) { if (!scrubbing) vTime = d.data.seconds; if (d.data.duration > 0) vDur = d.data.duration; }
   else if (d.event === 'pause' || d.event === 'play') { vPaused = d.event === 'pause'; $('scPlay').textContent = vPaused ? '▶' : '❚❚'; $('scPlay').setAttribute('aria-label', vPaused ? 'Play' : 'Pause'); }
 });
 function snippets(now) {
@@ -1494,7 +1494,8 @@ function drawPsy(now, zp) {
 const born = performance.now();
 const ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
 let idleN = 0, psyClear = false;
-let picN = 0, shadowFrames = 3;
+let picN = 0, shadowFrames = 3, halfN = 0, lastTouch = 0;
+['pointerdown', 'pointermove', 'touchmove'].forEach(t => addEventListener(t, () => lastTouch = performance.now(), { passive: true }));
 function loop(now) {
   requestAnimationFrame(loop);
   const life = (now - born) / 1000;
@@ -1504,8 +1505,11 @@ function loop(now) {
   const covered = vId && (fullP > .99 || zoomTo === 1 && zoomProgress(now) > .999);
   if (covered && ++idleN % 20) { if (!psyClear) { pctx.clearRect(0, 0, psyW, psyH); psyClear = true; } syncVimeo(now); return; }
   psyClear = false;
+  // phones draw the room at 30 frames a second while you're only watching, and at full speed while you touch, turn or step in
+  const moving = now - lastTouch < 1500 || (zoomProgress(now) > 0 && zoomProgress(now) < 1) || now < staticUntil;
+  if (PHONE && !moving && ++halfN % 2) { syncVimeo(now); return; }
   // phones repaint the picture on the glass every other frame, which is plenty for a CRT, and halves the texture uploads
-  if ((powered || ps.vis > 0) && (!PHONE || ++picN % 2)) { renderPicture(now); drawOSD(now); picTex.needsUpdate = true; if (++frameN % (PHONE ? 8 : 5) === 0) sampleScreen(); }
+  if ((powered || ps.vis > 0) && (!PHONE || !moving || ++picN % 2)) { renderPicture(now); drawOSD(now); picTex.needsUpdate = true; if (++frameN % (PHONE ? 8 : 5) === 0) sampleScreen(); }
   if (shadowFrames > 0) { shadowFrames--; renderer.shadowMap.needsUpdate = true; }
   Object.assign(tubeUniforms.sx, { value: ps.sx }); tubeUniforms.sy.value = ps.sy; tubeUniforms.bright.value = ps.b;
   tubeUniforms.sat.value = ps.sat; tubeUniforms.vis.value = ps.vis; tubeUniforms.glow.value = ps.glow; tubeUniforms.time.value = life;
