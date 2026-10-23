@@ -103,7 +103,8 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
   display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;padding:0 0 9px;
   background:linear-gradient(180deg,#fbf8f0,#e2ddd0 70%,#bdb7a8);box-shadow:0 5px 0 #8a8476, 0 6px 6px rgba(0,0,0,.5), inset 0 1px 0 #fff;transition:transform .07s, box-shadow .07s}
 .pk i{font-style:normal;font-size:.9rem;letter-spacing:0}
-.pk:active,.pk[aria-pressed="true"]{transform:translateY(4px);box-shadow:0 1px 0 #8a8476, 0 2px 3px rgba(0,0,0,.5), inset 0 2px 4px rgba(0,0,0,.15)}
+.pk{transform:translateZ(1px)}   /* keep the keys in front of their tray when the radio tilts */
+.pk:active,.pk[aria-pressed="true"]{transform:translate3d(0,4px,1px);box-shadow:0 1px 0 #8a8476, 0 2px 3px rgba(0,0,0,.5), inset 0 2px 4px rgba(0,0,0,.15)}
 .pk:focus-visible{outline:2px solid #e2361f;outline-offset:2px}
 .pk.on{background:linear-gradient(180deg,#f2694b,#d9401f 70%,#a42a12);color:#fff;box-shadow:0 5px 0 #6d1a0c, 0 6px 6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.4)}
 .pk.on:active,.pk.on[aria-pressed="true"]{box-shadow:0 1px 0 #6d1a0c, 0 2px 3px rgba(0,0,0,.5)}
@@ -476,6 +477,12 @@ const press = (id, fn) => { const b = $(id);
   b.addEventListener('pointerdown', e => { if (e.button === 0) { e.preventDefault(); fn(); } });
   b.addEventListener('click', e => { if (e.detail === 0) fn(); }); };
 press('kOn', () => power(!on));
+// if the tilt still lets the tray catch a press, give it to the key under the finger
+$('kOn').parentElement.addEventListener('pointerdown', e => {
+  if (e.target !== e.currentTarget || e.button !== 0) return;
+  const k = [...e.currentTarget.querySelectorAll('.pk')].find(b => { const r = b.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right; });
+  if (k) { e.preventDefault(); k.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: false, pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY })); }
+});
 // phones only let sound start when a tap ends, and the keys act as it begins, so finish waking the sound here
 const wake = () => { if (!ac) return; if (ac.state !== 'running') ac.resume();
   if (on && player && player.el) { deckLevel(); if (player.el.paused && !player.el.ended) player.el.play().catch(() => {}); } };
