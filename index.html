@@ -70,6 +70,27 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   box-shadow:inset 0 0 24px rgba(0,0,0,.8)}
 .vbox[hidden]{display:none}
 .psy{width:100%;height:100%;mix-blend-mode:screen}
+/* phone turned sideways: the film sits in a walnut set at its true shape, with a side panel for channels */
+.tvframe{position:fixed;inset:0;z-index:19;display:none;opacity:0;
+  background:radial-gradient(120% 90% at 40% 30%, rgba(255,220,180,.10), rgba(0,0,0,0) 60%),
+    repeating-linear-gradient(91deg, rgba(0,0,0,.10) 0 2px, rgba(0,0,0,0) 2px 11px),
+    repeating-linear-gradient(88deg, rgba(255,230,200,.04) 0 1px, rgba(0,0,0,0) 1px 23px),
+    linear-gradient(180deg, #6b4428, #4a2c17);
+  box-shadow:inset 0 0 0 3px #24150a, inset 0 0 60px rgba(0,0,0,.55)}
+body.filmfull .tvframe{display:block}
+.tvf-bezel{position:absolute;border-radius:20px;background:#0b0a09;
+  box-shadow:0 0 0 3px #c9c2b1, 0 0 0 5px #6f695b, 0 0 0 7px #1a110a, 0 10px 24px rgba(0,0,0,.55), inset 0 0 18px rgba(0,0,0,.9)}
+.tvf-side{position:absolute;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 8px;border-radius:8px;
+  background:linear-gradient(180deg,#e4e0d4,#b5b0a1 60%,#a39e8f);box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 4px rgba(0,0,0,.25), 0 0 0 2px #24150a}
+.tvf-ch{width:100%;text-align:center;padding:4px 0 2px;border-radius:3px;background:#0f0d09;box-shadow:inset 0 2px 6px rgba(0,0,0,.9);
+  font-family:"VT323", ui-monospace, monospace;font-size:1.35rem;line-height:1;color:#ffb547;text-shadow:0 0 8px rgba(255,170,60,.7)}
+.tvf-side .dk{width:100%;justify-content:center;padding:9px 0;font-size:.62rem}
+.tvf-side .dk[hidden]{display:none}
+.tvf-grille{flex:1;width:100%;min-height:12px;border-radius:4px;background:repeating-linear-gradient(0deg, #3a2a1c 0 2px, rgba(0,0,0,0) 2px 5px);opacity:.75}
+.draghint{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top, 0px));transform:translateX(-50%);z-index:6;pointer-events:none;
+  padding:7px 14px;border-radius:999px;background:rgba(10,10,9,.6);color:var(--title);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  opacity:0;transition:opacity .5s}
+.draghint.on{opacity:1}
 body.filmfull .psy{opacity:0}
 .tapsound{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:21;
   padding:7px 14px;border-radius:999px;background:rgba(10,10,9,.55);color:var(--title);font-size:.7rem;letter-spacing:.14em;
@@ -134,6 +155,17 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
 <canvas id="gl" aria-label="A 1970s television on a studio set. Turn the channel dial to change films."></canvas>
 <div class="vbox" id="vbox" hidden></div>
 <div class="tapsound" aria-hidden="true">Tap for sound</div>
+<div class="tvframe" id="tvframe">
+  <div class="tvf-bezel" id="tvfBezel"></div>
+  <div class="tvf-side" id="tvfSide">
+    <div class="tvf-ch" id="tvfCh" aria-live="polite">03</div>
+    <button class="dk" id="tvfUp" aria-label="Next channel">CH ▲</button>
+    <button class="dk" id="tvfDn" aria-label="Previous channel">CH ▼</button>
+    <span class="tvf-grille" aria-hidden="true"></span>
+    <button class="dk" id="tvfFull" aria-label="Full screen" hidden>Full</button>
+  </div>
+</div>
+<div class="draghint" id="draghint" aria-hidden="true">Drag the film to reframe</div>
 <canvas class="fx psy" id="psy" aria-hidden="true"></canvas>
 <div class="fx vignette"></div>
 <div class="fx grain" id="grain"></div>
@@ -834,7 +866,12 @@ canvas.addEventListener('pointermove', e => {
   ptr.tx = e.clientX / innerWidth * 2 - 1; ptr.ty = e.clientY / innerHeight * 2 - 1;
   if (drag) {
     if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 8) return;
-    drag.moved = true; setChannel(Math.round(dialScreenAngle(e) / 30) % 12 + 2); return;
+    drag.moved = true;
+    if (drag.pan) { const k = v => Math.max(-1, Math.min(1, v));
+      if (vOver.x > 1) pan.x = k(drag.px + (e.clientX - drag.x) / (vOver.x / 2));
+      if (vOver.y > 1) pan.y = k(drag.py + (e.clientY - drag.y) / (vOver.y / 2));
+      return; }
+    setChannel(Math.round(dialScreenAngle(e) / 30) % 12 + 2); return;
   }
   const a = pick(e); canvas.style.cursor = a === 'screen' && zoomTo < 1 ? 'zoom-in' : a ? 'pointer' : 'default';
 });
@@ -844,9 +881,13 @@ canvas.addEventListener('pointerdown', e => {
   if (a === 'dial') { drag = { x: e.clientX, y: e.clientY, moved: false }; canvas.setPointerCapture(e.pointerId); }
   else if (a === 'vol') setSound(!soundOn);
   else if (a === 'power') { pb.position.z = -.004; setTimeout(() => pb.position.z = 0, 140); setPower(!powered); }
-  else if (a === 'screen') { if (zoomTo < 1) setZoom(true); else if (powered) setChannel(cur + 1); }
+  else if (a === 'screen') {
+    if (zoomTo < 1) setZoom(true);
+    else if (vFrame && (vOver.x > 1 || vOver.y > 1)) { drag = { pan: true, x: e.clientX, y: e.clientY, px: pan.x, py: pan.y, moved: false }; canvas.setPointerCapture(e.pointerId); }
+    else if (powered) setChannel(cur + 1);
+  }
 });
-canvas.addEventListener('pointerup', () => { if (drag && !drag.moved) setChannel(cur + 1); drag = null; });
+canvas.addEventListener('pointerup', () => { if (drag && !drag.moved && powered) setChannel(cur + 1); drag = null; });
 canvas.addEventListener('pointercancel', () => { drag = null; });
 canvas.addEventListener('wheel', e => {
   if (pick(e) !== 'dial') return;
@@ -901,7 +942,7 @@ function setChannel(c) {
   if (c === cur) return;
   const delta = ((c - cur + 6 + 12) % 12) - 6;
   dialAngle -= (delta === -6 ? 6 : delta) * Math.PI / 6;
-  cur = c;
+  cur = c; pan.x = pan.y = 0;
   const now = performance.now(); staticUntil = now + STATIC_MS; chStart = now + STATIC_MS;
   caption();
   if (actx) tick3d();
@@ -1080,13 +1121,36 @@ let vFrame = null, vId = null, vimeoBlocked = false;
 addEventListener('securitypolicyviolation', e => { if (/vimeo/.test(e.blockedURI || '')) { vimeoBlocked = true; killVimeo(); } });
 const landscapePhone = matchMedia('(orientation: landscape) and (pointer: coarse) and (max-height: 540px)');
 let fullP = 0;
+// how far the cropped film overflows its window, and where you've dragged it to (-1..1 each way)
+const vOver = { x: 0, y: 0 }, pan = { x: 0, y: 0 };
+let dragHinted = false, vAt = 0;
+// the sideways set: a screen as large as the phone allows at the film's own shape, beside a slim control panel
+const insets = (() => { const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)';
+  document.body.appendChild(d); return () => { const c = getComputedStyle(d); return { t: parseFloat(c.paddingTop) || 0, r: parseFloat(c.paddingRight) || 0, b: parseFloat(c.paddingBottom) || 0, l: parseFloat(c.paddingLeft) || 0 }; }; })();
+function tvLayout(ar) {
+  const W = innerWidth, H = innerHeight, i = insets(), side = 66, gap = 14, rim = 12;
+  const ax = Math.max(i.l, rim) + rim, ay = Math.max(i.t, rim) + rim, aw = W - ax - Math.max(i.r, rim) - side - gap - rim, ah = H - ay - Math.max(i.b, rim) - rim;
+  let w = aw, h = w / ar; if (h > ah) { h = ah; w = h * ar; }
+  const x = ax + (aw - w) / 2, y = ay + (ah - h) / 2;
+  return { x, y, w, h, side: { x: x + w + rim + gap, y, w: side, h } };
+}
+const tvf = $('tvframe');
+$('tvfUp').addEventListener('click', () => setChannel(cur + 1));
+$('tvfDn').addEventListener('click', () => setChannel(cur - 1));
+const fsEl = document.documentElement;
+if (document.fullscreenEnabled && fsEl.requestFullscreen) {
+  $('tvfFull').hidden = false;
+  $('tvfFull').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : fsEl.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}));
+}
+tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
 function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
 function makeVimeo(id) {
   vFrame = document.createElement('iframe');
   vFrame.src = `https://player.vimeo.com/video/${id}?autoplay=1&muted=${soundOn ? 0 : 1}&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0`;
   vFrame.allow = 'autoplay; fullscreen; picture-in-picture'; vFrame.title = 'Film'; vFrame.tabIndex = -1;
   vFrame.addEventListener('load', () => setTimeout(vimeoSound, 400));
-  vbox.appendChild(vFrame); vbox.hidden = false; vId = id;
+  vbox.appendChild(vFrame); vbox.hidden = false; vId = id; vAt = performance.now();
 }
 function vimeoSound() {
   if (!vFrame || !vFrame.contentWindow) return;
@@ -1119,13 +1183,18 @@ function syncVimeo(now) {
   if (Math.abs(fullP - (full ? 1 : 0)) < .002) fullP = full ? 1 : 0;
   document.body.classList.toggle('filmfull', full);
   if (fullP > .001) {
-    const F = (a, b) => a + (b - a) * fullP;
-    bx = F(bx, 0); by = F(by, 0); bw = F(bw, innerWidth); bh = F(bh, innerHeight);
+    const F = (a, b) => a + (b - a) * fullP, T = tvLayout(w.aspect || 16 / 9);
+    bx = F(bx, T.x); by = F(by, T.y); bw = F(bw, T.w); bh = F(bh, T.h);
     vbox.style.transform = `translate(${bx}px, ${by}px)`;
     vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px';
-    vbox.style.borderRadius = F(parseFloat(vbox.style.borderRadius), 0) + 'px';
-    vbox.style.setProperty('--crt', F(1 - zp * .75, .12));
+    vbox.style.borderRadius = F(parseFloat(vbox.style.borderRadius), 14) + 'px';
+    vbox.style.setProperty('--crt', F(1 - zp * .75, .3));
+    const bz = $('tvfBezel').style, sd = $('tvfSide').style;
+    bz.left = T.x - 8 + 'px'; bz.top = T.y - 8 + 'px'; bz.width = T.w + 16 + 'px'; bz.height = T.h + 16 + 'px';
+    sd.left = T.side.x + 'px'; sd.top = T.side.y + 'px'; sd.width = T.side.w + 'px'; sd.height = T.side.h + 'px';
+    $('tvfCh').textContent = String(cur).padStart(2, '0');
   }
+  tvf.style.opacity = fullP;
   vbox.style.zIndex = fullP > .01 ? 20 : 0;
   // crop to cover: centered, no letterbox, horizontal or vertical
   // `aspect` is the video frame; `picture` is the image inside it when the film has black bars baked in.
@@ -1134,7 +1203,14 @@ function syncVimeo(now) {
   const fwRoom = Math.max(bw, bh * pa), fwFull = Math.max(bw, bh * ar);
   const fw = fwRoom + (fwFull - fwRoom) * open, fh = fw / ar;
   vFrame.style.width = fw + 'px'; vFrame.style.height = fh + 'px';
-  vFrame.style.left = (bw - fw) / 2 + 'px'; vFrame.style.top = (bh - fh) / 2 + 'px';
+  // where the film overflows its window (upright phones, mostly), a drag slides it to choose the frame
+  const live = zp * (1 - fullP);
+  vOver.x = (fw - bw) * live; vOver.y = (fh - bh) * live;
+  // the first time a cropped film is up on a touch screen, say that it can be moved
+  if (!dragHinted && zp === 1 && fullP === 0 && vOver.x + vOver.y > 40 && now - vAt > 1800 && matchMedia('(pointer: coarse)').matches) {
+    dragHinted = true; $('draghint').classList.add('on'); setTimeout(() => $('draghint').classList.remove('on'), 2800);
+  }
+  vFrame.style.left = (bw - fw) / 2 + pan.x * vOver.x / 2 + 'px'; vFrame.style.top = (bh - fh) / 2 + pan.y * vOver.y / 2 + 'px';
 }
 
 /* --- psychedelic layer: light trails, energy waves, prism light --- */
