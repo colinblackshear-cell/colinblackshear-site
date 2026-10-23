@@ -85,6 +85,19 @@ body.arrive .machine{animation:arrive 1s cubic-bezier(.2,.7,.2,1)}
 .cc{font:700 .62rem/1 var(--f-hw);letter-spacing:.32em;text-transform:uppercase}
 
 .lower{padding:16px 22px 22px;background:linear-gradient(180deg,#34322f,#2a2927)}
+.tsrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 22px;margin:0 0 20px}
+.scales{display:flex;flex-wrap:wrap;gap:6px}
+.sbtn{position:relative;border:0;cursor:pointer;min-width:46px;height:30px;margin-top:14px;padding:0 8px;border-radius:3px;font:700 .62rem/1 var(--f-hw);letter-spacing:.04em;
+  color:#1a1816;background:linear-gradient(#e6e0d0,#b9b2a1);box-shadow:0 3px 0 #6b6558, 0 4px 6px rgba(0,0,0,.35)}
+.sbtn::before{content:"";position:absolute;left:50%;top:-12px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:#3e140c;box-shadow:inset 0 1px 2px rgba(0,0,0,.7), 0 0 0 1px #000}
+.sbtn[aria-pressed="true"]::before{background:#ff3d14;box-shadow:0 0 8px #ff3d14, 0 0 0 1px #000}
+.sbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #6b6558}
+.sbtn:focus-visible{outline:2px solid #ffb547;outline-offset:3px}
+.lenbox{display:flex;align-items:center;gap:6px}
+.lenbox .amber{font-size:1.35rem;min-width:2.4ch;text-align:center}
+.tsrow .meter{font:500 .56rem/1.5 var(--f-hw);letter-spacing:.12em;text-transform:uppercase;color:var(--print-soft);align-self:center;margin-top:14px}
+.key.out{opacity:.32}
+.cell.out{opacity:.25}
 .dl{display:flex;align-items:flex-end;gap:8px}
 .ctrls{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-bottom:16px}
 .hwbtn{border:0;cursor:pointer;padding:0 14px;height:40px;border-radius:4px;font:700 .6rem/1 var(--f-hw);letter-spacing:.18em;text-transform:uppercase;
@@ -189,7 +202,7 @@ body.arrive .machine{animation:arrive 1s cubic-bezier(.2,.7,.2,1)}
 
 /* the lab shows a live, silent copy of the machine as its doorway */
 body.embed{background:transparent;overflow:hidden;width:1180px}
-body.embed .grain,body.embed .top,body.embed .intro,body.embed .sheet,body.embed .rack,body.embed .sampler,body.embed .note,body.embed .keyhint{display:none}
+body.embed .grain,body.embed .top,body.embed .intro,body.embed .tsrow,body.embed .sheet,body.embed .rack,body.embed .sampler,body.embed .note,body.embed .keyhint{display:none}
 body.embed main{padding:0;max-width:none}
 body.embed .machine{pointer-events:none;box-shadow:0 0 0 2px var(--edge)}
 
@@ -216,6 +229,8 @@ body.embed .machine{pointer-events:none;box-shadow:0 0 0 2px var(--edge)}
   .sheet{padding:14px 10px 16px;transform:none}
   .sheet h2 small{display:none}
   .sampler{grid-template-columns:1fr}
+  .scales{gap:5px}
+  .sbtn{min-width:0;padding:0 6px;font-size:.56rem}
   .rack{padding:14px 44px 16px;gap:16px}
   .rack::before,.rack::after{width:26px}
   .rhead{min-width:0;width:100%}
@@ -271,16 +286,23 @@ body.embed .machine{pointer-events:none;box-shadow:0 0 0 2px var(--edge)}
         <button class="hwbtn" id="clear">Clear</button>
         <button class="hwbtn" id="share">Copy link</button>
         <div class="dl">
-          <div class="disp"><label for="bars">Bars</label>
+          <div class="disp"><label for="bars">Loops</label>
             <select id="bars"><option value="1">1</option><option value="2">2</option><option value="4" selected>4</option><option value="8">8</option></select></div>
           <button class="hwbtn" id="dlbtn">Download WAV</button>
         </div>
+      </div>
+      <div class="tsrow">
+        <div class="disp"><span class="lab">Time scale</span>
+          <div class="scales" id="scales" role="group" aria-label="Time scale"></div></div>
+        <div class="disp"><span class="lab">Length</span>
+          <div class="lenbox"><button class="nudge" id="lenDn" aria-label="Shorter pattern">−</button><div class="amber" id="lenR" aria-live="polite">16</div><button class="nudge" id="lenUp" aria-label="Longer pattern">+</button></div></div>
+        <span class="meter" id="meter"></span>
       </div>
       <div class="keysw">
         <div class="ruler" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span></div>
         <div class="keys" id="keys" role="group" aria-label="Step keys"></div>
       </div>
-      <p class="keyhint">Tap once: hit · twice: accent · three times: clear</p>
+      <p class="keyhint">Tap once: hit · twice: accent · three times: clear · steps past the length are skipped</p>
     </div>
     <span class="screw" style="left:8px;bottom:8px"></span><span class="screw" style="right:8px;bottom:8px"></span>
   </section>
@@ -552,9 +574,14 @@ const fxOn = f => FXK.some(([k]) => f[k]);
 /* =========================================================
    STATE: 0 off, 1 hit, 2 accent; saved locally and shareable by link
    ========================================================= */
-const blank = () => ({ tempo: 104, swing: 12, echoT: 3, fb: .38, rows: Object.fromEntries(ROWS.map(r => [r.id, { s: Array(STEPS).fill(0), v: 0, vol: .8, fx: { ...FX0 } }])) });
+const blank = () => ({ tempo: 104, swing: 12, echoT: 3, fb: .38, scale: '1/16', len: 16, rows: Object.fromEntries(ROWS.map(r => [r.id, { s: Array(STEPS).fill(0), v: 0, vol: .8, fx: { ...FX0 } }])) });
 let S = blank();
-const pat = str => [...str].map(c => c === 'X' ? 2 : c === 'x' ? 1 : 0);
+const pat = str => [...str.padEnd(STEPS, '.')].map(c => c === 'X' ? 2 : c === 'x' ? 1 : 0);
+// each step is a note of this length; n is steps per beat, and triplets don't swing
+const SCALES = { '1/4': { n: 1 }, '1/4T': { n: 1.5, t: 1 }, '1/8': { n: 2 }, '1/8T': { n: 3, t: 1 }, '1/16': { n: 4 }, '1/16T': { n: 6, t: 1 }, '1/32': { n: 8 } };
+const SCALE_IDS = Object.keys(SCALES);
+const stepDur = () => 60 / S.tempo / SCALES[S.scale].n;
+const swingAt = (st, dur) => SCALES[S.scale].t || st % 2 === 0 ? 0 : dur * (S.swing / 100) * .66;
 const PRESETS = {
   'Boom bap': { tempo: 90, swing: 22, kick: 'x.......x.x.....', snare: '....X.......X...', chat: 'x.x.x.x.x.x.x.xx', ohat: '..............x.' },
   'Four on the floor': { tempo: 122, swing: 0, kick: 'X...x...X...x...', clap: '....x.......x...', chat: '..x...x...x...x.', ohat: '..x...x...x...x.', perc: '.......x.......x' },
@@ -563,12 +590,16 @@ const PRESETS = {
   'Toms and bells': { tempo: 100, swing: 16, kick: 'x.....x...x.....', ltom: '..x.....x.....x.', mtom: '......x.........', htom: '....x.......x...', perc: 'x..x..x...x..x..', chat: '.x.x.x.x.x.x.x.x' },
   'Dub plate': { tempo: 76, swing: 18, echoT: 3, fb: .5, kick: 'X.......x.......', snare: '....x.......x...', shak: '..x...x...x...x.', bass: 'x..x......x..x..', zap: '..............x.',
     fx: { snare: { echo: .55, verb: .3 }, zap: { echo: .7, pan: .4 }, shak: { pan: -.45 }, bass: { filter: -.3 } } },
+  'Twelve eight': { tempo: 84, swing: 0, scale: '1/8T', len: 12, kick: 'X.....x..x..', snare: '...X.....X..', chat: 'x.xx.xx.xx.x', bass: 'x.....x..x..', shak: '.x..x..x..x.',
+    fx: { snare: { verb: .4 }, chat: { pan: -.25 } } },
+  'Waltz': { tempo: 132, swing: 0, scale: '1/8', len: 6, kick: 'X.....', snare: '..x.x.', chat: 'x.x.x.', ohat: '.....x' },
   'Night drive': { tempo: 118, swing: 4, kick: 'X...x...X...x...', clap: '....x.......x...', chat: 'x.xxx.xxx.xxx.xx', bass: '..x...x...x..xx.', mtom: '...........x..x.',
     fx: { clap: { verb: .45 }, chat: { pan: .3, filter: .35 }, bass: { drive: .35, filter: -.35 }, mtom: { echo: .4 } } },
 };
 function applyPreset(name) {
   const p = PRESETS[name]; if (!p) return;
   const keep = S; S = blank(); S.tempo = p.tempo; S.swing = p.swing; S.echoT = p.echoT || keep.echoT; S.fb = p.fb ?? keep.fb;
+  S.scale = p.scale || '1/16'; S.len = p.len || STEPS;
   for (const r of ROWS) {
     const row = S.rows[r.id]; row.v = keep.rows[r.id].v; row.vol = keep.rows[r.id].vol; if (p[r.id]) row.s = pat(p[r.id]);
     // a pattern that comes with its own effects starts from a clean rack; the others leave yours alone
@@ -583,13 +614,14 @@ function encode() {
     if (fxOn(r.fx)) x += '.' + FXK.map(([k, a, b]) => Math.round((r.fx[k] - a) / (b - a) * 34).toString(36)).join('');
     return x;
   }).join('-');
-  return `t${S.tempo}s${S.swing}e${S.echoT}f${Math.round(S.fb * 100)}-${rows}`;
+  return `t${S.tempo}s${S.swing}e${S.echoT}f${Math.round(S.fb * 100)}d${SCALE_IDS.indexOf(S.scale)}l${S.len}-${rows}`;
 }
 function decode(h) {
-  const m = /^t(\d+)s(\d+)(?:e(\d+)f(\d+))?-(.*)$/.exec(h); if (!m) return null;
+  const m = /^t(\d+)s(\d+)(?:e(\d+)f(\d+))?(?:d(\d)l(\d+))?-(.*)$/.exec(h); if (!m) return null;
   const n = blank(); n.tempo = Math.min(180, Math.max(60, +m[1])); n.swing = Math.min(60, +m[2]);
   if (m[3]) { n.echoT = Math.min(8, Math.max(1, +m[3])); n.fb = Math.min(.85, +m[4] / 100); }
-  m[5].split('-').forEach((p, i) => {
+  if (m[5]) { n.scale = SCALE_IDS[+m[5]] || '1/16'; n.len = Math.min(STEPS, Math.max(1, +m[6])); }
+  m[7].split('-').forEach((p, i) => {
     const [s, v, fx] = p.split('.'), id = LINK[i]; if (!id || !s || s.length !== STEPS) return;
     n.rows[id].s = [...s].map(c => Math.min(2, +c || 0)); n.rows[id].v = Math.min(+v || 0, KITS[id].length - 1);
     if (fx && fx.length === FXK.length) FXK.forEach(([k, a, b], j) => { n.rows[id].fx[k] = Math.round((a + Math.min(34, parseInt(fx[j], 36) || 0) / 34 * (b - a)) * 100) / 100; });
@@ -604,6 +636,7 @@ function load() {
     const raw = localStorage.getItem('cb808');
     if (raw) { const x = JSON.parse(raw); if (x && x.rows) {
       S = blank(); Object.assign(S, { tempo: x.tempo, swing: x.swing }); if (x.echoT) S.echoT = x.echoT; if (x.fb != null) S.fb = x.fb;
+      if (SCALES[x.scale]) S.scale = x.scale; if (x.len) S.len = Math.min(STEPS, Math.max(1, x.len));
       for (const r of ROWS) if (x.rows[r.id]) S.rows[r.id] = { ...S.rows[r.id], ...x.rows[r.id], fx: { ...FX0, ...(x.rows[r.id].fx || {}) } };
       return;
     } }
@@ -756,6 +789,13 @@ function build() {
   $('fxReset').addEventListener('click', () => { S.rows[selId].fx = { ...FX0 }; fxChanged(selId); knobs.forEach(p => p()); hear(); });
   $('dlbtn').addEventListener('click', download);
 
+  const sc = $('scales');
+  sc.innerHTML = SCALE_IDS.map(k => `<button class="sbtn" data-k="${k}" aria-pressed="false">${k}</button>`).join('');
+  sc.addEventListener('click', e => { const b = e.target.closest('.sbtn'); if (b) { S.scale = b.dataset.k; paintScale(); save(); } });
+  const lenBy = d => { S.len = Math.min(STEPS, Math.max(1, S.len + d)); paintScale(); paintSteps(); save(); };
+  $('lenDn').addEventListener('click', () => lenBy(-1));
+  $('lenUp').addEventListener('click', () => lenBy(1));
+
   const kw = $('keys');
   kw.innerHTML = Array.from({ length: STEPS }, (_, i) => `<button class="key" data-i="${i}"><span>${i + 1}</span></button>`).join('');
   keyEls = [...kw.querySelectorAll('.key')];
@@ -815,11 +855,23 @@ function select(id) {
   paintSteps();
 }
 function fxChanged(id) { if (G) setFx(G, id); cols[id].classList.toggle('fxon', fxOn(S.rows[id].fx)); save(); }
-function render() { $('tempoR').textContent = S.tempo; ROWS.forEach(r => cols[r.id].classList.toggle('fxon', fxOn(S.rows[r.id].fx))); select(selId); renderStatus(); }
+// what the scale and length add up to, written the way a musician would say it
+function paintScale() {
+  document.querySelectorAll('.sbtn').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === S.scale));
+  $('lenR').textContent = S.len;
+  const beats = S.len / SCALES[S.scale].n, unit = { 1: 4, 2: 8, 4: 16, 8: 32 }[SCALES[S.scale].n];
+  let m;
+  if (SCALES[S.scale].t) m = `${S.len} triplet ${S.scale.slice(0, -1)}s · ${+beats.toFixed(2)} beat${beats === 1 ? '' : 's'}`;
+  else if (beats % 4 === 0) m = `4/4 · ${beats / 4} bar${beats > 4 ? 's' : ''}`;
+  else if (Number.isInteger(beats)) m = `${beats}/4 time`;
+  else { let top = S.len, bot = unit; while (top % 2 === 0 && bot > 8) { top /= 2; bot /= 2; } m = `${top}/${bot} time`; }
+  $('meter').textContent = m;
+}
+function render() { $('tempoR').textContent = S.tempo; paintScale(); ROWS.forEach(r => cols[r.id].classList.toggle('fxon', fxOn(S.rows[r.id].fx))); select(selId); renderStatus(); }
 function paintSteps() {
   const s = S.rows[selId].s;
-  keyEls.forEach((k, i) => { k.classList.toggle('on', s[i] === 1); k.classList.toggle('acc', s[i] === 2); k.setAttribute('aria-pressed', s[i] > 0); });
-  for (const r of ROWS) cellEls[r.id].forEach((c, i) => { const v = S.rows[r.id].s[i]; c.classList.toggle('on', v === 1); c.classList.toggle('acc', v === 2); c.setAttribute('aria-pressed', v > 0); });
+  keyEls.forEach((k, i) => { k.classList.toggle('out', i >= S.len); k.classList.toggle('on', s[i] === 1); k.classList.toggle('acc', s[i] === 2); k.setAttribute('aria-pressed', s[i] > 0); });
+  for (const r of ROWS) cellEls[r.id].forEach((c, i) => { const v = S.rows[r.id].s[i]; c.classList.toggle('out', i >= S.len); c.classList.toggle('on', v === 1); c.classList.toggle('acc', v === 2); c.setAttribute('aria-pressed', v > 0); });
 }
 function renderStatus() {
   ROWS.filter(r => r.mic !== undefined).forEach(r => cols[r.id].classList.toggle('empty', !SAMPLES[r.mic].buf));
@@ -844,10 +896,11 @@ function trigger(id, t, lvl) {
 }
 function schedule() {
   while (nextT < ac.currentTime + .12) {
-    const dur = 60 / S.tempo / 4, sw = step % 2 ? dur * (S.swing / 100) * .66 : 0;
+    if (step >= S.len) step = 0;
+    const dur = stepDur(), sw = swingAt(step, dur);
     for (const r of ROWS) { const v = S.rows[r.id].s[step]; if (v) trigger(r.id, nextT + sw, v); }
     queue.push({ step, t: nextT + sw });
-    nextT += dur; step = (step + 1) % STEPS;
+    nextT += dur; step = (step + 1) % S.len;
   }
 }
 function toggle() {
@@ -876,21 +929,21 @@ async function download() {
   const btn = $('dlbtn'); if (btn.disabled) return;
   audio(); btn.disabled = true; btn.textContent = 'Rendering…';
   try {
-    const bars = +$('bars').value, dur = 60 / S.tempo / 4, sr = ac.sampleRate, len = .02 + bars * STEPS * dur + 2.5;
+    const loops = +$('bars').value, dur = stepDur(), sr = ac.sampleRate, len = .02 + loops * S.len * dur + 2.5;
     const off = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(2, Math.ceil(len * sr), sr);
     const live = [ac, G];
     try {
       ac = off; G = graph(off, masterVol);
-      for (let i = 0; i < bars * STEPS; i++) {
-        const st = i % STEPS, sw = st % 2 ? dur * (S.swing / 100) * .66 : 0;
+      for (let i = 0; i < loops * S.len; i++) {
+        const st = i % S.len, sw = swingAt(st, dur);
         for (const r of ROWS) { const v = S.rows[r.id].s[st]; if (v) sound(r.id, .02 + i * dur + sw, v); }
       }
     } finally { [ac, G] = live; }
     const buf = await off.startRendering();
     const a = document.createElement('a'); a.href = URL.createObjectURL(wav(buf));
-    a.download = `cb-808-${S.tempo}bpm-${bars}-bar${bars > 1 ? 's' : ''}.wav`;
+    a.download = `cb-808-${S.tempo}bpm-${loops}-loop${loops > 1 ? 's' : ''}.wav`;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    note(`Saved ${bars} bar${bars > 1 ? 's' : ''} at ${S.tempo} BPM as a WAV, with a little room at the end for the echo and reverb to ring out.`);
+    note(`Saved ${loops} loop${loops > 1 ? 's' : ''} of the pattern at ${S.tempo} BPM as a WAV, with a little room at the end for the echo and reverb to ring out.`);
   } catch (e) { note('The download did not work in this browser. Try a current Chrome, Firefox or Safari.', true); }
   btn.disabled = false; btn.textContent = 'Download WAV';
 }
