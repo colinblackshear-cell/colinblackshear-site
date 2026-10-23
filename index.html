@@ -197,6 +197,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
   </div>
 </div>
 <div class="draghint" id="draghint" aria-hidden="true">Drag the film to reframe</div>
+<div class="draghint" id="taphint" style="z-index:31">Tap for sound</div>
 <div class="scrub" id="scrub" hidden><button id="scPlay" aria-label="Pause">❚❚</button><span id="scA">0:00</span><div class="sctrack" id="scTrack" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100"><i id="scFill"></i><b id="scKnob"></b></div><span id="scB">0:00</span></div>
 <div class="tvf-tip" id="tvfTip" aria-hidden="true">Swipe up to hide the browser bar</div>
 <canvas class="fx psy" id="psy" aria-hidden="true"></canvas>
@@ -936,7 +937,7 @@ canvas.addEventListener('pointerdown', e => {
   else if (a === 'power') { pb.position.z = -.004; setTimeout(() => pb.position.z = 0, 140); setPower(!powered); }
   else if (a === 'screen') {
     if (zoomTo < 1) setZoom(true);
-    else if (vFrame && (vOver.x > 1 || vOver.y > 1)) { drag = { pan: true, x: e.clientX, y: e.clientY, px: pan.x, py: pan.y, moved: false }; canvas.setPointerCapture(e.pointerId); }
+    else if (vId && (vOver.x > 1 || vOver.y > 1)) { drag = { pan: true, x: e.clientX, y: e.clientY, px: pan.x, py: pan.y, moved: false }; canvas.setPointerCapture(e.pointerId); }
     else if (powered) setChannel(cur + 1);
   }
 });
@@ -1211,7 +1212,7 @@ setWall(WALLS.find(w => w.id === saved) || WALLS[0]);
 /* --- Vimeo: the player is laid over the glass and follows the camera --- */
 const vbox = $('vbox');
 let vFrame = null, vId = null, vimeoBlocked = false;
-addEventListener('securitypolicyviolation', e => { if (/vimeo/.test(e.blockedURI || '')) { vimeoBlocked = true; killVimeo(); } });
+addEventListener('securitypolicyviolation', e => { if (/vimeo/.test(e.blockedURI || '')) { vimeoBlocked = true; dropVimeo(); } });
 const landscapePhone = matchMedia('(orientation: landscape) and (pointer: coarse) and (max-height: 540px)');
 let fullP = 0;
 // how far the cropped film overflows its window, and where you've dragged it to (-1..1 each way)
@@ -1248,13 +1249,28 @@ if (document.fullscreenEnabled && fsEl.requestFullscreen) {
   $('tvfFull').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : fsEl.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}));
 }
 tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
-function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
+/* One Vimeo player serves every channel. Between films it is paused and hidden rather than thrown away,
+   and the next film is loaded into it, so it starts at once and keeps the sound the browser has already allowed. */
+let vLoaded = null, vReady = false, needTap = false;
+function tapHint(on) { needTap = on; $('taphint').classList.toggle('on', on); }
+function dropVimeo() { killVimeo(); if (vFrame) vFrame.remove(); vFrame = null; vLoaded = null; vReady = false; }
+function killVimeo() { if (vId) vSend({ method: 'pause' }); tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
 function makeVimeo(id) {
-  vFrame = document.createElement('iframe');
-  vFrame.src = `https://player.vimeo.com/video/${id}?autoplay=1&muted=${soundOn ? 0 : 1}&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0`;
-  vFrame.allow = 'autoplay; fullscreen; picture-in-picture'; vFrame.title = 'Film'; vFrame.tabIndex = -1;
-  vFrame.addEventListener('load', () => setTimeout(vimeoSound, 400));
-  vbox.appendChild(vFrame); vbox.hidden = false; vId = id; vAt = performance.now();
+  vbox.hidden = false; vId = id; vAt = performance.now();
+  if (!vFrame) {
+    vFrame = document.createElement('iframe');
+    // it always starts muted, which every browser lets play; the sound comes up once it's running
+    vFrame.src = `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0`;
+    vFrame.allow = 'autoplay; fullscreen; picture-in-picture'; vFrame.title = 'Film'; vFrame.tabIndex = -1;
+    vbox.appendChild(vFrame); vFrame.dataset.id = vLoaded = id; vReady = false;
+  } else if (!vReady) vLoaded = id;   // still starting up; it gets this film when it's ready
+  else if (vLoaded === id && vReady) { vSend({ method: 'setCurrentTime', value: 0 }); filmStarted(); }
+  else { vLoaded = id; vSend({ method: 'loadVideo', value: id }); }   // the player says 'loaded' when it's in
+}
+function filmStarted() {
+  // the player can ignore sound and play until it's ready, so say them now, then check they stuck
+  vSend({ method: 'getDuration' }); vSend({ method: 'disableTextTrack' }); vKick();   // no captions over the picture
+  const f = vId; [700, 1600, 3200].forEach(t => setTimeout(() => { if (vId === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
 }
 /* In the room the set plays a loop of random sections of the film; stepping in plays it whole, from the top. */
 let vDur = 0, snipAt = 0, snipping = false;
@@ -1263,20 +1279,26 @@ addEventListener('message', e => {
   if (!vFrame || e.source !== vFrame.contentWindow || e.origin !== 'https://player.vimeo.com') return;
   let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
   if (d.event === 'ready') {
-    // the player can ignore sound and play until it's ready, so say them again now, then check they stuck
-    vSend({ method: 'getDuration' }); vSend({ method: 'disableTextTrack' }); vKick();
-    ['timeupdate', 'play', 'pause'].forEach(v => vSend({ method: 'addEventListener', value: v }));   // no captions over the picture
-    const f = vFrame; [700, 1600, 3200].forEach(t => setTimeout(() => { if (vFrame === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
+    vReady = true; ['timeupdate', 'play', 'pause', 'loaded'].forEach(v => vSend({ method: 'addEventListener', value: v }));
+    if (!vId) vSend({ method: 'pause' });
+    else if (vId !== vFrame.dataset.id) vSend({ method: 'loadVideo', value: vId });
+    else filmStarted();
   }
+  else if (d.event === 'loaded') { if (vId) filmStarted(); }
+  else if (!vId) return;
   else if (d.method === 'getDuration' && d.value > 0) { vDur = d.value; snipAt = 0; }
-  else if (d.method === 'getMuted' && d.value !== !soundOn) vimeoSound();
-  else if (d.method === 'getPaused' && d.value === true && powered && !userPaused) vSend({ method: 'play' });
+  else if (d.method === 'getMuted' && d.value !== !soundOn && !needTap) vimeoSound();
+  else if (d.method === 'getPaused' && d.value === true && powered && !userPaused) {
+    // the browser stopped it for having sound before you'd touched the page: keep the picture going, silently, and ask for a tap
+    if (soundOn && !needTap) { tapHint(true); vSend({ method: 'setMuted', value: true }); }
+    vSend({ method: 'play' });
+  }
   else if (d.event === 'timeupdate' && d.data) { if (!scrubbing) vTime = d.data.seconds; if (d.data.duration > 0) vDur = d.data.duration; }
   else if (d.event === 'pause' || d.event === 'play') { vPaused = d.event === 'pause'; $('scPlay').textContent = vPaused ? '▶' : '❚❚'; $('scPlay').setAttribute('aria-label', vPaused ? 'Play' : 'Pause'); }
 });
 function snippets(now) {
   const inRoom = zoomTo < 1 && fullP < .01;
-  if (!vFrame || !vDur) return;
+  if (!vId || !vDur) return;
   if (!inRoom) { if (snipping) { snipping = false; vSend({ method: 'setCurrentTime', value: 0 }); vSend({ method: 'play' }); } return; }
   if (!snipping || now - snipAt > 9000) {
     snipping = true; snipAt = now;
@@ -1320,7 +1342,8 @@ function placeScrub(now, bx, by, bw, bh, inside) {
   scTrack.setAttribute('aria-valuenow', Math.round(f * 100)); scTrack.setAttribute('aria-valuetext', `${clockOf(vTime)} of ${clockOf(vDur)}`);
 }
 // any tap while a film is on gives the player another go at sound, in case the browser held it back
-addEventListener('pointerdown', () => { if (vFrame && soundOn) setTimeout(vKick, 0); }, true);
+// sound may only start as a tap ends (on phones), so every tap, click or key gives the film another go at it
+['pointerup', 'touchend', 'keydown'].forEach(t => addEventListener(t, () => { if (vId && soundOn) { tapHint(false); vKick(); } }, true));
 function vimeoSound() {
   if (!vFrame || !vFrame.contentWindow) return;
   const send = m => vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
@@ -1331,7 +1354,7 @@ function syncVimeo(now) {
   const w = WORKS.find(w => w.ch === cur);
   const want = powered && now - powerAt > 1000 && now >= staticUntil && w && w.vimeo && !vimeoBlocked ? w.vimeo : null;
   if (want !== vId) { killVimeo(); if (want) makeVimeo(want); }
-  if (!vFrame) return;
+  if (!vId) return;
   snippets(now);
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
   for (const c of vCorners) {
@@ -1473,7 +1496,7 @@ function loop(now) {
   const ps = powerState(now);
   // while a film fills the view (stepped in, or the sideways set), the 3D room behind it is hidden: draw it only now and then,
   // so the phone's processor is free to play the video
-  const covered = vFrame && (fullP > .99 || zoomTo === 1 && zoomProgress(now) > .999);
+  const covered = vId && (fullP > .99 || zoomTo === 1 && zoomProgress(now) > .999);
   if (covered && ++idleN % 20) { if (!psyClear) { pctx.clearRect(0, 0, psyW, psyH); psyClear = true; } syncVimeo(now); return; }
   psyClear = false;
   if (powered || ps.vis > 0) { renderPicture(now); drawOSD(now); picTex.needsUpdate = true; if (++frameN % 5 === 0) sampleScreen(); }
