@@ -405,7 +405,7 @@ body.void .bar,body.void #hint{opacity:0!important}
 .flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
 .flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
 .shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
-.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{translate:0 -8px}}
 .fade{transition:opacity 1.6s ease, transform 1.6s ease}
 .fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
 /* on a phone the bar keeps just the arrow home */
@@ -668,6 +668,7 @@ function stillTest({ms,pass,fail,glow,events=[],grace=900,onTick=null}){
 function stopStillness(){ if(stillState){ stillState.stop(); stillState=null; } }
 let si=0, bi=0, typing=null, canAdvance=false, autoTimer=null, cleanups=[];
 function go(i, sb=0){
+  { const prev=S[si]; if(go.ran&&prev&&prev.learn&&i!==si) learn(prev.learn); } /* tapping through fast still counts */
   wakeAudio(); closeChapters(); closePath(); closeVoice(); hush(); clearTimeout(autoTimer); stopStillness(); choices.innerHTML=''; cleanups.forEach(f=>f()); cleanups=[];
   si=i; bi=0; const sc=S[i]; if(!go.ran){ go.ran=true; app.style.transition='none'; requestAnimationFrame(()=>requestAnimationFrame(()=>{ app.style.transition=''; })); }
   app.style.setProperty('--scene-bg', sc.bg); document.body.classList.remove('d1','d2','d3','void');
@@ -723,6 +724,31 @@ document.addEventListener('click',e=>{ if(!$('#chapters').hidden&&!e.target.clos
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+/* moods: named sound beds a book defines in MOODS; mood('a','b') keeps those playing and fades the rest */
+const MOODS={};
+function bell(f=392,v=.1,d=4){ if(!ctx) return; const t=now(); [1,2.01,2.76,4.1,5.4].forEach((k,i)=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.frequency.value=f*k; env(g,t,v/(1+i*.9),.004,d/(1+i*.4)); o.connect(g).connect(master); o.start(t); o.stop(t+d+.1); }); }
+function knell(n=3,f=146.8){ for(let i=0;i<n;i++) setTimeout(()=>bell(f,.14,6),i*2600); }
+function mood(...on){ if(!ctx) return; Object.keys(loops).forEach(k=>{ if(!on.includes(k)) stopLoop(k,2.5); }); on.forEach(k=>{ if(!loops[k]&&MOODS[k]) MOODS[k](); }); }
+
+/* ---------- things to do on a page ---------- */
+const sayCap=(t,done=()=>{})=>{ typeOut(t,done); speak(t); };
+/* tap every glowing spot; each one answers in the caption, and the last one lets you go on */
+function tapAll(items,done){ let n=0; items.forEach(([x,y,lab,line,fn],i)=>spotAt(x,y,lab,b=>{ b.classList.add('done'); initAudio(); bell([392,440,493.9,587.3,659.3,784][i%6],.06,2.6); fn&&fn(); const last=++n===items.length; sayCap(line,last?(done||armAdvance):undefined); })); }
+/* a choice that matters: a wrong answer walks you down it, then rewinds to here */
+function pick(opts){ choices.innerHTML=opts.map((o,i)=>`<button class="btn" type="button" data-i="${i}"${o.go?` data-go="${o.go}"`:''}>${o.label}</button>`).join('');
+  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const o=opts[+b.dataset.i]; choices.innerHTML=''; tickSnd(); if(o.go) detour(o.go,S[si].key,bi); else next(); }); }
+/* open your hands: tap each thing to give it up, and it fades from the picture */
+function letGo(items){ choices.innerHTML=items.map(([w],i)=>`<button class="btn alt" type="button" data-i="${i}">${w}</button>`).join(''); let n=0;
+  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const [,id,line]=items[+b.dataset.i]; b.disabled=true; b.style.opacity='.3'; whoosh(.12); bell(523.25-n*40,.05,3);
+    const el=document.getElementById(id); if(el){ el.classList.add('fade'); el.style.opacity='0'; el.style.transform='translateY(-20px)'; }
+    const last=++n===items.length; sayCap(line,last?()=>{ choices.innerHTML=''; armAdvance(); }:undefined); }); }
+/* the bedside questions: each gets a yes */
+function askAll(qs,label='Yes'){ let k=0; const ask=()=>{ sayCap(qs[k],()=>{ choices.innerHTML=`<button class="btn" type="button" id="yes">${label}</button>`; const y=$('#yes'); y.focus({preventScroll:true});
+    y.onclick=e=>{ e.stopPropagation(); choices.innerHTML=''; bell(293.7+k*36,.07,3); k++; k<qs.length?ask():next(); }; }); }; ask(); }
+function holdOn(o){ holdGeneric({...o, onDone:()=>{ o.onDone&&o.onDone(); setTimeout(next,o.wait||300); }}); }
+function tryAgain(label,key,beat){ choices.innerHTML=`<button class="btn" type="button" id="again">${label}</button>`; $('#again').onclick=e=>{ e.stopPropagation(); go(idx(key),beat); }; $('#again').focus({preventScroll:true}); }
+const card=(eye,h,p,btns='')=>`<div class="title-card"><span class="eyebrow">${eye}</span><h1>${h}</h1><p>${p}</p>${btns}</div>`;
 
 /* Woodcut kit for The Art of Dying Well: black line on rag paper, hand-tinted like the block books of the 1450s. */
 const INK='#1B1A17', RAG='#F3E8CF', RED='#B5483A', GREEN='#6E8B55', OCHRE='#D9A93A', BLUE='#4F6E96', BROWN='#8C5E35', SKIN='#EBCBA6';
@@ -815,30 +841,8 @@ const mercyIcon=(x,y,k)=>{ const c=`<circle cx="${x}" cy="${y}" r="30" fill="#FB
     chains:`<g fill="none" stroke="${INK}" stroke-width="3"><ellipse cx="-10" cy="0" rx="8" ry="5"/><ellipse cx="2" cy="0" rx="8" ry="5" transform="rotate(90 2 0)"/><ellipse cx="14" cy="0" rx="8" ry="5"/></g>`}[k]); };
 
 /* ---------- sound ---------- */
-function bell(f=392,v=.1,d=4){ if(!ctx) return; const t=now(); [1,2.01,2.76,4.1,5.4].forEach((k,i)=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.frequency.value=f*k; env(g,t,v/(1+i*.9),.004,d/(1+i*.4)); o.connect(g).connect(master); o.start(t); o.stop(t+d+.1); }); }
-function knell(n=3,f=146.8){ for(let i=0;i<n;i++) setTimeout(()=>bell(f,.14,6),i*2600); }
-const MOODS={ room:()=>roomTone(), drone:()=>drone(), chant:()=>pad('chant',[110,164.81,220],.035), glory:()=>pad('glory',[261.63,392,523.25,659.25],.026),
-  fire:()=>startLoop('fire',g=>{ const s=ctx.createBufferSource(); s.buffer=brownBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=320; f.Q.value=.8; s.connect(f).connect(g); s.start(); return [s]; },.2) };
-function mood(...on){ if(!ctx) return; Object.keys(loops).forEach(k=>{ if(!on.includes(k)) stopLoop(k,2.5); }); on.forEach(k=>{ if(!loops[k]&&MOODS[k]) MOODS[k](); }); }
-
-/* ---------- things to do on a page ---------- */
-const sayCap=(t,done=()=>{})=>{ typeOut(t,done); speak(t); };
-/* tap every glowing spot; each one answers in the caption, and the last one lets you go on */
-function tapAll(items,done){ let n=0; items.forEach(([x,y,lab,line,fn],i)=>spotAt(x,y,lab,b=>{ b.classList.add('done'); initAudio(); bell([392,440,493.9,587.3,659.3,784][i%6],.06,2.6); fn&&fn(); const last=++n===items.length; sayCap(line,last?(done||armAdvance):undefined); })); }
-/* a choice that matters: a wrong answer walks you down it, then rewinds to here */
-function pick(opts){ choices.innerHTML=opts.map((o,i)=>`<button class="btn" type="button" data-i="${i}">${o.label}</button>`).join('');
-  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const o=opts[+b.dataset.i]; choices.innerHTML=''; tickSnd(); if(o.go) detour(o.go,S[si].key,bi); else next(); }); }
-/* open your hands: tap each thing to give it up, and it fades from the picture */
-function letGo(items){ choices.innerHTML=items.map(([w],i)=>`<button class="btn alt" type="button" data-i="${i}">${w}</button>`).join(''); let n=0;
-  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const [,id,line]=items[+b.dataset.i]; b.disabled=true; b.style.opacity='.3'; whoosh(.12); bell(523.25-n*40,.05,3);
-    const el=document.getElementById(id); if(el){ el.classList.add('fade'); el.style.opacity='0'; el.style.transform='translateY(-20px)'; }
-    const last=++n===items.length; sayCap(line,last?()=>{ choices.innerHTML=''; armAdvance(); }:undefined); }); }
-/* the bedside questions: each gets a yes */
-function askAll(qs){ let k=0; const ask=()=>{ sayCap(qs[k],()=>{ choices.innerHTML='<button class="btn" type="button" id="yes">Yes</button>'; const y=$('#yes'); y.focus({preventScroll:true});
-    y.onclick=e=>{ e.stopPropagation(); choices.innerHTML=''; bell(293.7+k*36,.07,3); k++; k<qs.length?ask():next(); }; }); }; ask(); }
-function holdOn(o){ holdGeneric({...o, onDone:()=>{ o.onDone&&o.onDone(); setTimeout(next,o.wait||300); }}); }
-function tryAgain(label,key,beat){ choices.innerHTML=`<button class="btn" type="button" id="again">${label}</button>`; $('#again').onclick=e=>{ e.stopPropagation(); go(idx(key),beat); }; $('#again').focus({preventScroll:true}); }
-const card=(eye,h,p,btns='')=>`<div class="title-card"><span class="eyebrow">${eye}</span><h1>${h}</h1><p>${p}</p>${btns}</div>`;
+Object.assign(MOODS,{ room:()=>roomTone(), drone:()=>drone(), chant:()=>pad('chant',[110,164.81,220],.035), glory:()=>pad('glory',[261.63,392,523.25,659.25],.026),
+  fire:()=>startLoop('fire',g=>{ const s=ctx.createBufferSource(); s.buffer=brownBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=320; f.Q.value=.8; s.connect(f).connect(g); s.start(); return [s]; },.2) });
 const PAPER='#EFE4CC', DUSK='#D8C7A3', DARK='#3A3127', NIGHT='#16130F', HELL='#3A1D16', SKY='#F6E9C2';
 
 /* ---------- the book ---------- */
