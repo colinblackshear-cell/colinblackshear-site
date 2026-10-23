@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Many Doors</title>
-<meta name="description" content="What happens after you die, according to everyone. A visual guide to the world's maps of the afterlife, with a door for each.">
+<meta name="description" content="A visual guide to what the world's traditions see beyond death, with a door for each.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
-/* Many Doors: a pocket guide to the afterlife. Deep space, big friendly letters, one line at a time, then a hall of doors. */
+/* Many Doors: a guide to the journey after this one. Deep space, big friendly letters, one line at a time, then a hall of doors. */
 :root{
   color-scheme:dark;
   --space:#0B1220; --space2:#121C30; --cream:#FBF3DF; --cream2:#F6EBD2; --ink:#1E2A2B; --soft:#B9B3A2;
@@ -33,8 +33,11 @@ a{color:inherit}
 .top .sp{flex:1}
 .chip{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(251,243,223,.45);background:transparent;color:var(--cream);border-radius:999px;padding:7px 12px;min-height:36px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .chip:hover{background:rgba(251,243,223,.1)}
-.chip[aria-pressed="false"]{opacity:.55}
-.chip[aria-pressed="true"].q{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+#snd[aria-pressed="false"]{opacity:.55}
+.chip.q{font-size:.82rem;letter-spacing:.04em;text-transform:none;font-family:var(--fun);background:var(--cream);color:var(--ink);border:2.5px solid var(--ink);box-shadow:0 4px 0 #050910;min-height:42px;padding:8px 16px}
+.chip.q:hover{background:#fff}
+.chip.q:active{transform:translateY(3px);box-shadow:0 1px 0 #050910}
+.chip[aria-pressed="true"].q{background:var(--gold);color:var(--ink);border-color:var(--ink)}
 main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
 .fade{animation:fadeup .6s cubic-bezier(.2,.7,.2,1) both}
 @keyframes fadeup{from{opacity:0;transform:translateY(14px)}}
@@ -68,8 +71,11 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .sayrow .sp{flex:1}
 .gbtn{font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed #4A5754;background:transparent;color:#4A5754;border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
 .gbtn[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--cream2)}
-.next{font-family:var(--fun);font-weight:700;font-size:1rem;border:2.5px solid var(--ink);background:#1F5E63;color:var(--cream);border-radius:999px;padding:9px 20px;min-height:46px;cursor:pointer}
-.next[disabled]{opacity:.35;cursor:default}
+.next{font-family:var(--fun);font-weight:700;font-size:1.08rem;border:3px solid var(--ink);background:var(--gold);color:var(--ink);border-radius:999px;padding:10px 24px;min-height:50px;cursor:pointer;box-shadow:0 5px 0 var(--ink)}
+.next:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.next[disabled]{background:transparent;border:2.5px dashed #4A5754;color:#4A5754;box-shadow:none;cursor:default;font-size:.92rem}
+.next.go{animation:nudge 1.6s ease-in-out 3}
+@keyframes nudge{50%{transform:scale(1.07)}}
 .dots{display:flex;gap:7px}
 .dots i{width:9px;height:9px;border-radius:50%;background:rgba(30,42,43,.2)}
 .dots i.on{background:#1F5E63}
@@ -84,7 +90,18 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 @keyframes drw{to{stroke-dashoffset:0}}
 .pop{transform-box:fill-box;transform-origin:center;animation:popin .5s cubic-bezier(.3,1.6,.5,1) both}
 @keyframes popin{from{transform:scale(0);opacity:0}}
-.hotbtn{position:absolute;transform:translate(-50%,-50%);border:0;background:transparent;width:56px;height:56px;border-radius:50%;cursor:pointer;padding:0}
+.hotbtn{position:absolute;transform:translate(-50%,-50%);border:0;background:transparent;width:clamp(44px,7%,68px);aspect-ratio:1;border-radius:50%;cursor:pointer;padding:0}
+.hotbtn i{position:absolute;inset:-6%;border-radius:inherit;border:4px solid var(--gold);pointer-events:none;animation:ring 1.6s ease-out infinite}
+.hotbtn.used i{animation:none;opacity:.35}
+.hotbtn.sel i{opacity:1;border-width:5px;animation:none;box-shadow:0 0 0 6px rgba(242,182,64,.35)}
+@keyframes ring{0%{transform:scale(.85);opacity:1}100%{transform:scale(1.35);opacity:0}}
+.hotbtn b{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);font-family:var(--fun);font-weight:700;font-size:clamp(.9rem,2.4vw,1.25rem);background:var(--gold);color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:6px 18px;box-shadow:0 4px 0 var(--ink);white-space:nowrap}
+.hotbtn.used b{display:none}
+.mapbtn{cursor:pointer;outline:none}
+.mapbtn .ring{transform-box:fill-box;transform-origin:center;animation:ring 1.6s ease-out infinite}
+.mapbtn.used .ring{animation:none;opacity:.3}
+.mapbtn.sel .ring{animation:none;opacity:1;stroke-width:8}
+.mapbtn:hover .ring,.mapbtn:focus-visible .ring{animation:none;opacity:1}
 .hotbtn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .tagtip{position:absolute;transform:translate(-50%,-130%);background:var(--cream);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;font-family:var(--display);font-weight:700;font-size:.8rem;white-space:nowrap;pointer-events:none}
 /* the timeline slider */
@@ -97,6 +114,8 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .tl .ml{position:absolute;top:88px;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.58rem,1.4vw,.78rem);color:var(--soft);white-space:nowrap}
 .tl input{position:absolute;left:-14px;right:-14px;width:calc(100% + 28px);top:40px;height:44px;margin:0;opacity:0;cursor:ew-resize}
 .tl .thumb{position:absolute;top:30px;width:0;height:0;pointer-events:none}
+.tl .thumb b{position:absolute;left:0;top:-30px;transform:translateX(-50%);font-family:var(--fun);font-weight:700;font-size:.85rem;background:var(--gold);color:var(--ink);border:2.5px solid var(--ink);border-radius:999px;padding:2px 10px;white-space:nowrap;animation:nudge 1.6s ease-in-out infinite}
+.tl .thumb.used b{display:none}
 .tl .thumb::before{content:"";position:absolute;left:-22px;top:0;width:44px;height:64px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 64'%3E%3Ccircle cx='22' cy='12' r='9' fill='%23FBF3DF' stroke='%231E2A2B' stroke-width='3'/%3E%3Cpath d='M22 21 V44 M22 44 L13 62 M22 44 L31 62 M22 28 L10 38 M22 28 L34 36' stroke='%23FBF3DF' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E")}
 .readout{position:absolute;left:0;right:0;top:8%;text-align:center;pointer-events:none}
 .readout b{display:block;font-family:var(--fun);font-weight:700;font-size:clamp(2rem,7vw,4.2rem);line-height:1;color:var(--gold)}
@@ -110,6 +129,8 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .card .f{background:var(--cream);color:var(--ink)}
 .card .f svg{width:42%;height:auto;max-height:55%}
 .card .f b{font-family:var(--fun);font-weight:700;font-size:clamp(.9rem,2.4vw,1.4rem)}
+.card .f em{font-style:normal;font-family:var(--display);font-weight:700;font-size:clamp(.58rem,1.2vw,.76rem);letter-spacing:.06em;color:#8A4B22}
+.card .f{box-shadow:0 5px 0 rgba(0,0,0,.45)}
 .card .b{background:#1F5E63;color:var(--cream);transform:rotateY(180deg);font-size:clamp(.62rem,1.45vw,.9rem);line-height:1.3}
 .card .b b{font-family:var(--fun);font-size:1.15em;color:var(--gold)}
 
@@ -165,7 +186,9 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .route{position:relative;display:flex;justify-content:space-between;gap:4px;padding:6px 0 0}
 .route::before{content:"";position:absolute;left:24px;right:24px;top:30px;border-top:3px dashed color-mix(in srgb,var(--c) 55%,#fff)}
 .stn{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:0;cursor:pointer;flex:1;min-width:0;color:var(--ink)}
-.stn i{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:#fff;border:3px solid var(--ink);transition:transform .25s,background .25s}
+.rhint{margin:0;font-family:var(--display);font-weight:800;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:#8A4B22}
+.stn i{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);transition:transform .25s,background .25s}
+.stn:hover i{transform:translateY(-2px)}
 .stn i svg{width:70%;height:70%}
 .stn b{font-family:var(--display);font-weight:700;font-size:clamp(.62rem,1.3vw,.78rem);line-height:1.15;text-align:center}
 .stn[aria-pressed="true"] i{background:color-mix(in srgb,var(--c) 28%,#fff);border-color:var(--c);transform:scale(1.14)}
@@ -705,14 +728,22 @@ document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closes
 
 /* ---------- sound: a few small, optional noises ---------- */
 const A={ctx:null,on:store.get('md-sound')!=='0'};
-function ai(){ if(A.ctx||!A.on) return; try{ A.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+/* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
+function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
+  const sw=c.createOscillator(), sg=c.createGain(); sw.frequency.value=.045; sg.gain.value=260; sw.connect(sg).connect(lp.frequency); sw.start(t);
+  const nodes=[sw]; [[55,'sine',.55,0],[110,'sawtooth',.16,-4],[110.3,'sawtooth',.12,3],[164.8,'sine',.12,0],[220,'sine',.1,2],[329.6,'sine',.035,-3]].forEach(([f,type,v,dt],i)=>{ const o=c.createOscillator(),og=c.createGain(); o.type=type; o.frequency.value=f; o.detune.value=dt; og.gain.value=v;
+    const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
+  return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
+    stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+function ai(){ if(A.ctx||!A.on) return; try{ A.ctx=new (window.AudioContext||window.webkitAudioContext)(); A.drone=makeDrone(A.ctx,A.ctx.destination); }catch(e){} }
 function tn(f,{d=.4,p=.08,type='sine',at=0}={}){ if(!A.ctx||!A.on) return; const c=A.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain(); o.type=type; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g).connect(c.destination); o.start(t); o.stop(t+d+.05); }
 const blip=()=>tn(660,{d:.12,p:.05,type:'triangle'});
 const chime=()=>[523.25,659.25,783.99,1046.5].forEach((f,i)=>tn(f,{d:1.4,p:.05,at:i*.09}));
 const knock=()=>{ [0,.18,.36].forEach(at=>tn(90,{d:.12,p:.25,type:'square',at})); };
 function creak(){ if(!A.ctx||!A.on) return; const c=A.ctx,t=c.currentTime,o=c.createOscillator(),g=c.createGain(),f=c.createBiquadFilter(); o.type='sawtooth'; o.frequency.setValueAtTime(70,t); o.frequency.linearRampToValueAtTime(140,t+.5); o.frequency.linearRampToValueAtTime(90,t+.9); f.type='bandpass'; f.frequency.value=900; f.Q.value=6; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.05,t+.05); g.gain.exponentialRampToValueAtTime(.0001,t+.95); o.connect(f).connect(g).connect(c.destination); o.start(t); o.stop(t+1); }
 $('#snd').setAttribute('aria-pressed',A.on);
-$('#snd').onclick=e=>{ A.on=!A.on; store.set('md-sound',A.on?'1':'0'); e.currentTarget.setAttribute('aria-pressed',A.on); if(A.on){ ai(); blip(); } };
+$('#snd').onclick=e=>{ A.on=!A.on; store.set('md-sound',A.on?'1':'0'); e.currentTarget.setAttribute('aria-pressed',A.on); if(A.drone) A.drone.level(A.on?1:0,1); if(A.on){ ai(); blip(); } };
 addEventListener('pointerdown',ai,{once:true});
 
 /* ---------- the sky ---------- */
@@ -839,9 +870,9 @@ function show(html,cls=''){ scene.innerHTML=`<div class="fade ${cls}">${html}</d
 
 function cover(){
   show(`<div class="cover">
-    <div class="guidebook"><span class="eyebrow">A pocket guide to the afterlife</span>
-      <b class="panic" aria-label="Don't panic."><span>DON'T</span> <span>PANIC.</span></b>
-      <p>Everybody dies. Here is what everybody thinks happens next.</p></div>
+    <div class="guidebook"><span class="eyebrow">A guide for the journey after this one</span>
+      <b class="panic" aria-label="Fear not."><span>Fear</span> <span>not.</span></b>
+      <p>Every life comes to a threshold. Here is what the world's traditions see beyond it.</p></div>
     <div class="row"><button type="button" class="btn" id="open">Open the Guide <span aria-hidden="true">→</span></button><button type="button" class="btn alt" id="skip">Skip to the doors</button></div>
     <svg class="planet" viewBox="0 0 360 170" aria-hidden="true"><defs><radialGradient id="pl" cx=".4" cy=".3"><stop offset="0" stop-color="#3FA0A4"/><stop offset="1" stop-color="#123D40"/></radialGradient><radialGradient id="dg"><stop offset="0" stop-color="#FFF6D8"/><stop offset="1" stop-color="#F2B640" stop-opacity="0"/></radialGradient></defs>
       <circle cx="180" cy="300" r="250" fill="url(#pl)" stroke="#FBF3DF" stroke-width="3"/>
@@ -858,19 +889,19 @@ function cover(){
 
 /* five slides: one picture, one line, one thing to touch */
 const SL=[
- {who:'The numbers',text:'About 117 billion humans have ever been born. Each figure here is a billion of them. Watch.',note:'Population Reference Bureau estimate. About 109 billion have died; roughly 8 billion are alive now, including you.',mount:mountCrowd,after:'109 billion of them have already gone through the same door. The other 8 billion are reading this, or standing near someone who is.'},
- {who:'The problem',text:'Nobody has come back from the other side with a reliable map. Go on, knock.',mount:mountKnock,after:'Nothing. The door doesn\'t do return trips.',note:'People revived after cardiac arrest do report experiences, and researchers argue about what they mean. A report from the threshold is not a map of the country.'},
- {who:'The solution',text:'So every culture drew a map anyway. Lots of maps. Tap one.',mount:mountMaps,after:'Each map is a whole world: guides, judges, rivers, bridges, gardens and fires.'},
- {who:'The disagreement',text:'The maps disagree about nearly everything. Take how long the trip lasts. Drag the traveller.',mount:mountTime,after:'Anywhere from no time at all to four years, depending on which map you\'re holding.'},
- {who:'The surprise',text:'And yet the same few things keep turning up on map after map. Flip the cards.',mount:mountMotifs,after:'People who never met drew the same river, the same scales, even the same dog. Make of that what you will.'}
+ {who:'All of us',text:'About 117 billion humans have ever been born. Each figure here is a billion of them. Watch.',note:'Population Reference Bureau estimate. About 109 billion have died; roughly 8 billion are alive now, including you.',hint:'Watch the count',mount:mountCrowd,after:'109 billion of them have already gone through the same door. The other 8 billion are reading this, or standing near someone who is.'},
+ {who:'The mystery',text:'Nobody has come back from the other side with a reliable map. Go on, knock.',hint:'Knock on the door first',mount:mountKnock,after:'Nothing. The door doesn\'t do return trips.',note:'People revived after cardiac arrest do report experiences, and researchers argue about what they mean. A report from the threshold is not a map of the country.'},
+ {who:'The maps',text:'So every culture drew a map anyway. Lots of maps. Tap one.',hint:'Tap a glowing map first',mount:mountMaps,after:'Each map is a whole world: guides, judges, rivers, bridges, gardens and fires.'},
+ {who:'The differences',text:'The maps disagree about nearly everything. Take how long the trip lasts. Drag the traveller.',hint:'Drag the traveller first',mount:mountTime,after:'Anywhere from no time at all to four years, depending on which map you\'re holding.'},
+ {who:'The echoes',text:'And yet the same few things keep turning up on map after map. Flip the cards.',hint:'Flip three cards first',mount:mountMotifs,after:'People who never met drew the same river, the same scales, even the same dog. Make of that what you will.'}
 ];
 function slide(i){
   const S=SL[i];
   show(`<div class="slide"><div class="stagebox" id="st"></div>
     <div class="say"><span class="who">${S.who}</span><p id="sayp">${S.text}</p>
-    <div class="sayrow">${S.note?`<button type="button" class="gbtn" id="gn" aria-expanded="false">✦ Guide note</button>`:''}<div class="dots">${SL.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('')}</div><span class="sp"></span><button type="button" class="skip" id="sk">Skip</button><button type="button" class="next" id="nx" disabled>${i<SL.length-1?'Next':'To the doors'} →</button></div></div></div>`);
+    <div class="sayrow">${S.note?`<button type="button" class="gbtn" id="gn" aria-expanded="false">✦ Guide note</button>`:''}<div class="dots">${SL.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('')}</div><span class="sp"></span><button type="button" class="skip" id="sk">Skip</button><button type="button" class="next" id="nx" disabled>${S.hint}</button></div></div></div>`);
   const nx=$('#nx');
-  const ready=()=>{ if(!nx.disabled) return; nx.disabled=false; if(S.after){ $('#sayp').textContent=S.after; } nx.focus({preventScroll:true}); };
+  const ready=()=>{ if(!nx.disabled) return; nx.disabled=false; nx.textContent=(i<SL.length-1?'Next':'To the doors')+' →'; nx.classList.add('go'); if(S.after){ $('#sayp').textContent=S.after; } nx.focus({preventScroll:true}); };
   nx.onclick=()=>{ blip(); i<SL.length-1?slide(i+1):hall(); };
   $('#sk').onclick=()=>hall();
   const gn=$('#gn'); if(gn) gn.onclick=()=>{ const o=gn.getAttribute('aria-expanded')!=='true'; gn.setAttribute('aria-expanded',o); let n=$('#sayn'); if(o){ n=document.createElement('p'); n.id='sayn'; n.className='note'; n.textContent=S.note; $('#sayp').after(n); } else if(n) n.remove(); };
@@ -895,35 +926,36 @@ function mountKnock(el,ready){
     <g transform="translate(250 470)"><circle cy="-128" r="22" fill="#FBF3DF"/><path d="M0 -104 V-40 M0 -40 L-18 0 M0 -40 L18 0 M0 -90 L-26 -60 M0 -90 L40 -110" stroke="#FBF3DF" stroke-width="12" stroke-linecap="round"/></g>
     <g id="kb" opacity="0"><rect x="600" y="110" width="240" height="90" rx="45" fill="#FBF3DF" stroke="#1E2A2B" stroke-width="4"/><path d="M620 190 L590 230 L650 196Z" fill="#FBF3DF" stroke="#1E2A2B" stroke-width="4"/><text x="720" y="166" text-anchor="middle" font-family="Fredoka,Jost,sans-serif" font-weight="700" font-size="34" fill="#1E2A2B">(silence)</text></g>
     <text id="kk" x="480" y="70" text-anchor="middle" font-family="Fredoka,Jost,sans-serif" font-weight="700" font-size="40" fill="#F2B640" opacity="0">KNOCK KNOCK</text></svg>
-    <button type="button" class="hotbtn" style="left:50%;top:55%;width:24%;height:60%;border-radius:40% 40% 4px 4px" aria-label="Knock on the door"></button>`;
-  let n=0; el.querySelector('.hotbtn').onclick=()=>{ n++; knock(); const d=$('#kd'); d.classList.remove('shake'); void d.getBBox(); d.classList.add('shake'); $('#kk').setAttribute('opacity',1);
+    <button type="button" class="hotbtn" style="left:50%;top:55%;width:24%;height:60%;border-radius:40% 40% 4px 4px" aria-label="Knock on the door"><b>Knock</b></button>`;
+  let n=0; el.querySelector('.hotbtn').onclick=ev=>{ n++; ev.currentTarget.classList.add('used'); knock(); const d=$('#kd'); d.classList.remove('shake'); void d.getBBox(); d.classList.add('shake'); $('#kk').setAttribute('opacity',1);
     setTimeout(()=>{ $('#kk').setAttribute('opacity',0); $('#kb').setAttribute('opacity',1); ready(); },900); };
 }
 function mountMaps(el,ready){
-  const ends=D.slice(0,11); const ox=480,oy=470; let paths='',btns='';
-  ends.forEach((d,i)=>{ const a=Math.PI*(1-(i+.5)/ends.length), r=(i%2?330:400); const x=ox+Math.cos(a)*r*1.12, y=oy-Math.sin(a)*r*.92-30; const cx=ox+Math.cos(a)*120, cy=oy-160;
+  const ends=D.slice(0,11); const ox=480,oy=470; let paths='';
+  ends.forEach((d,i)=>{ const a=Math.PI*(1-(i+.5)/ends.length), r=(i%2?330:400); const x=ox+Math.cos(a)*r*1.02, y=oy-Math.sin(a)*r*.92-30; const cx=ox+Math.cos(a)*120, cy=oy-160;
     const len=Math.round(Math.hypot(x-ox,y-oy)*1.3);
-    paths+=`<path class="draw" style="--len:${len};animation-delay:${i*.12}s" d="M${ox} ${oy-70} Q${cx} ${cy} ${x} ${y}" stroke="${d.col}" stroke-width="6" fill="none" stroke-linecap="round"/><g class="pop" style="animation-delay:${.8+i*.12}s" transform="translate(${x} ${y})"><circle r="30" fill="#FBF3DF" stroke="${d.col}" stroke-width="5"/><g transform="scale(.95)">${IC[d.emb]}</g></g>`;
-    btns+=`<button type="button" class="hotbtn" data-i="${i}" style="left:${x/9.6}%;top:${y/5.4}%" aria-label="${esc2(d.name)}"></button>`; });
+    paths+=`<path class="draw" style="--len:${len};animation-delay:${i*.12}s" d="M${ox} ${oy-70} Q${cx} ${cy} ${x} ${y}" stroke="${d.col}" stroke-width="6" fill="none" stroke-linecap="round"/><g class="mapbtn" data-i="${i}" role="button" tabindex="0" aria-label="${esc2(d.name)}" transform="translate(${x} ${y})"><g class="pop" style="animation-delay:${.8+i*.12}s"><circle class="ring" r="38" fill="none" stroke="#F2B640" stroke-width="5"/><circle r="30" fill="#FBF3DF" stroke="${d.col}" stroke-width="5"/><g transform="scale(.95)">${IC[d.emb]}</g><circle r="44" fill="transparent"/></g></g>`;
+  });
   el.innerHTML=`<svg viewBox="0 0 960 540"><defs><radialGradient id="dg3"><stop offset="0" stop-color="#FFF6D8"/><stop offset="1" stop-color="#F2B640" stop-opacity="0"/></radialGradient></defs>${paths}
-    <circle cx="${ox}" cy="${oy-40}" r="90" fill="url(#dg3)"/><path d="M${ox-36} ${oy} V${oy-80} Q${ox} ${oy-120} ${ox+36} ${oy-80} V${oy}Z" fill="#FFF6D8" stroke="#FBF3DF" stroke-width="5"/><path d="M${ox-36} ${oy} V${oy-80} Q${ox-24} ${oy-96} ${ox-10} ${oy-104} V${oy}Z" fill="#1F5E63" stroke="#FBF3DF" stroke-width="4"/></svg>${btns}<span class="tagtip" id="tt" hidden></span>`;
-  const tt=$('#tt'); el.querySelectorAll('.hotbtn').forEach(b=>b.onclick=()=>{ const d=ends[+b.dataset.i]; tt.hidden=false; tt.style.left=b.style.left; tt.style.top=b.style.top; tt.textContent=`${d.name}: ${d.route[d.route.length-1][1]}`; blip(); ready(); });
+    <circle cx="${ox}" cy="${oy-40}" r="90" fill="url(#dg3)"/><path d="M${ox-36} ${oy} V${oy-80} Q${ox} ${oy-120} ${ox+36} ${oy-80} V${oy}Z" fill="#FFF6D8" stroke="#FBF3DF" stroke-width="5"/><path d="M${ox-36} ${oy} V${oy-80} Q${ox-24} ${oy-96} ${ox-10} ${oy-104} V${oy}Z" fill="#1F5E63" stroke="#FBF3DF" stroke-width="4"/></svg>`;
+  el.querySelectorAll('.mapbtn').forEach(b=>b.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); b.onclick(); } });
+  el.querySelectorAll('.mapbtn').forEach(b=>b.onclick=()=>{ const d=ends[+b.dataset.i]; el.querySelectorAll('.mapbtn').forEach(x=>x.classList.toggle('sel',x===b)); b.classList.add('used'); ready(); $('#sayp').innerHTML=`<b style="color:${d.col}">${esc2(d.name)}:</b> ${esc2(d.route[d.route.length-1][1])}. Tap another, or press Next.`; blip(); });
 }
 function mountTime(el,ready){
   /* days on a stretched scale so that 3 nights and 4 years both fit */
   const M=[[0,'Instant','Theravada Buddhists and Jains: the next life starts at once.'],[3,'3 nights','Zoroastrians: three nights by the body, then the bridge.'],[13,'13 days','Hindus: thirteen days of rites build the soul a body.'],[40,'40 days','Orthodox Christians: the soul\'s forty-day passage.'],[49,'49 days','Tibetan Buddhists and Chinese families: seven weeks.'],[70,'70 days','Ancient Egyptians: seventy days of embalming first.'],[365,'1 year','Jewish mourners say Kaddish for eleven months; Lakota families keep a spirit for a year.'],[1460,'4 years','The Mexica: four years walking down through Mictlan.']];
   const pos=d=>M.findIndex(m=>m[0]===d)/(M.length-1)*100; /* evenly spaced: the order matters more than the scale */
   el.innerHTML=`<div class="readout"><b id="rb">Pick a moment</b><span id="rs">Drag the little traveller along the line.</span></div>
-    <div class="tl"><div class="rail"></div><div class="fill" id="tf" style="width:0"></div>${M.map((m,i)=>`<i class="mk" data-i="${i}" style="left:${pos(m[0])}%"></i><span class="ml${i%2?' up':''}" style="left:${pos(m[0])}%">${m[1]}</span>`).join('')}<span class="thumb" id="th" style="left:0"></span>
+    <div class="tl"><div class="rail"></div><div class="fill" id="tf" style="width:0"></div>${M.map((m,i)=>`<i class="mk" data-i="${i}" style="left:${pos(m[0])}%"></i><span class="ml${i%2?' up':''}" style="left:${pos(m[0])}%">${m[1]}</span>`).join('')}<span class="thumb" id="th" style="left:0"><b>Drag me</b></span>
     <input type="range" min="0" max="100" step="0.5" value="0" aria-label="How long the trip lasts" id="tr"></div>`;
   const tr=$('#tr'),seen=new Set(); let last=-1;
   const upd=()=>{ const v=+tr.value; $('#th').style.left=v+'%'; $('#tf').style.width=v+'%'; let k=0; M.forEach((m,i)=>{ if(pos(m[0])<=v+.01) k=i; }); el.querySelectorAll('.mk').forEach((m,i)=>m.classList.toggle('on',i<=k&&v>0||i===0));
-    if(k!==last){ last=k; $('#rb').textContent=M[k][1]; $('#rs').textContent=M[k][2]; tn(300+k*60,{d:.15,p:.05,type:'triangle'}); seen.add(k); if(seen.size>=3) ready(); } };
-  tr.oninput=upd; upd(); setTimeout(()=>tr.focus({preventScroll:true}),300);
+    if(k!==last){ last=k; $('#rb').textContent=M[k][1]; $('#rs').textContent=M[k][2]; tn(300+k*60,{d:.15,p:.05,type:'triangle'}); seen.add(k); if(seen.size>=3) ready(); } $('#th').classList.add('used'); };
+  tr.oninput=upd; upd(); $('#th').classList.remove('used'); setTimeout(()=>tr.focus({preventScroll:true}),300);
 }
 function mountMotifs(el,ready){
   const C=[['bridge','A crossing','Zoroastrian · Islamic · Chinese · Norse · Hindu · Greek · Mexica'],['scales','A weighing','Egyptian · Islamic · Zoroastrian · Tibetan · Chinese · Hindu'],['dog','A dog','Zoroastrian · Mexica · Greek · Norse · Egyptian · Vedic'],['angel','A guide','Greek · Egyptian · Norse · Islamic · Hindu · Pure Land'],['bowl','Forgetting','Greek · Chinese · Plato · Tibetan'],['mirror','Your own face','Zoroastrian · Tibetan · Swedenborg · Yoruba']];
-  el.innerHTML=`<div class="cards">${C.map((c,i)=>`<button type="button" class="card" data-i="${i}" aria-label="${c[1]}"><span class="in"><span class="f">${icon(c[0])}<b>${c[1]}</b></span><span class="b"><b>${c[1]}</b>${c[2]}</span></span></button>`).join('')}</div>`;
+  el.innerHTML=`<div class="cards">${C.map((c,i)=>`<button type="button" class="card" data-i="${i}" aria-label="${c[1]}"><span class="in"><span class="f">${icon(c[0])}<b>${c[1]}</b><em>Tap to flip ↻</em></span><span class="b"><b>${c[1]}</b>${c[2]}</span></span></button>`).join('')}</div>`;
   const seen=new Set(); el.querySelectorAll('.card').forEach(b=>b.onclick=()=>{ b.classList.toggle('on'); seen.add(b.dataset.i); tn(400+seen.size*70,{d:.25,p:.05,type:'triangle'}); if(seen.size>=3) ready(); });
 }
 
@@ -933,8 +965,8 @@ const ASKS=[['who','Who decides?'],['long','How long?'],['cross','Any crossing?'
 function hall(){
   store.set('md-hub-seen','1');
   show(`<div class="hall">
-    <div class="hallhead"><div><h1>Pick a door.</h1></div><p>Each one opens a different map of what happens after death. Hover to peek, click to go in.</p></div>
-    <div class="asks"><span>Ask the Guide</span>${ASKS.map(([k,l])=>`<button type="button" class="chip q" data-q="${k}" aria-pressed="${ASK===k}">${l}</button>`).join('')}</div>
+    <div class="hallhead"><div><h1>Pick a door.</h1></div><p>Each door opens a different tradition's map of what happens after death. Tap any door to go in.</p></div>
+    <div class="asks"><span>Compare them: tap a question</span>${ASKS.map(([k,l])=>`<button type="button" class="chip q" data-q="${k}" aria-pressed="${ASK===k}">${l}</button>`).join('')}</div>
     <div class="doors">${D.map((d,i)=>`<button type="button" class="door" data-i="${i}" style="--c:${d.col}" aria-label="${esc2(d.name)}: ${esc2(d.head)}">
       <span class="med">${icon(d.emb)}</span>
       <span class="arch"><svg class="behind" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${COVER(d.k)}</svg><span class="glow"></span><span class="panel"><i class="knob"></i></span></span>
@@ -964,7 +996,7 @@ function entry(i){
     <div class="epic"><svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${COVER(d.k)}</svg><span class="tag">Guide entry: ${esc2(d.name)}</span></div>
     <div class="ebody">
       <h2>${esc2(d.head)}</h2>
-      <div class="route">${d.route.map((r,k)=>`<button type="button" class="stn" data-k="${k}" aria-pressed="${k===0}"><small>${k+1}</small><i>${icon(r[0])}</i><b>${esc2(r[1])}</b></button>`).join('')}</div>
+      <p class="rhint">The road, step by step. Tap each stop.</p><div class="route">${d.route.map((r,k)=>`<button type="button" class="stn" data-k="${k}" aria-pressed="${k===0}"><small>${k+1}</small><i>${icon(r[0])}</i><b>${esc2(r[1])}</b></button>`).join('')}</div>
       <p class="stnsay" id="ss" aria-live="polite">${esc2(d.route[0][2])}</p>
       <div class="facts">${d.facts.map(f=>`<div class="fact"><span>${esc2(f[0])}</span><b>${esc2(f[1])}</b></div>`).join('')}</div>
       <div class="people">${d.pop?`<span class="bar" title="Share of the world's 8.1 billion people"><i style="width:${Math.max(1.5,d.pop/8.1*100)}%"></i></span>`:''}<span>${esc2(d.popTxt)}</span></div>
@@ -979,6 +1011,8 @@ function entry(i){
 }
 function closeEntry(){ const e=$('#entry'); e.hidden=true; e.innerHTML=''; document.body.style.overflow=''; const b=document.querySelector(`.door[data-i="${CUR}"]`); if(b) b.focus({preventScroll:true}); CUR=-1; }
 addEventListener('keydown',ev=>{ if($('#entry').hidden) return; if(ev.key==='Escape') closeEntry(); if(ev.key==='ArrowRight') entry((CUR+1)%D.length); if(ev.key==='ArrowLeft') entry((CUR+D.length-1)%D.length); });
+/* the drone starts on the first touch anywhere */
+['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>ai(),{once:true,capture:true}));
 $('#toHall').onclick=()=>{ ai(); closeEntry(); hall(); };
 
 /* start: first visit gets the cover; #doors (or a return visit) goes straight to the hall */
