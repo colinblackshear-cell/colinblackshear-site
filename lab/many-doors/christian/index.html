@@ -1,4 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<script>window.MD_HOME='../index.html#doors'</script>
 <title>The Last Day · Many Doors</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
@@ -29,6 +30,8 @@ svg text{font-family:var(--display)}
 
 /* ---------- full-screen player (manual and daily session) ---------- */
 body.insession{overflow:hidden}
+a.sbtn.home{text-decoration:none;display:inline-flex;align-items:center}
+body.insession .mdhome{display:none}
 .player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
 .player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
 .pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
@@ -266,6 +269,7 @@ function openPlayer({title,sub,steps=[],menu=null,color}){
   const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
   if(color) el.style.setProperty('--c',color);
   el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${window.MD_HOME?`<a class="sbtn home" href="${MD_HOME}">← Doors</a>`:''}
     ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
     <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
     ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
@@ -496,7 +500,7 @@ function chCover(){ return wc(`${glory(300,60,120)}${bed()}${angel(115,230,1)}${
 /* The Christian door: the Ars moriendi deathbed, then the Catholic map of what follows, in seven stops. */
 const BED_L=b=>wc(`${bed()}${b||""}`);
 const J={key:'j-christian',tradition:'Christianity',title:'The Last Day',col:'#8E2A22',mins:6,
- tag:'You are dying. Don\'t panic: in 1415 the Church wrote a manual for exactly this.',
+ tag:'You are dying. Fear not: in 1415 the Church wrote a manual for exactly this.',
  cover:chCover,
  end:{line:'That\'s the Christian map: one life, one judgment, and a resurrection at the end. The world isn\'t escaped. It\'s made new.',
   book:'The Art of Dying Well',bookUrl:'../../many-doors/christian/book/',walk:'The Forty Days',walkUrl:'../../many-doors/christian/walk/'},

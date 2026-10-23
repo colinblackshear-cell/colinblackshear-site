@@ -27,8 +27,11 @@ HEAD = '''<!doctype html><html lang="en"><head><meta charset=utf8><meta name=vie
 # Links between pages of the series open in the same tab; outside links keep their new tab.
 SAME_TAB = '''<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
 '''
-# The atlas sits behind the hub's last door, so it gets a way back to the doors.
-BACK = '''<a href="{up}" style="position:fixed;left:12px;bottom:12px;z-index:50;font:500 12px/1 Jost,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1E2A2B;background:#FBF3DFe6;border:1px solid rgba(30,42,43,.25);border-radius:999px;padding:9px 13px;text-decoration:none">&larr; {label}</a>
+# Every page gets a way back to the hall of doors: a button in the player's bar (the engine draws it when
+# MD_HOME is set), and on pages without their own back link, a pill in the corner that hides while the player is open.
+HOME = '''<script>window.MD_HOME='{home}'</script>
+'''
+BACK = '''<a class="mdhome" href="{home}" style="position:fixed;left:12px;bottom:12px;z-index:50;font:500 12px/1 Jost,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1E2A2B;background:#FBF3DFe6;border:1px solid rgba(30,42,43,.25);border-radius:999px;padding:9px 13px;text-decoration:none">&larr; {label}</a>
 '''
 
 
@@ -57,8 +60,10 @@ def main(src):
             html = html.replace(url, up + to)
         left = sorted(set(re.findall(r'https://claude\.ai/artifact/\w+', html)))
         if left: print(f'  {file}: no site page for {", ".join(left)}')
-        extra = SAME_TAB + (BACK.format(up='../#doors', label='All doors') if path == 'many-doors/atlas/' else '')
-        write(path, HEAD + html.rstrip() + '\n' + extra + '</body></html>\n')
+        home = '../' * (path.count('/') - 1) + 'index.html#doors'  # the hub, from inside many-doors/
+        is_journey = path.count('/') == 2 and path != 'many-doors/atlas/' and path != 'many-doors/doors/'
+        extra = SAME_TAB + ('' if is_journey else BACK.format(home=home, label='Many Doors'))
+        write(path, HEAD + HOME.format(home=home) + html.rstrip() + '\n' + extra + '</body></html>\n')
         print(f'lab/{path} <- {file}')
 
     # the hub is a whole page already
