@@ -350,7 +350,7 @@ const WORKS = [
   { ch: 4, title: 'Second Nature', kind: 'Sector 9 · Film', year: '',  role: '',                  scene: road,    root: 50, vimeo: '20973698' },
   { ch: 5, title: 'Free Ride',     kind: 'Film',         year: '',     role: '',                  scene: fog,     root: 53, vimeo: '19586969', aspect: 4 / 3 },
   { ch: 6, title: 'Remio',         kind: 'Film',         year: '',     role: '',                  scene: sunset,  root: 55, vimeo: '54697211' },
-  { ch: 7, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968', picture: 2.39 },
+  { ch: 7, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968', picture: 2.39, vol: .6 },
   { ch: 8, title: 'The Bread Bejkr', kind: 'Film',       year: '',     role: '',                  scene: leaks,   root: 52, vimeo: '71693536' },
 ];
 const MUSIC_CH = 9;
@@ -1346,7 +1346,9 @@ function placeScrub(now, bx, by, bw, bh, inside) {
 function vimeoSound() {
   if (!vFrame || !vFrame.contentWindow) return;
   const send = m => vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
-  send({ method: 'setMuted', value: !soundOn }); send({ method: 'setVolume', value: soundOn ? 1 : 0 });
+  // `vol` on a film evens out its level against the others (1 is as uploaded)
+  const w = WORKS.find(w => w.vimeo === vLoaded), v = w && w.vol || 1;
+  send({ method: 'setMuted', value: !soundOn }); send({ method: 'setVolume', value: soundOn ? v : 0 });
 }
 const vCorners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => new THREE.Vector3(SX + a * SW / 2 * .985, CY + b * SH / 2 * .985, FZ + .04));
 function syncVimeo(now) {

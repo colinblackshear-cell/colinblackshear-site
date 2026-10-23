@@ -272,6 +272,18 @@ ST.forEach((s, i) => {
   $('stations').insertAdjacentHTML('beforeend', `<button class="st${i % 2 ? ' lo' : ''}" data-i="${i}" style="left:${pct(s.freq)}%" tabindex="-1">${s.title}</button>`);
   $('log').insertAdjacentHTML('beforeend', `<li><button data-i="${i}"><span class="f">${s.freq.toFixed(1)} FM</span><span class="n">${s.title}</span><span class="x">${s.note || ''}</span></button></li>`);
 });
+// the more stations, the smaller the names on the dial, so neighbours on the same row never run together
+function fitStations() {
+  const sts = [...document.querySelectorAll('.st')]; sts.forEach(b => b.style.fontSize = '');
+  let k = 1;
+  for (let i = 0; i + 2 < sts.length; i++) {
+    const a = sts[i].getBoundingClientRect(), b = sts[i + 2].getBoundingClientRect();
+    const room = (b.left + b.width / 2) - (a.left + a.width / 2), need = (a.width + b.width) / 2 + 6;
+    if (room > 0) k = Math.min(k, room / need);
+  }
+  if (k < 1) sts.forEach(b => b.style.fontSize = Math.max(.55, .98 * k) + 'rem');
+}
+addEventListener('resize', fitStations); fitStations(); document.fonts && document.fonts.ready.then(fitStations);
 
 let on = false, needle = ST.length ? ST[0].freq : 98, cur = -1, vol = .8, signal = 0, glide = null;
 
