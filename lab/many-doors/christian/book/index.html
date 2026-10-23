@@ -736,7 +736,7 @@ const sayCap=(t,done=()=>{})=>{ typeOut(t,done); speak(t); };
 /* tap every glowing spot; each one answers in the caption, and the last one lets you go on */
 function tapAll(items,done){ let n=0; items.forEach(([x,y,lab,line,fn],i)=>spotAt(x,y,lab,b=>{ b.classList.add('done'); initAudio(); bell([392,440,493.9,587.3,659.3,784][i%6],.06,2.6); fn&&fn(); const last=++n===items.length; sayCap(line,last?(done||armAdvance):undefined); })); }
 /* a choice that matters: a wrong answer walks you down it, then rewinds to here */
-function pick(opts){ choices.innerHTML=opts.map((o,i)=>`<button class="btn" type="button" data-i="${i}">${o.label}</button>`).join('');
+function pick(opts){ choices.innerHTML=opts.map((o,i)=>`<button class="btn" type="button" data-i="${i}"${o.go?` data-go="${o.go}"`:''}>${o.label}</button>`).join('');
   choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const o=opts[+b.dataset.i]; choices.innerHTML=''; tickSnd(); if(o.go) detour(o.go,S[si].key,bi); else next(); }); }
 /* open your hands: tap each thing to give it up, and it fades from the picture */
 function letGo(items){ choices.innerHTML=items.map(([w],i)=>`<button class="btn alt" type="button" data-i="${i}">${w}</button>`).join(''); let n=0;
@@ -744,7 +744,7 @@ function letGo(items){ choices.innerHTML=items.map(([w],i)=>`<button class="btn 
     const el=document.getElementById(id); if(el){ el.classList.add('fade'); el.style.opacity='0'; el.style.transform='translateY(-20px)'; }
     const last=++n===items.length; sayCap(line,last?()=>{ choices.innerHTML=''; armAdvance(); }:undefined); }); }
 /* the bedside questions: each gets a yes */
-function askAll(qs,label='Yes'){ let k=0; const ask=()=>{ sayCap(qs[k],()=>{ choices.innerHTML='<button class="btn" type="button" id="yes">${label}</button>'; const y=$('#yes'); y.focus({preventScroll:true});
+function askAll(qs,label='Yes'){ let k=0; const ask=()=>{ sayCap(qs[k],()=>{ choices.innerHTML=`<button class="btn" type="button" id="yes">${label}</button>`; const y=$('#yes'); y.focus({preventScroll:true});
     y.onclick=e=>{ e.stopPropagation(); choices.innerHTML=''; bell(293.7+k*36,.07,3); k++; k<qs.length?ask():next(); }; }); }; ask(); }
 function holdOn(o){ holdGeneric({...o, onDone:()=>{ o.onDone&&o.onDone(); setTimeout(next,o.wait||300); }}); }
 function tryAgain(label,key,beat){ choices.innerHTML=`<button class="btn" type="button" id="again">${label}</button>`; $('#again').onclick=e=>{ e.stopPropagation(); go(idx(key),beat); }; $('#again').focus({preventScroll:true}); }
