@@ -85,7 +85,6 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   box-shadow:inset 0 0 24px rgba(0,0,0,.8)}
 .vbox[hidden]{display:none}
 /* a cut between sections in the room: the picture blinks out and back, like a hard edit */
-.vbox.cut{filter:brightness(.08)}
 .vbox iframe{transition:opacity .35s}
 /* the film's scrub bar, along the bottom of the picture when you're inside */
 .scrub{position:fixed;left:0;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:6px 12px 6px 6px;border-radius:12px;box-sizing:border-box;
@@ -1246,8 +1245,13 @@ if (document.fullscreenEnabled && fsEl.requestFullscreen) {
 tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
 /* Every film has its own player, loaded and waiting (paused, silent) from the start. Turning to a channel brings that
    player up and tells it to play with sound inside your tap, so picture and sound arrive together, like a real set. */
-const POOL = {};   // vimeo id -> { el, ready, dur }
+const POOL = {};   // vimeo id -> { el, ready, dur, cue }
 let needTap = false, lastCheck = false;
+// While a player fetches the moment it was sent to, the glass shows static instead of the player's loading wheel.
+// Waiting players are parked ("cued") at a random moment ahead of time, so tuning in usually needs no fetch at all.
+let vWait = false, vWaitAt = 0, vWaitT = null;
+function waitFor(t) { vWait = true; vWaitAt = performance.now(); vWaitT = t; }
+const cueUp = p => { if (p.dur) { p.cue = p.dur * (.06 + Math.random() * .82); poolPost(p, { method: 'setCurrentTime', value: p.cue }); } };
 function tapHint(on) { needTap = on; $('taphint').classList.toggle('on', on); }
 const poolPost = (p, m) => p.el.contentWindow && p.el.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
 function buildPool() {
@@ -1261,20 +1265,23 @@ function buildPool() {
 }
 setTimeout(buildPool, 1200);
 function dropVimeo() { killVimeo(); Object.keys(POOL).forEach(k => { POOL[k].el.remove(); delete POOL[k]; }); }
-function filmState() { tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
+function filmState() { vWait = false; tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
 function killVimeo() {
-  if (vFrame) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; }
+  if (vFrame) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; const old = Object.values(POOL).find(p => p.el === vFrame); if (old) cueUp(old); }
   filmState(); vFrame = null; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull');
 }
 function makeVimeo(id) {
   buildPool(); const p = POOL[id]; if (!p) return;
-  if (vFrame && vFrame !== p.el) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; }
+  if (vFrame && vFrame !== p.el) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; const old = Object.values(POOL).find(o => o.el === vFrame); if (old) cueUp(old); }
   vbox.hidden = false; vId = id; vAt = performance.now(); vFrame = p.el; vFrame.style.opacity = 1; vDur = p.dur; laid = null;
-  if (p.ready) filmStarted();
+  waitFor(null); if (p.ready) filmStarted();
 }
 function filmStarted() {
   // tuning in lands you somewhere in the middle, like a broadcast already running; stepping inside starts it from the top
-  if (vDur && zoomTo < 1) { snipping = true; snipAt = performance.now(); vSend({ method: 'setCurrentTime', value: vDur * (.06 + Math.random() * .82) }); }
+  const p = POOL[vId];
+  if (p && p.cue != null) { snipping = zoomTo < 1; snipAt = performance.now(); waitFor(p.cue); p.cue = null; }   // already parked somewhere: just roll
+  else if (vDur && zoomTo < 1) { const t = vDur * (.06 + Math.random() * .82); snipping = true; snipAt = performance.now(); waitFor(t); vSend({ method: 'setCurrentTime', value: t }); }
+  else waitFor(null);
   vSend({ method: 'disableTextTrack' }); vKick();   // no captions over the picture
   const f = vId;
   [800, 2000].forEach(t => setTimeout(() => { if (vId === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
@@ -1295,14 +1302,16 @@ addEventListener('message', e => {
     if (active) filmStarted(); else poolPost(p, { method: 'pause' });
     return;
   }
-  if (d.method === 'getDuration' && d.value > 0) { p.dur = d.value; if (active && !vDur) { vDur = d.value; snipAt = 0; } return; }
+  if (d.method === 'getDuration' && d.value > 0) { p.dur = d.value; if (active && !vDur) { vDur = d.value; snipAt = 0; } else if (!active && p.cue == null) cueUp(p); return; }
   if (!active) return;
   if (d.method === 'getMuted' && d.value !== !soundOn && !needTap) vimeoSound();
   else if (d.method === 'getPaused') {
     if (d.value === true && powered && !userPaused) { vSend({ method: 'play' }); if (lastCheck && soundOn) tapHint(true); }
     lastCheck = false;
   }
-  else if (d.event === 'timeupdate' && d.data) { if (!scrubbing) vTime = d.data.seconds; if (d.data.duration > 0) vDur = d.data.duration; }
+  else if (d.event === 'timeupdate' && d.data) {
+    if (vWait && (vWaitT == null || Math.abs(d.data.seconds - vWaitT) < 4) && d.data.seconds !== vTime) vWait = false;   // it's rolling
+    if (!scrubbing) vTime = d.data.seconds; if (d.data.duration > 0) vDur = d.data.duration; }
   if (d.event === 'pause' || d.event === 'play') {
     vPaused = d.event === 'pause'; $('scPlay').textContent = vPaused ? '▶' : '❚❚'; $('scPlay').setAttribute('aria-label', vPaused ? 'Play' : 'Pause');
     if (d.event === 'play' && needTap) tapHint(false);
@@ -1311,12 +1320,11 @@ addEventListener('message', e => {
 function snippets(now) {
   const inRoom = zoomTo < 1 && fullP < .01;
   if (!vId || !vDur) return;
-  if (!inRoom) { if (snipping) { snipping = false; vSend({ method: 'setCurrentTime', value: 0 }); vSend({ method: 'play' }); } return; }
+  if (!inRoom) { if (snipping) { snipping = false; waitFor(0); vSend({ method: 'setCurrentTime', value: 0 }); vSend({ method: 'play' }); } return; }
   if (!snipping || now - snipAt > 9000) {
     snipping = true; snipAt = now;
     const t = vDur * (.06 + Math.random() * .82);
-    vbox.classList.add('cut'); vSend({ method: 'setCurrentTime', value: t }); vSend({ method: 'play' });
-    setTimeout(() => vbox.classList.remove('cut'), 160);
+    waitFor(t); vSend({ method: 'setCurrentTime', value: t }); vSend({ method: 'play' });
   }
 }
 function vKick() { vimeoSound(); if (!userPaused) vSend({ method: 'play' }); }
@@ -1370,6 +1378,7 @@ function syncVimeo(now) {
   // and stays out of sight under the static until the picture settles
   const want = powered && now - powerAt > 1000 && w && w.vimeo && !vimeoBlocked ? w.vimeo : null;
   if (want !== vId) { if (want && vId) filmState(); else killVimeo(); if (want) makeVimeo(want); }
+  if (vWait && now - vWaitAt < 3500) staticUntil = Math.max(staticUntil, now + 40); else vWait = false;
   if (vId) vbox.style.opacity = now < staticUntil ? 0 : '';
   if (!vId) return;
   snippets(now);
