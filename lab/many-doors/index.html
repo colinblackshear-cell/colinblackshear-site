@@ -141,7 +141,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .hallhead p{margin:0;color:var(--soft);max-width:44ch}
 .asks{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .asks>span{font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-right:4px}
-.doors{width:100%;max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(10px,2vw,22px) clamp(8px,1.6vw,18px);padding-top:6px}
+.doors{width:100%;max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:clamp(10px,2vw,22px) clamp(8px,1.6vw,18px);padding-top:6px}
 @media (max-width:900px){.doors{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:560px){.doors{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .door{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;padding:0;cursor:pointer;color:var(--cream);min-width:0;text-decoration:none}
@@ -663,6 +663,24 @@ function milkTree(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s
 function cxCover(){ return cx(`${ground(330)}${hill(110,330,.75,{col:'#4A6A5A'})}${hill(490,330,.75,{col:'#4A6A5A'})}${deathLord(300,330,1)}${xolo(190,330,.7)}${walker(420,330,.7)}`); }
 
 return cxCover;})();
+COVERS.secular=(()=>{
+/* Kit for The Last Light: a clear night sky, one small person, a tree, and the long view. */
+const K='#151B2B', INDIGO='#1B2550', NIGHT='#0A0F1F', STAR='#F8F5EE', EMBER='#F0C25A', WARM='#C8773A', LEAF='#5E9C6A', SOIL='#3A2E26', SKY2='#3D5A99', ROSE='#D98C7A';
+const SC_DEFS=`<defs><linearGradient id="scsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${NIGHT}"/><stop offset="1" stop-color="${INDIGO}"/></linearGradient>
+<linearGradient id="scdawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${INDIGO}"/><stop offset=".65" stop-color="${ROSE}"/><stop offset="1" stop-color="${EMBER}"/></linearGradient>
+<radialGradient id="scglow"><stop offset="0" stop-color="#FFF4D0"/><stop offset=".4" stop-color="${EMBER}" stop-opacity=".55"/><stop offset="1" stop-color="${EMBER}" stop-opacity="0"/></radialGradient><clipPath id="scclip"><rect width="600" height="400"/></clipPath></defs>`;
+function sc(inner,{sky='night',ground=true}={}){ return `${SC_DEFS}<g clip-path="url(#scclip)"><rect width="600" height="400" fill="${sky==='night'?'url(#scsky)':sky==='dawn'?'url(#scdawn)':sky}"/>${sky!=='dawn'?stars(120,7,330):stars(30,7,160)}${ground?`<path d="M0 330 Q150 312 300 322 T600 316 V400 H0Z" fill="#141A2E"/><path d="M0 352 Q200 340 360 348 T600 344 V400 H0Z" fill="#0E1324"/>`:''}${inner}</g>`; }
+/* a person: plain and universal, no robe or symbol */
+function person(x,y,s=1,{col=STAR,glow=false,sit=false,op=1}={}){ return `<g transform="translate(${x} ${y}) scale(${s})" opacity="${op}">${glow?`<circle cx="0" cy="-60" r="70" fill="url(#scglow)"/>`:''}<circle cx="0" cy="${sit?-62:-92}" r="13" fill="${col}" stroke="${K}" stroke-width="2"/>${sit?`<path d="M-20 0 Q-22 -30 -12 -48 H12 Q22 -30 20 0Z" fill="${col}" stroke="${K}" stroke-width="2"/><path d="M-30 0 H30" stroke="${col}" stroke-width="8" stroke-linecap="round"/>`:`<path d="M-15 -76 Q-18 -40 -12 0 H12 Q18 -40 15 -76Z" fill="${col}" stroke="${K}" stroke-width="2"/>`}</g>`; }
+function tree(x,y,s=1,{leaves=1}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-6 0 Q-4 -40 -2 -70 M2 -70 Q4 -40 6 0Z" fill="${SOIL}" stroke="${K}" stroke-width="2"/><path d="M-4 -60 Q-26 -74 -34 -96 M4 -64 Q24 -80 30 -104 M0 -70 V-112" stroke="${SOIL}" stroke-width="5" fill="none" stroke-linecap="round"/>${leaves>0?[[-34,-104,26],[30,-112,28],[0,-126,32],[-14,-90,22],[18,-92,22]].map(([cx,cy,r],i)=>`<circle cx="${cx}" cy="${cy}" r="${r*leaves}" fill="${i%2?LEAF:'#4C8A5B'}" stroke="${K}" stroke-width="1.5" opacity=".95"/>`).join(''):''}</g>`; }
+function ripple(x,y,n=4,col=EMBER){ return Array.from({length:n},(_,i)=>`<ellipse class="fadein" style="animation-delay:${i*.35}s" cx="${x}" cy="${y}" rx="${40+i*55}" ry="${10+i*14}" fill="none" stroke="${col}" stroke-width="${3-i*.5}" opacity="${.9-i*.18}"/>`).join(''); }
+function wave(x,y,w,amp,flat=0){ let d=`M${x} ${y}`; for(let i=0;i<=60;i++){ const px=x+i*w/60; const a=amp*(1-flat)*(i%6===3?2.2:1); d+=` L${px.toFixed(1)} ${(y+Math.sin(i*1.9)*a*(i%2?1:-.6)).toFixed(1)}`; } return `<path d="${d}" fill="none" stroke="${LEAF}" stroke-width="3" stroke-linejoin="round"/>`; }
+function monitor(x,y,flat=0){ return `<g transform="translate(${x} ${y})"><rect x="-150" y="-70" width="300" height="140" rx="14" fill="#0E1324" stroke="${STAR}" stroke-width="3"/>${wave(-130,0,260,26,flat)}<text x="-130" y="-46" font-family="Jost,sans-serif" font-weight="700" font-size="14" fill="${STAR}" opacity=".7">BRAIN ACTIVITY</text></g>`; }
+function atoms(n,seed=5,{cx=300,cy=200,r=170,cols=[EMBER,LEAF,SKY2,ROSE,STAR]}={}){ const R=rnd(seed); let o=''; for(let i=0;i<n;i++){ const a=R()*Math.PI*2, d=Math.sqrt(R())*r; o+=`<circle class="drift" style="animation-duration:${3+R()*4}s;animation-delay:-${(R()*3).toFixed(1)}s" cx="${(cx+Math.cos(a)*d).toFixed(1)}" cy="${(cy+Math.sin(a)*d*.7).toFixed(1)}" r="${(2+R()*4).toFixed(1)}" fill="${cols[i%cols.length]}"/>`; } return o; }
+function bed(x=300,y=300){ return `<g transform="translate(${x} ${y})"><rect x="-150" y="-24" width="300" height="30" rx="6" fill="#2A3352" stroke="${K}" stroke-width="2"/><rect x="-150" y="-50" width="40" height="56" rx="6" fill="#2A3352" stroke="${K}" stroke-width="2"/><path d="M-104 -34 Q0 -50 140 -30 V-22 H-104Z" fill="${STAR}" stroke="${K}" stroke-width="2"/><circle cx="-118" cy="-40" r="12" fill="${STAR}" stroke="${K}" stroke-width="2"/><path d="M-150 6 V30 M150 6 V30" stroke="#2A3352" stroke-width="6"/></g>`; }
+function scCover(){ return sc(`<circle cx="300" cy="250" r="160" fill="url(#scglow)" opacity=".55"/>${tree(470,330,1.1)}${person(300,330,1.1,{glow:true})}<path d="M40 70 Q300 20 560 70" stroke="${STAR}" stroke-width="1" fill="none" opacity=".25" stroke-dasharray="3 6"/>`); }
+
+return scCover;})();
 COVERS.more=(()=>{
 /* Door kit for the Many Doors capstone: a row of painted doors, one per tradition, each with a small emblem above it. Same palette as the Many Doors atlas. */
 const K='#1E2A2B', CREAMD='#F6EBD2', PARCH='#FBF3DF', TEALD='#1F5E63', BROWND='#8A4B22', LAMPD='#E8B13A';
@@ -801,6 +819,12 @@ const D=[
   facts:[['Trip length','Until the Last Day'],['Who decides','God'],['Last stop','Paradise, or the Fire']],
   ask:{who:'God',long:'Until Judgment Day',cross:'The Sirat bridge',back:'Raised on the Last Day'},
   book:['The Barzakh','islam/book/'],walk:['Seven Days of Remembering','islam/walk/'],href:'islam/',review:'Still waiting for review by Muslim readers.'},
+ {k:'secular',name:'Non-belief',col:'#3D5A99',emb:'star',pop:1.9,popTxt:'About 1.9 billion people have no religion',title:'The Last Light',
+  head:'No beyond at all: one life, and what it leaves behind.',
+  route:[['bed','The last breath','The heart stops, then the brain. That is the whole crossing.'],['eye','Nothing after','On this view the person simply ends, as before they were born.'],['star','Star stuff','Every atom goes back into the world, to soil, trees and other people.'],['heart','What lives on','Memories, kindness, children, and the things you made.'],['tree','The goodbye','A celebration of one life, a silence, sometimes a tree.']],
+  facts:[['Trip length','None'],['Who decides','No one'],['Last stop','The world, without you']],
+  ask:{who:'No one',long:'No time at all',cross:'No crossing',back:'No'},
+  href:'secular/',review:'Not everyone without a religion holds this view; many believe in something after death.'},
  {k:'hindu',name:'Hinduism',col:'#E86A17',emb:'fire',pop:1.17,popTxt:'About 1.2 billion Hindus',title:'The Thirteen Days',
   head:'Your soul gets a new body, a long road, and another life.',
   route:[['water','Ganga water','Holy water, tulsi and God\'s name at the end. Your last thought counts.'],['fire','The pyre','Fire releases the soul from the body.'],['bowl','13 days','Rice balls offered each day build the soul a body for the road.'],['water','The river','A river to cross on the way to Yama, the lord of death.'],['wheel','Rebirth','Born again by your karma, or freed from the cycle for good.']],
@@ -856,7 +880,7 @@ const D=[
   ask:{who:'How you died',long:'4 years',cross:'A river, on a dog',back:'No'},
   book:['The Nine Levels of Mictlan','aztec/book/'],walk:['The Road Down','aztec/walk/'],href:'aztec/',review:'Still waiting for review by Nahua scholars and communities.'},
  {k:'more',name:'Everything else',col:'#4A5754',emb:'q',pop:null,popTxt:'26 traditions, side by side',title:'The Atlas',
-  head:'Norse halls, Yoruba ancestors, near-death reports, and the view that nothing happens at all.',
+  head:'Norse halls, Yoruba ancestors, Sikh and Jain maps, near-death reports, and more.',
   route:[['book','The atlas','Twenty-six traditions, side by side.'],['scales','Compare','Who judges, how long, where it ends.'],['star','Six shared motifs','Crossings, weighings, dogs, guides, forgetting, your own face.']],
   facts:[['Trip length','Instant to 4 years'],['Who decides','Depends who you ask'],['Last stop','Everywhere, or nowhere']],
   ask:{who:'Depends who you ask',long:'Instant to forever',cross:'Often',back:'About half say yes'},
@@ -882,7 +906,7 @@ function cover(){
       <path d="M180 54 V22 Q187 24 194 30 V54Z" fill="#F2B640"/>
       <circle cx="152" cy="46" r="4" fill="#FBF3DF"/><path d="M152 50 V60" stroke="#FBF3DF" stroke-width="3"/>
     </svg>
-    <p class="small">About 5 minutes to see the idea. Then twelve doors. Sound is optional.</p></div>`);
+    <p class="small">About 5 minutes to see the idea. Then thirteen doors. Sound is optional.</p></div>`);
   $('#open').onclick=()=>{ ai(); blip(); slide(0); };
   $('#skip').onclick=()=>{ ai(); hall(); };
 }
@@ -931,7 +955,7 @@ function mountKnock(el,ready){
     setTimeout(()=>{ $('#kk').setAttribute('opacity',0); $('#kb').setAttribute('opacity',1); ready(); },900); };
 }
 function mountMaps(el,ready){
-  const ends=D.slice(0,11); const ox=480,oy=470; let paths='';
+  const ends=D.filter(d=>d.k!=='secular'&&d.k!=='more').slice(0,11); const ox=480,oy=470; let paths='';
   ends.forEach((d,i)=>{ const a=Math.PI*(1-(i+.5)/ends.length), r=(i%2?330:400); const x=ox+Math.cos(a)*r*1.02, y=oy-Math.sin(a)*r*.92-30; const cx=ox+Math.cos(a)*120, cy=oy-160;
     const len=Math.round(Math.hypot(x-ox,y-oy)*1.3);
     paths+=`<path class="draw" style="--len:${len};animation-delay:${i*.12}s" d="M${ox} ${oy-70} Q${cx} ${cy} ${x} ${y}" stroke="${d.col}" stroke-width="6" fill="none" stroke-linecap="round"/><g class="mapbtn" data-i="${i}" role="button" tabindex="0" aria-label="${esc2(d.name)}" transform="translate(${x} ${y})"><g class="pop" style="animation-delay:${.8+i*.12}s"><circle class="ring" r="38" fill="none" stroke="#F2B640" stroke-width="5"/><circle r="30" fill="#FBF3DF" stroke="${d.col}" stroke-width="5"/><g transform="scale(.95)">${IC[d.emb]}</g><circle r="44" fill="transparent"/></g></g>`;

@@ -1,0 +1,512 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<script>window.MD_HOME='../index.html#doors'</script>
+<title>The Last Light · Many Doors</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+a.sbtn.home{text-decoration:none;display:inline-flex;align-items:center}
+body.insession .mdhome{display:none}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{cursor:pointer;box-shadow:0 3px 0 var(--ink);position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* ---------- journeys: a full-bleed title, then the player at its biggest ---------- */
+body.jbody{background:var(--night)}
+body.jbody #bar{display:none}
+body.jbody .wrap{max-width:none;padding:0}
+.jsplash{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;color:var(--nightink);background:var(--night)}
+.jcover{position:absolute;inset:0;width:100%;height:100%;display:block;animation:jzoom 30s ease-out both}
+@keyframes jzoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.jshade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--night) 88%,transparent) 0%,color-mix(in srgb,var(--night) 60%,transparent) 45%,transparent 80%),linear-gradient(180deg,transparent 35%,var(--night) 100%)}
+@media (max-width:700px){.jshade{background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 55%,transparent) 30%,var(--night) 75%)}}
+.jback{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px));z-index:2;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:8px 14px;text-decoration:none}
+.jt{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:32vh max(16px,env(safe-area-inset-right,0px)) max(28px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.jdoor{display:inline-block;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;background:var(--c,var(--accent));color:#FFF6DE;border:2px solid #FFF6DE;border-radius:4px;padding:5px 10px}
+.jt h1{margin:12px 0 8px;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;color:#FFF6DE;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+.jtag{margin:0;font-size:clamp(1.05rem,2.6vw,1.4rem);max-width:36ch;line-height:1.35}
+.jt .cta{margin:22px 0 18px}
+.jt .btn{font-size:1.15rem;padding:13px 28px}
+.jt .btn.alt{background:transparent;color:#FFF6DE;border-color:#FFF6DE;box-shadow:none}
+.jstops{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.jstops button{display:flex;align-items:center;gap:8px;background:rgba(255,246,222,.08);border:1.5px solid rgba(255,246,222,.35);color:#FFF6DE;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.82rem;min-height:38px}
+.jstops button:hover{background:rgba(255,246,222,.2)}
+.jstops b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFF6DE;color:var(--night);font-size:.75rem}
+.jmeta{margin:16px 0 0;font-size:.85rem;color:rgba(255,246,222,.7)}
+.jmeta em{color:var(--gold);font-style:normal}
+
+.player.jplayer .stage{width:min(100%,1100px,calc(min(64vh,720px)*1.5))}
+@media (max-height:700px){.player.jplayer .stage{width:min(100%,calc(54vh*1.5))}}
+/* keep 3:2 on phones so tap spots stay on what they point at */
+@media (max-width:600px) and (orientation:portrait){.player.jplayer .stage{width:100%;aspect-ratio:3/2;max-height:none}.player.jplayer .scap p{font-size:1.08rem}}
+.player.jplayer .scap{min-height:0}
+.player.jplayer .scap p{font-size:clamp(1.08rem,2.4vw,1.32rem);min-height:1.5em}
+.gnote{margin-right:auto;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed var(--ink-soft);background:transparent;color:var(--ink-soft);border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
+.gnote[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--bg)}
+.gtext{margin:8px 0 0!important;font-size:.95rem!important;line-height:1.45;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:10px;min-height:0!important}
+a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.jend{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.7) 40%)}
+.jend>span{flex-basis:100%;text-align:center;font-family:var(--display);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFF6DE}
+.jend a,.jend button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;text-align:left}
+.jend small{font-family:var(--body);font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.dtrack{position:absolute;height:0;border-top:4px dashed rgba(255,246,222,.6);transform-origin:0 0}
+.dknob{position:absolute;transform:translate(-50%,-50%);width:clamp(54px,10%,78px);aspect-ratio:1;border-radius:50%;border:3px solid var(--ink);background:var(--gold);cursor:grab;touch-action:none;padding:0;box-shadow:0 0 0 8px rgba(255,246,222,.25)}
+.dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
+.dknob:active{cursor:grabbing}
+
+/* The Last Light: a clear night. Deep indigo, starlight, leaf green and a warm human ember. */
+:root{
+  --bg:#ECE8DF; --paper:#F8F5EE; --ink:#151B2B; --ink-soft:#4B5468; --accent:#3D5A99; --accent2:#C8773A; --gold:#F0C25A; --night:#0A0F1F; --nightink:#F8F5EE;
+  --display:'Jost','Futura',system-ui,sans-serif;
+}
+h1,.brand,.ptitle b{font-family:var(--display);font-weight:800}
+.brand{letter-spacing:.12em;font-size:.95rem}
+.cover{background:#0A0F1F}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{},drone:null};
+/* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
+function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
+  const sw=c.createOscillator(), sg=c.createGain(); sw.frequency.value=.045; sg.gain.value=260; sw.connect(sg).connect(lp.frequency); sw.start(t);
+  const nodes=[sw]; [[55,'sine',.55,0],[110,'sawtooth',.16,-4],[110.3,'sawtooth',.12,3],[164.8,'sine',.12,0],[220,'sine',.1,2],[329.6,'sine',.035,-3]].forEach(([f,type,v,dt],i)=>{ const o=c.createOscillator(),og=c.createGain(); o.type=type; o.frequency.value=f; o.detune.value=dt; og.gain.value=v;
+    const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
+  return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
+    stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; }
+  SND.drone=makeDrone(c,SND.m); }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${window.MD_HOME?`<a class="sbtn home" href="${MD_HOME}">← Doors</a>`:''}
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false,hm=null;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; if(hm){ hm.stop(true); hm=null; } z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); hm=holdHum(ms); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; if(hm){ hm.stop(false); hm=null; } z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* the sound of a press and hold: a soft hum that climbs an octave as the ring fills, a bell when it's full */
+function holdHum(ms){ aInit(); if(!SND.ctx) return {stop(){}}; const c=SND.ctx,t=T(),s=ms/1000,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(SND.m);
+  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k,t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
+  return {stop(full){ const n=T(); g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7)); if(full) bell(784,.08); }}; }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); if(SND.drone) SND.drone.level(0,2.5); return new Promise(r0=>{ const res=v=>{ if(SND.drone) SND.drone.level(1,4); r0(v); }; const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); if(SND.drone) SND.drone.level(1,2); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The journey: a short click-through trip behind one door. One picture, one line, one thing to do.
+   Data: const J={key,tradition,title,tag,mins,col,cover,stops:[{name,run}],end:{line,book,bookUrl,walk,walkUrl},review}. */
+const HUB=window.MD_HUB||'../#doors';
+/* the pages live in folders; anywhere but the site itself, spell out index.html */
+if(!/colinblackshear\.com$/.test(location.hostname)) document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const m=a.getAttribute('href').match(/^([^:#]*\/)(#.*)?$/); if(m) a.setAttribute('href',m[1]+'index.html'+(m[2]||'')); },true);
+function journeySplash(J){
+  document.body.classList.add('jbody');
+  const next=Math.min(+store.get(J.key+'-next')||0,J.stops.length-1);
+  $('#wrap').innerHTML=`<section class="jsplash" style="--c:${J.col}">
+    <svg class="jcover" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${J.cover()}</svg>
+    <div class="jshade"></div>
+    <a class="jback" href="${HUB}">← All doors</a>
+    <div class="jt">
+      <span class="jdoor">Door: ${esc(J.tradition)}</span>
+      <h1>${esc(J.title)}</h1>
+      <p class="jtag">${esc(J.tag)}</p>
+      <div class="cta"><button type="button" class="btn gold" id="jgo">${next?'Carry on':'Step through'} <span aria-hidden="true">→</span></button>${next?`<button type="button" class="btn alt" id="jre">Start over</button>`:''}</div>
+      <ol class="jstops">${J.stops.map((c,i)=>`<li><button type="button" data-i="${i}"><b>${i+1}</b>${esc(c.name)}</button></li>`).join('')}</ol>
+      <p class="jmeta">${J.mins} minutes · tap to move on · sound optional${J.review?` · <em>${esc(J.review)}</em>`:''}</p>
+    </div></section>`;
+  $('#jgo').onclick=()=>playJourney(J,next);
+  const r=$('#jre'); if(r) r.onclick=()=>{ store.set(J.key+'-next','0'); playJourney(J,0); };
+  document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
+}
+/* one short line with Continue, and an optional Guide note the curious can open */
+async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+  if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
+    n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
+    setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
+  await waitTap(s,spoke); const d=$('#pNote'); if(d) d.remove(); }
+
+async function playJourney(J,start){
+  const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
+  const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
+  s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
+  try{
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+      s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
+      await c.run(s); if(SND.ctx) allOff(1.2); }
+    store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
+    await journeyEnd(s,J);
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+function journeyEnd(s,J){ alive(s); art(J.cover()); if(SND.ctx) chime(); eyebrow('End of the line');
+  s.el.querySelector('.ptitle').innerHTML=`<b>Arrived</b>${esc(J.title)}`;
+  $('#pText').textContent=J.end.line; narrate(J.end.line);
+  const E=J.end; $('#pRow').innerHTML=`<a class="sgo" href="${HUB}">Pick another door <span aria-hidden="true">→</span></a>`;
+  layer().innerHTML=`<div class="jend"><span>Want more than the short version?</span>${E.bookUrl?`<a href="${E.bookUrl}">${esc(E.book)}<small>the full illustrated book</small></a>`:''}${E.walkUrl?`<a href="${E.walkUrl}">${esc(E.walk)}<small>a few minutes a day</small></a>`:''}<button type="button" id="jagain">Ride again<small>from the first stop</small></button></div>`;
+  $('#jagain').onclick=()=>playJourney(J,0);
+  return new Promise(()=>{}); }
+/* drag a token along a path to a target, e.g. across a bridge: returns when it arrives */
+function drag(s,{ask:q,from,to,label='Drag',onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="dtrack" style="left:${from[0]}%;top:${from[1]}%;width:${Math.hypot(to[0]-from[0],(to[1]-from[1])*2/3)}%;transform:rotate(${Math.atan2((to[1]-from[1])*2/3,to[0]-from[0])}rad)"></div><button type="button" class="dknob" style="left:${from[0]}%;top:${from[1]}%" aria-label="${esc(label)}. Use the arrow keys."><span>${esc(label)}</span></button>`;
+  const k=l.querySelector('.dknob'); let p=0,on=false,done=false;
+  const set=v=>{ p=Math.max(0,Math.min(1,v)); k.style.left=(from[0]+(to[0]-from[0])*p)+'%'; k.style.top=(from[1]+(to[1]-from[1])*p)+'%'; onP&&onP(p); if(p>=.98&&!done){ done=true; l.innerHTML=''; res(); } };
+  const proj=e=>{ const r=l.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100; const dx=to[0]-from[0], dy=to[1]-from[1]; const ax=dx*r.width, ay=dy*r.height; return ((x-from[0])*r.width*ax+(y-from[1])*r.height*ay)/(ax*ax+ay*ay); };
+  k.addEventListener('pointerdown',e=>{ on=true; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+  k.addEventListener('pointermove',e=>{ if(on) set(proj(e)); });
+  k.addEventListener('pointerup',()=>{ on=false; }); k.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key===' '){ e.preventDefault(); set(p+.1); } if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); set(p-.1); } });
+  k.focus({preventScroll:true}); }); }
+/* a big tap-anywhere moment with a label, for drama (knock, ring, open) */
+function tapIt(s,{ask:q,label='Tap'}){ return count(s,{ask:q,n:1,label}); }
+
+/* Kit for The Last Light: a clear night sky, one small person, a tree, and the long view. */
+const K='#151B2B', INDIGO='#1B2550', NIGHT='#0A0F1F', STAR='#F8F5EE', EMBER='#F0C25A', WARM='#C8773A', LEAF='#5E9C6A', SOIL='#3A2E26', SKY2='#3D5A99', ROSE='#D98C7A';
+const SC_DEFS=`<defs><linearGradient id="scsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${NIGHT}"/><stop offset="1" stop-color="${INDIGO}"/></linearGradient>
+<linearGradient id="scdawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${INDIGO}"/><stop offset=".65" stop-color="${ROSE}"/><stop offset="1" stop-color="${EMBER}"/></linearGradient>
+<radialGradient id="scglow"><stop offset="0" stop-color="#FFF4D0"/><stop offset=".4" stop-color="${EMBER}" stop-opacity=".55"/><stop offset="1" stop-color="${EMBER}" stop-opacity="0"/></radialGradient><clipPath id="scclip"><rect width="600" height="400"/></clipPath></defs>`;
+function sc(inner,{sky='night',ground=true}={}){ return `${SC_DEFS}<g clip-path="url(#scclip)"><rect width="600" height="400" fill="${sky==='night'?'url(#scsky)':sky==='dawn'?'url(#scdawn)':sky}"/>${sky!=='dawn'?stars(120,7,330):stars(30,7,160)}${ground?`<path d="M0 330 Q150 312 300 322 T600 316 V400 H0Z" fill="#141A2E"/><path d="M0 352 Q200 340 360 348 T600 344 V400 H0Z" fill="#0E1324"/>`:''}${inner}</g>`; }
+/* a person: plain and universal, no robe or symbol */
+function person(x,y,s=1,{col=STAR,glow=false,sit=false,op=1}={}){ return `<g transform="translate(${x} ${y}) scale(${s})" opacity="${op}">${glow?`<circle cx="0" cy="-60" r="70" fill="url(#scglow)"/>`:''}<circle cx="0" cy="${sit?-62:-92}" r="13" fill="${col}" stroke="${K}" stroke-width="2"/>${sit?`<path d="M-20 0 Q-22 -30 -12 -48 H12 Q22 -30 20 0Z" fill="${col}" stroke="${K}" stroke-width="2"/><path d="M-30 0 H30" stroke="${col}" stroke-width="8" stroke-linecap="round"/>`:`<path d="M-15 -76 Q-18 -40 -12 0 H12 Q18 -40 15 -76Z" fill="${col}" stroke="${K}" stroke-width="2"/>`}</g>`; }
+function tree(x,y,s=1,{leaves=1}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-6 0 Q-4 -40 -2 -70 M2 -70 Q4 -40 6 0Z" fill="${SOIL}" stroke="${K}" stroke-width="2"/><path d="M-4 -60 Q-26 -74 -34 -96 M4 -64 Q24 -80 30 -104 M0 -70 V-112" stroke="${SOIL}" stroke-width="5" fill="none" stroke-linecap="round"/>${leaves>0?[[-34,-104,26],[30,-112,28],[0,-126,32],[-14,-90,22],[18,-92,22]].map(([cx,cy,r],i)=>`<circle cx="${cx}" cy="${cy}" r="${r*leaves}" fill="${i%2?LEAF:'#4C8A5B'}" stroke="${K}" stroke-width="1.5" opacity=".95"/>`).join(''):''}</g>`; }
+function ripple(x,y,n=4,col=EMBER){ return Array.from({length:n},(_,i)=>`<ellipse class="fadein" style="animation-delay:${i*.35}s" cx="${x}" cy="${y}" rx="${40+i*55}" ry="${10+i*14}" fill="none" stroke="${col}" stroke-width="${3-i*.5}" opacity="${.9-i*.18}"/>`).join(''); }
+function wave(x,y,w,amp,flat=0){ let d=`M${x} ${y}`; for(let i=0;i<=60;i++){ const px=x+i*w/60; const a=amp*(1-flat)*(i%6===3?2.2:1); d+=` L${px.toFixed(1)} ${(y+Math.sin(i*1.9)*a*(i%2?1:-.6)).toFixed(1)}`; } return `<path d="${d}" fill="none" stroke="${LEAF}" stroke-width="3" stroke-linejoin="round"/>`; }
+function monitor(x,y,flat=0){ return `<g transform="translate(${x} ${y})"><rect x="-150" y="-70" width="300" height="140" rx="14" fill="#0E1324" stroke="${STAR}" stroke-width="3"/>${wave(-130,0,260,26,flat)}<text x="-130" y="-46" font-family="Jost,sans-serif" font-weight="700" font-size="14" fill="${STAR}" opacity=".7">BRAIN ACTIVITY</text></g>`; }
+function atoms(n,seed=5,{cx=300,cy=200,r=170,cols=[EMBER,LEAF,SKY2,ROSE,STAR]}={}){ const R=rnd(seed); let o=''; for(let i=0;i<n;i++){ const a=R()*Math.PI*2, d=Math.sqrt(R())*r; o+=`<circle class="drift" style="animation-duration:${3+R()*4}s;animation-delay:-${(R()*3).toFixed(1)}s" cx="${(cx+Math.cos(a)*d).toFixed(1)}" cy="${(cy+Math.sin(a)*d*.7).toFixed(1)}" r="${(2+R()*4).toFixed(1)}" fill="${cols[i%cols.length]}"/>`; } return o; }
+function bed(x=300,y=300){ return `<g transform="translate(${x} ${y})"><rect x="-150" y="-24" width="300" height="30" rx="6" fill="#2A3352" stroke="${K}" stroke-width="2"/><rect x="-150" y="-50" width="40" height="56" rx="6" fill="#2A3352" stroke="${K}" stroke-width="2"/><path d="M-104 -34 Q0 -50 140 -30 V-22 H-104Z" fill="${STAR}" stroke="${K}" stroke-width="2"/><circle cx="-118" cy="-40" r="12" fill="${STAR}" stroke="${K}" stroke-width="2"/><path d="M-150 6 V30 M150 6 V30" stroke="#2A3352" stroke-width="6"/></g>`; }
+function scCover(){ return sc(`<circle cx="300" cy="250" r="160" fill="url(#scglow)" opacity=".55"/>${tree(470,330,1.1)}${person(300,330,1.1,{glow:true})}<path d="M40 70 Q300 20 560 70" stroke="${STAR}" stroke-width="1" fill="none" opacity=".25" stroke-dasharray="3 6"/>`); }
+
+/* The door of non-belief: the view that death is simply the end, in six stops. After Epicurus, Lucretius, modern neuroscience and humanist funerals. */
+const J={key:'j-secular',tradition:'Non-belief',title:'The Last Light',col:'#3D5A99',mins:6,
+ tag:'No heaven, no rebirth, no judge. Just one life, and what it leaves behind.',
+ cover:scCover,
+ end:{line:'That\'s the map without a beyond: one life, borrowed atoms, and the people you leave changed. For many who hold it, that makes this life matter more, not less.'},
+ stops:[
+ {name:'The view',short:'The view',col:'#3D5A99',run:async s=>{
+   art(sc(`${person(300,330,1.2)}`));
+   if(SND.ctx) pad('pad',[110,165,220],.025);
+   await tell(s,'Many people think death is simply the end. The brain stops, and the person stops with it. Nothing goes anywhere.',{eye:'The view from no religion',note:'About 1.9 billion people today have no religion (Pew Research Center, 2025). Not all of them rule out an afterlife; many still believe in something. This door is for the view that nothing of "you" continues.'});
+   art(sc(`${person(300,330,1.2)}<text x="300" y="120" text-anchor="middle" font-family="Jost,sans-serif" font-weight="700" font-size="30" fill="${STAR}">"Where death is, I am not."</text><text x="300" y="156" text-anchor="middle" font-family="Jost,sans-serif" font-size="18" fill="${STAR}" opacity=".7">Epicurus, about 300 BCE</text>`));
+   const k=await choose(s,'Epicurus said that when death arrives, you are already gone. How does that land for you?',['Frightening','Comforting','A bit of both']);
+   await tell(s,k===0?'You\'re in good company. Epicurus\' whole point was to argue people out of that fear: there will be no "you" left to suffer it.':'Epicurus hoped it would be. If you won\'t be there to mind, he said, death is "nothing to us."');
+ }},
+ {name:'The last minutes',short:'The body',col:'#5E9C6A',run:async s=>{
+   art(sc(`${bed(300,300)}${monitor(300,140)}`,{ground:false}));
+   await tell(s,'Here is what doctors see. The heart stops. Within minutes the brain, starved of oxygen, falls quiet.',{eye:'What science sees',note:'In some dying patients, researchers have recorded a brief surge of organized brain activity just after the heart stops (Borjigin and colleagues, 2023). Roughly one in ten people revived from cardiac arrest report a near-death experience. What these mean is still argued over.'});
+   let last=-1; await hold(s,{label:'Stay with them',ms:5000,ask:'Press and hold, and watch the line.',early:'Stay a little longer.',onP:p=>{ const f=Math.round(p*20)/20; if(f===last) return; last=f; art(sc(`${bed(300,300)}${monitor(300,140,f)}`,{ground:false})); }});
+   await tell(s,'A flat line. On this map, that is the whole of the crossing. There is no river, and no bridge.');
+ }},
+ {name:'Before you were born',short:'Before',col:'#8A6AA8',run:async s=>{
+   art(sc(`${atoms(70,3)}`,{ground:false}));
+   await tell(s,'One way to picture it: think of the time before you were born.',{eye:'The long view',note:'Lucretius made this argument in the first century BCE: the time before our birth is a mirror held up to the time after our death. A similar line is often attributed to Mark Twain.'});
+   let last=-1; await drag(s,{ask:'Drag from the beginning of the universe to the day you were born.',from:[12,50],to:[86,50],label:'13.8 billion years',onP:p=>{ const f=Math.round(p*10); if(f===last) return; last=f; art(sc(`${atoms(70,3)}${p>.9?`<g class="fadein">${person(520,250,.6,{glow:true})}</g>`:''}`,{ground:false})); if(SND.ctx&&f) bell(220+f*30,.03); }});
+   await tell(s,'Billions of years without you, and you didn\'t mind a single one. On this view, after is just like before.');
+ }},
+ {name:'Star stuff',short:'Atoms',col:'#F0C25A',run:async s=>{
+   art(sc(`${person(300,330,1.2)}${atoms(40,9,{cx:300,cy:270,r:60})}`));
+   await tell(s,'You don\'t vanish, exactly. Every atom in you was made in a star, and every one of them stays in the world.',{eye:'"We are made of star-stuff"',note:'Carl Sagan, Cosmos, 1980. Almost all the carbon, oxygen and iron in your body were forged in stars that died before the Sun formed.'});
+   await release(s,{ask:'Give them back. Tap each one to let it go.',words:['Carbon','Iron','Water','Calcium']});
+   art(sc(`${tree(300,330,1.4)}${atoms(60,11,{cx:300,cy:180,r:240})}`,{sky:'dawn'}));
+   if(SND.ctx) chime();
+   await tell(s,'They\'ll be soil, then trees, then other people. Nothing of you is wasted, even if nothing of you remembers.');
+ }},
+ {name:'What lives on',short:'Legacy',col:'#C8773A',run:async s=>{
+   art(sc(`${ripple(300,320,5)}${person(300,330,.9,{op:.35})}${person(150,330,.7)}${person(450,330,.7)}${person(520,330,.55)}${person(90,330,.55)}`));
+   await tell(s,'What carries on is what you started in other people.',{eye:'Legacy'});
+   await spots(s,{ask:'Tap each ripple.',items:[
+     {x:25,y:72,label:'Memories',say:'People keep telling your stories. Some of your jokes outlive you by decades.'},
+     {x:75,y:72,label:'Kindness',say:'Someone is gentler with their own children because you were gentle with them.'},
+     {x:50,y:45,label:'Things you made',say:'A garden, a song, a company, a cake recipe. They keep working without you.'},
+     {x:88,y:60,label:'Family',say:'Half your genes in each child, a quarter in each grandchild, and your habits in all of them.'}]});
+   await tell(s,'Philosophers call it the afterlife of influence. It\'s not you, but it\'s not nothing.');
+ }},
+ {name:'The goodbye',short:'Goodbye',col:'#5E9C6A',run:async s=>{
+   art(sc(`${tree(300,330,.5,{leaves:.3})}${person(170,330,.8)}${person(430,330,.8)}${person(520,330,.6)}`,{sky:'dawn'}));
+   await tell(s,'Without a religion, people still gather. A humanist funeral is a celebration of one life: stories, music, and silence.',{eye:'Humanist funerals',note:'Humanist and secular celebrants lead many funerals in the UK, Norway and elsewhere. Natural burials, where the body feeds a tree or a meadow, are growing too.'});
+   await count(s,{ask:'Some families plant a tree. Tap three times to fill the soil.',n:3,label:'Add soil',onTap:i=>{ if(SND.ctx) plop(); art(sc(`${tree(300,330,.5+i*.25,{leaves:.3+i*.25})}${person(170,330,.8)}${person(430,330,.8)}${person(520,330,.6)}`,{sky:'dawn'})); }});
+   await still(s,{ask:'A moment of silence, the one ritual nearly everyone shares. Stay still.',ms:8000});
+   if(SND.ctx) chime();
+   await tell(s,'One life, lived once. On this map, that\'s exactly what makes it precious.');
+ }}]};
+journeySplash(J);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>
