@@ -81,6 +81,19 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
 /* a cut between sections in the room: the picture blinks out and back, like a hard edit */
 .vbox.cut iframe{opacity:.08;transition:opacity .08s}
 .vbox iframe{transition:opacity .35s}
+/* the film's scrub bar, along the bottom of the picture when you're inside */
+.scrub{position:fixed;left:0;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:6px 12px 6px 6px;border-radius:12px;box-sizing:border-box;
+  background:rgba(10,8,6,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#f3e9d6;font:500 12px/1 "IBM Plex Mono",monospace;
+  opacity:0;pointer-events:none;transition:opacity .45s}
+.scrub.on{opacity:1;pointer-events:auto}
+.scrub[hidden]{display:none}
+.scrub button{all:unset;cursor:pointer;width:32px;height:32px;display:grid;place-items:center;color:#ffb547;font-size:14px;border-radius:8px}
+.scrub button:focus-visible,.sctrack:focus-visible{outline:2px solid #ffb547;outline-offset:2px}
+.sctrack{position:relative;flex:1;height:28px;cursor:pointer;touch-action:none}
+.sctrack::before,.sctrack i{content:"";position:absolute;left:0;top:50%;height:4px;margin-top:-2px;border-radius:2px}
+.sctrack::before{right:0;background:rgba(243,233,214,.25)}
+.sctrack i{width:0;background:linear-gradient(90deg,#ff7a3d,#ffb547)}
+.sctrack b{position:absolute;left:0;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff3dc;box-shadow:0 0 10px #ffb547}
 .psy{width:100%;height:100%;mix-blend-mode:screen}
 /* phone turned sideways: the film sits in a walnut set at its true shape, with a side panel for channels */
 .tvframe{position:fixed;inset:0;z-index:19;display:none;opacity:0;
@@ -184,6 +197,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
   </div>
 </div>
 <div class="draghint" id="draghint" aria-hidden="true">Drag the film to reframe</div>
+<div class="scrub" id="scrub" hidden><button id="scPlay" aria-label="Pause">❚❚</button><span id="scA">0:00</span><div class="sctrack" id="scTrack" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100"><i id="scFill"></i><b id="scKnob"></b></div><span id="scB">0:00</span></div>
 <div class="tvf-tip" id="tvfTip" aria-hidden="true">Swipe up to hide the browser bar</div>
 <canvas class="fx psy" id="psy" aria-hidden="true"></canvas>
 <div class="fx vignette"></div>
@@ -1234,7 +1248,7 @@ if (document.fullscreenEnabled && fsEl.requestFullscreen) {
   $('tvfFull').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : fsEl.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}));
 }
 tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
-function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; laid = null; vDur = 0; snipping = false; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
+function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
 function makeVimeo(id) {
   vFrame = document.createElement('iframe');
   vFrame.src = `https://player.vimeo.com/video/${id}?autoplay=1&muted=${soundOn ? 0 : 1}&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0`;
@@ -1250,12 +1264,15 @@ addEventListener('message', e => {
   let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
   if (d.event === 'ready') {
     // the player can ignore sound and play until it's ready, so say them again now, then check they stuck
-    vSend({ method: 'getDuration' }); vSend({ method: 'disableTextTrack' }); vKick();   // no captions over the picture
+    vSend({ method: 'getDuration' }); vSend({ method: 'disableTextTrack' }); vKick();
+    ['timeupdate', 'play', 'pause'].forEach(v => vSend({ method: 'addEventListener', value: v }));   // no captions over the picture
     const f = vFrame; [700, 1600, 3200].forEach(t => setTimeout(() => { if (vFrame === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
   }
   else if (d.method === 'getDuration' && d.value > 0) { vDur = d.value; snipAt = 0; }
   else if (d.method === 'getMuted' && d.value !== !soundOn) vimeoSound();
-  else if (d.method === 'getPaused' && d.value === true && powered) vSend({ method: 'play' });
+  else if (d.method === 'getPaused' && d.value === true && powered && !userPaused) vSend({ method: 'play' });
+  else if (d.event === 'timeupdate' && d.data) { if (!scrubbing) vTime = d.data.seconds; if (d.data.duration > 0) vDur = d.data.duration; }
+  else if (d.event === 'pause' || d.event === 'play') { vPaused = d.event === 'pause'; $('scPlay').textContent = vPaused ? '▶' : '❚❚'; $('scPlay').setAttribute('aria-label', vPaused ? 'Play' : 'Pause'); }
 });
 function snippets(now) {
   const inRoom = zoomTo < 1 && fullP < .01;
@@ -1268,7 +1285,40 @@ function snippets(now) {
     setTimeout(() => vbox.classList.remove('cut'), 160);
   }
 }
-function vKick() { vimeoSound(); vSend({ method: 'play' }); }
+function vKick() { vimeoSound(); if (!userPaused) vSend({ method: 'play' }); }
+/* scrubbing: drag along the bar, or arrow keys, to move through the film; it shows when you move or tap, and while paused */
+let vTime = 0, vPaused = false, userPaused = false, scrubbing = false, scrubSeen = 0, scrubSent = 0;
+const scrub = $('scrub'), scTrack = $('scTrack');
+const clockOf = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+function scrubTo(frac, final) {
+  if (!vDur) return;
+  vTime = Math.max(0, Math.min(vDur - .2, frac * vDur));
+  const now = performance.now();
+  if (final || now - scrubSent > 120) { scrubSent = now; vSend({ method: 'setCurrentTime', value: vTime }); }
+}
+const scAt = e => { const r = scTrack.getBoundingClientRect(); return (e.clientX - r.left) / r.width; };
+scTrack.addEventListener('pointerdown', e => { scrubbing = true; scTrack.setPointerCapture(e.pointerId); scrubTo(scAt(e)); e.stopPropagation(); });
+scTrack.addEventListener('pointermove', e => { if (scrubbing) scrubTo(scAt(e)); });
+const scEnd = e => { if (!scrubbing) return; scrubbing = false; scrubTo(scAt(e), true); };
+scTrack.addEventListener('pointerup', scEnd); scTrack.addEventListener('pointercancel', () => scrubbing = false);
+scTrack.addEventListener('keydown', e => {
+  const d = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5 }[e.key]; if (!d || !vDur) return;
+  e.preventDefault(); e.stopPropagation(); scrubSeen = performance.now(); scrubTo((vTime + d) / vDur, true);
+});
+$('scPlay').addEventListener('click', () => { userPaused = !vPaused; vSend({ method: userPaused ? 'pause' : 'play' }); });
+['pointermove', 'pointerdown', 'keydown'].forEach(t => addEventListener(t, () => scrubSeen = performance.now(), { passive: true }));
+function placeScrub(now, bx, by, bw, bh, inside) {
+  const show = inside && vDur > 0;
+  scrub.hidden = !show; if (!show) return;
+  const pad = Math.min(16, bw * .03), w = Math.min(bw - pad * 2, 720);
+  scrub.style.width = w + 'px';
+  scrub.style.transform = `translate(${bx + (bw - w) / 2}px, ${by + bh - 44 - pad}px)`;
+  scrub.classList.toggle('on', scrubbing || vPaused || now - scrubSeen < 2800 || document.activeElement === scTrack);
+  const f = Math.min(1, vTime / vDur);
+  $('scFill').style.width = f * 100 + '%'; $('scKnob').style.left = f * 100 + '%';
+  $('scA').textContent = clockOf(vTime); $('scB').textContent = clockOf(vDur);
+  scTrack.setAttribute('aria-valuenow', Math.round(f * 100)); scTrack.setAttribute('aria-valuetext', `${clockOf(vTime)} of ${clockOf(vDur)}`);
+}
 // any tap while a film is on gives the player another go at sound, in case the browser held it back
 addEventListener('pointerdown', () => { if (vFrame && soundOn) setTimeout(vKick, 0); }, true);
 function vimeoSound() {
@@ -1325,6 +1375,7 @@ function syncVimeo(now) {
     dragHinted = true; $('draghint').classList.add('on'); setTimeout(() => $('draghint').classList.remove('on'), 2800);
   }
   placeFilm(bx, by, bw, bh, fw, fh, (bw - fw) / 2 + pan.x * vOver.x / 2, (bh - fh) / 2 + pan.y * vOver.y / 2, radius, crt);
+  placeScrub(now, bx, by, bw, bh, Math.max(zp, fullP) > .98);
 }
 // Resizing the player restarts its layout and can make it switch video quality, which stalls playback on phones.
 // So the player keeps one size while the set drifts and sways, and small changes are made with a transform;
