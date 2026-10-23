@@ -6,5 +6,5 @@
 window.TRACKS = [
   { title: 'Rinsginse', note: '2:43', src: 'tracks/rinsginse.mp3' },
   { title: 'Zrrrgg', note: '2:11', src: 'tracks/zrrrgg.mp3' },
-  { title: 'Wiird', note: '1:33', src: 'tracks/wiird.mp3' },
+  { title: 'Wiird', note: '1:38', src: 'tracks/wiird.mp3' },
 ];

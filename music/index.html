@@ -294,6 +294,12 @@ function audio() {
   src.connect(bp); bp.connect(statG); statG.connect(master); src.start();
   return ac;
 }
+// the phone's deck can't go through the gain stages, so set its own level (iPhones ignore this and only mute)
+function deckLevel() {
+  if (!player || !player.native) return;
+  const s2 = Math.pow(signal, .7); player.el.muted = s2 < .35;
+  try { player.el.volume = Math.min(1, s2 * vol); } catch (e) {}
+}
 const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 function env(g, time, peak, a, dec) { g.gain.setValueAtTime(0, time); g.gain.linearRampToValueAtTime(peak, time + a); g.gain.exponentialRampToValueAtTime(.0005, time + a + dec); }
 function tone(type, f, time, dur, peak, out, a = .005) {
@@ -327,16 +333,29 @@ function demo(tr, out) {
   return () => { clearInterval(timer); held.forEach(o => o.stop()); };
 }
 let player = null;   // { g, stop }
+/* One tape deck plays every song, so once a tap has let it start, changing stations needs no new permission.
+   On phones it plays straight to the speaker: routed through the page's audio graph, a busy frame can make
+   the song drag and wobble in tempo. The meter and beat waves then read the song's waveform instead. */
+const NATIVE = matchMedia('(pointer: coarse)').matches;
+let deck = null, deckG = null;
+function getDeck() {
+  if (deck) return deck;
+  deck = new Audio(); deck.preload = 'auto'; deck.playsInline = true;
+  deckG = ac.createGain(); deckG.gain.value = 0; deckG.connect(master);
+  if (!NATIVE) { deck.crossOrigin = 'anonymous'; ac.createMediaElementSource(deck).connect(deckG); }
+  deck.addEventListener('ended', () => { if (on && player && player.el === deck) step(1); });
+  return deck;
+}
 function startStation(i) {
   stopStation();
-  const s = ST[i], g = ac.createGain(); g.gain.value = 0; g.connect(master);
-  if (s.demo) player = { g, stop: demo(s.demo, g) };
+  const s = ST[i];
+  if (s.demo) { const g = ac.createGain(); g.gain.value = 0; g.connect(master); player = { g, stop: demo(s.demo, g) }; }
   else {
-    const el = new Audio(); el.src = s.src; el.preload = 'auto'; el.crossOrigin = 'anonymous';
-    const node = ac.createMediaElementSource(el); node.connect(g);
-    el.addEventListener('ended', () => { if (on && cur === i) step(1); });
+    const el = getDeck();
+    if (NATIVE) el.muted = true;   // listen() opens it up as the signal comes in
+    if (el.getAttribute('src') !== s.src) el.src = s.src; else el.currentTime = 0;
     el.play().catch(() => {});
-    player = { g, el, src: s.src, stop: () => { el.pause(); el.removeAttribute('src'); el.load(); node.disconnect(); } };
+    player = { g: deckG, el, src: s.src, native: NATIVE, stop: () => { if (!player || player.el !== el) el.pause(); } };
     peaksFor(s.src);
   }
   cur = i; paintStation();
@@ -348,7 +367,8 @@ function stopStation() {
   if (!player) return;
   const p = player; player = null; cur = -1;
   p.g.gain.setTargetAtTime(0, ac.currentTime, .03);
-  setTimeout(() => { p.stop(); p.g.disconnect(); }, 200);
+  if (p.native) p.el.muted = true;
+  setTimeout(() => { p.stop(); if (p.g !== deckG) p.g.disconnect(); }, 200);
 }
 
 /* =========================================================
@@ -363,6 +383,7 @@ function listen() {
   if (!ac) return;
   const t = ac.currentTime, s2 = Math.pow(signal, .7);
   if (player) player.g.gain.setTargetAtTime(s2, t, .04);
+  deckLevel();
   statG.gain.setTargetAtTime(on ? (1 - s2) * .22 + (signal > .98 ? 0 : .02) : 0, t, .04);
 }
 function setNeedle(f) {
@@ -437,7 +458,7 @@ dragTune($('grille'), el => SPAN * .6 / el.clientWidth);
 (() => {
   const k = $('kVol'); let g = null;
   const paint = () => { k.style.setProperty('--a', vol * 270 - 135 + 'deg'); k.setAttribute('aria-valuenow', Math.round(vol * 100)); };
-  const set = v => { vol = Math.min(1, Math.max(0, v)); if (master) master.gain.setTargetAtTime(vol, ac.currentTime, .03); paint(); };
+  const set = v => { vol = Math.min(1, Math.max(0, v)); if (master) master.gain.setTargetAtTime(vol, ac.currentTime, .03); deckLevel(); paint(); };
   k.addEventListener('pointerdown', e => { k.setPointerCapture(e.pointerId); g = { y: e.clientY, x: e.clientX, v: vol }; e.preventDefault(); });
   k.addEventListener('pointermove', e => { if (g) set(g.v + ((g.y - e.clientY) + (e.clientX - g.x)) / 160); });
   k.addEventListener('pointerup', () => g = null);
@@ -457,7 +478,7 @@ const press = (id, fn) => { const b = $(id);
 press('kOn', () => power(!on));
 // phones only let sound start when a tap ends, and the keys act as it begins, so finish waking the sound here
 const wake = () => { if (!ac) return; if (ac.state !== 'running') ac.resume();
-  if (on && player && player.el && player.el.paused && !player.el.ended) player.el.play().catch(() => {}); };
+  if (on && player && player.el) { deckLevel(); if (player.el.paused && !player.el.ended) player.el.play().catch(() => {}); } };
 ['pointerup', 'touchend', 'click', 'keydown'].forEach(t => addEventListener(t, wake, true));
 press('kPrev', () => step(-1));
 press('kNext', () => step(1));
@@ -553,7 +574,9 @@ function room(now, lvl) {
   const g = $('grille').getBoundingClientRect(), d = $('dial').getBoundingClientRect();
   const cx = g.left + g.width / 2, cy = g.top + g.height / 2;
   // strong low beats send a wave out of the speaker
-  if (an && on && signal > .5) {
+  if (player && player.native && on && signal > .5) {
+    if (lvl > .72 && now - lastBeat > 600) { waves.push({ t: now, s: .5 + lvl * .5 }); lastBeat = now; }
+  } else if (an && on && signal > .5) {
     an.getByteFrequencyData(freq);
     let lo = 0; for (let i = 1; i < 8; i++) lo += freq[i];
     if (lo / (7 * 255) > .62 && now - lastBeat > 600) { waves.push({ t: now, s: .5 + lvl * .5 }); lastBeat = now; }
@@ -599,6 +622,8 @@ const buf = new Float32Array(1024); let vu = 0;
 (function meter() {
   let lvl = 0;
   if (an && on) { an.getFloatTimeDomainData(buf); let s = 0; for (const x of buf) s += x * x; lvl = Math.min(1, Math.sqrt(s / buf.length) * 3.2); }
+  const e = el(), pk = e && player.native && PEAKS[player.src];
+  if (pk instanceof Float32Array && !e.paused) lvl = Math.max(lvl, pk[Math.min(pk.length - 1, Math.floor(e.currentTime / e.duration * pk.length))] * .9 * signal);
   vu += (lvl - vu) * (lvl > vu ? .35 : .08);
   $('vn').style.transform = `rotate(${-48 + vu * 96}deg)`;
   $('radio').classList.toggle('signal', signal > .9);
