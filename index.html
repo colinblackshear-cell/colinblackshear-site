@@ -1004,7 +1004,7 @@ function setChannel(c) {
   caption();
   if (actx) tick3d();
   tracerKick = now; spawnWave(1);
-  if (powered) { showCh(); if (soundOn) { clickBurst(); startChannelAudio(); } }
+  if (powered) { showCh(); if (soundOn) { clickBurst(); startChannelAudio(); } syncVimeo(now); }
 }
 
 /* =========================================================
@@ -1241,7 +1241,8 @@ tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !s
 let vLoaded = null, vReady = false, needTap = false;
 function tapHint(on) { needTap = on; $('taphint').classList.toggle('on', on); }
 function dropVimeo() { killVimeo(); if (vFrame) vFrame.remove(); vFrame = null; vLoaded = null; vReady = false; }
-function killVimeo() { if (vId) vSend({ method: 'pause' }); tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
+function filmState() { tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
+function killVimeo() { if (vId) vSend({ method: 'pause' }); filmState(); vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
 function makeVimeo(id) {
   vbox.hidden = false; vId = id; vAt = performance.now();
   if (!vFrame) {
@@ -1252,7 +1253,7 @@ function makeVimeo(id) {
     vbox.appendChild(vFrame); vFrame.dataset.id = vLoaded = id; vReady = false;
   } else if (!vReady) vLoaded = id;   // still starting up; it gets this film when it's ready
   else if (vLoaded === id && vReady) { vSend({ method: 'setCurrentTime', value: 0 }); filmStarted(); }
-  else { vLoaded = id; vSend({ method: 'loadVideo', value: id }); }   // the player says 'loaded' when it's in
+  else { vLoaded = id; vSend({ method: 'loadVideo', value: id }); vKick(); }   // the player says 'loaded' when it's in
 }
 function filmStarted() {
   // the player can ignore sound and play until it's ready, so say them now, then check they stuck
@@ -1330,7 +1331,7 @@ function placeScrub(now, bx, by, bw, bh, inside) {
 }
 // any tap while a film is on gives the player another go at sound, in case the browser held it back
 // sound may only start as a tap ends (on phones), so every tap, click or key gives the film another go at it
-['pointerup', 'touchend', 'keydown'].forEach(t => addEventListener(t, () => { if (vId && soundOn) { tapHint(false); vKick(); } }, true));
+['pointerup', 'touchend', 'click', 'keydown'].forEach(t => addEventListener(t, () => setTimeout(() => { if (vId && soundOn) { tapHint(false); vKick(); } }), true));
 function vimeoSound() {
   if (!vFrame || !vFrame.contentWindow) return;
   const send = m => vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
@@ -1339,8 +1340,11 @@ function vimeoSound() {
 const vCorners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => new THREE.Vector3(SX + a * SW / 2 * .985, CY + b * SH / 2 * .985, FZ + .04));
 function syncVimeo(now) {
   const w = WORKS.find(w => w.ch === cur);
-  const want = powered && now - powerAt > 1000 && now >= staticUntil && w && w.vimeo && !vimeoBlocked ? w.vimeo : null;
-  if (want !== vId) { killVimeo(); if (want) makeVimeo(want); }
+  // the next film is asked for as soon as the channel turns (inside your tap, so the browser lets its sound play)
+  // and stays out of sight under the static until the picture settles
+  const want = powered && now - powerAt > 1000 && w && w.vimeo && !vimeoBlocked ? w.vimeo : null;
+  if (want !== vId) { if (want && vId) filmState(); else killVimeo(); if (want) makeVimeo(want); }
+  if (vId) vbox.style.opacity = now < staticUntil ? 0 : '';
   if (!vId) return;
   snippets(now);
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
