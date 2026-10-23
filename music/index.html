@@ -123,6 +123,31 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
 .radio.on.signal .jewel i{background:radial-gradient(circle at 35% 30%,#fff1c4,#ff5a2e 60%);box-shadow:0 0 0 2px #8a8476, 0 0 10px #ff5a2e}
 
 /* ---------- now playing and the station log ---------- */
+/* 3D: the radio is a box with depth, turned a little toward wherever you point */
+.stage{perspective:1500px;perspective-origin:50% 20%}
+.radio{--d:96px;transform-style:preserve-3d;transform:rotateX(var(--rx,10deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));will-change:transform}
+.side{position:absolute;pointer-events:none;display:block;
+  background:repeating-linear-gradient(92deg, rgba(0,0,0,.14) 0 2px, rgba(0,0,0,0) 2px 9px), linear-gradient(180deg,#4e301a,#2e1b0d)}
+.side.top{left:14px;right:14px;top:0;height:var(--d);transform-origin:50% 0;transform:rotateX(90deg);
+  background:repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 2px, rgba(0,0,0,0) 2px 11px), linear-gradient(0deg,#7a5030,#5a3820);border-radius:8px 8px 0 0}
+.side.left{top:14px;bottom:14px;left:0;width:var(--d);transform-origin:0 50%;transform:rotateY(-90deg)}
+.side.right{top:14px;bottom:14px;right:0;width:var(--d);transform-origin:100% 50%;transform:rotateY(90deg)}
+.side.bottom{left:14px;right:14px;bottom:0;height:var(--d);transform-origin:50% 100%;transform:rotateX(-90deg);background:#160d06}
+.sheen{position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:soft-light;
+  background:radial-gradient(60% 70% at var(--lx,40%) var(--ly,20%), rgba(255,240,215,.45), rgba(255,240,215,0) 60%)}
+.shadow{position:absolute;left:50%;bottom:-6px;width:min(900px,96%);height:60px;transform:translateX(calc(-50% + var(--sx,0px)));z-index:-1;pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.75), rgba(0,0,0,0) 70%);filter:blur(6px)}
+.grille .cone{position:absolute;inset:14%;border-radius:50%;pointer-events:none;transform:scale(var(--pump,1));
+  background:radial-gradient(circle, rgba(255,200,140,.10), rgba(0,0,0,.18) 45%, rgba(0,0,0,0) 70%)}
+.psy{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40;mix-blend-mode:screen}
+
+/* the tape: the song's waveform; drag or tap it to move through the song */
+.tape{max-width:900px;margin:14px auto 0;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.tape canvas{display:block;width:100%;height:56px;cursor:pointer;touch-action:none;border-radius:4px;background:rgba(239,232,216,.04);box-shadow:inset 0 0 0 1px rgba(239,232,216,.1)}
+.tape:focus-visible{outline:2px solid var(--title);outline-offset:4px}
+.tm{font:400 1.25rem/1 "VT323",monospace;color:#ffb547;text-shadow:0 0 8px rgba(255,170,60,.5);min-width:3.2ch;text-align:center}
+.tape.idle .tm{color:var(--title-soft);text-shadow:none}
+
 .np{margin:34px auto 0;max-width:900px;display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap}
 .np .t{font:italic 400 clamp(1.6rem, 4vw, 2.4rem)/1.05 var(--f-display)}
 .np .m{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--title-soft)}
@@ -148,13 +173,14 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
   .vu{width:96px;height:62px}
   .pk{width:46px;height:52px}
   .knob{width:50px;height:50px}.knob.big{width:58px;height:58px}
-  .radio{padding:12px;border-radius:18px}
+  .radio{padding:12px;border-radius:18px;--d:56px}
 }
 @media (max-width:420px){ .vu{display:none} }
 </style>
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
+<canvas class="psy" id="psy" aria-hidden="true"></canvas>
 <div class="top">
   <a class="home wm" href="../"><span class="sr">Colin Blackshear</span><svg data-wordmark aria-hidden="true"></svg></a>
   <nav class="sections" aria-label="Sections">
@@ -173,10 +199,12 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
     <p class="howto">Press On, then swipe the dial or the speaker to change stations, or drag the needle and tune by ear. The arrow keys work too.</p>
   </div>
 
-  <div class="set">
+  <div class="set stage">
     <section class="radio" id="radio" aria-label="Radio">
+      <i class="side top"></i><i class="side left"></i><i class="side right"></i><i class="side bottom"></i>
       <div class="face">
         <div class="grille" id="grille" aria-hidden="true">
+          <span class="cone" id="cone"></span>
           <span class="jewel"><i></i>Stereo</span>
           <div class="plate"><b>Blackshear</b><small>Solid state · FM stereo</small></div>
         </div>
@@ -209,10 +237,15 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
           </div>
         </div>
       </div>
+      <span class="sheen"></span>
     </section>
+    <span class="shadow" id="shadow"></span>
   </div>
 
   <div class="np"><span class="t" id="npT">—</span><span class="m" id="npM">Radio off</span></div>
+  <div class="tape idle" id="tape" role="slider" tabindex="0" aria-label="Position in the song" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <span class="tm" id="tmA">0:00</span><canvas id="wave" aria-hidden="true"></canvas><span class="tm" id="tmB">0:00</span>
+  </div>
   <section class="log" aria-label="Station log">
     <h2>Station log <small>tap a station to tune in</small></h2>
     <ol id="log"></ol>
@@ -301,7 +334,8 @@ function startStation(i) {
     const node = ac.createMediaElementSource(el); node.connect(g);
     el.addEventListener('ended', () => { if (on && cur === i) step(1); });
     el.play().catch(() => {});
-    player = { g, el, stop: () => { el.pause(); el.removeAttribute('src'); el.load(); node.disconnect(); } };
+    player = { g, el, src: s.src, stop: () => { el.pause(); el.removeAttribute('src'); el.load(); node.disconnect(); } };
+    peaksFor(s.src);
   }
   cur = i; paintStation();
   if ('mediaSession' in navigator && window.MediaMetadata) {
@@ -414,9 +448,13 @@ let dialWheel = 0;
 $('dial').addEventListener('keydown', e => { const d = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]; if (d) { e.preventDefault(); step(d); } });
 $('stations').addEventListener('click', e => { const b = e.target.closest('.st'); if (b) tuneTo(+b.dataset.i); });
 $('log').addEventListener('click', e => { const b = e.target.closest('button'); if (b) tuneTo(+b.dataset.i); });
-$('kOn').addEventListener('click', () => power(!on));
-$('kPrev').addEventListener('click', () => step(-1));
-$('kNext').addEventListener('click', () => step(1));
+// the piano keys act on press, like the real thing (and so the key sinking under a tilted radio can't swallow the click)
+const press = (id, fn) => { const b = $(id);
+  b.addEventListener('pointerdown', e => { if (e.button === 0) { e.preventDefault(); fn(); } });
+  b.addEventListener('click', e => { if (e.detail === 0) fn(); }); };
+press('kOn', () => power(!on));
+press('kPrev', () => step(-1));
+press('kNext', () => step(1));
 addEventListener('keydown', e => {
   if (e.target.closest('[role=slider],button,input')) return;
   if (e.code === 'Space') { e.preventDefault(); power(!on); }
@@ -429,6 +467,127 @@ if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('play', () => power(true));
 }
 
+/* =========================================================
+   TAPE: the song's waveform, read once from the file; tap or drag to move through it
+   ========================================================= */
+const PEAKS = {}, wave = $('wave'), wctx = wave.getContext('2d');
+async function peaksFor(src) {
+  if (PEAKS[src]) return;
+  PEAKS[src] = 'loading';
+  try {
+    const data = await (await fetch(src)).arrayBuffer();
+    const b = await new Promise((ok, no) => ac.decodeAudioData(data, ok, no));
+    const N = 480, ch = b.getChannelData(0), per = Math.floor(ch.length / N), out = new Float32Array(N);
+    let top = 0;
+    for (let i = 0; i < N; i++) { let pk = 0; for (let k = i * per; k < (i + 1) * per; k += 16) pk = Math.max(pk, Math.abs(ch[k])); out[i] = pk; top = Math.max(top, pk); }
+    for (let i = 0; i < N; i++) out[i] /= top || 1;
+    PEAKS[src] = out;
+  } catch (e) { PEAKS[src] = null; }
+}
+const clock = t => isFinite(t) ? `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}` : '0:00';
+const el = () => player && player.el && isFinite(player.el.duration) ? player.el : null;
+function seek(frac) { const e = el(); if (!e) return; e.currentTime = Math.min(e.duration - .05, Math.max(0, frac * e.duration)); }
+(() => {
+  let dragging = false;
+  const at = ev => { const r = wave.getBoundingClientRect(); return (ev.clientX - r.left) / r.width; };
+  wave.addEventListener('pointerdown', ev => { if (!el()) return; dragging = true; wave.setPointerCapture(ev.pointerId); seek(at(ev)); });
+  wave.addEventListener('pointermove', ev => { if (dragging) seek(at(ev)); });
+  wave.addEventListener('pointerup', () => dragging = false);
+  $('tape').addEventListener('keydown', ev => { const e = el(), d = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5 }[ev.key]; if (e && d) { ev.preventDefault(); e.currentTime = Math.max(0, Math.min(e.duration - .05, e.currentTime + d)); } });
+})();
+function drawTape() {
+  const dpr = devicePixelRatio || 1, W = Math.round(wave.clientWidth * dpr), H = Math.round(wave.clientHeight * dpr);
+  if (wave.width !== W || wave.height !== H) { wave.width = W; wave.height = H; }
+  wctx.clearRect(0, 0, W, H);
+  const e = el(), pk = player && PEAKS[player.src], frac = e ? e.currentTime / e.duration : 0;
+  $('tape').classList.toggle('idle', !e);
+  $('tmA').textContent = e ? clock(e.currentTime) : '0:00'; $('tmB').textContent = e ? clock(e.duration) : '0:00';
+  $('tape').setAttribute('aria-valuenow', Math.round(frac * 100)); $('tape').setAttribute('aria-valuetext', e ? `${clock(e.currentTime)} of ${clock(e.duration)}` : 'No song playing');
+  const bars = pk instanceof Float32Array ? pk : null, n = 160, bw = W / n;
+  for (let i = 0; i < n; i++) {
+    const v = bars ? bars[Math.floor(i / n * bars.length)] : .06, h = Math.max(2 * dpr, v * H * .86), x = i * bw;
+    const played = e && i / n < frac;
+    wctx.fillStyle = played ? `hsl(${32 + (i / n) * 40},100%,${62 + v * 10}%)` : 'rgba(239,232,216,.26)';
+    wctx.fillRect(x + bw * .2, (H - h) / 2, Math.max(1, bw * .6), h);
+  }
+  if (e) { const x = frac * W; wctx.fillStyle = '#fff3dc'; wctx.shadowColor = '#ffb547'; wctx.shadowBlur = 10 * dpr; wctx.fillRect(x - dpr, 0, 2 * dpr, H); wctx.shadowBlur = 0; }
+}
+
+/* =========================================================
+   DEPTH AND LIGHT: the radio turns toward the pointer, and a psychedelic layer plays over the room, as on the TV
+   ========================================================= */
+const psy = $('psy'), pctx = psy.getContext('2d'), radio = $('radio');
+let psyW = 0, psyH = 0;
+function psyResize() { const dpr = Math.min(2, devicePixelRatio || 1); psyW = innerWidth; psyH = innerHeight; psy.width = psyW * dpr; psy.height = psyH * dpr; pctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+psyResize(); addEventListener('resize', psyResize);
+const trail = [], waves = [], tilt = { x: 0, y: 0, tx: 0, ty: 0 }, born = performance.now();
+let lastBeat = 0;
+addEventListener('pointermove', e => {
+  tilt.tx = e.clientX / innerWidth * 2 - 1; tilt.ty = e.clientY / innerHeight * 2 - 1;
+  const now = performance.now(), last = trail[trail.length - 1];
+  // stutter: a mark only every so often, so the trail breaks into spaced-out echoes
+  if (last && (Math.hypot(e.clientX - last.x, e.clientY - last.y) < 34 || now - last.t < 45)) return;
+  trail.push({ x: e.clientX, y: e.clientY, t: now, h: (now / 9) % 360 }); if (trail.length > 70) trail.shift();
+}, { passive: true });
+const freq = new Uint8Array(512);
+function room(now, lvl) {
+  // the box turns toward the pointer; it settles in from a higher angle on arrival, then sways a little when left alone
+  const ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3), intro = reduce ? 1 : ease((now - born) / 1800);
+  tilt.x += (tilt.tx - tilt.x) * .05; tilt.y += (tilt.ty - tilt.y) * .05;
+  const sway = reduce ? 0 : Math.sin(now / 3200) * 1.2;
+  const ry = tilt.x * 9 + sway, rx = 6 + (1 - intro) * 18 - tilt.y * 5;
+  radio.style.setProperty('--ry', ry.toFixed(2) + 'deg'); radio.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+  radio.style.setProperty('--sc', (.9 + intro * .1).toFixed(3));
+  radio.style.setProperty('--lx', 40 - tilt.x * 25 + '%'); radio.style.setProperty('--ly', 15 - tilt.y * 15 + '%');
+  $('shadow').style.setProperty('--sx', -ry * 3 + 'px');
+  $('cone').style.setProperty('--pump', (1 + lvl * .06).toFixed(3));
+
+  pctx.clearRect(0, 0, psyW, psyH);
+  if (reduce) return;
+  const g = $('grille').getBoundingClientRect(), d = $('dial').getBoundingClientRect();
+  const cx = g.left + g.width / 2, cy = g.top + g.height / 2;
+  // strong low beats send a wave out of the speaker
+  if (an && on && signal > .5) {
+    an.getByteFrequencyData(freq);
+    let lo = 0; for (let i = 1; i < 8; i++) lo += freq[i];
+    if (lo / (7 * 255) > .62 && now - lastBeat > 600) { waves.push({ t: now, s: .5 + lvl * .5 }); lastBeat = now; }
+  }
+  // prism: a faint spectrum fanning out of the lit dial and across the table
+  if (on) {
+    const breathe = (.05 + .02 * Math.sin(now / 1300) + lvl * .05) * signal + .015;
+    pctx.save(); pctx.translate(d.left + d.width * .5, d.top + d.height * .55); pctx.rotate(.5 + Math.sin(now / 4200) * .06);
+    const len = Math.hypot(psyW, psyH), wid = Math.min(psyW, psyH) * .08;
+    const gr = pctx.createLinearGradient(0, -wid, 0, wid);
+    for (let i = 0; i <= 6; i++) gr.addColorStop(i / 6, `hsla(${i * 52},100%,60%,${breathe})`);
+    pctx.fillStyle = gr; pctx.beginPath(); pctx.moveTo(0, -wid * .12); pctx.lineTo(len, -wid * 1.6); pctx.lineTo(len, wid * 1.6); pctx.lineTo(0, wid * .12); pctx.fill();
+    pctx.restore();
+  }
+  for (let i = waves.length - 1; i >= 0; i--) {
+    const w = waves[i], age = (now - w.t) / 2600;
+    if (age > 1) { waves.splice(i, 1); continue; }
+    const r = 30 + age * Math.hypot(psyW, psyH) * .75;
+    for (let k = 0; k < 3; k++) {
+      pctx.beginPath(); pctx.arc(cx, cy, Math.max(1, r - k * 12), 0, Math.PI * 2);
+      pctx.strokeStyle = `hsla(${(now / 8 + k * 70 + age * 220) % 360},100%,65%,${(1 - age) * .3 * w.s})`;
+      pctx.lineWidth = 2 + (1 - age) * 7; pctx.stroke();
+    }
+  }
+  // ripple echoes behind the pointer
+  const LIFE = 2600;
+  while (trail.length && now - trail[0].t > LIFE) trail.shift();
+  pctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < trail.length; i++) {
+    const p = trail[i], age = Math.max(0, (now - p.t) / LIFE), life = 1 - age, r = 3 + Math.pow(age, .6) * 46;
+    pctx.beginPath(); pctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    pctx.strokeStyle = `hsla(${p.h + age * 120},100%,64%,${life * life * .45})`; pctx.lineWidth = 1 + life * 2.5; pctx.stroke();
+    if (r > 14) { pctx.beginPath(); pctx.arc(p.x, p.y, r * .55, 0, Math.PI * 2); pctx.strokeStyle = `hsla(${p.h + 180},100%,70%,${life * life * .25})`; pctx.lineWidth = 1; pctx.stroke(); }
+    const q = trail[i + 1];
+    if (q) { pctx.setLineDash([2, 7]); pctx.beginPath(); pctx.moveTo(p.x, p.y); pctx.lineTo(q.x, q.y); pctx.strokeStyle = `hsla(${p.h},100%,70%,${life * .3})`; pctx.lineWidth = 1.5; pctx.stroke(); pctx.setLineDash([]); }
+    pctx.beginPath(); pctx.arc(p.x, p.y, 1 + life * 3.5, 0, Math.PI * 2); pctx.fillStyle = `hsla(${p.h},100%,75%,${life * .6})`; pctx.fill();
+  }
+  pctx.globalCompositeOperation = 'source-over';
+}
+
 /* the VU meter follows the level, with a little needle weight */
 const buf = new Float32Array(1024); let vu = 0;
 (function meter() {
@@ -437,6 +596,7 @@ const buf = new Float32Array(1024); let vu = 0;
   vu += (lvl - vu) * (lvl > vu ? .35 : .08);
   $('vn').style.transform = `rotate(${-48 + vu * 96}deg)`;
   $('radio').classList.toggle('signal', signal > .9);
+  drawTape(); room(performance.now(), vu);
   requestAnimationFrame(meter);
 })();
 
