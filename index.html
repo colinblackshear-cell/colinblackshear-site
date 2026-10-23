@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Blackshear TV</title>
+<title>Now Playing · Colin Blackshear</title>
 <link rel="manifest" href="site.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0c0d0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Blackshear TV">
+<meta name="apple-mobile-web-app-title" content="Now Playing">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -985,6 +985,8 @@ function caption() {
   document.querySelectorAll('.sections a[data-ch]').forEach(a => a.setAttribute('aria-current', a.dataset.ch === 'music' ? cur === MUSIC_CH : cur !== MUSIC_CH));
   const k = kindOf(cur), w = WORKS.find(w => w.ch === cur);
   $('lNum').textContent = `Channel ${cur}`;
+  // the tab names what's on
+  document.title = `Now Playing${k === 'work' ? ': ' + w.title : k === 'music' ? ': ' + TRACKS[trackIdx].title : ''} · Colin Blackshear`;
   if (k === 'montage') { $('lTitle').innerHTML = 'Selected <em>Work</em>'; $('lMeta').textContent = 'Be here. Now playing.'; }
   else if (k === 'music') { $('lTitle').innerHTML = '<em>Music</em>'; $('lMeta').textContent = `${TRACKS[trackIdx].title} · track ${trackIdx + 1} of ${TRACKS.length}`; }
   else if (k === 'work') { $('lTitle').innerHTML = `<em>${w.title}</em>`; $('lMeta').textContent = metaOf(w) + (w.vimeo ? ' · via Vimeo' : ''); }

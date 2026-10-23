@@ -1,6 +1,6 @@
 {
   "name": "Colin Blackshear",
-  "short_name": "Blackshear TV",
+  "short_name": "Now Playing",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
