@@ -666,6 +666,7 @@ function stillTest({ms,pass,fail,glow,events=[],grace=900,onTick=null}){
 function stopStillness(){ if(stillState){ stillState.stop(); stillState=null; } }
 let si=0, bi=0, typing=null, canAdvance=false, autoTimer=null, cleanups=[];
 function go(i, sb=0){
+  { const prev=S[si]; if(go.ran&&prev&&prev.learn&&i!==si) learn(prev.learn); } /* tapping through fast still counts */
   wakeAudio(); closeChapters(); closePath(); closeVoice(); hush(); clearTimeout(autoTimer); stopStillness(); choices.innerHTML=''; cleanups.forEach(f=>f()); cleanups=[];
   si=i; bi=0; const sc=S[i]; if(!go.ran){ go.ran=true; app.style.transition='none'; requestAnimationFrame(()=>requestAnimationFrame(()=>{ app.style.transition=''; })); }
   app.style.setProperty('--scene-bg', sc.bg); document.body.classList.remove('d1','d2','d3','void');

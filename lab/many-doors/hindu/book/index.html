@@ -3,167 +3,466 @@
 <title>The Thirteen Days</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
-/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+/* Layout: one full-screen "flight" — a thin instrument bar on top, the scene card in the middle, the narrator's caption card below it. Single deliberate look: the safety-card palette. */
 :root{
-  color-scheme:light;
-  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
-  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+  color-scheme: light;
+  --cream:#F6EBD2; --parchment:#FBF3DF; --ink:#1E2A2B; --ink-soft:#44524F;
+  --teal:#1F5E63; --teal-deep:#123D40; --brown:#8A4B22; --lamp:#F2B640;
+  --red:#B8352A; --ok:#2F6B2B;
+  --scene-bg: var(--cream);
+  --display:'Jost', 'Futura', 'Century Gothic', sans-serif;
+  --body:'Atkinson Hyperlegible', 'Verdana', sans-serif;
 }
-html,body{min-height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
-a{color:var(--accent)}
-button{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
-.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
-.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
-.bar .sp{flex:1}
-.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
-.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
-.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-.btn.alt{background:var(--paper);color:var(--ink)}
-.btn.gold{background:var(--gold);color:var(--ink)}
-.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
-svg text{font-family:var(--display)}
+html,body{height:100%}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--body);overflow:hidden;-webkit-tap-highlight-color:transparent}
+#app{height:100%;display:flex;flex-direction:column;background:var(--scene-bg);transition:background-color 2.2s ease}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:2px solid var(--ink);background:var(--parchment);transition:opacity 1.5s,filter 1.5s}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;font-size:.8rem;text-transform:uppercase}
+#stageLabel{font-family:var(--display);font-weight:500;font-size:.85rem;color:var(--ink-soft);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#stageLabel b{color:var(--brown);font-weight:700;margin-right:8px;font-variant-numeric:tabular-nums}
+.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:var(--cream);color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;min-height:36px}
+.tog[aria-pressed="false"]{background:transparent;color:var(--ink-soft);border-style:dashed}
+.pick{font-family:var(--body);font-size:.8rem;border:2px solid var(--ink);background:var(--cream);color:var(--ink);border-radius:8px;padding:6px 8px;min-height:36px;max-width:190px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pick:focus-visible,.tog:focus-visible,.btn:focus-visible,.spot:focus-visible{outline:3px solid var(--lamp);outline-offset:3px}
+#stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:18px;padding-block:18px;padding-inline:16px;cursor:pointer;user-select:none}
+#visual{width:100%;display:flex;justify-content:center;flex:none}
+.frame{position:relative;width:min(100%, calc((100dvh - 380px) * 1.5), 980px);min-width:min(100%,300px);aspect-ratio:3/2;max-width:100%;border-radius:18px;overflow:hidden;transition:filter 3s ease, transform 3s ease}
+.frame>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:filter 3s ease}
+.frame canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.caption{flex:none;max-width:720px;width:100%;box-sizing:border-box;background:var(--parchment);border:2px solid var(--ink);border-radius:6px;padding:16px 20px;min-height:4.6em;transition:opacity .8s, filter 1.5s, transform 1.5s, border-color 1.5s}
+.caption p{margin:0;font-size:clamp(1.02rem, 2.3vw, 1.3rem);line-height:1.45;text-wrap:pretty}
+.caption.quiet{background:transparent;border-color:transparent;text-align:center}
+.caption.dark{background:#141413;color:var(--parchment);border-color:#141413}
+.caption[hidden]{display:none!important}
+#hint{margin:0;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);opacity:0;transition:opacity .6s;min-height:1em}
+#hint.on{opacity:.8;animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.35}}
+#choices{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.04em;border:2px solid var(--ink);background:var(--teal);color:var(--parchment);border-radius:999px;padding:12px 22px;cursor:pointer;min-height:48px}
+.btn.alt{background:var(--parchment);color:var(--ink)}
 
-/* ---------- full-screen player (manual and daily session) ---------- */
-body.insession{overflow:hidden}
-a.sbtn.home{text-decoration:none;display:inline-flex;align-items:center}
-body.insession .mdhome{display:none}
-.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
-.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
-.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
-.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
-.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
-.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
-.sbtn[aria-pressed="false"]{opacity:.55}
-.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
-.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
-.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
-.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
-.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
-@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
-@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
-.art{position:absolute;inset:0;width:100%;height:100%;display:block}
-.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
-.layer{position:absolute;inset:0}
-.layer:empty{pointer-events:none}
-.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
-.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
-.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
-.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
-.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
-.sgo.alt{background:transparent;color:var(--ink)}
-.sgo.wrong{animation:nope .4s}
-@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+/* dissolution: the manual's chrome comes apart; the narration always stays sharp */
+body.d1 .bar{opacity:.85}
+body.d2 .bar{filter:blur(.6px);opacity:.6}
+body.d2 .frame{border-radius:28px}
+body.d3 .bar{filter:blur(1.5px);opacity:.3}
+body.d3 .frame{border-radius:40px}
+body.void .bar,body.void #hint{opacity:0!important}
 
-/* interactions on the stage */
-.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
-.holdpill svg{width:28px;height:28px;margin-left:-8px}
-.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
-.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
-.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
-.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
-.spot b{cursor:pointer;box-shadow:0 3px 0 var(--ink);position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+/* title */
+.title-card{width:min(100%,640px);background:var(--teal);color:var(--parchment);border:2px solid var(--ink);border-radius:18px;padding:36px 28px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;align-items:flex-start;cursor:default}
+.title-card .eyebrow{font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:.75rem;color:var(--lamp);text-transform:uppercase}
+.title-card h1{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,7vw,3.6rem);line-height:1;text-wrap:balance;text-transform:uppercase;letter-spacing:.02em}
+.title-card p{margin:0;font-size:1.05rem;line-height:1.5;max-width:46ch}
+.title-card ol{margin:4px 0 8px;padding-left:1.3em;display:flex;flex-direction:column;gap:4px;font-size:.98rem}
+.title-card .btn{background:var(--lamp);color:var(--ink)}
+
+/* hotspots */
+.spot{position:absolute;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;border:3px solid #FFF3D6;background:rgba(242,182,64,.35);cursor:pointer;padding:0}
+.spot::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid #FFF3D6;animation:ping 1.8s ease-out infinite}
 .spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
-@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
-.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
-.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
-.pk.gone{opacity:.25;pointer-events:none}
-.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
-.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
-.half svg{width:100%;height:100%;display:block;transition:transform .5s}
-.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
-.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
-.half+.half{border-left:3px solid var(--night)}
-.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
-.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
-.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
-.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
-.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
-.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
-@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
-.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
-.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
-.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
-.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
-.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
-.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
-.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
-.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
-.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
-.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+@keyframes ping{from{transform:scale(.7);opacity:.9}to{transform:scale(1.4);opacity:0}}
+.heartglow{position:absolute;width:12%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(var(--s,0.4));background:radial-gradient(circle,#FFFBEA 0%,rgba(255,221,120,.85) 35%,rgba(255,200,80,0) 70%);transition:transform 1.2s ease;pointer-events:none}
 
-/* svg motion helpers */
-.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+/* breath ring */
+.breath{position:absolute;left:50%;top:50%;width:26%;aspect-ratio:1;transform:translate(-50%,-50%) scale(.6);border-radius:50%;border:4px solid var(--parchment);box-shadow:0 0 0 12px rgba(251,243,223,.15);transition:transform 1s ease-in-out, opacity 1s}
+
+/* svg scenes */
+.svgscene{position:absolute;inset:0;width:100%;height:100%}
+.flicker{transform-origin:300px 262px;animation:flick 1.3s ease-in-out infinite}
+@keyframes flick{0%,100%{transform:scaleY(1) skewX(0)}30%{transform:scaleY(.9) skewX(3deg)}60%{transform:scaleY(1.06) skewX(-2deg)}}
+.orb-down{animation:down 7s ease-in-out forwards}
+.orb-up{animation:up 7s ease-in-out forwards}
+@keyframes down{to{transform:translateY(91px)}}
+@keyframes up{to{transform:translateY(-55px)}}
+.dots{stroke-dasharray:2 7;stroke-linecap:round}
+
+/* guide entry */
+.guide{position:absolute;inset:0;background:var(--parchment);display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:4%;padding:5%;box-sizing:border-box}
+.guide .tag,.doorsteps .tag{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:clamp(.55rem,1.4vw,.75rem);background:var(--teal);color:var(--parchment);padding:5px 10px;border-radius:4px;text-transform:uppercase}
+.guide h2{margin:10px 0 8px;font-family:var(--display);font-weight:800;font-size:clamp(1.1rem,3.4vw,2.2rem);line-height:1.05;text-transform:uppercase;color:var(--brown);text-wrap:balance}
+.guide p{margin:0;font-size:clamp(.85rem,1.8vw,1.15rem);line-height:1.45}
+.guide .fig{height:100%;display:flex;align-items:center;justify-content:center;background:var(--teal);border-radius:12px;min-height:0}
+.frame.guideframe{aspect-ratio:auto;width:min(100%,860px)}
+.frame.guideframe .guide{position:relative;inset:auto;padding:24px;gap:24px}
+.guide .fig{align-self:stretch;min-height:200px;padding:12px}
+.guide .fig svg{height:220px;width:auto}
+.guide .gtext{box-sizing:border-box}
+.guide .gtext:focus-visible{outline:3px solid var(--lamp)}
+@media (max-width:760px){
+  .frame.guideframe .guide{grid-template-columns:1fr;gap:16px;padding:18px}
+  .guide .fig{min-height:0}
+  .guide .fig svg{height:150px}
+  .guide h2{font-size:1.5rem}
+  .guide p{font-size:1.02rem}
+}
+
+/* clear light */
+.crack{stroke-dasharray:900;stroke-dashoffset:900;animation:crack 1.2s ease-out forwards}
+@keyframes crack{to{stroke-dashoffset:0}}
+.bubble{opacity:0;transform:scale(.6);transform-origin:80% 80%;transition:opacity .8s, transform .8s}
+.bubble.on{opacity:1;transform:scale(1)}
+.ring{position:absolute;left:49.8%;top:43%;width:8%;aspect-ratio:1;border-radius:50%;border:3px solid rgba(242,182,64,.55);transform:translate(-50%,-50%);animation:ring 4.5s ease-out infinite;pointer-events:none}
+@keyframes ring{from{transform:translate(-50%,-50%) scale(.3);opacity:1}to{transform:translate(-50%,-50%) scale(9);opacity:0}}
+
+
+/* chapters 4-5 */
+.rise{animation:rise 4.5s ease-out forwards}
+@keyframes rise{from{transform:translateY(80px);opacity:0}to{transform:none;opacity:1}}
+.walk{animation:walk 9s ease-in forwards}
+@keyframes walk{to{transform:translateY(-22px);opacity:.25}}
+.steam path{animation:steam 2.4s ease-in-out infinite}
+.steam path+path{animation-delay:1.2s}
+@keyframes steam{0%{opacity:0;transform:translateY(6px)}50%{opacity:.9}100%{opacity:0;transform:translateY(-10px)}}
+.balloon{opacity:0}
+.balloon.on{animation:shout 4s ease-out forwards}
+@keyframes shout{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+.mug{opacity:0}
+.mug.on{opacity:1;animation:shake .35s linear 2}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.drawer{transition:transform 1s ease}
+.drawer.open{transform:translateX(60px)}
+.page{transform-box:fill-box;transform-origin:center;animation:fly 1.6s ease-in forwards}
+.page.f2{animation-delay:.35s}.page.f3{animation-delay:.7s}
+@keyframes fly{to{transform:translate(160px,-190px) rotate(30deg);opacity:0}}
+.glass.flash{animation:flash .9s ease}
+@keyframes flash{40%{fill:#FFFFFF}}
+.popped{transform-box:fill-box;transform-origin:center;animation:pop 1.2s ease 1s forwards}
+@keyframes pop{to{transform:scale(1.5);opacity:0}}
+.drops{opacity:0;animation:drops 1s ease 2s forwards}
+@keyframes drops{to{opacity:1}}
+.drawerbtn{position:absolute;background:transparent;border:2px dashed rgba(251,243,223,.75);border-radius:6px;cursor:pointer;padding:0}
+.drawerbtn:hover{background:rgba(242,182,64,.2)}
+.drawerbtn:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.run{background:var(--red);font-size:1.2rem;letter-spacing:.24em;text-transform:uppercase;padding:14px 34px;animation:pulse .9s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.checks{position:absolute;inset:0;background:var(--parchment);padding:5%;box-sizing:border-box;display:flex;flex-direction:column;gap:4%}
+.ck-head span{display:block;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(.95rem,3.4vw,2rem);color:var(--brown);letter-spacing:.03em}
+.ck-head small{display:block;font-size:clamp(.7rem,1.6vw,1rem);color:var(--ink-soft);margin-top:4px}
+.ck-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4%;flex:1}
+.ck{display:flex;align-items:center;gap:6%;padding:4%;border:2px solid var(--ink);border-radius:12px;background:var(--cream);color:var(--ink);font-family:var(--body);font-size:clamp(.7rem,1.9vw,1.15rem);line-height:1.25;text-align:left;cursor:pointer;min-width:0}
+.ck:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.box{flex:none;width:clamp(18px,3vw,32px);aspect-ratio:1;border:3px solid var(--ink);border-radius:6px;position:relative;background:#FFFFFF}
+.ck[aria-pressed="true"] .box{background:var(--ok)}
+.ck[aria-pressed="true"] .box::after{content:"";position:absolute;left:30%;top:6%;width:28%;height:58%;border:solid #FFFFFF;border-width:0 4px 4px 0;transform:rotate(45deg)}
+
+
+/* epilogue */
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:none;overflow:hidden;transition:filter .4s}
+.half svg{width:100%;height:100%;display:block}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-family:var(--display);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:clamp(.68rem,1.6vw,.95rem);background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;white-space:nowrap}
+.duo:hover .half:not(:hover){filter:brightness(.55)}
+.half:focus-visible{outline:4px solid var(--lamp);outline-offset:-4px}
+.rules{position:relative;background:var(--parchment);padding:24px;display:flex;flex-direction:column;gap:18px}
+.rule-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rule{display:flex;flex-direction:column;gap:8px;border:2px solid var(--ink);border-radius:12px;padding:12px;background:var(--cream);min-width:0}
+.rule svg{width:100%;height:auto;border-radius:8px;background:#E9DDBF}
+.rule b{font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--teal)}
+.rule p{margin:0;font-size:clamp(.9rem,1.6vw,1.05rem);line-height:1.35}
+.spin{transform-origin:300px 170px;animation:spinr 40s linear infinite}
+@keyframes spinr{to{transform:rotate(360deg)}}
+.bluerise{animation:brise 3s ease-out forwards}
+@keyframes brise{to{opacity:.85;transform:translateY(-40px)}}
+
+/* volume 2 */
+.approach{transform-origin:300px 205px;animation:approach 9s ease-in forwards}
+@keyframes approach{from{transform:scale(.8)}to{transform:scale(1.14)}}
+.pulse{transform-origin:300px 205px;animation:pulseg 1.24s ease-in-out infinite}
+@keyframes pulseg{50%{opacity:.12;transform:scale(.92)}}
+.morph .pulse{animation:none;opacity:0;transition:opacity 1s}
+.wrath{transform-origin:300px 205px;transition:transform 1.6s ease, opacity 1.4s ease}
+.fl{transform-origin:300px 205px;animation:flick2 .45s ease-in-out infinite alternate}
+@keyframes flick2{to{transform:scale(1.04) rotate(1.5deg)}}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 3.6s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.peace{opacity:0;transform-origin:300px 205px;transform:scale(.3);transition:opacity 1.6s ease .5s, transform 1.6s ease .5s}
+.morph .wrath{transform:scale(.12) rotate(90deg);opacity:0}
+.morph .peace{opacity:1;transform:scale(1)}
+.frame.facing{transition:none;animation:shake2 .12s linear infinite}
+@keyframes shake2{25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+.holdbtn{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px 8px 8px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:clamp(.72rem,1.7vw,.95rem);white-space:nowrap}
+.holdpill svg{width:30px;height:30px}
+.holdbtn:focus-visible .holdpill{outline:3px solid var(--lamp);outline-offset:3px}
+.zone{position:absolute;background:transparent;border:2px dashed rgba(255,255,255,.55);border-radius:50%;cursor:pointer;padding:0}
+.zone:focus-visible{outline:3px solid var(--lamp)}
+.closing{transform-origin:300px 205px;animation:closing 10s ease-in forwards}
+@keyframes closing{from{transform:scale(1.35)}to{transform:scale(.82)}}
+.orbit{transform-origin:300px 210px;animation:spinr 18s linear infinite}
+
+
+/* chapters menu */
+#app{position:relative}
+.chap{position:absolute;right:16px;top:calc(100% + 0px);z-index:20;width:min(340px,calc(100% - 32px));max-height:min(70vh,560px);overflow-y:auto;background:var(--parchment);border:2px solid var(--ink);border-radius:14px;box-shadow:0 12px 30px rgba(20,20,19,.25);padding:14px;box-sizing:border-box}
+.chapwrap{position:relative;z-index:20}
+.chap h3{margin:10px 6px 6px;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brown)}
+.chap h3:first-child{margin-top:2px}
+.chap ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.chap button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:10px 8px;font-family:var(--body);font-size:1rem;color:var(--ink);cursor:pointer;min-height:44px}
+.chap button:hover,.chap button:focus-visible{background:var(--cream);outline:none}
+.chap button[aria-current="true"]{background:var(--cream);font-weight:700}
+.chap button small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.4em;font-variant-numeric:tabular-nums}
+
+
+/* volume 3 */
+.streaks{animation:streak 1.1s linear infinite}
+@keyframes streak{from{transform:translateX(-140px)}to{transform:translateX(140px)}}
+.blown{animation:blown 2.6s ease-in-out infinite}
+@keyframes blown{50%{transform:translate(40px,-8px)}}
+.elgrid{position:absolute;inset:0;background:#1B2224;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4%;padding:6%;box-sizing:border-box}
+.el{background:#2A3335;border-radius:14px;display:flex;align-items:center;justify-content:center;opacity:.22;transition:opacity .4s, transform .4s;min-height:0}
+.el svg{width:62%;height:auto;max-height:90%}
+.el.on{opacity:1;transform:scale(1.04)}
+.peb{opacity:0}
+.pebs.on .peb{animation:drop .5s ease-in forwards}
+@keyframes drop{from{opacity:0;transform:translateY(-70px)}to{opacity:1;transform:none}}
+.mref{opacity:0;transition:opacity 1.2s}
+.mref.on{opacity:1}
+.approach2{transform-origin:230px 200px;animation:approach 9s ease-in forwards}
+.leaf{transform-origin:20px 115px;transform:scaleX(.12);transition:transform .15s}
+.doorwrap{position:relative;background:var(--parchment);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:24px;padding:24px;align-items:center}
+.doorsteps ol{margin:12px 0 0;padding-left:1.4em;display:flex;flex-direction:column;gap:8px;font-size:clamp(.95rem,1.8vw,1.1rem);line-height:1.35}
+.doorpic svg{width:100%;height:auto;max-height:260px;display:block}
+.doorgrid{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px;background:#10181B}
+.doorcard{display:flex;flex-direction:column;gap:8px;background:var(--parchment);border:2px solid var(--ink);border-radius:12px;padding:8px;cursor:pointer;font-family:var(--body);font-size:clamp(.82rem,1.6vw,1rem);line-height:1.25;color:var(--ink);text-align:left;min-width:0}
+.doorcard svg{width:100%;height:auto;border-radius:8px;display:block}
+.doorcard:hover{transform:translateY(-2px)}
+.doorcard.nope{opacity:.4;filter:grayscale(1)}
+.doorcard:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+/* pilot: shared production layer */
+#visual{position:relative}
+.leaving{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;pointer-events:none;z-index:4;animation:leave .7s ease forwards}
+@keyframes leave{to{opacity:0;transform:scale(.985)}}
+.entering{animation:enter .8s cubic-bezier(.2,.7,.2,1)}
+@keyframes enter{from{clip-path:inset(0 0 0 100% round 18px)}to{clip-path:inset(0 0 0 0 round 18px)}}
+.amb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.kb{animation:kb 24s ease-out forwards;transform-origin:62% 48%}
+@keyframes kb{to{transform:scale(1.09)}}
+.glowspot{position:absolute;width:22%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,214,120,.55) 0%,rgba(255,190,90,.18) 40%,rgba(255,190,90,0) 70%);mix-blend-mode:screen;pointer-events:none;animation:candle 2.3s steps(9,end) infinite;transition:opacity 1.2s ease}
+@keyframes candle{0%{opacity:.85;transform:translate(-50%,-50%) scale(1)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}35%{opacity:.75}55%{opacity:.95;transform:translate(-50%,-50%) scale(.97)}75%{opacity:.8}100%{opacity:.9;transform:translate(-50%,-50%) scale(1.02)}}
+.callout{position:absolute;z-index:3;transform:translate(-50%,-50%) scale(0);background:var(--parchment);border:2px solid var(--ink);border-radius:8px;padding:5px 10px;display:flex;flex-direction:column;align-items:center;gap:1px;animation:pop .45s cubic-bezier(.3,1.6,.5,1) forwards;box-shadow:0 3px 0 var(--ink);pointer-events:none;white-space:nowrap}
+.callout b{font-family:var(--display);font-weight:800;font-size:clamp(.52rem,1.2vw,.66rem);letter-spacing:.14em;text-transform:uppercase;color:var(--brown)}
+.callout span{font-family:var(--display);font-weight:700;font-size:clamp(.72rem,1.7vw,1rem);color:var(--ink)}
+@keyframes pop{to{transform:translate(-50%,-50%) scale(1)}}
+.guidechip{position:absolute;top:10px;right:10px;z-index:5;display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:36px}
+.guidechip svg{width:16px;height:16px}
+.guidechip:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.gpop{position:absolute;inset:6%;z-index:6;background:var(--parchment);border:2px solid var(--ink);border-radius:14px;padding:clamp(14px,3vw,26px);overflow:auto;display:flex;flex-direction:column;gap:10px;align-items:flex-start;animation:pop2 .35s ease;cursor:default;box-shadow:0 6px 0 var(--ink)}
+.gpop .tag{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:.7rem;background:var(--teal);color:var(--parchment);padding:5px 10px;border-radius:4px;text-transform:uppercase}
+.gpop h2{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(1.2rem,3vw,1.9rem);text-transform:uppercase;color:var(--brown);line-height:1.05}
+.gpop p{margin:0;font-size:clamp(.95rem,1.9vw,1.15rem);line-height:1.45;max-width:60ch}
+@keyframes pop2{from{opacity:0;transform:scale(.96)}}
+.brief{position:relative;background:var(--parchment);padding:24px;display:flex;flex-direction:column;gap:18px}
+.brief-row{display:flex;align-items:center;gap:8px}
+.stage{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;opacity:0;animation:stagein .5s ease forwards}
+.stage svg{width:78%;max-width:110px;height:auto}
+.stage b{font-family:var(--display);font-weight:800;font-size:clamp(.85rem,1.8vw,1.1rem)}
+.stage small{font-size:clamp(.75rem,1.5vw,.95rem);color:var(--ink-soft)}
+@keyframes stagein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.melt{transform-box:fill-box;transform-origin:50% 100%;animation:melt 2.4s ease-in-out infinite}
+@keyframes melt{50%{transform:scaleY(.86) scaleX(1.08)}}
+.arrowr{font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--teal);flex:none}
+.dnarr{animation:dn 1.3s ease-in-out infinite}
+@keyframes dn{50%{transform:translateY(8px)}}
+.drop{position:absolute;z-index:3;width:30px;height:30px;margin:-15px 0 0 -15px;border:2.5px solid var(--ink);background:#7FC4E0;border-radius:50% 50% 50% 0;transform:rotate(-45deg);cursor:pointer;padding:0;animation:bob 1.8s ease-in-out infinite}
+.drop::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(30,42,43,.35)}
+.drop.gone{animation:evap 1s ease-out forwards;pointer-events:none}
+.drop:focus-visible{outline:3px solid var(--lamp);outline-offset:4px}
+@keyframes bob{50%{margin-top:-21px}}
+@keyframes evap{to{transform:rotate(-45deg) translate(24px,-24px) scale(.2);opacity:0}}
+.smoke{transition:opacity 2.5s ease}
+.puff{animation:puff 7s ease-in-out infinite alternate}
+@keyframes puff{to{transform:translate(40px,-14px)}}
+.flicker2{transform-box:fill-box;transform-origin:50% 100%;animation:flick3 .7s ease-in-out infinite alternate}
+@keyframes flick3{to{transform:scaleY(1.12) scaleX(.9) skewX(-4deg)}}
+.glowpulse{transform-box:fill-box;transform-origin:center;animation:gp 2.6s ease-in-out infinite}
+@keyframes gp{50%{transform:scale(1.08);opacity:.25}}
+.band{animation:band 9s ease-in-out infinite alternate}
+@keyframes band{to{transform:translateY(16px)}}
+.curl{stroke-dasharray:120;stroke-dashoffset:120}
+.curl.on{animation:curl 3s ease-out forwards}
+@keyframes curl{0%{opacity:0}15%{opacity:.9}100%{stroke-dashoffset:0;opacity:0;transform:translateY(-24px)}}
+@media (max-width:700px){.gpop{position:fixed;top:72px;left:12px;right:12px;bottom:12px;inset:72px 12px 12px 12px;z-index:50}}
+
+/* adventure */
+.toast{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--parchment);font-family:var(--display);font-weight:700;font-size:.85rem;letter-spacing:.02em;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+.toast.out{opacity:0;transition:opacity .5s}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.rewind{position:absolute;inset:0;z-index:55;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 5px);display:flex;align-items:center;justify-content:center;animation:rw 1.5s ease forwards}
+.rewind span{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,6vw,3rem);letter-spacing:.2em;text-transform:uppercase;color:#FBF3DF;background:rgba(20,20,19,.75);padding:10px 22px;border-radius:10px;animation:rwj .18s steps(2) infinite}
+@keyframes rw{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes rwj{50%{transform:translateX(3px)}}
+.frame.spinback{transition:transform 1.1s ease-in, filter 1.1s ease-in;transform:rotate(-8deg) scale(.9);filter:blur(3px) saturate(.3)}
+.pathp{outline:none}
+.pathp ol,.pathp ul{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:4px}
+.lesson{display:flex;gap:10px;align-items:flex-start;padding:8px;border-radius:8px;background:transparent}
+.lesson b{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:.8rem;border:2px dashed var(--ink-soft);color:var(--ink-soft)}
+.lesson.got b{border:2px solid var(--ink);background:var(--ok);color:#FFFFFF}
+.lesson span{display:flex;flex-direction:column;gap:2px;font-size:.95rem;line-height:1.3}
+.lesson strong{font-family:var(--display);font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--brown)}
+.lesson:not(.got) strong{color:var(--ink-soft)}
+.lesson small{color:var(--ink-soft)}
+.realms{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px!important}
+.realm{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px;border:2px dashed rgba(68,82,79,.4);opacity:.55;font-size:.85rem;line-height:1.2}
+.realm svg{width:34px;height:34px;flex:none}
+.realm small{display:block;font-size:.72rem;color:var(--ink-soft)}
+.realm.seen{opacity:1;border:2px solid var(--ink);background:var(--cream)}
+.pathnote{margin:6px 4px 0;font-size:.85rem;color:var(--ink-soft);line-height:1.35}
+.drift{animation:driftc 14s ease-in-out infinite alternate}
+@keyframes driftc{to{transform:translateX(26px)}}
+.wilt .flower{transition:fill 2.5s ease, transform 2.5s ease;fill:#7A6A4A;transform:translateY(8px)}
+.clash{animation:clash .9s steps(2) infinite}
+@keyframes clash{50%{transform:translateX(4px)}}
+.life{opacity:0;animation:stagein .6s ease forwards}
+.alarmring{transform-box:fill-box;transform-origin:center;animation:shake .12s linear infinite}
+.graze{transform-box:fill-box;transform-origin:0% 0%;animation:graze 2.2s ease-in-out infinite}
+@keyframes graze{50%{transform:rotate(18deg)}}
+.fly{animation:fly 1.6s ease-in-out infinite alternate}
+@keyframes fly{25%{transform:translate(30px,-16px)}50%{transform:translate(-10px,-30px)}75%{transform:translate(20px,10px)}to{transform:translate(-20px,-6px)}}
+.fizz{animation:fizz .8s ease-out infinite}
+@keyframes fizz{to{transform:translateY(-16px);opacity:0}}
+.trudge{animation:clash 1.4s steps(2) infinite}
+
+/* meditation layer */
+.mcv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.medbg{position:absolute;inset:0}
+.dissolving{animation:diss 6s ease-in-out infinite alternate}
+@keyframes diss{from{opacity:.25}to{opacity:.6}}
+.enso.draw{stroke-dasharray:100;stroke-dashoffset:100;animation:ensod 2.2s cubic-bezier(.4,.1,.3,1) forwards}
+@keyframes ensod{to{stroke-dashoffset:0}}
+.mspin{animation:spinr 60s linear infinite}
+
+
+/* title sequence */
+.frame.titleframe{aspect-ratio:16/9;width:min(100%, calc((100dvh - 150px) * 1.777), 1100px)}
+.tdot{animation:tdot 1.6s ease-out forwards}
+@keyframes tdot{0%{opacity:0;r:1}40%{opacity:1;r:6}100%{opacity:0;r:40}}
+.titleframe .enso.draw{animation-delay:.5s}
+.tveil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(11,18,36,.72) 0%,rgba(11,18,36,.45) 45%,rgba(11,18,36,0) 75%);pointer-events:none;opacity:0;animation:fadein 1.2s ease 2s forwards}
+.ttext{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.4vw,14px);text-align:center;padding:16px;cursor:default}
+.teye{font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.4vw,.8rem);letter-spacing:.3em;text-transform:uppercase;color:#D4A546;opacity:0;animation:fadein 1s ease 4.4s forwards}
+.tname{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,6.6vw,4.4rem);line-height:1;letter-spacing:.06em;text-transform:uppercase;color:#F3E9D2;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.tname span{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(8px);animation:letter .9s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(2.3s + var(--i) * 70ms)}
+.tname .tw{display:inline-block;white-space:nowrap}
+@keyframes letter{to{opacity:1;filter:blur(0);transform:none}}
+.tsub{margin:0;font-size:clamp(.85rem,2vw,1.2rem);color:#F3E9D2;opacity:0;animation:fadein 1s ease 3.7s forwards;text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.tbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:clamp(4px,1.2vw,12px);opacity:0;animation:fadein .8s ease 5s forwards}
+.tgo{background:#D4A546;color:var(--ink)}
+.tnote{font-size:clamp(.65rem,1.4vw,.8rem);color:rgba(243,233,210,.75);opacity:0;animation:fadein .8s ease 5.4s forwards}
+@keyframes fadein{to{opacity:1}}
+.soundcheck{background:transparent;border:1.5px solid rgba(243,233,210,.6);color:#F3E9D2;border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;min-height:34px;opacity:0;animation:fadein .8s ease 5.2s forwards}
+.soundcheck:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+.skipi{font-size:.85rem;padding:9px 16px;min-height:40px}
+.map49{display:grid;grid-template-columns:repeat(auto-fill,minmax(22px,1fr));gap:6px;max-width:560px}
+.map49 i{aspect-ratio:1;border-radius:50%;background:var(--c);border:2px solid var(--ink);opacity:0;animation:stagein .4s ease forwards}
+.map49k{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.9rem;color:var(--ink-soft)}
+.map49k b{display:inline-block;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);margin-right:6px;vertical-align:-1px}
+.howgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.how{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:12px 8px;border:2px solid var(--ink);border-radius:12px;background:var(--cream);opacity:0;animation:stagein .5s ease forwards;min-width:0}
+.how svg{width:56px;height:56px}
+.how b{font-family:var(--display);font-weight:800;font-size:clamp(.8rem,1.6vw,1rem)}
+.how small{font-size:clamp(.75rem,1.4vw,.9rem);color:var(--ink-soft);line-height:1.3}
+.bookopen{transform-origin:300px 290px;animation:bookopen 1.4s ease-out}
+@keyframes bookopen{from{transform:scaleY(.2);opacity:0}}
+
+.vpanel ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.vrow{width:100%;display:flex;gap:10px;align-items:center;text-align:left;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-family:var(--body);font-size:.98rem;color:var(--ink);cursor:pointer;min-height:44px}
+.vrow small{display:block;font-size:.76rem;color:var(--ink-soft)}
+.vrow:hover,.vrow:focus-visible{background:var(--cream);outline:none}
+.vdot{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--ink)}
+.vrow[aria-pressed="true"] .vdot{background:var(--teal);box-shadow:inset 0 0 0 3px var(--parchment)}
+.vrow[aria-pressed="true"]{font-weight:700}
+.vspeeds{display:flex;gap:6px;padding:2px 6px 4px}
+.chap .vchip{flex:1;width:auto;justify-content:center;text-align:center;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:8px 6px;cursor:pointer;min-height:40px}
+.chap .vchip[aria-pressed="true"]{background:var(--teal);color:var(--parchment)}
+.chap .vchip:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+@media (max-width:560px){.howgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.frame.titleframe{aspect-ratio:3/4;width:100%}.tname{font-size:clamp(1.7rem,9vw,2.4rem)}.tnote{max-width:26ch}}
+
+@media (max-width:560px){.pick{display:none!important}}
+
+@media (max-width:560px){.brief-row{flex-wrap:wrap;justify-content:center}.stage{flex:0 0 42%}.arrowr{display:none}.guidechip{padding:5px 9px}}
+
+@media (max-width:560px){.doorwrap{grid-template-columns:1fr}.doorpic svg{max-height:170px}.doorgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media (max-width:560px){.rule-row{grid-template-columns:1fr}.rule{flex-direction:row;align-items:center}.rule svg{width:38%;flex:none}}
+
+@media (max-width:560px){
+  .pick{max-width:80px}
+  #stageLabel{display:none}
+  .brand{display:none}
+  .tog{padding:6px 9px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* animations the woodcut kits use */
 .flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
 .flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
-.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
-.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
-.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
-.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
-.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
 .shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{translate:0 -8px}}
+.fade{transition:opacity 1.6s ease, transform 1.6s ease}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+/* on a phone the bar keeps just the arrow home */
+.brand{font-size:1rem;padding:6px 4px}
+@media (max-width:560px){ .brand{display:inline-block!important;font-size:1.3rem;line-height:1} .brand .bname{display:none} }
+.tog{white-space:nowrap}
 
-/* ---------- landing pages ---------- */
-.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
-h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
-.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
-.note{font-size:.88rem;color:var(--ink-soft)}
-.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
-.cover svg{display:block;width:100%;height:auto}
-.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
-.sec{margin-top:34px}
-.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
-.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
-.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
-.ck span{font-size:.86rem;color:var(--ink-soft)}
-.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
-.ck:hover{background:#FFFFFF}
-.ck.seen b::after{content:" ✓";color:var(--accent)}
-.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
-.how div{border-top:3px solid var(--ink);padding-top:8px}
-.how>h2{grid-column:1/-1}
-.how b{font-family:var(--display);font-weight:800;display:block}
-.how p{margin:2px 0 0;font-size:.93rem}
-details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
-details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
-details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
-details.all p{margin:0 0 6px;max-width:68ch}
-.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
-@media (max-width:760px){.hero{grid-template-columns:1fr}}
-
-/* The Thirteen Days: the ghats at dusk. Sandstone, marigold, saffron and vermilion, with a peacock-teal river. */
+/* The Thirteen Days, full book: the Bardo Manual's layout at the ghats at dusk. Sandstone, marigold, saffron, vermilion and river teal. */
 :root{
-  --bg:#F3E2C1; --paper:#FBF0D9; --ink:#2A1A12; --ink-soft:#5E4634; --accent:#B8321C; --accent2:#136F75; --gold:#F2A007; --night:#170F0C; --nightink:#FBF0D9;
-  --display:'Yatra One','Jost','Futura',sans-serif;
+  --cream:#F3E2C1; --parchment:#FBF0D9; --ink:#2A1A12; --ink-soft:#5E4634;
+  --teal:#136F75; --teal-deep:#0C4A4E; --brown:#B8321C; --lamp:#F2A007; --red:#B8321C; --ok:#4C8C3A;
+  --display:'Yatra One','Jost',sans-serif;
 }
-h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);font-weight:400}
-h1{letter-spacing:.01em}
-.brand{letter-spacing:.06em;text-transform:none;font-size:1.05rem}
-.cover{background:#1D1A3A}
+.brand,.title-card h1,.gpop h2,.guide h2,.rewind span,.callout b,.callout span,.chap h3,.lesson strong{font-weight:400;text-transform:none;letter-spacing:.01em}
+.title-card h1{line-height:1.05}
+.title-card .eyebrow{font-family:'Jost',sans-serif;font-weight:700;text-transform:uppercase}
+.tog,#hint,.btn,.gpop .tag,.guide .tag,.guidechip{font-family:'Jost','Futura',sans-serif}
+.frame{border-radius:10px}
+#holdring{stroke:var(--teal)}
+.spot{border-color:#FFF6D8;background:rgba(242,160,7,.45);box-shadow:0 0 0 2px #2A1A12}
+.mdhome{display:none!important}
+.endlinks{display:flex;gap:16px;flex-wrap:wrap;font-family:'Jost',sans-serif;font-size:.9rem}
+.endlinks a{color:var(--lamp)}
+.draft{font-size:.85rem!important;opacity:.85}
 
 </style>
-<header class="bar" id="bar"></header>
-<main class="wrap" id="wrap"></main>
-<script>
-/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
+<div id="app">
+  <header class="bar">
+    <a class="brand" href="../../index.html#doors" style="color:inherit;text-decoration:none" title="Back to Many Doors" aria-label="Back to Many Doors">←<span class="bname"> Many Doors</span></a>
+    <span id="stageLabel" aria-live="polite"></span>
+    <button class="tog" id="chapBtn" aria-expanded="false" aria-controls="chapters" type="button">Chapters</button>
+    <button class="tog" id="pathBtn" aria-expanded="false" aria-controls="pathpanel" type="button">Path 0/8</button>
+    <button class="tog" id="soundBtn" aria-pressed="true" type="button">Sound</button>
+    <button class="tog" id="voiceBtn" aria-expanded="false" aria-controls="voicepanel" type="button">Voice</button>
+  </header>
+  <div class="chapwrap"><nav class="chap" id="chapters" aria-label="Chapters" hidden></nav><section class="chap pathp" id="pathpanel" aria-label="Your path" tabindex="-1" hidden></section><section class="chap vpanel" id="voicepanel" aria-label="Narrator voice" tabindex="-1" hidden></section></div>
+  <main id="stage" aria-label="Story. Tap, or press Space, to continue.">
+    <div id="visual"></div>
+    <div id="caption" class="caption" hidden><p id="captionText" aria-live="polite"></p></div>
+    <div id="choices"></div>
+    <p id="hint">Tap to continue</p>
+  </main>
+</div>
+
+<script>
+/* The deep-book engine, forked from the Bardo Manual: scenes of beats with a typed, narrated caption; branching choices that play out and rewind; Guide entries; lessons gathered on a path; chapters, voice and sound. A book supplies BOOK, S (scenes), CHAPTERS and LESSONS. */
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const app = $('#app'), visual = $('#visual'), cap = $('#caption'), capText = $('#captionText'), hint = $('#hint'), choices = $('#choices'), label = $('#stageLabel');
+const IMG={};
 /* ---------------- sound ---------------- */
-const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{},drone:null};
+let ctx=null, master=null, noiseBuf=null, brownBuf=null, soundOn=true;
+const loops={}; let hbOn=false, hbBpm=62, hbTimer=null, clockTimer=null;
+let unlockEl=null;
+function unlockMedia(){ try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
+  try{ if(!unlockEl){ unlockEl=new Audio('data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='); unlockEl.loop=true; unlockEl.setAttribute('playsinline',''); unlockEl.volume=0.01; } const p=unlockEl.play(); p&&p.catch(()=>{}); }catch(e){} }
 /* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
 function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
   const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
@@ -172,194 +471,281 @@ function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.ga
     const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
   return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
     stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+let DRONE=null;
+function initAudio(){
+  unlockMedia();
+  if(ctx) return;
+  try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  master=ctx.createGain(); master.gain.value=soundOn?0.9:0; master.connect(ctx.destination); DRONE=makeDrone(ctx,master,.035);
+  const n=ctx.sampleRate*2; noiseBuf=ctx.createBuffer(1,n,ctx.sampleRate); brownBuf=ctx.createBuffer(1,n,ctx.sampleRate);
+  const w=noiseBuf.getChannelData(0), b=brownBuf.getChannelData(0); let last=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; last=(last+0.02*r)/1.02; b[i]=last*3.5; }
+}
+const now=()=>ctx.currentTime;
+function env(g,t,peak,a,d){ g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+a); g.gain.exponentialRampToValueAtTime(0.0001,t+a+d); }
+function burst({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7}={}){
+  if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf;
+  const f=ctx.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=ctx.createGain(); env(g,t,peak,a,d);
+  s.connect(f).connect(g).connect(master); s.start(t, Math.random()*1.5); s.stop(t+a+d+.05);
+}
+function startLoop(name, build, vol, fade=2){
+  if(!ctx||loops[name]) return; const g=ctx.createGain(); g.gain.value=0.0001; g.connect(master);
+  const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol, now()+fade); loops[name]={g,nodes};
+}
+function stopLoop(name, fade=1.5){
+  const L=loops[name]; if(!L) return; delete loops[name]; const t=now();
+  L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,0.0001),t); L.g.gain.exponentialRampToValueAtTime(0.0001,t+fade);
+  setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000);
+}
+function roomTone(){ startLoop('room', g=>{ const s=ctx.createBufferSource(); s.buffer=brownBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=420; s.connect(f).connect(g); s.start(); return [s]; }, .16); }
+function clockOn(){ if(!ctx||clockTimer) return; clockTimer=setInterval(()=>burst({freq:3200,peak:.05,d:.02}),1000); }
+function clockOff(){ clearInterval(clockTimer); clockTimer=null; }
+function thump(vol){ const t=now(); const o=ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(62,t); o.frequency.exponentialRampToValueAtTime(38,t+.14);
+  const g=ctx.createGain(); env(g,t,vol,.006,.2); o.connect(g).connect(master); o.start(t); o.stop(t+.3); }
+function heartbeat(bpm){ hbBpm=bpm; if(!ctx) return; if(hbOn) return; hbOn=true; const beat=()=>{ if(!hbOn) return; thump(.55); setTimeout(()=>hbOn&&thump(.35),280); hbTimer=setTimeout(beat,60000/hbBpm); }; beat(); }
+function heartStop(){ hbOn=false; clearTimeout(hbTimer); }
+function breath(inDur,outDur){
+  if(!ctx) return; wakeAudio(); const t=now(); const T=inDur+outDur;
+  const layer=(type,freq,q,pin,pout,f2)=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true;
+    const f=ctx.createBiquadFilter(); f.type=type; f.Q.value=q; f.frequency.setValueAtTime(freq,t); f.frequency.linearRampToValueAtTime(f2,t+T);
+    const g=ctx.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(pin,t+inDur*.75); g.gain.exponentialRampToValueAtTime(pin*.12,t+inDur);
+    g.gain.exponentialRampToValueAtTime(pout,t+inDur+outDur*.2); g.gain.exponentialRampToValueAtTime(pout*.35,t+inDur+outDur*.7); g.gain.exponentialRampToValueAtTime(0.0001,t+T);
+    s.connect(f).connect(g).connect(master); s.start(t,Math.random()); s.stop(t+T+.1); };
+  layer('bandpass',1500,.7,.42,.5,800);   /* the airy part */
+  layer('lowpass',420,.5,.28,.34,300);     /* the body of the breath */
+  const L=loops.room; if(L){ const g=L.g.gain; g.cancelScheduledValues(t); g.setValueAtTime(Math.max(g.value,.0001),t); g.linearRampToValueAtTime(.05,t+.3); g.linearRampToValueAtTime(.16,t+T+.4); }
+}
+function wakeAudio(){ if(ctx&&ctx.state!=='running'){ try{ ctx.resume(); }catch(e){} } if(ctx&&unlockEl&&unlockEl.paused){ const p=unlockEl.play(); p&&p.catch(()=>{}); } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,wakeAudio,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wakeAudio(); });
+function crackle(ms=1400){ if(!ctx) return; const end=performance.now()+ms; const tick=()=>{ if(performance.now()>end) return; burst({freq:2000+Math.random()*3000,peak:.03+Math.random()*.04,d:.012}); setTimeout(tick,30+Math.random()*90); }; tick(); }
+function pad(name,freqs,vol){ startLoop(name, g=>{ const out=[]; freqs.forEach((fr,i)=>{ const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=fr; o.detune.value=(i%2?4:-4);
+  const tg=ctx.createGain(); tg.gain.value=.5; const l=ctx.createOscillator(); l.frequency.value=.12+i*.07; const lg=ctx.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain);
+  o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; }, vol, 4); }
+function drone(){ startLoop('drone', g=>{ const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=82.4; const o2=ctx.createOscillator(); o2.type='sine'; o2.frequency.value=41.2;
+  const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=300; o.connect(f).connect(g); o2.connect(g); o.start(); o2.start(); return [o,o2]; }, .12, 4); }
+function crackSound(){ if(!ctx) return; const t=now(); const o=ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(2600,t); o.frequency.exponentialRampToValueAtTime(500,t+.5);
+  const g=ctx.createGain(); env(g,t,.12,.005,.55); o.connect(g).connect(master); o.start(t); o.stop(t+.7); burst({freq:1500,peak:.18,d:.25}); }
+function puff(){ burst({type:'lowpass',freq:700,peak:.25,a:.02,d:.5}); }
+function chime(){ if(!ctx) return; [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>{ const t=now()+i*.14; const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=fr;
+  const g=ctx.createGain(); env(g,t,.12,.01,3.2); o.connect(g).connect(master); o.start(t); o.stop(t+3.4); }); }
+function silenceAll(f=1.5){ Object.keys(loops).forEach(k=>stopLoop(k,f)); clockOff(); heartStop(); clearInterval(roarTimer); roarTimer=null; }
 
-function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
-  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
-  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
-  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
-  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
-  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; }
-  SND.drone=makeDrone(c,SND.m); }
-['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
-const T=()=>SND.ctx.currentTime;
-function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
-function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
-function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
-function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
-function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
-function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
-function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
-function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
-function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
-function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
-function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
-function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
-function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
-function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
-function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
-function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
-function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
-function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
-function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
-function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
-
-/* ---------------- narration ---------------- */
-const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
-function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+/* ---------------- voice ---------------- */
+let voiceOn=('speechSynthesis' in window), voice=null, voiceList=[], speakToken=0;
+function score(v){ let n=0; const nm=v.name.toLowerCase();
+  if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20;
+  if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
   if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
-  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
-function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
-if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
-function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
-  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
-  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
-  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
-function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
-
-/* ---------------- the player ---------------- */
-class Abort extends Error{}
-let PS=null; /* the live player session */
-function alive(s){ if(!s||PS!==s) throw new Abort(); }
-function openPlayer({title,sub,steps=[],menu=null,color}){
-  aInit(); closePlayer(true);
-  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
-  if(color) el.style.setProperty('--c',color);
-  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
-    ${window.MD_HOME?`<a class="sbtn home" href="${MD_HOME}">← Doors</a>`:''}
-    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
-    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
-    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
-    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
-    <div class="menu" id="pPanel" hidden></div></div>
-    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
-    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
-    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
-  document.body.appendChild(el); document.body.classList.add('insession');
-  const s={el,menu}; PS=s;
-  el.querySelector('#pClose').onclick=()=>closePlayer();
-  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
-  const panel=el.querySelector('#pPanel');
-  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
-  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
-  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
-  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
-  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
-  return s;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60;
+  return n; }
+let voiceRate=.84; const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+{ const r=parseFloat(store.get('bm-rate')); if(r) voiceRate=r; if(store.get('bm-voiceon')==='0') voiceOn=false; }
+const ACC={'en-GB':'British','en-US':'American','en-AU':'Australian','en-IE':'Irish','en-IN':'Indian','en-ZA':'South African','en-NZ':'New Zealand','en-CA':'Canadian','en-SG':'Singaporean'};
+function vName(v){ return v.name.replace(/Microsoft |Google |\(.*?\)| - .*$|Online|Natural|Enhanced|Premium/g,'').replace(/\s+/g,' ').trim()||v.name; }
+function loadVoices(){ const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>score(b)-score(a)); if(!vs.length) return;
+  voiceList=vs; const saved=store.get('bm-voice'); const keep=(voice&&voice.name)||saved;
+  const k=keep?vs.findIndex(v=>v.name===keep):0; voice=vs[Math.max(k,0)]; if(!$('#voicepanel').hidden) buildVoicePanel(); }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; } else { $('#voiceBtn').hidden=true; }
+function buildVoicePanel(){ const p=$('#voicepanel'); const list=voiceList.slice(0,16);
+  const speeds=[['Slow',.74],['Normal',.84],['Brisk',.96]];
+  p.innerHTML=`<h3>Narrator</h3><button type="button" class="vrow vtoggle" aria-pressed="${voiceOn}"><span class="vdot"></span><span>${voiceOn?'Narrator on':'Narrator off'}<small>${voiceOn?'Tap to turn off and read silently':'Tap to turn on'}</small></span></button>
+    <h3>Speed</h3><div class="vspeeds">${speeds.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(voiceRate-r)<.01}">${l}</button>`).join('')}</div>
+    <h3>Voice${list.length?' · '+list.length+' on this device':''}</h3>${list.length?'':'<p class="pathnote">No voices have loaded yet. Tap Begin, then open this menu again.</p>'}<ol>${list.map((v,i)=>`<li><button type="button" class="vrow vpick" data-i="${i}" aria-pressed="${voice&&v.name===voice.name}"><span class="vdot"></span><span>${vName(v)}<small>${ACC[v.lang.replace('_','-')]||v.lang}${/natural|neural|premium|enhanced|siri/i.test(v.name)?' · high quality':''}</small></span></button></li>`).join('')}</ol>
+    <p class="pathnote">Tap a voice to hear it. The choices depend on your device; Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('.vtoggle').onclick=e=>{ e.stopPropagation(); voiceOn=!voiceOn; store.set('bm-voiceon',voiceOn?'1':'0'); if(!voiceOn) hush(); buildVoicePanel(); };
+  p.querySelectorAll('.vchip').forEach(b=>b.onclick=e=>{ e.stopPropagation(); voiceRate=+b.dataset.r; store.set('bm-rate',voiceRate); buildVoicePanel(); if(voiceOn) speak(BOOK.voiceSample); });
+  p.querySelectorAll('.vpick').forEach(b=>b.onclick=e=>{ e.stopPropagation(); voice=voiceList[+b.dataset.i]; store.set('bm-voice',voice.name); if(!voiceOn){ voiceOn=true; store.set('bm-voiceon','1'); } buildVoicePanel(); speak(BOOK.voiceSample); const nb=$('#voicepanel .vpick[data-i="'+b.dataset.i+'"]'); nb&&nb.focus({preventScroll:true}); }); }
+function openVoice(){ closeChapters(); closePath(); buildVoicePanel(); $('#voicepanel').hidden=false; $('#voiceBtn').setAttribute('aria-expanded','true'); $('#voicepanel').focus({preventScroll:true}); }
+function closeVoice(){ const p=$('#voicepanel'); if(!p||p.hidden) return; p.hidden=true; $('#voiceBtn').setAttribute('aria-expanded','false'); }
+const VOICE={};
+const vnorm=t=>t.replace(/[*_]/g,'').replace(/\s+/g,' ').trim();
+let voiceEl=null, voiceBlessed=false;
+const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+function blessVoice(){ if(voiceBlessed) return; try{ if(!voiceEl){ voiceEl=document.createElement('audio'); voiceEl.setAttribute('playsinline',''); voiceEl.preload='auto'; document.body.appendChild(voiceEl); }
+    voiceEl.src=SILENT; const p=voiceEl.play(); if(p&&p.then){ p.then(()=>{ voiceBlessed=true; }).catch(()=>{}); } else voiceBlessed=true; }catch(e){} }
+['pointerdown','touchend','keydown','click'].forEach(ev=>addEventListener(ev,blessVoice,{capture:true,passive:true}));
+function duck(on){ if(master&&ctx) master.gain.setTargetAtTime(soundOn?(on?.5:.9):0, now(), .25); }
+function ttsSpeak(clean,my){ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel();
+  const parts=clean.match(/[^.!?:]+[.!?:]*/g)||[clean];
+  let i=0; const nextPart=()=>{ if(my!==speakToken||i>=parts.length) return; const u=new SpeechSynthesisUtterance(parts[i++].trim().replace(/:$/,'…'));
+    if(voice) u.voice=voice; u.rate=voiceRate; u.pitch=.88; u.volume=.85; u.onend=()=>setTimeout(nextPart, 520); speechSynthesis.speak(u); };
+  setTimeout(nextPart, 350); }
+function playClip(src,clean,my){
+  if(!voiceEl){ blessVoice(); }
+  if(!voiceEl) return ttsSpeak(clean,my);
+  let fell=false; const fallback=()=>{ if(fell||my!==speakToken) return; fell=true; try{ voiceEl.pause(); }catch(e){} duck(false); ttsSpeak(clean,my); };
+  try{ voiceEl.pause(); voiceEl.onended=()=>{ if(my===speakToken) duck(false); }; voiceEl.onerror=fallback; voiceEl.src=src; voiceEl.currentTime=0; duck(true);
+    const p=voiceEl.play(); if(p&&p.catch) p.catch(fallback);
+  }catch(e){ fallback(); } }
+function speak(text){
+  if(!voiceOn) return; const my=++speakToken; const clean=vnorm(text);
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  if(VOICE[clean]){ setTimeout(()=>{ if(my===speakToken) playClip(VOICE[clean],clean,my); },200); return; }
+  ttsSpeak(clean,my);
 }
-function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
-  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
-  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
-  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
-  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
-  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
-  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
-  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+function hush(){ speakToken++; if('speechSynthesis' in window) speechSynthesis.cancel(); if(voiceEl){ try{ voiceEl.pause(); }catch(e){} } duck(false); }
+
+$('#soundBtn').onclick=e=>{ e.stopPropagation(); soundOn=!soundOn; e.currentTarget.setAttribute('aria-pressed',soundOn); if(master) master.gain.setTargetAtTime(soundOn?.9:0,now(),.1); };
+$('#voiceBtn').onclick=e=>{ e.stopPropagation(); $('#voicepanel').hidden?openVoice():closeVoice(); };
+
+let roarTimer=null;
+const frame = (inner,cls='') => `<div class="frame ${cls}" id="frame">${inner}</div>`;
+let stillState=null;
+const idx=k=>S.findIndex(s=>s.key===k);
+const sv=(inner,lab)=>`<svg class="svgscene" viewBox="0 0 600 400" role="img" aria-label="${lab}">${inner}</svg>`;
+function whoosh(v=.15){ if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2;
+  f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2600,t+.55); const g=ctx.createGain(); env(g,t,v,.2,.45); s.connect(f).connect(g).connect(master); s.start(t,Math.random()); s.stop(t+.8); }
+function tickSnd(){ burst({freq:3800,peak:.1,d:.035}); setTimeout(()=>burst({freq:2600,peak:.06,d:.03}),60); }
+function spotAt(x,y,label,fn){ const b=document.createElement('button'); b.className='spot'; b.type='button'; b.setAttribute('aria-label',label); b.style.left=x+'%'; b.style.top=y+'%';
+  b.onclick=e=>{ e.stopPropagation(); fn(b); }; $('#frame').appendChild(b); return b; }
+function holdHum(c,dest,ms,p0=0){ if(!c||!dest) return {stop(){}}; const t=c.currentTime,s=Math.max(.05,ms*(1-p0)/1000),g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(dest);
+  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k*Math.pow(2,p0),t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
+  return {stop(full){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7));
+    if(full) [784,1568*1.003,2352*1.01].forEach((fr,i)=>{ const o=c.createOscillator(),bg=c.createGain(); o.frequency.value=fr; bg.gain.setValueAtTime(.0001,n); bg.gain.exponentialRampToValueAtTime(.08/(i+1),n+.005); bg.gain.exponentialRampToValueAtTime(.0001,n+3); o.connect(bg).connect(dest); o.start(n); o.stop(n+3.1); }); }}; }
+function holdGeneric(o){
+  const fr=$('#frame'); fr.insertAdjacentHTML('beforeend',`<button type="button" class="holdbtn" id="hold" aria-label="${o.label}"><span class="holdpill"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(30,42,43,.25)" stroke-width="4"/><circle id="holdring" cx="18" cy="18" r="15" fill="none" stroke="#1F5E63" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2" transform="rotate(-90 18 18)"/></svg>${o.label}</span></button>`);
+  const b=$('#hold'), ring=$('#holdring'); let t0=0, raf=0, done=false, holding=false, hm=null;
+  const tick=()=>{ const p=Math.min((performance.now()-t0)/o.ms,1); ring.setAttribute('stroke-dashoffset',(94.2*(1-p)).toFixed(1)); o.onProgress&&o.onProgress(p);
+    if(p>=1){ done=true; if(hm){ hm.stop(true); hm=null; } b.remove(); o.onDone(); return; } raf=requestAnimationFrame(tick); };
+  const start=()=>{ if(done||holding) return; holding=true; t0=performance.now(); initAudio(); hm=holdHum(ctx,master,o.ms); tick(); };
+  const stop=()=>{ if(done||!holding) return; holding=false; cancelAnimationFrame(raf); if(hm){ hm.stop(false); hm=null; } ring.setAttribute('stroke-dashoffset','94.2'); o.onProgress&&o.onProgress(0); };
+  b.addEventListener('pointerdown',e=>{ e.stopPropagation(); e.preventDefault(); b.setPointerCapture&&b.setPointerCapture(e.pointerId); start(); });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,stop));
+  b.addEventListener('click',e=>e.stopPropagation());
+  b.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); if(!e.repeat) start(); } });
+  b.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); stop(); } });
+  b.addEventListener('blur',stop); b.focus({preventScroll:true});
 }
-function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
-function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
-function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
-function layer(){ return $('#pLayer'); }
-function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
-function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
-function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
-function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
-/* show a passage, one or two sentences at a time, each with Continue */
-async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
-  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
-function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
-  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
-  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
-  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
-function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
-/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
-function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
-  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
-  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
-  row.querySelector('button').focus({preventScroll:true}); }); }
-/* press and hold the stage */
-function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
-  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false,hm=null;
-  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; if(hm){ hm.stop(true); hm=null; } z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
-  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); hm=holdHum(ms); raf=requestAnimationFrame(tick); };
-  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; if(hm){ hm.stop(false); hm=null; } z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
-  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
-  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
-  z.focus({preventScroll:true}); }); }
-/* the sound of a press and hold: a soft hum that climbs an octave as the ring fills, a bell when it's full */
-function holdHum(ms){ aInit(); if(!SND.ctx) return {stop(){}}; const c=SND.ctx,t=T(),s=ms/1000,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(SND.m);
-  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k,t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
-  return {stop(full){ const n=T(); g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7)); if(full) bell(784,.08); }}; }
-/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
-function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
-  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
-  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
-  l.querySelector('.spot').focus({preventScroll:true}); }); }
-/* two pictures side by side; pick one */
-function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
-  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
-/* words to clear: tap each to let it go */
-function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
-  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
-/* hold still (pointer/keys); ms of stillness needed */
-function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); if(SND.drone) SND.drone.level(0,2.5); return new Promise(r0=>{ const res=v=>{ if(SND.drone) SND.drone.level(1,4); r0(v); }; const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
-  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
-  addEventListener('pointermove',mv); addEventListener('keydown',mv);
-  const tick=()=>{ if(PS!==s){ cleanup(); if(SND.drone) SND.drone.level(1,2); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
-  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
-/* count taps (beads, breaths, pebbles) */
-function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
-  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
 
-/* ---------------- sitting: a minute with a breathing ring ---------------- */
-let cvRaf=0;
-function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
-function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
-  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
-    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
-    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
-    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
-    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
-    cvRaf=requestAnimationFrame(fr); }; fr(); }
-async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
-  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
-    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
-    l.querySelector('.ghost').onclick=end;
-    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
-  cvStop(); alive(s); }
+function callouts(list){ const fr=$('#frame'); if(!fr) return; list.forEach(([x,y,k,v],i)=>{ const d=document.createElement('div'); d.className='callout'; d.style.left=x+'%'; d.style.top=y+'%'; d.style.animationDelay=(i*.45)+'s';
+  d.innerHTML=`<b>${k}</b><span>${v}</span>`; fr.appendChild(d); }); }
+/* optional guide entries */
+function addGuideChip(gd){ const fr=$('#frame'); if(!fr) return;
+  fr.insertAdjacentHTML('beforeend',`<button type="button" class="guidechip" aria-haspopup="dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h5a2 2 0 0 1 2 2v10a2 2 0 0 0-2-2H3zM17 4h-5a2 2 0 0 0-2 2v10a2 2 0 0 1 2-2h5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Guide</button>`);
+  const chip=fr.querySelector('.guidechip');
+  chip.onclick=e=>{ e.stopPropagation(); if(fr.querySelector('.gpop')) return; tickSnd();
+    fr.insertAdjacentHTML('beforeend',`<div class="gpop" role="dialog" aria-label="${gd.title}"><span class="tag">Guide entry</span><h2>${gd.title}</h2><p>${gd.text}</p><button type="button" class="btn gclose">${BOOK.guideBack}</button></div>`);
+    const pop=fr.querySelector('.gpop'); pop.addEventListener('click',ev=>ev.stopPropagation()); speak(gd.title+'. '+gd.text);
+    const close=()=>{ pop.remove(); hush(); chip.focus({preventScroll:true}); }; pop.querySelector('.gclose').onclick=ev=>{ ev.stopPropagation(); close(); }; pop.querySelector('.gclose').focus({preventScroll:true});
+    pop.addEventListener('keydown',ev=>{ if(ev.key==='Escape'){ ev.stopPropagation(); close(); } }); }; }
+function tss(){ burst({freq:4200,peak:.07,a:.02,d:.35}); }
+let pathState=null;
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; app.appendChild(t); setTimeout(()=>t.classList.add('out'),2600); setTimeout(()=>t.remove(),3200); }
+function rewindSnd(){ if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=2;
+  f.frequency.setValueAtTime(3200,t); f.frequency.exponentialRampToValueAtTime(260,t+1.1); const g=ctx.createGain(); env(g,t,.25,.05,1.1); s.connect(f).connect(g).connect(master); s.start(t); s.stop(t+1.3);
+  const o=ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(900,t); o.frequency.exponentialRampToValueAtTime(120,t+1.1); const og=ctx.createGain(); env(og,t,.06,.05,1.05); o.connect(og).connect(master); o.start(t); o.stop(t+1.2); }
+function rewind(){ if(!pathState) return go(idx(BOOK.home)); const p=pathState; pathState=null; hush(); rewindSnd();
+  const ov=document.createElement('div'); ov.className='rewind'; ov.setAttribute('aria-hidden','true'); ov.innerHTML='<span>◀◀ Rewind</span>'; app.appendChild(ov);
+  const f=$('#frame'); f&&f.classList.add('spinback');
+  setTimeout(()=>{ go(idx(p.back), p.beat); }, 1100); setTimeout(()=>ov.remove(), 1500); }
+function rewindButton(){ choices.innerHTML='<button class="btn" type="button" id="rw">◀◀ Rewind to the choice</button>'; $('#rw').onclick=e=>{ e.stopPropagation(); rewind(); }; $('#rw').focus({preventScroll:true}); }
 
-/* ---------------- svg helpers shared by the books ---------------- */
+/* lessons and detours: what the reader has learned, and which wrong turns they have walked down */
+const journey={ visited:new Set(), learned:new Set() };
+function learn(k){ if(journey.learned.has(k)) return; journey.learned.add(k); const l=LESSONS.find(x=>x[0]===k); if(l){ toast(BOOK.toast+l[2]); if(ctx) chime(); } updatePathBadge(); }
+function updatePathBadge(){ const b=$('#pathBtn'); if(b) b.textContent=`${BOOK.pathLabel} ${journey.learned.size}/${LESSONS.length}`; }
+/* take a wrong turn on purpose: it plays out, then rewinds to the choice */
+function detour(key, backKey, backBeat){ journey.visited.add(key); pathState={back:backKey, beat:backBeat}; go(idx(key)); }
+function buildPath(){
+  const l=LESSONS.map(([k,t,rule,where],i)=>{ const got=journey.learned.has(k); return `<li class="lesson ${got?'got':''}"><b>${i+1}</b><span>${got?`<strong>${t}</strong>${rule}`:`<strong>Not learned yet</strong><small>Found in: ${where}</small>`}</span></li>`; }).join('');
+  const r=DETOURS.map(([k,name,icon])=>{ const seen=journey.visited.has(k); return `<li class="realm ${seen?'seen':''}"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="var(--teal)"/>${icon}</svg><span>${name}<small>${seen?'Walked':'Not yet'}</small></span></li>`; }).join('');
+  $('#pathpanel').innerHTML=`<h3>${BOOK.pathTitle} · ${journey.learned.size} of ${LESSONS.length}</h3><ol class="lessons">${l}</ol><h3>${BOOK.detourTitle} · ${journey.visited.size} of ${DETOURS.length}</h3><ul class="realms">${r}</ul><p class="pathnote">${BOOK.pathNote}</p>`; }
+function openPath(){ closeChapters(); closeVoice(); buildPath(); $('#pathpanel').hidden=false; $('#pathBtn').setAttribute('aria-expanded','true'); $('#pathpanel').focus({preventScroll:true}); }
+function closePath(){ const p=$('#pathpanel'); if(!p||p.hidden) return; p.hidden=true; $('#pathBtn').setAttribute('aria-expanded','false'); }
+function stillTest({ms,pass,fail,glow,events=[],grace=900,onTick=null}){
+  const t0=performance.now(); let raf=0; const recent=[]; const g=glow?$(glow):null; const fired=new Set();
+  const disturb=e=>{ if(performance.now()-t0<grace) return; if(e.target&&e.target.closest&&e.target.closest('.bar,#chapters,#pathpanel,#voicepanel')) return; if(!$('#chapters').hidden||!$('#pathpanel').hidden||!$('#voicepanel').hidden) return; if(e.type==='pointermove'){ const tn=performance.now(); recent.push([tn,Math.abs(e.movementX||0)+Math.abs(e.movementY||0)]); while(recent.length&&tn-recent[0][0]>500) recent.shift(); if(recent.reduce((x,r)=>x+r[1],0)<40) return; } stopStillness(); go(idx(fail)); };
+  const evs=['pointermove','pointerdown','keydown','touchstart'];
+  evs.forEach(ev=>addEventListener(ev,disturb,{capture:true,passive:true}));
+  const tick=()=>{ const el=performance.now()-t0; events.forEach((ev,i)=>{ if(!fired.has(i)&&el>=ev.at){ fired.add(i); ev.fn(); } });
+    if(g) g.style.setProperty('--s', .5+el/ms*2.2); onTick&&onTick(Math.min(el/ms,1)); if(el>=ms){ stopStillness(); go(idx(pass)); return; } raf=requestAnimationFrame(tick); };
+  tick(); stillState={ stop(){ evs.forEach(ev=>removeEventListener(ev,disturb,{capture:true})); cancelAnimationFrame(raf); } };
+}
+function stopStillness(){ if(stillState){ stillState.stop(); stillState=null; } }
+let si=0, bi=0, typing=null, canAdvance=false, autoTimer=null, cleanups=[];
+function go(i, sb=0){
+  { const prev=S[si]; if(go.ran&&prev&&prev.learn&&i!==si) learn(prev.learn); } /* tapping through fast still counts */
+  wakeAudio(); closeChapters(); closePath(); closeVoice(); hush(); clearTimeout(autoTimer); stopStillness(); choices.innerHTML=''; cleanups.forEach(f=>f()); cleanups=[];
+  si=i; bi=0; const sc=S[i]; if(!go.ran){ go.ran=true; app.style.transition='none'; requestAnimationFrame(()=>requestAnimationFrame(()=>{ app.style.transition=''; })); }
+  app.style.setProperty('--scene-bg', sc.bg); document.body.classList.remove('d1','d2','d3','void');
+  if(sc.dissolve) document.body.classList.add('d'+sc.dissolve); if(sc.void) document.body.classList.add('void');
+  label.textContent = sc.label||'';
+  const oldNode=visual.firstElementChild; visual.innerHTML = sc.view();
+  if(oldNode&&!reduce&&oldNode.classList.contains('frame')){ oldNode.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id')); oldNode.removeAttribute('id'); oldNode.querySelectorAll('button').forEach(b=>b.remove());
+    const lv=document.createElement('div'); lv.className='leaving'; lv.setAttribute('aria-hidden','true'); lv.appendChild(oldNode); visual.appendChild(lv); setTimeout(()=>lv.remove(),750);
+    const nf=visual.firstElementChild; if(nf&&nf.classList.contains('frame')){ nf.classList.add('entering'); setTimeout(()=>nf.classList.remove('entering'),850); } }
+  if(DRONE) DRONE.level(sc.void?0:1,sc.void?1:5); /* the black screen of death is the one silence on purpose */
+  sc.enter&&sc.enter(); if(sc.guide) addGuideChip(sc.guide); showBeat(sb);
+  if(sc.learn) setTimeout(()=>{ if(S[si]===sc) learn(sc.learn); },1600);
+  if(sc.detour) journey.visited.add(sc.detour);
+}
+function showBeat(j){
+  const sc=S[si], b=sc.beats[j]; bi=j; canAdvance=false; hint.classList.remove('on'); clearTimeout(autoTimer);
+  cap.className='caption'+(b.cls?' '+b.cls:'');
+  if(b.text===null){ cap.hidden=true; } else { cap.hidden = b.text==='' ; }
+  b.show&&b.show(); if(b.say) speak(b.say);
+  const finish=()=>{ typing=null; b.afterType&&b.afterType(); if(b.choice) renderChoice(b); if(!b.lock) armAdvance(); if(b.auto) autoTimer=setTimeout(next,b.auto); };
+  if(b.text){ const d=b.delay||0; setTimeout(()=>{ if(S[si]!==sc||bi!==j) return; typeOut(b.text, finish); speak(b.text); }, d); }
+  else { capText.textContent=''; if(b.delay){ autoTimer=setTimeout(()=>{ if(!b.lock) armAdvance(); },b.delay); } else finish(); }
+}
+function renderChoice(b){ choices.innerHTML=b.choice.map((c,i)=>`<button class="btn${i?' alt':''}" type="button" data-i="${i}">${c.label}</button>`).join('');
+  choices.querySelectorAll('button').forEach(btn=>btn.onclick=e=>{ e.stopPropagation(); const c=b.choice[+btn.dataset.i]; choices.innerHTML=''; tickSnd(); typeOut(c.reply, armAdvance); speak(c.reply); }); }
+function typeOut(text, done){
+  if(reduce){ capText.textContent=text; done(); return; }
+  let k=0; capText.textContent=''; clearInterval(typing&&typing.id);
+  const id=setInterval(()=>{ k+=2; capText.textContent=text.slice(0,k); if(k>=text.length){ clearInterval(id); done(); } },34);
+  typing={id, text, done};
+}
+function armAdvance(){ canAdvance=true; setTimeout(()=>{ if(canAdvance) hint.classList.add('on'); },900); }
+function next(){ const sc=S[si]; if(bi<sc.beats.length-1) showBeat(bi+1); else if(si<S.length-1) go(nextScene()); }
+function nextScene(){ const n=S[si].next; return n?idx(n):si+1; }
+function advance(){
+  if(typing){ clearInterval(typing.id); capText.textContent=typing.text; const d=typing.done; typing=null; d(); return; }
+  if(canAdvance) next();
+}
+$('#stage').addEventListener('click', e=>{ if(e.target.closest('button,.gpop')) return; advance(); });
+addEventListener('keydown', e=>{ if(e.key==='Escape'&&!$('#chapters').hidden){ closeChapters(); $('#chapBtn').focus(); return; } if(e.key==='Escape'&&!$('#pathpanel').hidden){ closePath(); $('#pathBtn').focus(); return; } if(e.key==='Escape'&&!$('#voicepanel').hidden){ closeVoice(); $('#voiceBtn').focus(); return; } if(!$('#chapters').hidden||!$('#pathpanel').hidden||!$('#voicepanel').hidden) return; if(stillState) return; if([' ','Enter','ArrowRight'].includes(e.key)){ if(document.activeElement&&document.activeElement.tagName==='BUTTON'&&e.key!=='ArrowRight') return; e.preventDefault(); advance(); } });
+
+/* warmth interaction */
+function buildChapters(){ const cur=S[si]&&S[si].key; let n=0;
+  $('#chapters').innerHTML=CHAPTERS.map(([vol,items])=>`<h3>${vol}</h3><ol>${items.map(([t,k])=>{ n++; return `<li><button type="button" data-k="${k}" ${k===cur?'aria-current="true"':''}><small>${String(n).padStart(2,'0')}</small><span>${t}</span></button></li>`; }).join('')}</ol>`).join('');
+  $('#chapters').querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); initAudio(); if(ctx&&ctx.state==='suspended') ctx.resume(); if('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance('')); go(idx(b.dataset.k)); }); }
+function openChapters(focus){ closeVoice(); closePath(); buildChapters(); $('#chapters').hidden=false; $('#chapBtn').setAttribute('aria-expanded','true'); if(focus!==false){ const c=$('#chapters [aria-current]')||$('#chapters button'); c&&c.focus({preventScroll:false}); } }
+function closeChapters(){ const c=$('#chapters'); if(!c||c.hidden) return; c.hidden=true; $('#chapBtn').setAttribute('aria-expanded','false'); }
+$('#chapBtn').onclick=e=>{ e.stopPropagation(); closePath(); $('#chapters').hidden?openChapters():closeChapters(); };
+$('#pathBtn').onclick=e=>{ e.stopPropagation(); $('#pathpanel').hidden?openPath():closePath(); };
+document.addEventListener('click',e=>{ if(!$('#chapters').hidden&&!e.target.closest('#chapters,#chapBtn')) closeChapters(); if(!$('#pathpanel').hidden&&!e.target.closest('#pathpanel,#pathBtn')) closePath(); if(!$('#voicepanel').hidden&&!e.target.closest('#voicepanel,#voiceBtn')) closeVoice(); },true);
+
+/* the small helpers the woodcut kits share with the short books */
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
-function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
-function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+/* moods: named sound beds a book defines in MOODS; mood('a','b') keeps those playing and fades the rest */
+const MOODS={};
+function bell(f=392,v=.1,d=4){ if(!ctx) return; const t=now(); [1,2.01,2.76,4.1,5.4].forEach((k,i)=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.frequency.value=f*k; env(g,t,v/(1+i*.9),.004,d/(1+i*.4)); o.connect(g).connect(master); o.start(t); o.stop(t+d+.1); }); }
+function knell(n=3,f=146.8){ for(let i=0;i<n;i++) setTimeout(()=>bell(f,.14,6),i*2600); }
+function mood(...on){ if(!ctx) return; Object.keys(loops).forEach(k=>{ if(!on.includes(k)) stopLoop(k,2.5); }); on.forEach(k=>{ if(!loops[k]&&MOODS[k]) MOODS[k](); }); }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
-}
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
-  try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
-  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
-}
+/* ---------- things to do on a page ---------- */
+const sayCap=(t,done=()=>{})=>{ typeOut(t,done); speak(t); };
+/* tap every glowing spot; each one answers in the caption, and the last one lets you go on */
+function tapAll(items,done){ let n=0; items.forEach(([x,y,lab,line,fn],i)=>spotAt(x,y,lab,b=>{ b.classList.add('done'); initAudio(); bell([392,440,493.9,587.3,659.3,784][i%6],.06,2.6); fn&&fn(); const last=++n===items.length; sayCap(line,last?(done||armAdvance):undefined); })); }
+/* a choice that matters: a wrong answer walks you down it, then rewinds to here */
+function pick(opts){ choices.innerHTML=opts.map((o,i)=>`<button class="btn" type="button" data-i="${i}">${o.label}</button>`).join('');
+  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const o=opts[+b.dataset.i]; choices.innerHTML=''; tickSnd(); if(o.go) detour(o.go,S[si].key,bi); else next(); }); }
+/* open your hands: tap each thing to give it up, and it fades from the picture */
+function letGo(items){ choices.innerHTML=items.map(([w],i)=>`<button class="btn alt" type="button" data-i="${i}">${w}</button>`).join(''); let n=0;
+  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const [,id,line]=items[+b.dataset.i]; b.disabled=true; b.style.opacity='.3'; whoosh(.12); bell(523.25-n*40,.05,3);
+    const el=document.getElementById(id); if(el){ el.classList.add('fade'); el.style.opacity='0'; el.style.transform='translateY(-20px)'; }
+    const last=++n===items.length; sayCap(line,last?()=>{ choices.innerHTML=''; armAdvance(); }:undefined); }); }
+/* the bedside questions: each gets a yes */
+function askAll(qs,label='Yes'){ let k=0; const ask=()=>{ sayCap(qs[k],()=>{ choices.innerHTML='<button class="btn" type="button" id="yes">${label}</button>'; const y=$('#yes'); y.focus({preventScroll:true});
+    y.onclick=e=>{ e.stopPropagation(); choices.innerHTML=''; bell(293.7+k*36,.07,3); k++; k<qs.length?ask():next(); }; }); }; ask(); }
+function holdOn(o){ holdGeneric({...o, onDone:()=>{ o.onDone&&o.onDone(); setTimeout(next,o.wait||300); }}); }
+function tryAgain(label,key,beat){ choices.innerHTML=`<button class="btn" type="button" id="again">${label}</button>`; $('#again').onclick=e=>{ e.stopPropagation(); go(idx(key),beat); }; $('#again').focus({preventScroll:true}); }
+const card=(eye,h,p,btns='')=>`<div class="title-card"><span class="eyebrow">${eye}</span><h1>${h}</h1><p>${p}</p>${btns}</div>`;
 
 /* Folk-painting kit for The Thirteen Days: bold outline, flat colour, marigold garlands, the ghats of Kashi at dusk. */
 const K='#2A1A12', SAND='#EBD3A6', MARI='#F2A007', SAFF='#E86A17', VERM='#B8321C', TURM='#E9B92F', TEAL='#136F75', LEAF='#4C8C3A', WHITE='#FBF4E6', SKIN='#C98A5A', DARK='#3C3A6A', INDIGO='#1D1A3A';
@@ -407,131 +793,347 @@ function portrait(x,y,s=1){ let g=''; for(let i=0;i<15;i++){ const t=i/14, gx=-6
   return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-60" y="-80" width="120" height="150" fill="#8C5A30" stroke="${K}" stroke-width="3"/><rect x="-48" y="-68" width="96" height="126" fill="#D8C7A4" stroke="${K}" stroke-width="2"/><circle cx="0" cy="-20" r="22" fill="#8A7A66"/><path d="M-36 58 Q-36 14 0 10 Q36 14 36 58Z" fill="#8A7A66"/><circle cx="0" cy="-48" r="4" fill="${VERM}"/><g transform="translate(0 -6)">${g}</g></g>`; }
 function wall(){ return `<rect x="0" y="0" width="600" height="262" fill="#6A3A2A"/><rect x="0" y="0" width="600" height="262" fill="url(#glow)" opacity=".15"/><path d="M0 250 H600" stroke="${K}" stroke-width="3"/>`; }
 
-/* The Thirteen Days: the Hindu passage from the last breath to the ancestors, after the Upanishads, the Gita and the Garuda Purana. */
-const BOOK={key:'t13',brand:'The Thirteen Days',brandSub:'A Hindu book of the dead',title:'The Thirteen Days',eyebrow:'From the Upanishads, the Gita and the Garuda Purana',
- lede:'In many Hindu homes, the Garuda Purana is read aloud in the days after a death, while the family performs rites that build the dead a new body and send them on to the ancestors. This is that passage, told again: the boy who questioned Death, the self that cannot burn, the fire, the river and the thirteenth day.',
- note:'About 40 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../../many-doors/hindu/walk/',walkName:'The Thirteen-Day Walk',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['Many traditions','Hindu practice varies widely by region, caste, sect and family. This follows the widely shared North Indian pattern and says where others differ.'],['Your part','You make the offerings: water, rice, a lamp, a cow, and the names of the ancestors.'],['Two voices','The Upanishads and the Gita speak of a self beyond death. The Garuda Purana describes a vivid journey. Both are part of the tradition, and both are here.']],
- sources:'Katha Upanishad; Bhagavad Gita 2, 8 and 9; Garuda Purana, Preta Khanda (Saroddhara); Bhagavata Purana 6.1–2 (Ajamila); Manusmriti 5 on impurity; household manuals of antyeṣṭi and śrāddha. Translations after Patrick Olivelle (Upaniṣads, 1996) and Eknath Easwaran (Gita, 1985), lightly simplified. See also J. P. Parry, Death in Banaras (1994).',
- cover:hiCover,
- chapters:[
- {name:'The Boy Who Asked Death',short:'Nachiketa',sub:'Three nights at Yama\'s door',col:'#B8321C',run:async s=>{
-   art(scene(`<rect x="0" y="300" width="600" height="100" fill="#4A3020"/>${gate(400,300,1)}${person(200,300,1,{cloth:WHITE,thread:true,arms:'pray'})}`,{sky:'dusk'}));
-   if(SND.ctx) pad('pad',[110,165,220],.035);
-   await say(s,'The oldest Hindu story about death is in the Katha Upanishad, about 2,500 years old. A priest is giving away his possessions in a great sacrifice, but only his old, worn-out cows. His young son Nachiketa is ashamed, and keeps asking: father, to whom will you give me?',{eye:'Katha Upanishad'});
-   await say(s,'At last the father snaps: I give you to Death. And the boy goes. He travels to the house of Yama, the lord of death, finds him away, and waits at the door for three nights without food.');
-   art(scene(`<rect x="0" y="300" width="600" height="100" fill="#4A3020"/>${yama(420,300,.9)}${person(170,300,1,{cloth:WHITE,thread:true,arms:'pray'})}`,{sky:'dusk'}));
-   await say(s,'Yama comes home, troubled that a guest has gone hungry, and offers three wishes, one for each night. For the third, Nachiketa asks: when a person dies, some say they still exist, others say they do not. Teach me which is true.');
-   await say(s,'Yama tries to talk him out of it. Ask for anything else, he says.');
-   await release(s,{ask:'Yama offers everything. Tap each offer to refuse it, as Nachiketa did.',words:['Sons and grandsons','Herds of cattle','Gold and horses','A great kingdom','A hundred years of life','Music and dancers']});
-   await say(s,'Nachiketa says: all these last only until tomorrow. Keep your horses, your songs and your dances. What use is wealth to someone who has seen you? Yama is delighted. Only now will he teach.');
- }},
- {name:'What Cannot Burn',short:'The self',sub:'The ātman',col:'#F2A007',run:async s=>{
-   art(scene(`${tiny(300,240,2.2)}`,{sky:INDIGO}));
-   if(SND.ctx) pad('pad',[130.8,196,261.6],.035);
-   await say(s,'Yama\'s teaching, repeated almost word for word in the Bhagavad Gita, is the foundation of Hindu thought about death. The true self, the ātman, is not born and does not die. It is not killed when the body is killed.',{eye:'The ātman · Gita 2.20'});
-   await say(s,'Weapons cannot cut it, says the Gita. Fire cannot burn it, water cannot wet it, wind cannot dry it. It is eternal, everywhere, unmoving, ancient.');
-   await say(s,'The Upanishad gives it a size: a person no bigger than a thumb, living in the heart, like a flame without smoke.');
-   await hold(s,{label:'Change your clothes',ms:4500,ask:'The Gita says: as a person throws off worn-out clothes and puts on new ones, so the self throws off worn-out bodies and takes on new ones. Press and hold.'});
-   await say(s,'This is why Hindu mourning, however painful, is framed differently from many others. Krishna tells the grieving warrior Arjuna: for the born, death is certain; for the dead, birth is certain. Do not grieve over what cannot be avoided.');
- }},
- {name:'The Last Thought',short:'The last thought',sub:'Ganga water, tulsi and the name',col:'#4C8C3A',run:async s=>{
-   art(scene(`<rect x="0" y="270" width="600" height="130" fill="#C9A26E"/>${shroud(300,300,1)}${tulsi(110,330,1)}${pot(480,330,1)}${diya(380,320,1)}${person(200,270,.8,{sari:true,cloth:'#E9D6B0',arms:'offer'})}`,{sky:'#5A3A2A'}));
-   if(SND.ctx) bowl(220,.12);
-   await say(s,'The Gita says something with huge consequences for the dying: whatever a person remembers at the moment of leaving the body, that is what they become. Whoever remembers God at the end goes to God.',{eye:'Gita 8.5–6'});
-   await say(s,'So families try to fill the last moments with the sacred. The dying person is often moved to the floor, closer to the earth, with their head to the north or east.');
-   await spots(s,{ask:'Three things are given at the end. Tap each one.',items:[
-     {x:80,y:72,label:'Ganga water',say:'A few drops of water from the Ganga, the holy river, are placed in the mouth. Families keep sealed pots of it at home for this moment.'},
-     {x:18,y:70,label:'Tulsi',say:'A leaf of tulsi, holy basil, sacred to Vishnu, is laid on the tongue.'},
-     {x:33,y:44,label:'The name',say:'And the name of God is spoken into the ear: Rama, Krishna, Shiva, or simply Om, so that the last thought is of the divine.'}]});
-   await say(s,'Bhagavata Purana tells of Ajamila, a man who lived badly but had named his youngest son Narayana, a name of Vishnu. Dying, he called for his son, and Vishnu\'s messengers came instead of Yama\'s, because he had said the name. Even said by accident, the story goes, it works.');
- }},
- {name:'Leaving the Body',short:'Leaving',sub:'The subtle body and the crown',col:'#136F75',run:async s=>{
-   art(scene(`${shroud(300,320,1)}<g class="rise">${tiny(300,230,1.6)}</g>`,{sky:INDIGO}));
-   await say(s,'At death the gross body, made of food, is left behind. What travels on is the subtle body: mind, senses, breath, and the karma of everything done, carried like seeds.',{eye:'The subtle body'});
-   await say(s,'The Katha Upanishad says the heart has a hundred and one channels. One of them rises to the crown of the head. Leaving by that one, a person goes up to immortality. Leaving by the others, they go in every other direction, back into the world.');
-   await hold(s,{label:'Rise through the crown',ms:6000,ask:'Press and hold. Let the breath leave upward, as the yogis train to.',early:'The breath slipped sideways. Hold again.'});
-   if(SND.ctx) chime();
-   await say(s,'In the holy city of Varanasi, also called Kashi, there is a belief that anyone who dies there is freed at once: Shiva himself whispers the mantra of crossing into their ear. People come there to die, and some hospices exist just for them.');
- }},
- {name:'The Last Sacrifice',short:'Fire',sub:'Cremation',col:'#E86A17',run:async s=>{
-   art(GHAT(`${pyre(300,290,.8)}${person(470,290,.75,{shaved:true,thread:true,arms:'down'})}`));
-   if(SND.ctx){ allOff(1); fireLoop(); }
-   await say(s,'Cremation is called antyeṣṭi, the last sacrifice. The body itself is the final offering into the sacred fire. It usually happens within a day, often by a river.',{eye:'Antyeṣṭi'});
-   await say(s,'The body is washed, dressed in white, or red for a married woman, garlanded, and carried on a bamboo bier while the bearers chant: Rāma nāma satya hai. The name of Rama is truth.');
-   await count(s,{ask:'The chief mourner, usually the eldest son, walks around the pyre carrying a pot of water. Circle it three times.',n:3,label:'Walk around the pyre',onTap:()=>{ if(SND.ctx) plop(); }});
-   art(GHAT(`${pyre(300,290,.8)}${person(470,290,.75,{shaved:true,thread:true,arms:'down'})}${pot(410,300,.8,{broken:true})}`));
-   if(SND.ctx) thud();
-   await say(s,'Then he breaks the pot on the ground behind him, without looking back. In many regions, water pours out through a hole in it as he walks: a picture of life running out, and the bond being released.');
-   await hold(s,{label:'Light the pyre',ms:3500,ask:'Press and hold to light the fire.'});
-   art(GHAT(`${pyre(300,290,.8,{lit:true})}${person(470,290,.75,{shaved:true,thread:true,arms:'pray'})}${pot(410,300,.8,{broken:true})}`));
-   await say(s,'As the fire burns, the chief mourner performs kapāla kriyā, cracking the skull with a bamboo pole, to release the soul. At Manikarnika Ghat in Varanasi, pyres have burned without stopping, day and night, for centuries.');
- }},
- {name:'A Body of Rice',short:'The preta',sub:'Ten days of offerings',col:'#E9B92F',run:async s=>{
-   art(scene(`${wall()}${portrait(300,140,.95)}<rect x="0" y="260" width="600" height="140" fill="#C9A26E"/>${leaf(300,320,1.6,0)}${diya(470,310,1.2)}${person(140,300,.85,{shaved:true,thread:true,arms:'offer'})}`,{sky:'#4A2A22'}));
-   if(SND.ctx){ allOff(1); pad('pad',[110,165,220],.03); }
-   await say(s,'After the fire, the dead person is a preta: a ghost, a departed one, with no body at all. In this state, the Garuda Purana says, they are hungry, thirsty and lost.',{eye:'Garuda Purana · the preta'});
-   await say(s,'So for ten days the family offers piṇḍas: balls of cooked rice, mixed with sesame, ghee and honey. Each day\'s offering builds a part of a new, subtle body. First the head, then the neck and shoulders, then the heart, and so on, until on the tenth day it can feel hunger and thirst, and so be fed.');
-   const P=[]; await count(s,{ask:'Place the ten piṇḍas, one for each day.',n:10,label:'Offer a piṇḍa',onTap:k=>{ art(scene(`${wall()}${portrait(300,140,.95)}<rect x="0" y="260" width="600" height="140" fill="#C9A26E"/>${leaf(300,320,1.6,k)}${diya(470,310,1.2)}${person(140,300,.85,{shaved:true,thread:true,arms:'offer'})}`,{sky:'#4A2A22'})); if(SND.ctx) plop(); }});
-   await say(s,'During these days the family is ritually impure. They stay home, don\'t cook, and are fed by neighbours and relatives. A lamp burns, a pot of water hangs for the preta to drink, and in many homes, a priest reads the Garuda Purana aloud.');
- }},
- {name:'The Road South',short:'The road',sub:'A year-long walk to Yama\'s city',col:'#3C3A6A',run:async s=>{
-   art(scene(`<path d="M0 360 Q300 240 600 300 V400 H0Z" fill="#8C6A4A"/>${gate(500,280,.6)}${person(170,340,.6,{cloth:'#9A9AB0',skin:'#A08A9A'})}${person(110,345,.65,{cloth:K,skin:'#3E6E5A',arms:'offer'})}${person(230,335,.65,{cloth:K,skin:'#3E6E5A',arms:'offer'})}`,{sky:'#3A2A3A'}));
-   if(SND.ctx) windLoop();
-   await say(s,'With its new body complete, the Garuda Purana says, the dead person is led south by Yama\'s messengers, the Yamadūtas. The road to Yama\'s city is eighty-six thousand leagues long, and the journey takes a year.',{eye:'Garuda Purana'});
-   await say(s,'For the wicked it is a road of burning sand, thorns and storms, with no shade and no water. For the good it\'s easier, with food, shade and pleasant company. Along the way are sixteen cities, and in each one, the family\'s monthly offerings reach the traveller as food.');
-   await hold(s,{label:'Keep walking',ms:5000,ask:'Press and hold to keep walking south.',early:'The wind pushes back. Hold again.'});
-   loopOff('wind');
-   await say(s,'Many Hindus read these descriptions as moral teaching rather than geography, and many have never read them at all. But they explain why the monthly and yearly rites matter to families: they are feeding someone on a long road.');
- }},
- {name:'The River Vaitaraṇī',short:'Vaitaraṇī',sub:'Crossing with the cow',col:'#8E1E1A',run:async s=>{
-   art(scene(`${bloodRiver(260)}<path d="M0 260 Q60 230 120 260Z" fill="#6A4A30"/><path d="M480 260 Q540 230 600 260Z" fill="#6A4A30"/>`,{sky:'#2A1414'}));
-   if(SND.ctx) noiseLoop('river','lowpass',400,.1);
-   await say(s,'Before Yama\'s city runs the Vaitaraṇī, the most frightening image in the Garuda Purana: a river a hundred leagues wide, flowing with blood, pus and bone, full of creatures, roaring.',{eye:'The Vaitaraṇī'});
-   await say(s,'The wicked are swept away in it. But there is a way across.');
-   const k=await duo(s,{ask:'How will you cross?',a:{label:'Swim',svg:`${HI_DEFS}${bloodRiver(0)}`},b:{label:'Hold the cow\'s tail',svg:`${HI_DEFS}<rect width="300" height="400" fill="#F3E2C1"/>${cow(150,260,1.4)}`},right:1,wrong:'No one swims the Vaitaraṇī. The Garuda Purana offers another way.'});
-   art(scene(`${bloodRiver(260)}<g class="drift">${cow(260,300,.9)}${person(170,300,.55,{cloth:WHITE,arms:'offer'})}</g>`,{sky:'#2A1414'}));
-   await say(s,'Someone who gave a cow in life, or whose family gives one in their name, crosses holding the cow\'s tail, and the river parts for them. This is godāna, the gift of a cow, still made at deathbeds and on the eleventh or twelfth day, often to a priest.');
-   loopOff('river');
-   await say(s,'The deeper point is generosity. What you gave away in life is what carries you across.');
- }},
- {name:'The Ledger',short:'Judgment',sub:'Yama and Chitragupta',col:'#B8321C',run:async s=>{
-   art(scene(`<rect x="0" y="300" width="600" height="100" fill="#4A3020"/>${yama(420,300,.95)}${person(270,300,.7,{cloth:WHITE,skin:'#B8A090',arms:'pray'})}${person(120,300,.85,{cloth:'#F7E2B0',arms:'offer'})}<rect x="90" y="215" width="54" height="34" fill="${WHITE}" stroke="${K}" stroke-width="2"/><path d="M96 224 h40 M96 232 h40 M96 240 h30" stroke="${K}"/>`,{sky:'#5A2A22'}));
-   if(SND.ctx) pad('pad',[98,147,196],.03);
-   await say(s,'In Yama\'s city the dead stand before him. Here Yama is called Dharmarāja, the king of righteousness. He isn\'t a devil. He is the first mortal who died, and he judges fairly.',{eye:'Yama\'s court'});
-   await say(s,'Beside him sits Chitragupta, his scribe, who keeps a ledger of every deed of every person. Messengers called Śravaṇas have heard everything, and the sun, the moon, the wind and fire are witnesses.');
-   const i=await choose(s,'Chitragupta opens the book at your name. What do you hope he reads first?',['A kindness no one saw','A duty done well','Something I gave away','A promise I kept'],{});
-   await say(s,'In the Hindu picture, every action leaves a trace, and that trace becomes your next experience. Yama doesn\'t invent a sentence. He reads out what you have already written.');
- }},
- {name:'Heavens and Hells',short:'Rebirth',sub:'Every reward runs out',col:'#3C3A6A',run:async s=>{
-   art(scene(`${wheel(300,200,140)}`,{sky:INDIGO}));
-   if(SND.ctx) pad('pad',[110,165,220,277],.03);
-   await say(s,'The Garuda Purana describes heavens of pleasure and many hells, each matched to a wrong. But neither lasts forever. The Gita says: having enjoyed the vast world of heaven, they return to the mortal world when their merit is spent.',{eye:'Gita 9.21'});
-   await say(s,'After heaven or hell comes rebirth: as a human, an animal, a plant, a god, depending on karma. This is saṃsāra, the wheel of birth and death, turning without end.');
-   await release(s,{ask:'Every reward runs out. Tap each one to watch it end.',words:['A heaven of pleasure','A hell of suffering','A royal birth','A poor birth','A long life','A short life']});
-   await say(s,'So the real question isn\'t which heaven, but how to get off the wheel.');
- }},
- {name:'The Thirteenth Day',short:'Ancestors',sub:'Joining the pitṛs',col:'#4C8C3A',run:async s=>{
-   art(scene(`<rect x="0" y="260" width="600" height="140" fill="#C9A26E"/>${leaf(300,320,1.6,4)}${crow(470,250,1.4)}${crow(520,270,1.2)}${person(140,300,.85,{shaved:true,thread:true,arms:'offer'})}`,{sky:'day'}));
-   if(SND.ctx) pad('pad',[146.8,220,293.7],.03);
-   await say(s,'On the twelfth day comes the rite that ends the preta\'s homelessness: sapiṇḍīkaraṇa. One large piṇḍa for the dead person is cut into three and mixed into three others, for their father, grandfather and great-grandfather.',{eye:'Sapiṇḍīkaraṇa'});
-   await count(s,{ask:'Join the piṇḍa to the three ancestors. Tap once for each.',n:3,label:'Join the ancestor',onTap:()=>{ if(SND.ctx) bell(330,.07); }});
-   await say(s,'With that, the preta becomes a pitṛ, an ancestor. They move to the world of the fathers, and will be fed every year at the anniversary and during Pitṛ Paksha, the fortnight of the ancestors in autumn. Crows, thought to carry offerings to the dead, are given the first share.');
-   await say(s,'On the thirteenth day the family bathes, the priests and relatives are fed, and the mourning ends. The house becomes pure again. Life starts up.');
- }},
- {name:'Release',short:'Moksha',sub:'Getting off the wheel',col:'#F2A007',run:async s=>{
-   art(scene(`<circle cx="300" cy="200" r="190" fill="url(#glow)"/>${lotus(300,260,1.6)}`,{sky:INDIGO}));
-   if(SND.ctx) pad('pad',[130.8,196,261.6,329.6],.035);
-   await say(s,'Beyond heaven, hell and rebirth is mokṣa: release. The Katha Upanishad says: when all the desires that live in the heart are let go, the mortal becomes immortal, and reaches Brahman, the infinite, here and now.',{eye:'Mokṣa'});
-   await say(s,'Hindu schools picture it differently. For some, the self dissolves into the infinite like a river into the sea. For others, the soul lives forever in the presence of a loving God, Vishnu or Shiva or the Goddess. The Gita promises: those who come to me do not return to birth.');
-   await say(s,'That is the answer Nachiketa got from Death. What you really are was never born and will never die. The rest is clothing.');
- }}],
- finale:async s=>{ art(hiCover()); if(SND.ctx) chime();
-   await say(s,'That is the passage: a last thought turned to God, a body given to fire, ten days of rice building a new one, a long road, a river crossed with a cow, and a place among the ancestors on the thirteenth day.',{eye:'The end of the book'});
-   await say(s,'For the dead, the rites are a road. For the living, they are thirteen days of something to do with grief. The Thirteen-Day Walk goes through them one at a time.'); }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+/* The Thirteen Days, the full book. It opens with the boy who went to Death's house (Katha Upanishad), then it's your turn: the last thought,
+   the fire, ten days of rice, the road south, the river, Yama's court, the ancestors on the thirteenth day, and release.
+   After the Katha Upanishad, the Bhagavad Gita, the Bhagavata Purana and the Garuda Purana, as many Hindu families read them at a death. */
+const BOOK={home:'room', toast:'Learned: ', pathLabel:'Path', pathTitle:'What you have learned', detourTitle:'Wrong turns you walked',
+  pathNote:'Every wrong turn rewinds. The wheel of birth and death is patient: everyone gets another turn.',
+  guideBack:'Back to the book', voiceSample:'What you really are was never born, and will never die.'};
+
+/* ---------- pictures ---------- */
+const PG=(inner,lab,o)=>frame(sv(scene(inner,o),lab));
+const lying=(x,y,s=.9,o={})=>`<g transform="translate(${x} ${y}) rotate(-90)">${person(0,0,s,o)}</g>`;
+const moonC=(x,y,id)=>`<g id="${id}" opacity=".15" style="transition:opacity .8s"><circle cx="${x}" cy="${y}" r="16" fill="#FFF1B8"/><circle cx="${x+7}" cy="${y-4}" r="14" fill="#2B2152"/></g>`;
+const gold=(x,y)=>[[0,0],[16,4],[-14,6],[6,-10],[-6,-6],[22,-6],[-20,-4],[0,-18]].map(([a,b])=>`<ellipse cx="${x+a}" cy="${y+b}" rx="10" ry="5" fill="${TURM}" stroke="${K}" stroke-width="1.5"/>`).join('');
+const icon={
+  sword:(x,y)=>`<g transform="translate(${x} ${y}) rotate(-35)"><path d="M0 -40 L6 -30 L6 20 H-6 V-30Z" fill="#D8D8E0" stroke="${K}" stroke-width="2"/><rect x="-16" y="20" width="32" height="6" fill="${TURM}" stroke="${K}" stroke-width="1.5"/><rect x="-4" y="26" width="8" height="16" fill="#7A4A26" stroke="${K}" stroke-width="1.5"/></g>`,
+  fire:(x,y)=>`<g transform="translate(${x} ${y})">${fireTongues(0,30,60,60,5)}</g>`,
+  water:(x,y)=>`<g transform="translate(${x} ${y})"><path d="M0 -30 Q22 0 18 14 Q14 30 0 30 Q-14 30 -18 14 Q-22 0 0 -30Z" fill="#4FA3A0" stroke="${K}" stroke-width="2"/></g>`,
+  wind:(x,y)=>`<g transform="translate(${x} ${y})" fill="none" stroke="${WHITE}" stroke-width="4" stroke-linecap="round"><path d="M-30 -12 H14 q14 0 14 -12 q0 -10 -10 -10"/><path d="M-30 4 H24 q12 0 12 12 q0 10 -10 10"/><path d="M-24 18 H4"/></g>`,
+  sun:(x,y)=>`<circle cx="${x}" cy="${y}" r="22" fill="${MARI}" stroke="${K}" stroke-width="2"/>${rays(x,y,40,12,.6,TURM)}`,
+  moon:(x,y)=>`<circle cx="${x}" cy="${y}" r="20" fill="#FFF1B8" stroke="${K}" stroke-width="2"/><circle cx="${x+9}" cy="${y-5}" r="17" fill="#2B2152"/>` };
+const cloth=(x,id,c,w=60,h=80)=>`<g id="${id}"><path d="M${x-w/2} 96 H${x+w/2} L${x+w/2-6} ${96+h} H${x-w/2+6}Z" fill="${c}" stroke="${K}" stroke-width="2"/><path d="M${x-w/2} 96 H${x+w/2}" stroke="${MARI}" stroke-width="5"/><circle cx="${x-w/3}" cy="92" r="4" fill="${K}"/><circle cx="${x+w/3}" cy="92" r="4" fill="${K}"/></g>`;
+function bier(x,y){ return `<g transform="translate(${x} ${y})"><path d="M-150 -118 H150" stroke="#C9A060" stroke-width="7"/><path d="M-150 -104 H150" stroke="#C9A060" stroke-width="7"/>${shroud(0,-120,1.1)}${Array.from({length:11},(_,i)=>`<circle cx="${-96+i*19}" cy="${-150+Math.sin(i/10*Math.PI)*-6}" r="7" fill="${i%2?MARI:SAFF}" stroke="${K}" stroke-width="1.2"/>`).join('')}${[-110,-40,40,110].map(px=>person(px,0,.8,{cloth:WHITE,arms:'offer'})).join('')}</g>`; }
+const pindaBall=(x,y,id,o=1)=>`<g ${id?`id="${id}"`:''} opacity="${o}" style="transition:opacity .6s, transform 1.2s"><circle cx="${x}" cy="${y}" r="13" fill="#F3E6C8" stroke="${K}" stroke-width="2"/><circle cx="${x-4}" cy="${y-3}" r="1.6" fill="${K}"/><circle cx="${x+3}" cy="${y+2}" r="1.6" fill="${K}"/></g>`;
+const banana=(x,y,w=200)=>`<path d="M${x-w/2} ${y} Q${x} ${y-36} ${x+w/2} ${y} Q${x} ${y+24} ${x-w/2} ${y}Z" fill="${LEAF}" stroke="${K}" stroke-width="2"/><path d="M${x-w/2} ${y} Q${x} ${y-8} ${x+w/2} ${y}" stroke="#2E6A2A" stroke-width="2" fill="none"/>`;
+function bodyOutline(){ return `<g fill="none" stroke="${WHITE}" stroke-width="2.5" stroke-dasharray="7 6" opacity=".8"><circle cx="300" cy="86" r="28"/><path d="M286 114 h28 l40 30 v80 h-18 M286 114 l-40 30 v80 h18 M262 144 v120 h76 v-120 M270 264 l-6 110 M330 264 l6 110"/></g>`; }
+const PARTS=[['p0',300,86,'The head'],['p1',300,128,'The neck and shoulders'],['p2',300,166,'The heart'],['p3',268,190,'The back'],['p4',300,212,'The navel'],['p5',300,252,'The hips'],['p6',276,290,'The thighs'],['p7',324,318,'The knees'],['p8',300,366,'The feet'],['p9',372,86,'Hunger and thirst']];
+function road(){ let o=`<path d="M220 400 Q300 250 290 120 L310 120 Q320 250 380 400Z" fill="#D9B87A" stroke="${K}" stroke-width="2"/>`; for(let i=0;i<6;i++){ const y=150+i*42, x=300+Math.sin(i)*14, s=.12+i*.05; o+=gate(x+(i%2?60+i*12:-60-i*12),y+30,s); } return o; }
+
+/* ---------- sound ---------- */
+Object.assign(MOODS,{ room:()=>roomTone(), drone:()=>drone(),
+  tanpura:()=>pad('tanpura',[130.81,196,261.63,130.81*1.5*2],.032), shine:()=>pad('shine',[261.63,392,523.25],.024),
+  fire:()=>startLoop('fire',g=>{ const s=ctx.createBufferSource(); s.buffer=brownBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=320; f.Q.value=.8; s.connect(f).connect(g); s.start(); return [s]; },.2),
+  river:()=>startLoop('river',g=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=700; s.connect(f).connect(g); s.start(); return [s]; },.06) });
+function conch(){ if(!ctx) return; const t=now(); [[220,.07],[440,.03],[660,.015]].forEach(([f,v])=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(f*.94,t); o.frequency.exponentialRampToValueAtTime(f,t+.5); const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=1400; env(g,t,v,.4,2.6); o.connect(lp).connect(g).connect(master); o.start(t); o.stop(t+3.2); }); }
+function crack(){ if(!ctx) return; burst({freq:900,peak:.3,a:.002,d:.18}); thump(.3); }
+function caw(){ if(!ctx) return; [0,.28].forEach(d=>{ const t=now()+d,o=ctx.createOscillator(),g=ctx.createGain(); o.type='square'; o.frequency.setValueAtTime(700,t); o.frequency.exponentialRampToValueAtTime(420,t+.18); const f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=900; env(g,t,.06,.01,.2); o.connect(f).connect(g).connect(master); o.start(t); o.stop(t+.25); }); }
+
+/* ---------- the book ---------- */
+const SANDBG='#F3E2C1', DUSKBG='#2B2152', NIGHTBG='#170F0C', RIVERBG='#136F75';
+const S=[
+{ key:'title', label:'', bg:DUSKBG,
+  view:()=>`<div class="title-card" role="dialog" aria-label="Start"><span class="eyebrow">Many Doors · Hinduism · the full book</span><h1>The Thirteen Days</h1>
+    <p>In many Hindu homes, the thirteen days after a death are spent doing things: a fire, ten days of offerings of rice, a feast. Here is what those rites are for, as the Upanishads, the Gita and the Garuda Purana describe the soul's road: from the last thought, through the fire and the river, to the ancestors and beyond.</p>
+    <ol><li>Headphones make it better.</li><li>Tap, or press Space, to move on.</li><li>When the book asks you something, answer it yourself.</li></ol>
+    <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="begin" type="button">Begin</button><button class="btn alt" id="pickch" type="button">Choose a chapter</button></div></div>`,
+  enter(){ $('#pickch').onclick=e=>{ e.stopPropagation(); openChapters(true); }; $('#begin').onclick=e=>{ e.stopPropagation(); initAudio(); if(ctx&&ctx.state==='suspended') ctx.resume(); if('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance('')); go(1); }; },
+  beats:[{text:null,lock:true}] },
+
+{ key:'door', label:'The boy who asked Death', bg:DUSKBG,
+  view:()=>PG(`${moonC(160,70,'m0')}${moonC(300,56,'m1')}${moonC(440,70,'m2')}<rect y="330" width="600" height="70" fill="#5A3A2A"/>${gate(300,330,1.15)}${person(300,330,.55,{cloth:SAFF,shaved:true,thread:true,arms:'pray'})}`,'Dusk. A boy in saffron stands alone before a great red gate.'),
+  enter(){ mood('tanpura'); },
+  beats:[
+    {text:"The oldest Hindu story about death is about two and a half thousand years old, in the Katha Upanishad. A priest is giving away everything he owns in a great sacrifice, but only his old, dry cows that will never give milk again."},
+    {text:"His young son Nachiketa is ashamed, and keeps asking: Father, to whom will you give me? At last the father snaps. I give you to Death."},
+    {text:"So the boy goes. He walks to the house of Yama, the lord of death, and finds him away from home. Hold, and wait at the door for three nights without food.", lock:true, show(){ holdOn({label:'Wait at the door',ms:6000,wait:500,onProgress:p=>{ ['m0','m1','m2'].forEach((id,i)=>{ const m=$('#'+id); if(m) m.setAttribute('opacity',p*3>i?'1':'.15'); }); }}); }} ]},
+
+{ key:'boons', label:'The boy who asked Death', bg:DUSKBG,
+  view:()=>PG(`<rect y="330" width="600" height="70" fill="#5A3A2A"/>${yama(170,330,.95)}${person(480,330,.62,{cloth:SAFF,shaved:true,thread:true,arms:'pray'})}${gold(330,322)}<g transform="translate(400 310)"><circle r="22" fill="none" stroke="${TURM}" stroke-width="5"/><path d="M-22 0 H22 M0 -22 V22 M-16 -16 L16 16 M16 -16 L-16 16" stroke="${TURM}" stroke-width="2.5"/></g>`,'Yama, green-skinned and crowned, rides a black buffalo. He holds out gold and a chariot wheel to the boy.'),
+  enter(){ mood('tanpura'); conch(); },
+  beats:[
+    {text:"Yama comes home, mortified that a guest has gone hungry in his house. Three nights, three wishes, he says. Choose."},
+    {text:"For the first, Nachiketa asks that his father not be angry with him. For the second, to learn a fire ritual. And for the third: when a person dies, some say they still exist and some say they don't. Teach me which is true."},
+    {text:"Yama flinches. Even the gods have wondered about that, he says. Ask for something else. Take sons and grandsons who live a hundred years. Herds of cattle, horses, gold, as much land as you want. Lovely women with chariots and music.", lock:true, afterType(){ pick([{label:'Take the gold and the horses',go:'x_wealth'},{label:'“Keep them. Tell me about death.”'}]); }} ]},
+
+{ key:'shreya', label:'The good and the pleasant', bg:DUSKBG, learn:'shreya',
+  view:()=>PG(`<rect y="330" width="600" height="70" fill="#5A3A2A"/>${yama(170,330,.95)}${person(480,330,.62,{cloth:SAFF,shaved:true,thread:true,arms:'pray'})}<circle cx="480" cy="250" r="70" fill="url(#glow)" class="flick"/>`,'The boy stands firm before Yama, glowing.'),
+  enter(){ chime(); },
+  beats:[
+    {text:"All these things last only until tomorrow, Nachiketa says. Keep your horses and your songs. What use is wealth to someone who has seen you?"},
+    {text:"Yama is delighted. Two things come to every person, he says: the good and the pleasant. The wise choose the good. The fool chooses the pleasant, and keeps choosing it. You chose the good. Now I will teach you."} ]},
+
+{ key:'atman', label:'What cannot burn', bg:INDIGO,
+  view:()=>PG(`${tiny(300,240,1.5)}${icon.sword(110,120)}${icon.fire(490,100)}${icon.water(110,300)}${icon.wind(490,300)}`,'A small golden figure glows like a flame in the dark. Around it: a sword, a fire, a drop of water, a gust of wind.',{sky:INDIGO}),
+  enter(){ mood('tanpura','shine'); },
+  beats:[
+    {text:"Here is what Death taught the boy. The real you, the self, the ātman, is not born and does not die. When the body is killed, it is not killed."},
+    {text:"The Bhagavad Gita says the same thing, and names four things that can't touch it. Tap each one.", lock:true, show(){ tapAll([
+      [18,30,'The sword',"Weapons cannot cut it."],
+      [82,22,'The fire',"Fire cannot burn it."],
+      [18,75,'The water',"Water cannot wet it."],
+      [82,75,'The wind',"Wind cannot dry it. It is eternal, everywhere, unmoving, ancient (Gita 2.23–24)."] ]); }},
+    {text:"The Upanishad even gives it a size. A person no bigger than a thumb, living in the heart, like a flame without smoke."} ]},
+
+{ key:'clothes', label:'Old clothes', bg:SANDBG, learn:'atman',
+  view:()=>PG(`<path d="M40 92 Q300 108 560 92" stroke="${K}" stroke-width="3" fill="none"/>${cloth(110,'c0','#F2B8C6',44,60)}${cloth(230,'c1',TEAL,60,90)}${cloth(360,'c2',VERM,70,100)}${cloth(490,'c3',WHITE,64,110)}${tiny(300,340,.8)}`,'A washing line strung with four garments: a child’s shirt, a young man’s kurta, a red wedding shawl and an old man’s white dhoti. A small light waits below.',{sky:'day'}),
+  enter(){ mood('tanpura'); },
+  beats:[
+    {text:"Krishna tells the grieving warrior Arjuna: as a person throws off worn-out clothes and puts on new ones, the self throws off worn-out bodies and enters new ones (Gita 2.22)."},
+    {text:"Take them off the line, one by one.", lock:true, afterType(){ letGo([['A child’s shirt','c0',"The child you were. Gone, and you didn't die."],['A young man’s kurta','c1',"The young man. Gone too."],['A wedding shawl','c2',"The bride, the groom, the parent. All worn out, all set down."],['An old man’s dhoti','c3',"And this old body. It's only the last one on the line."]]); }},
+    {text:"For the born, death is certain, Krishna says, and for the dead, birth is certain. So don't grieve too long over what can't be avoided. You've changed clothes before."} ]},
+
+/* ===== Volume 1: the last thought ===== */
+{ key:'room', label:'The last thought', bg:'#6A3A2A',
+  view:()=>PG(`${wall()}<rect y="262" width="600" height="138" fill="#B07A4A"/><rect x="170" y="300" width="300" height="20" rx="4" fill="${WHITE}" stroke="${K}" stroke-width="2"/>${lying(380,306,.85,{cloth:WHITE})}${person(500,300,.7,{sari:true,cloth:MARI,arms:'pray'})}${person(140,300,.7,{shaved:true,thread:true,arms:'pray'})}${diya(250,360,1.1)}${tulsi(560,370,.7)}${pot(430,370,.8)}${portrait(300,120,.55)}`,'A room with a garlanded portrait on the wall. A dying person lies on a white mat on the floor. Family kneel on either side. A clay lamp, a pot of Ganga water and a tulsi plant.',{sky:'#6A3A2A'}),
+  enter(){ mood('room','tanpura'); clockOn(); heartbeat(64); },
+  beats:[
+    {text:"Now it's your turn. You're very ill, and the family has moved you off the bed onto a mat on the floor, closer to the earth, your head to the north."},
+    {text:"Fear not. Look around the room. Tap the four things.", lock:true, show(){ tapAll([
+      [71.5,85,'The pot',"Water from the Ganga, the holy river, kept in a sealed pot for years for exactly this. A few drops on your lips."],
+      [93,82,'The tulsi',"Tulsi, holy basil, sacred to Vishnu. A leaf is placed in your mouth."],
+      [41.5,86,'The lamp',"A clay lamp, a diya. It will burn by your head after you go, to light the way."],
+      [83,50,'Your daughter',"Your daughter, chanting a name of God softly next to your ear, again and again, so it's the last sound you hear."] ]); }},
+    {text:"Why the name? Because of what the Gita says next."} ]},
+
+{ key:'thought', label:'The last thought', bg:'#4A2A1E',
+  view:()=>PG(`${wall()}<rect y="262" width="600" height="138" fill="#8A5A3A"/>${lying(380,306,.85,{cloth:WHITE})}<g transform="translate(260 150)"><ellipse rx="130" ry="70" fill="${WHITE}" stroke="${K}" stroke-width="2.5" stroke-dasharray="7 5"/><circle cx="-60" cy="96" r="10" fill="${WHITE}" stroke="${K}" stroke-width="2"/><circle cx="-36" cy="78" r="14" fill="${WHITE}" stroke="${K}" stroke-width="2"/><path d="M-80 20 V-14 L-60 -32 L-40 -14 V20Z" fill="${VERM}" stroke="${K}" stroke-width="2"/>${gold(10,10)}<text x="70" y="14" font-size="44" text-anchor="middle" fill="${SAFF}" font-family="serif">ॐ</text></g>`,'The dying person’s thought bubble: a house, a pile of gold, and the sacred syllable Om.',{sky:'#4A2A1E'}),
+  enter(){ mood('room','drone'); heartbeat(58); },
+  beats:[
+    {text:"Whatever a person remembers at the moment of leaving the body, Krishna says, that is what they become. Whoever remembers me at the end comes to me (Gita 8.5–6)."},
+    {text:"So the last thought matters. And yours keeps sliding to the house. Who will get it? Did you lock the back door?"},
+    {text:"Where do you put your mind?", lock:true, afterType(){ pick([{label:'On the house, and who gets it',go:'x_deer'},{label:'On God’s name'}]); }} ]},
+
+{ key:'ajamila', label:'The last thought', bg:'#F2A007', learn:'lastthought',
+  view:()=>PG(`<rect y="300" width="600" height="100" fill="#B07A4A"/>${lying(330,316,.75,{cloth:'#8A7A66'})}${person(120,300,.75,{cloth:'#3C3A3A',skin:'#3E4E5A'})}${person(190,300,.75,{cloth:'#3C3A3A',skin:'#3E4E5A'})}${person(450,300,.8,{cloth:TURM,skin:'#4F7AB8',arms:'offer'})}${person(520,300,.8,{cloth:TURM,skin:'#4F7AB8',arms:'offer'})}<circle cx="485" cy="190" r="80" fill="url(#glow)" class="flick"/>`,'A dying man. On the left, two dark messengers of Death. On the right, two blue-skinned messengers of Vishnu in yellow, stopping them.',{sky:'day'}),
+  enter(){ mood('tanpura','shine'); chime(); heartbeat(52); },
+  beats:[
+    {text:"Good. There's a famous story about this in the Bhagavata Purana. Ajamila was a man who lived badly for most of his life. But he had named his youngest son Narayana, which is a name of Vishnu."},
+    {text:"Dying, terrified, he called out for his little boy: Narayana! And Vishnu's messengers came running, and stopped Death's messengers at the door. He'd said the name. It was enough."},
+    {text:"That's why your daughter is chanting in your ear. Families try to fill the last moments with the sacred, so that whatever your mind lands on, it lands on God."} ]},
+
+{ key:'leaving', label:'Leaving the body', bg:INDIGO,
+  view:()=>PG(`<g opacity=".55">${person(300,380,2.3,{cloth:'#3C3A6A',skin:'#5A4A7A',hair:'#2A2450'})}</g><path d="M300 228 V114" stroke="${MARI}" stroke-width="3" stroke-dasharray="4 6"/><circle cx="300" cy="112" r="20" fill="none" stroke="${TURM}" stroke-width="2"/><g id="sb" style="transition:transform .2s">${tiny(0,0,.55)}</g>`,'A large faint body. A dotted golden line runs from the heart up to the crown of the head. A tiny bright figure sits at the heart.',{sky:INDIGO}),
+  enter(){ mood('shine'); heartbeat(44); const b=$('#sb'); b&&b.setAttribute('transform','translate(300 240)'); },
+  guide:{title:'Kashi',text:"In the holy city of Varanasi, also called Kashi, many believe that anyone who dies there is freed at once: Shiva himself whispers the mantra of crossing into their ear. People come there to die. Some hospices, like Mukti Bhawan, the House of Liberation, exist only for them, and ask guests to leave if they haven't died within about two weeks."},
+  beats:[
+    {text:"At death, the body made of food is left behind. What travels on is the subtle body: your mind, your senses, your breath, and the karma of everything you've done, carried like seeds."},
+    {text:"The heart has a hundred and one channels, the Katha Upanishad says. One of them rises to the crown of the head. Leave by that one, and you go up to immortality. Leave by the others, and you go every other way, back into the world."},
+    {text:"Hold, and rise to the crown.", lock:true, show(){ heartStop(); clockOff(); holdOn({label:'Rise to the crown',ms:6000,wait:900,onProgress:p=>{ const b=$('#sb'); if(b) b.setAttribute('transform',`translate(300 ${240-128*p})`); },onDone:()=>{ breath(1.5,5); bell(523.25,.08,5); }}); }} ]},
+
+{ key:'black', label:'', bg:'#000000', void:true,
+  view:()=>'', enter(){ silenceAll(1); }, beats:[{text:null, lock:true, auto:6000}] },
+
+/* ===== Volume 2: the fire ===== */
+{ key:'v2', label:'Volume 2', bg:'var(--teal)',
+  view:()=>card('Volume 2','The Fire',"Cremation usually happens within a day, often on the bank of a river. It is called antyeṣṭi: the last sacrifice. The body is the offering."),
+  enter(){ mood('tanpura'); conch(); }, beats:[{text:null}] },
+
+{ key:'bier', label:'The last sacrifice', bg:DUSKBG,
+  view:()=>PG(`${temples(250)}${steps(250,40)}<rect y="290" width="600" height="110" fill="#D9B98A"/>${bier(300,380)}`,'At dusk by the temples, four men carry a white-shrouded body on a bamboo bier draped in marigolds.'),
+  enter(){ mood('tanpura'); },
+  beats:[
+    {text:"They wash you, dress you in white, and garland you with marigolds. A married woman would wear red. Then four men lift you onto their shoulders on a bamboo bier and walk you to the river."},
+    {text:"They chant as they walk. Chant with them, three times.", lock:true, afterType(){ setTimeout(()=>askAll(["Rāma nāma satya hai.","The name of Rama is truth.","Rāma nāma satya hai. Everything else passes."],'Rāma nāma satya hai'),600); }} ]},
+
+{ key:'pyre', label:'The last sacrifice', bg:DUSKBG,
+  view:()=>PG(`${temples(250)}${steps(250,40)}${river(290)}<g id="py">${pyre(300,280,.75)}</g>${person(470,290,.75,{shaved:true,thread:true,arms:'offer'})}${pot(470,215,.7)}`,'On the ghat, a body lies on a pyre of logs. The chief mourner, head shaved, holds a clay pot of water.'),
+  enter(){ mood('tanpura','river'); },
+  guide:{title:'Who lights the fire',text:"Traditionally the chief mourner is the eldest son, and in many places only men go to the cremation ground. That is changing: daughters and wives now light pyres too. Not everyone is cremated. Young children and holy renunciants, sannyasis, are often buried or given to a river, and some communities, such as the Lingayats, bury their dead."},
+  beats:[
+    {text:"Your eldest son has shaved his head. He carries a clay pot of water on his shoulder, and walks around your pyre three times. With each round, a hole is knocked in the pot, and water runs out behind him."},
+    {text:"Tap to walk each round.", lock:true, show(){ tapAll([
+      [24,62,'The first round',"The first round. Water runs out of the pot like a life running out.",()=>burst({type:'lowpass',freq:800,peak:.12,d:.6})],
+      [50,46,'The second round',"The second.",()=>burst({type:'lowpass',freq:800,peak:.12,d:.6})],
+      [76,62,'The third round',"The third. Then he throws the pot down behind him and walks on without looking back. The bond is broken.",crack] ]); }},
+    {text:"Now the fire. He lights it at your head. Hold to light the pyre.", lock:true, show(){ holdOn({label:'Light the fire',ms:5000,wait:700,onDone:()=>{ const p=$('#py'); if(p) p.innerHTML=pyre(300,280,.75,{lit:true}); mood('fire','tanpura'); crackle(2500); }}); }},
+    {text:"Agni, the fire, was always the messenger in the Vedic sacrifice, carrying offerings up to the gods. Now it carries you."} ]},
+
+{ key:'mourn', label:'The last sacrifice', bg:DUSKBG,
+  view:()=>PG(`${temples(250)}${steps(250,40)}${river(290)}${pyre(300,280,.75,{lit:true})}${person(110,290,.7,{sari:true,cloth:WHITE,arms:'pray'})}${person(470,290,.75,{shaved:true,thread:true,arms:'pray'})}`,'The pyre burns. A woman in white and the chief mourner stand by.'),
+  enter(){ mood('fire','tanpura'); },
+  beats:[
+    {text:"Your wife can't stop crying. Nobody would blame her. But what should the family do now?", lock:true, afterType(){ pick([{label:'Let the fire do its work',},{label:'Weep, and keep weeping',go:'x_grief'}]); }},
+    {text:"So they stand and watch, and pray. When the fire has done most of its work, your son taps your skull with a bamboo pole. It's called kapāla kriyā, and it frees what's left of you."},
+    {text:"At Manikarnika Ghat in Varanasi, pyres have burned like this without stopping, day and night, for centuries."} ]},
+
+{ key:'ashes', label:'The ashes', bg:RIVERBG, learn:'fire',
+  view:()=>PG(`${temples(200)}${river(230)}${[110,200,290,380,470].map((x,i)=>diya(x,280+(i%2)*30,.9)).join('')}`,'Little clay lamps float on the dark river at dusk.',{sky:'dusk'}),
+  enter(){ mood('river','tanpura'); },
+  beats:[
+    {text:"On the third or fourth day the bones and ashes are gathered and given to a river, the Ganga if the family can reach it. Lamps go with them, floating downstream."},
+    {text:"The body was the last offering. It's been given. Nothing of it is wasted, and none of it was you."} ]},
+
+{ key:'preta', label:'A body of rice', bg:NIGHTBG,
+  view:()=>PG(`${bodyOutline()}${PARTS.map(([id,x,y])=>`<g id="${id}" opacity=".15" style="transition:opacity .8s"><circle cx="${x}" cy="${y}" r="16" fill="url(#glow)"/>${pindaBall(x,y)}</g>`).join('')}${banana(110,360,160)}${pindaBall(80,350)}${pindaBall(110,346)}${pindaBall(140,350)}`,'In the dark, the dotted outline of a body. On a banana leaf, balls of cooked rice.',{sky:NIGHTBG}),
+  enter(){ mood('drone','tanpura'); },
+  beats:[
+    {text:"After the fire you have no body at all. You're a preta: a departed one, a ghost. The Garuda Purana says the preta is hungry, thirsty and lost, about the size of a thumb, hovering near home."},
+    {text:"So for ten days your family offer you piṇḍas: balls of cooked rice mixed with sesame, ghee and honey. Each one builds a part of a new, subtle body for the journey. Tap to offer each day's piṇḍa.", lock:true, show(){ tapAll(PARTS.map(([id,x,y,name],i)=>[x/6,y/4,`Day ${i+1}`,`Day ${i+1}: ${name.toLowerCase()}.`+(i===9?' Now you can feel hunger and thirst, and so you can be fed.':''),()=>{ const e=$('#'+id); if(e) e.setAttribute('opacity','1'); }])); }},
+    {text:"During those days the family are ritually impure. They stay home, don't cook elaborate food, don't go to temples or weddings. Neighbours feed them. Grief is given a shape, and something to do every day."} ]},
+
+{ key:'fed', label:'A body of rice', bg:NIGHTBG, learn:'pinda',
+  view:()=>PG(`${bodyOutline()}${PARTS.map(([id,x,y])=>`<circle cx="${x}" cy="${y}" r="16" fill="url(#glow)"/>`).join('')}${tiny(300,240,1.1)}`,'The outline of the body glows, complete.',{sky:NIGHTBG}),
+  enter(){ chime(); mood('shine'); },
+  beats:[{text:"On the tenth day the new body is complete, about the size of a forearm, the Garuda Purana says. You're ready to travel. The living have built it for you, one handful of rice at a time."}] },
+
+/* ===== Volume 3: the road south ===== */
+{ key:'v3', label:'Volume 3', bg:'var(--teal)',
+  view:()=>card('Volume 3','The Road South',"Yama's city lies far to the south. The Garuda Purana says the walk takes a year, which is why families keep making offerings every month. Many Hindus read this road as a parable. Here it is as the Purana tells it."),
+  enter(){ mood('drone'); conch(); }, beats:[{text:null}] },
+
+{ key:'road', label:'The road south', bg:'#B2475A',
+  view:()=>PG(`${road()}${person(250,380,.55,{cloth:'#3C3A3A',skin:'#3E4E5A'})}${person(350,380,.55,{cloth:'#3C3A3A',skin:'#3E4E5A'})}${tiny(300,360,.5)}`,'A long road winds south through desert, past small gates. Two dark messengers walk a small glowing figure along it.'),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"Yama's messengers come for you, and you walk south. The road passes sixteen cities. At each one, the offerings your family are making that month reach you, and you eat."},
+    {text:"For those who did wrong it's a road of burning sand and thorns, with no shade and no water. For those who were generous, the Purana says, there is shade, and water, and food. What you gave away in life is waiting for you on the road."} ]},
+
+{ key:'vaitarani', label:'The river Vaitaraṇī', bg:'#5A1410',
+  view:()=>PG(`${bloodRiver(250)}<rect y="216" width="600" height="40" fill="#3C3A6A"/><g id="cw" style="transition:transform .2s">${cow(0,0,.85)}${tiny(-70,-20,.45)}<path d="M-50 -24 Q-60 -30 -64 -20" stroke="${K}" stroke-width="2" fill="none"/></g>`,'A river of blood and pus. A white cow stands at the edge, a small glowing figure holding its tail.'),
+  enter(){ mood('river','drone'); const c=$('#cw'); c&&c.setAttribute('transform','translate(110 290)'); },
+  guide:{title:'Giving a cow',text:"Giving a cow, godāna, is one of the oldest gifts in Hindu practice. Some families still give a cow, or money for one, to a priest in the dead person's name, so that they have a cow to hold onto at the river. The deeper point is generosity: what you gave away is what carries you over."},
+  beats:[
+    {text:"Before Yama's city runs the Vaitaraṇī, a river of blood, pus and bones, hot and roaring. The wicked are swept away in it. But there is a way across."},
+    {text:"Someone who gave a cow in life, or whose family gives one in their name, crosses holding the cow's tail. Hold on, and don't let go until you reach the far bank.", lock:true, show(){ let last=0; holdOn({label:'Hold the cow’s tail',ms:7000,wait:400,onProgress:p=>{
+        if(p===0&&last>.06&&last<1&&S[si].key==='vaitarani'){ last=0; setTimeout(()=>detour('x_river','vaitarani',1),350); return; } last=p; const c=$('#cw'); if(c) c.setAttribute('transform',`translate(${110+380*p} ${290+Math.sin(p*Math.PI*6)*4})`); }}); }},
+    {text:"You're across."} ]},
+
+{ key:'dana', label:'The river Vaitaraṇī', bg:'#F3E2C1', learn:'dana',
+  view:()=>PG(`${steps(250,60)}<rect y="310" width="600" height="90" fill="#D9B98A"/>${cow(300,320,1)}${tiny(200,300,.6)}`,'On the far bank, the cow and the small figure rest.',{sky:'day'}),
+  enter(){ mood('tanpura'); chime(); },
+  beats:[{text:"An old cow given to a priest, or a little money in your name. It looks like nothing. But generosity is the one thing in this story strong enough to swim a river of blood."}] },
+
+{ key:'court', label:'The court of Yama', bg:'#3C3A6A',
+  view:()=>PG(`<rect width="600" height="400" fill="#3C3A6A"/><rect y="320" width="600" height="80" fill="#2A2450"/>${yama(400,320,1)}${person(170,320,.8,{cloth:WHITE,arms:'offer'})}<g transform="translate(170 250)"><rect x="-34" y="-8" width="68" height="44" fill="${WHITE}" stroke="${K}" stroke-width="2"/><path d="M-28 4 h56 M-28 12 h56 M-28 20 h40 M0 -8 V36" stroke="${K}" stroke-width="1.2"/></g>${icon.sun(80,70)}${icon.moon(220,60)}${icon.wind(380,70)}${icon.fire(520,50)}`,'Yama on his buffalo in his hall. Beside him the scribe Chitragupta with an open ledger. Above: the sun, the moon, the wind and fire.',{sky:'#3C3A6A'}),
+  enter(){ mood('drone','tanpura'); conch(); },
+  beats:[
+    {text:"In his city, Yama sits in judgment. Here he's called Dharmarāja, the king of what is right. Beside him sits Chitragupta, his scribe, who keeps a ledger of every deed of every person who ever lived."},
+    {text:"How does he know? There were witnesses, the Purana says, watching all along. Tap each one.", lock:true, show(){ tapAll([
+      [13,17,'The sun',"The sun, who saw everything you did by day."],
+      [37,15,'The moon',"The moon, who saw everything you did by night."],
+      [63,17,'The wind',"The wind, who heard everything you said."],
+      [87,12,'The fire',"And fire, who was there at every meal and every prayer."] ]); }},
+    {text:"Chitragupta reads. Yama doesn't really sentence you. He reads out what you've already written. Every action leaves a trace, and the trace becomes what happens to you next. That's karma."} ]},
+
+{ key:'wheel', label:'Heavens and hells', bg:INDIGO, learn:'karma',
+  view:()=>PG(`${wheel(300,210,150)}<text x="300" y="44" text-anchor="middle" font-size="22" fill="${TURM}" font-family="'Yatra One',serif">heaven</text><text x="300" y="392" text-anchor="middle" font-size="22" fill="${VERM}" font-family="'Yatra One',serif">hell</text>${tiny(300,90,.45)}`,'A great golden wheel turning slowly, heaven written at the top and hell at the bottom.',{sky:INDIGO}),
+  enter(){ mood('tanpura','shine'); },
+  beats:[
+    {text:"The Purana describes heavens of pleasure and many hells, each matched to a wrong. You have earned a heaven. It's beautiful there. The music is better."},
+    {text:"But here's the catch. Neither heaven nor hell lasts. Having enjoyed the vast world of heaven, the Gita says, they return to the mortal world when their merit is spent (9.21). What do you want?", lock:true, afterType(){ pick([{label:'Stay in heaven for ever',go:'x_heaven'},{label:'Get off the wheel'}]); }},
+    {text:"Good question to ask. After every heaven and every hell comes another birth: as a person, an animal, a plant, a god, depending on karma. This is saṃsāra, the wheel, turning without end. The real goal was never heaven. It was getting off."} ]},
+
+{ key:'sapinda', label:'The twelfth day', bg:SANDBG,
+  view:()=>PG(`${banana(300,300,360)}${pindaBall(220,292,'pA')}${pindaBall(300,286,'pB')}${pindaBall(380,292,'pC')}<g id="pY" style="transition:transform 1.4s">${pindaBall(300,360)}</g><text x="220" y="262" text-anchor="middle" font-size="14" fill="${K}">grandfather</text><text x="300" y="256" text-anchor="middle" font-size="14" fill="${K}">father</text><text x="380" y="262" text-anchor="middle" font-size="14" fill="${K}">great-grandfather</text>${crow(500,140,1.4)}${crow(90,170,1.2)}`,'A banana leaf with three balls of rice for the ancestors, and one more below it. Crows wait nearby.',{sky:'day'}),
+  enter(){ mood('tanpura'); },
+  beats:[
+    {text:"Back home, on the twelfth day, comes the rite that ends your time as a ghost. It's called sapiṇḍīkaraṇa. Your piṇḍa is cut into three and merged with the piṇḍas of three ancestors: your father, your grandfather, your great-grandfather."},
+    {text:"Hold to join them.", lock:true, show(){ holdOn({label:'Join the ancestors',ms:4000,wait:800,onProgress:p=>{ const y=$('#pY'); if(y) y.setAttribute('transform',`translate(0 ${-70*p})`); },onDone:()=>{ ['pA','pB','pC'].forEach(id=>{ const e=$('#'+id); if(e) e.setAttribute('opacity','.6'); }); bell(392,.08,4); }}); }},
+    {text:"With that you're no longer a preta. You're a pitṛ, an ancestor, in the world of the fathers. Every year on the day you died, and in the autumn fortnight of Pitṛ Paksha, your family will feed you again."},
+    {text:"And the crows get the first share. They're thought to carry offerings to the dead. Tap a crow.", lock:true, show(){ tapAll([[83,33,'A crow',"If a crow takes the food quickly, people say the ancestor is content.",caw],[15,40,'Another crow',"This one too. You've been fed.",caw]]); }} ]},
+
+{ key:'thirteenth', label:'The thirteenth day', bg:SANDBG,
+  view:()=>PG(`${[90,200,310,420,530].map((x,i)=>`${banana(x,320,110)}<circle cx="${x-20}" cy="312" r="10" fill="${WHITE}" stroke="${K}" stroke-width="1.5"/><circle cx="${x}" cy="310" r="8" fill="${TURM}" stroke="${K}" stroke-width="1.5"/><circle cx="${x+20}" cy="312" r="9" fill="${SAFF}" stroke="${K}" stroke-width="1.5"/>`).join('')}${portrait(300,150,.8)}${diya(180,240,1)}${diya(420,240,1)}`,'A garlanded portrait between two lamps. Below, a row of banana leaves laid with food for a feast.',{sky:'day'}),
+  enter(){ mood('tanpura'); chime(); },
+  beats:[
+    {text:"On the thirteenth day the family bathes. Priests and relatives are fed. Your photograph goes up on the wall with a garland. The mourning ends, and the house is pure again."},
+    {text:"Life starts up. That's what the thirteen days were for, for the living: not forgetting, but being carried, step by step, back into the world."} ]},
+
+{ key:'moksha', label:'Release', bg:RIVERBG,
+  view:()=>PG(`<rect width="600" height="200" fill="url(#dusk)"/><path d="M0 200 H600 V400 H0Z" fill="${TEAL}"/><path d="M-20 400 Q160 300 300 250 Q440 210 620 210" stroke="#4FA3A0" stroke-width="40" fill="none" opacity=".7"/><circle cx="520" cy="200" r="120" fill="url(#glow)"/>${lotus(140,330,1.1)}`,'A river widening into a glowing sea at sunset. A lotus floats in the foreground.',{sky:RIVERBG}),
+  enter(){ mood('shine','river'); },
+  guide:{title:'One or two?',text:"Hindu schools picture release differently. For Advaita Vedanta, the self was always Brahman, the infinite, and release is simply waking up to that: the river was always water. For devotional schools, Vaishnava, Shaiva and Shakta, the soul lives for ever in the loving presence of God, close but still itself, the way a drop of honey can taste honey."},
+  beats:[
+    {text:"Beyond heaven, hell and rebirth is mokṣa: release. When all the desires that live in the heart are let go, the Upanishad says, the mortal becomes immortal, and reaches Brahman, the infinite, here and now (Katha 6.14)."},
+    {text:"As rivers flowing into the sea lose their names and forms, the wise, freed from name and form, reach the divine (Mundaka 3.2.8). Be still now. Let go of wanting anything. Don't tap.", lock:true, cls:'quiet', afterType(){ stillTest({ms:12000,pass:'released',fail:'mokFail'}); }} ]},
+
+{ key:'mokFail', label:'Release', bg:RIVERBG,
+  view:()=>PG(`<rect width="600" height="200" fill="url(#dusk)"/><path d="M0 200 H600 V400 H0Z" fill="${TEAL}"/>${lotus(140,330,1.1)}`,'The river again.',{sky:RIVERBG}),
+  beats:[{text:"A desire, a twitch, a thought. That's the whole wheel in one small movement. Sages take lifetimes over this. You can take another minute.", lock:true, afterType(){ tryAgain('Be still again','moksha',1); }}] },
+
+{ key:'released', label:'Release', bg:'#FFF1B8', learn:'moksha',
+  view:()=>PG(`<rect width="600" height="400" fill="#FFF1B8"/><circle cx="300" cy="200" r="280" fill="url(#glow)"/><circle cx="300" cy="200" r="140" fill="url(#glow)"/>`,'Only golden light.',{sky:'#FFF1B8',frame:false}),
+  enter(){ chime(); setTimeout(()=>bell(523.25,.07,6),1400); },
+  beats:[{text:"Those who come to me, Krishna says, do not return to birth (Gita 8.16). The wheel stops. The river is the sea."}] },
+
+{ key:'lastpage', label:'The last page', bg:DUSKBG,
+  view:()=>PG(`${moonC(300,70,'mL').replace('opacity=".15"','opacity="1"')}<rect y="330" width="600" height="70" fill="#5A3A2A"/>${gate(300,330,1.15)}${person(300,330,.55,{cloth:SAFF,shaved:true,thread:true,arms:'pray'})}`,'The boy at Death’s gate again, under the moon.'),
+  enter(){ mood('tanpura'); },
+  beats:[
+    {text:"That's the road: a last thought turned to God, a body given to fire, ten days of rice building a new one, a long walk south, a river crossed holding a cow, the ledger, and a place among the ancestors on the thirteenth day."},
+    {text:"And it's the answer Nachiketa got from Death, all those centuries ago, for waiting three nights at his door. What you really are was never born, and will never die. The rest is clothing."} ]},
+
+{ key:'end', label:'The end', bg:'var(--teal)',
+  view:()=>`<div class="title-card" style="cursor:default"><span class="eyebrow">The end of the book</span><h1>Go in peace</h1>
+    <p>That was the whole road: the boy at Death's door, the last thought, the fire, the ten days, the road south, the river, the court, the ancestors and release.</p><p id="endsum" style="font-weight:700"></p>
+    <p class="draft">Sources: Katha and Mundaka Upanishads; Bhagavad Gita 2, 8 and 9; Bhagavata Purana (Ajamila); Garuda Purana, Preta Khanda. Practice varies a great deal by region, caste and community.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="again" type="button">Read it again</button><button class="btn alt" id="pathend" type="button">See your path</button><button class="btn alt" id="chend" type="button">Choose a chapter</button></div>
+    <div class="endlinks"><a href="../walk/">Walk the Thirteen Days</a><a href="../../index.html#doors">Back to Many Doors</a></div></div>`,
+  enter(){ mood('tanpura'); $('#again').onclick=e=>{ e.stopPropagation(); go(idx('room')); }; $('#chend').onclick=e=>{ e.stopPropagation(); openChapters(true); }; $('#pathend').onclick=e=>{ e.stopPropagation(); openPath(); };
+    $('#endsum').textContent=`You learned ${journey.learned.size} of ${LESSONS.length} lessons and walked ${journey.visited.size} of ${DETOURS.length} wrong turns.`+(journey.learned.size===LESSONS.length?' You know the way.':' Read again to learn the rest.'); },
+  beats:[{text:null,lock:true}] },
+
+/* ===== wrong turns ===== */
+{ key:'x_wealth', label:'A wrong turn', bg:'#4A3A20',
+  view:()=>PG(`<rect y="330" width="600" height="70" fill="#5A3A2A"/>${gold(200,320)}${gold(300,326)}${gold(400,320)}${gold(250,300)}${gold(350,300)}${person(300,300,.62,{cloth:SAFF,shaved:true,thread:true,arms:'offer'})}`,'The boy sits on a heap of gold. The gate is gone.'),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"You take the gold, the horses and the dancers. Yama smiles, and is gone, and the door closes. You'll never know what he would have said."},
+    {text:"Yama has a name for this: the fool chooses the pleasant. It isn't wicked. It's just very small. Every one of those horses will die. Rewind, and ask the real question.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_deer', label:'A wrong turn', bg:'#2E4A2A',
+  view:()=>PG(`<rect y="300" width="600" height="100" fill="#4C8C3A"/>${[100,500].map(x=>`<g transform="translate(${x} 300)"><path d="M-4 0 V-90" stroke="#7A4A26" stroke-width="10"/><circle cy="-110" r="50" fill="#2E6A2A"/></g>`).join('')}<g transform="translate(300 300)"><path d="M-40 -40 Q-50 -66 -20 -68 L30 -66 Q46 -60 46 -44 L48 0 H40 L38 -24 H-30 L-34 0 H-42Z" fill="#C98A4A" stroke="${K}" stroke-width="2"/><circle cx="48" cy="-80" r="14" fill="#C98A4A" stroke="${K}" stroke-width="2"/><path d="M44 -92 l-8 -22 M52 -92 l8 -22 M40 -104 l-10 -4 M56 -104 l10 -4" stroke="${K}" stroke-width="2.5"/></g>`,'A forest. A young deer stands where a person should be.',{sky:'#9FC6A0'}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"There's a story for this too, in the Bhagavata Purana. King Bharata gave up his kingdom to live as a hermit in the forest. But he rescued an orphaned fawn, and grew so attached to it that he thought of nothing else."},
+    {text:"He died thinking about his deer. And he was born a deer. The house you're worrying about will be fine. Rewind, and put your mind somewhere bigger.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_grief', label:'A wrong turn', bg:'#3A3040',
+  view:()=>PG(`${temples(250)}${steps(250,40)}${river(290)}${pyre(300,280,.75,{lit:true})}${[150,200,400,450].map(x=>person(x,290,.6,{sari:true,cloth:WHITE,arms:'pray'})).join('')}${Array.from({length:12},(_,i)=>`<path d="M${120+i*30} ${170+(i%3)*12} q4 10 0 16" stroke="#4FA3A0" stroke-width="3" fill="none"/>`).join('')}`,'Mourners weep around the pyre, their tears falling like rain.'),
+  enter(){ mood('fire','drone'); },
+  beats:[
+    {text:"They weep, and weep, for days. Nobody does the rites. Nobody cooks the rice."},
+    {text:"The Garuda Purana says something startling about this: the dead have to drink the tears their relatives shed, so endless weeping hurts them. Most families take it gently: cry, yes, but then do the next thing. The rites are how you love the dead now.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_river', label:'A wrong turn', bg:'#5A1410',
+  view:()=>PG(`${bloodRiver(150)}${tiny(300,260,.5)}`,'The small figure is swept away in a river of blood.',{sky:'#3C1010'}),
+  enter(){ mood('river','drone'); burst({type:'lowpass',freq:400,peak:.3,a:.05,d:1.2}); },
+  beats:[
+    {text:"You let go of the tail, and the Vaitaraṇī takes you. It's hot, and loud, and it doesn't care who you were."},
+    {text:"The Purana is trying to frighten you into one thing: generosity, while you can still give. Rewind, and hold on to what you gave.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_heaven', label:'A wrong turn', bg:'#F7D58C',
+  view:()=>PG(`<circle cx="300" cy="120" r="140" fill="url(#glow)"/>${lotus(300,180,1.4)}<g class="fadein">${tiny(300,330,.5)}</g><path d="M300 200 V310" stroke="${K}" stroke-width="2" stroke-dasharray="4 6"/>`,'A golden heaven with a great lotus. Below it, a small figure falls back toward earth.',{sky:'day'}),
+  enter(){ mood('shine'); setTimeout(()=>{ if(ctx) rewindSnd(); },2500); },
+  beats:[
+    {text:"Heaven is wonderful. For a while. Then one day your merit runs out, like money in a bank account, and you're born again on earth, a baby, starting over."},
+    {text:"That's the trouble with every reward: it ends. The Gita's whole point is that you were never meant to want a nicer room on the wheel. Rewind, and ask to get off.", lock:true, afterType(){ rewindButton(); }} ]}
+];
+
+const CHAPTERS=[
+  ['The boy who asked Death',[['At Death’s door','door'],['Three wishes','boons'],['What cannot burn','atman'],['Old clothes','clothes']]],
+  ['Volume 1 · The Last Thought',[['The room','room'],['The last thought','thought'],['Leaving the body','leaving']]],
+  ['Volume 2 · The Fire',[['The bier','bier'],['The pyre','pyre'],['The ashes','ashes'],['A body of rice','preta']]],
+  ['Volume 3 · The Road South',[['The road','road'],['The river Vaitaraṇī','vaitarani'],['The court of Yama','court'],['Heavens and hells','wheel'],['The twelfth day','sapinda'],['The thirteenth day','thirteenth'],['Release','moksha']]] ];
+const LESSONS=[
+  ['shreya','The good, not the pleasant','The wise choose what is good over what is pleasant.','Three wishes'],
+  ['atman','What cannot burn','The self was never born and will never die. Bodies are clothing.','Old clothes'],
+  ['lastthought','The last thought','What you remember at the end is what you become. Fill the end with God.','The last thought'],
+  ['fire','The last offering','The body is given to the fire. None of it was you.','The ashes'],
+  ['pinda','Feeding the dead','The living build the traveller a body, a handful of rice a day.','A body of rice'],
+  ['dana','Generosity','What you gave away is what carries you across.','The river Vaitaraṇī'],
+  ['karma','Karma','Every action leaves a trace, and the trace becomes your next life.','The court of Yama'],
+  ['moksha','Release','Heaven ends too. The goal is to get off the wheel.','Release'] ];
+const IC=(d)=>`<path d="${d}" fill="none" stroke="#FBF4E6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+const DETOURS=[
+  ['x_wealth','Taking the gold',IC('M10 26 h20 M12 22 h16 M14 18 h12')],
+  ['x_deer','Thinking of the deer',IC('M14 14 l-4 -6 M26 14 l4 -6 M14 14 q6 4 12 0 v8 q-6 6 -12 0z')],
+  ['x_grief','Endless weeping',IC('M14 12 q2 6 0 8 M24 14 q2 6 0 8 M19 24 q2 6 0 8')],
+  ['x_river','Letting go in the river',IC('M8 18 q6 -4 12 0 t12 0 M8 26 q6 -4 12 0 t12 0')],
+  ['x_heaven','Staying in heaven',IC('M20 8 a12 12 0 1 0 .1 0 M20 14 v12 M15 21 l5 5 l5 -5')] ];
+updatePathBadge();
+go(0);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
