@@ -1297,7 +1297,7 @@ addEventListener('message', e => {
 });
 function snippets(now) {
   const inRoom = zoomTo < 1 && fullP < .01;
-  if (!vId || !vDur) return;
+  if (!vId || !vDur || PHONE) return;   // on phones each jump means waiting on the network again, so the film just plays
   if (!inRoom) { if (snipping) { snipping = false; vSend({ method: 'setCurrentTime', value: 0 }); vSend({ method: 'play' }); } return; }
   if (!snipping || now - snipAt > 9000) {
     snipping = true; snipAt = now;
@@ -1506,8 +1506,9 @@ function loop(now) {
   if (covered && ++idleN % 20) { if (!psyClear) { pctx.clearRect(0, 0, psyW, psyH); psyClear = true; } syncVimeo(now); return; }
   psyClear = false;
   // phones draw the room at 30 frames a second while you're only watching, and at full speed while you touch, turn or step in
-  const moving = now - lastTouch < 1500 || (zoomProgress(now) > 0 && zoomProgress(now) < 1) || now < staticUntil;
-  if (PHONE && !moving && ++halfN % 2) { syncVimeo(now); return; }
+  const moving = now - lastTouch < 1500 || now - born < 5000 || (zoomProgress(now) > 0 && zoomProgress(now) < 1) || now < staticUntil;
+  // while a film plays on the set, the phone needs its strength for the video: the room is redrawn only now and then
+  if (PHONE && !moving && ++halfN % (vId ? 6 : 2)) { syncVimeo(now); return; }
   // phones repaint the picture on the glass every other frame, which is plenty for a CRT, and halves the texture uploads
   if ((powered || ps.vis > 0) && (!PHONE || !moving || ++picN % 2)) { renderPicture(now); drawOSD(now); picTex.needsUpdate = true; if (++frameN % (PHONE ? 8 : 5) === 0) sampleScreen(); }
   if (shadowFrames > 0) { shadowFrames--; renderer.shadowMap.needsUpdate = true; }
@@ -1525,7 +1526,7 @@ function loop(now) {
 
   ptr.x += (ptr.tx - ptr.x) * .04; ptr.y += (ptr.ty - ptr.y) * .04;
   const dolly = reduce ? 0 : (1 - ease(life / 4.5)) * .6;
-  const drift = reduce ? 0 : Math.sin(life * .17) * .03;
+  const drift = reduce || (PHONE && vId) ? 0 : Math.sin(life * .17) * .03;   // held still on phones while a film plays
   const zp = zoomProgress(now), fz = FZ + .045;
   const rx = ptr.x * .16 + drift, ry = lookY + .1 - ptr.y * .06, rz = dist + dolly;
   const zx = SX + ptr.x * .006, zy = CY - zoomShift - ptr.y * .004, zz = fz + zoomDist;
