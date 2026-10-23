@@ -561,10 +561,19 @@ const icon=(k,lab)=>`<svg viewBox="0 0 80 80" aria-hidden="true">${ICON[k]||''}<
 
 /* ---------------- sound ---------------- */
 let actx=null, mstr=null, nBuf=null, bBuf=null, soundOn=true; const LOOPS={};
+/* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
+function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
+  const sw=c.createOscillator(), sg=c.createGain(); sw.frequency.value=.045; sg.gain.value=260; sw.connect(sg).connect(lp.frequency); sw.start(t);
+  const nodes=[sw]; [[55,'sine',.55,0],[110,'sawtooth',.16,-4],[110.3,'sawtooth',.12,3],[164.8,'sine',.12,0],[220,'sine',.1,2],[329.6,'sine',.035,-3]].forEach(([f,type,v,dt],i)=>{ const o=c.createOscillator(),og=c.createGain(); o.type=type; o.frequency.value=f; o.detune.value=dt; og.gain.value=v;
+    const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
+  return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
+    stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+let DRONE=null;
 function aInit(){ if(actx){ if(actx.state!=='running') try{ actx.resume(); }catch(e){} return; }
   try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
   try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
-  mstr=actx.createGain(); mstr.gain.value=soundOn?.9:0; mstr.connect(actx.destination);
+  mstr=actx.createGain(); mstr.gain.value=soundOn?.9:0; mstr.connect(actx.destination); DRONE=makeDrone(actx,mstr,.04);
   const n=actx.sampleRate*2; nBuf=actx.createBuffer(1,n,actx.sampleRate); bBuf=actx.createBuffer(1,n,actx.sampleRate);
   const w=nBuf.getChannelData(0), b=bBuf.getChannelData(0); let l=0; for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
 ['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>{ if(actx&&actx.state!=='running') try{ actx.resume(); }catch(e){} },{capture:true,passive:true}));

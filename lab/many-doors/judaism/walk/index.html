@@ -159,13 +159,23 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ---------------- sound ---------------- */
-const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{},drone:null};
+/* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
+function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
+  const sw=c.createOscillator(), sg=c.createGain(); sw.frequency.value=.045; sg.gain.value=260; sw.connect(sg).connect(lp.frequency); sw.start(t);
+  const nodes=[sw]; [[55,'sine',.55,0],[110,'sawtooth',.16,-4],[110.3,'sawtooth',.12,3],[164.8,'sine',.12,0],[220,'sine',.1,2],[329.6,'sine',.035,-3]].forEach(([f,type,v,dt],i)=>{ const o=c.createOscillator(),og=c.createGain(); o.type=type; o.frequency.value=f; o.detune.value=dt; og.gain.value=v;
+    const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
+  return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
+    stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+
 function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
   try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
   const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
   const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
   const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
-  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; }
+  SND.drone=makeDrone(c,SND.m); }
 ['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
 const T=()=>SND.ctx.currentTime;
 function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
@@ -286,10 +296,10 @@ function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise
 function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
   l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
 /* hold still (pointer/keys); ms of stillness needed */
-function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); if(SND.drone) SND.drone.level(0,2.5); return new Promise(r0=>{ const res=v=>{ if(SND.drone) SND.drone.level(1,4); r0(v); }; const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
   const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
   addEventListener('pointermove',mv); addEventListener('keydown',mv);
-  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const tick=()=>{ if(PS!==s){ cleanup(); if(SND.drone) SND.drone.level(1,2); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
   const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
 /* count taps (beads, breaths, pebbles) */
 function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;

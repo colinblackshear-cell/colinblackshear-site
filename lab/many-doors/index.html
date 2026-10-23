@@ -728,14 +728,22 @@ document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closes
 
 /* ---------- sound: a few small, optional noises ---------- */
 const A={ctx:null,on:store.get('md-sound')!=='0'};
-function ai(){ if(A.ctx||!A.on) return; try{ A.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+/* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
+function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
+  const sw=c.createOscillator(), sg=c.createGain(); sw.frequency.value=.045; sg.gain.value=260; sw.connect(sg).connect(lp.frequency); sw.start(t);
+  const nodes=[sw]; [[55,'sine',.55,0],[110,'sawtooth',.16,-4],[110.3,'sawtooth',.12,3],[164.8,'sine',.12,0],[220,'sine',.1,2],[329.6,'sine',.035,-3]].forEach(([f,type,v,dt],i)=>{ const o=c.createOscillator(),og=c.createGain(); o.type=type; o.frequency.value=f; o.detune.value=dt; og.gain.value=v;
+    const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
+  return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
+    stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+function ai(){ if(A.ctx||!A.on) return; try{ A.ctx=new (window.AudioContext||window.webkitAudioContext)(); A.drone=makeDrone(A.ctx,A.ctx.destination); }catch(e){} }
 function tn(f,{d=.4,p=.08,type='sine',at=0}={}){ if(!A.ctx||!A.on) return; const c=A.ctx,t=c.currentTime+at,o=c.createOscillator(),g=c.createGain(); o.type=type; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g).connect(c.destination); o.start(t); o.stop(t+d+.05); }
 const blip=()=>tn(660,{d:.12,p:.05,type:'triangle'});
 const chime=()=>[523.25,659.25,783.99,1046.5].forEach((f,i)=>tn(f,{d:1.4,p:.05,at:i*.09}));
 const knock=()=>{ [0,.18,.36].forEach(at=>tn(90,{d:.12,p:.25,type:'square',at})); };
 function creak(){ if(!A.ctx||!A.on) return; const c=A.ctx,t=c.currentTime,o=c.createOscillator(),g=c.createGain(),f=c.createBiquadFilter(); o.type='sawtooth'; o.frequency.setValueAtTime(70,t); o.frequency.linearRampToValueAtTime(140,t+.5); o.frequency.linearRampToValueAtTime(90,t+.9); f.type='bandpass'; f.frequency.value=900; f.Q.value=6; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.05,t+.05); g.gain.exponentialRampToValueAtTime(.0001,t+.95); o.connect(f).connect(g).connect(c.destination); o.start(t); o.stop(t+1); }
 $('#snd').setAttribute('aria-pressed',A.on);
-$('#snd').onclick=e=>{ A.on=!A.on; store.set('md-sound',A.on?'1':'0'); e.currentTarget.setAttribute('aria-pressed',A.on); if(A.on){ ai(); blip(); } };
+$('#snd').onclick=e=>{ A.on=!A.on; store.set('md-sound',A.on?'1':'0'); e.currentTarget.setAttribute('aria-pressed',A.on); if(A.drone) A.drone.level(A.on?1:0,1); if(A.on){ ai(); blip(); } };
 addEventListener('pointerdown',ai,{once:true});
 
 /* ---------- the sky ---------- */
@@ -1003,6 +1011,8 @@ function entry(i){
 }
 function closeEntry(){ const e=$('#entry'); e.hidden=true; e.innerHTML=''; document.body.style.overflow=''; const b=document.querySelector(`.door[data-i="${CUR}"]`); if(b) b.focus({preventScroll:true}); CUR=-1; }
 addEventListener('keydown',ev=>{ if($('#entry').hidden) return; if(ev.key==='Escape') closeEntry(); if(ev.key==='ArrowRight') entry((CUR+1)%D.length); if(ev.key==='ArrowLeft') entry((CUR+D.length-1)%D.length); });
+/* the drone starts on the first touch anywhere */
+['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>ai(),{once:true,capture:true}));
 $('#toHall').onclick=()=>{ ai(); closeEntry(); hall(); };
 
 /* start: first visit gets the cover; #doors (or a return visit) goes straight to the hall */
