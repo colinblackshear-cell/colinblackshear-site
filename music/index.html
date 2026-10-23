@@ -280,6 +280,8 @@ let on = false, needle = ST.length ? ST[0].freq : 98, cur = -1, vol = .8, signal
 let ac = null, master, an, statG, noiseBuf;
 function audio() {
   if (ac) { if (ac.state !== 'running') ac.resume(); return ac; }
+  // play like a music app, so the iPhone's silent switch doesn't mute the radio
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
   ac = new (window.AudioContext || window.webkitAudioContext)();
   master = ac.createGain(); master.gain.value = vol;
   an = ac.createAnalyser(); an.fftSize = 1024;
@@ -453,6 +455,10 @@ const press = (id, fn) => { const b = $(id);
   b.addEventListener('pointerdown', e => { if (e.button === 0) { e.preventDefault(); fn(); } });
   b.addEventListener('click', e => { if (e.detail === 0) fn(); }); };
 press('kOn', () => power(!on));
+// phones only let sound start when a tap ends, and the keys act as it begins, so finish waking the sound here
+const wake = () => { if (!ac) return; if (ac.state !== 'running') ac.resume();
+  if (on && player && player.el && player.el.paused && !player.el.ended) player.el.play().catch(() => {}); };
+['pointerup', 'touchend', 'click', 'keydown'].forEach(t => addEventListener(t, wake, true));
 press('kPrev', () => step(-1));
 press('kNext', () => step(1));
 addEventListener('keydown', e => {
