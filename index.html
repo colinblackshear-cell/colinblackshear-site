@@ -71,7 +71,13 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   display:flex;align-items:center;z-index:0}
 .vbox iframe{position:absolute;left:0;top:0;display:block;border:0;transform-origin:0 0;filter:contrast(1.06) saturate(.88) sepia(.08) brightness(1.04)}
 /* phones: a filter on a playing video makes the browser redraw every frame by hand, which stalls playback */
-@media (pointer: coarse){ .vbox iframe{filter:none} }
+@media (pointer: coarse){
+  .vbox iframe{filter:none}
+  /* phones: no live blending or blurring over the moving 3D set, which makes the browser recomposite the whole screen every frame */
+  .grain{mix-blend-mode:normal;opacity:.05}
+  .psy{mix-blend-mode:normal}
+  .pill,body .scrub{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(10,10,9,.72)}
+}
 .vbox::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:var(--crt,1);
   background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, rgba(0,0,0,0) 1px 3px),
     radial-gradient(55% 35% at 30% 18%, rgba(255,255,255,.10), rgba(255,255,255,0) 70%),
@@ -633,12 +639,14 @@ const canvas = $('gl');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); }
 catch (e) { document.body.insertAdjacentHTML('beforeend', '<div class="nogl">This browser can’t show the 3D set (WebGL is off).</div>'); return; }
-renderer.setPixelRatio(Math.min(devicePixelRatio || 1, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
+const PHONE = matchMedia('(pointer: coarse)').matches;
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, PHONE ? 1.25 : 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = .9;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate = false;   // the set doesn't move, so its shadows are drawn once (see loop)
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(26, 1, .05, 40);
@@ -834,7 +842,7 @@ for (const [rz, rx, len] of [[.6, -.12, .46], [-.46, .1, .4]]) {
 const hemi = new THREE.HemisphereLight('#c9d2ff', '#2a2015', .08); scene.add(hemi);
 const key = new THREE.SpotLight('#ffd9b0', 1.7, 0, .36, .9, 1);
 key.position.set(-1.7, 2.7, 2.3); key.target.position.set(0, .45, 0);
-key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -.0004; key.shadow.radius = 6; key.shadow.camera.near = 1; key.shadow.camera.far = 8;
+key.castShadow = true; key.shadow.mapSize.set(PHONE ? 1024 : 2048, PHONE ? 1024 : 2048); key.shadow.bias = -.0004; key.shadow.radius = 6; key.shadow.camera.near = 1; key.shadow.camera.far = 8;
 scene.add(key, key.target);
 const wash = new THREE.SpotLight('#ffe6c4', .55, 0, .42, 1, 1);
 wash.position.set(.6, 2.2, 2.6); wash.target.position.set(.2, .9, -2.0); scene.add(wash, wash.target);
@@ -1238,7 +1246,7 @@ if (document.fullscreenEnabled && fsEl.requestFullscreen) {
 tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
 /* One Vimeo player serves every channel. Between films it is paused and hidden rather than thrown away,
    and the next film is loaded into it, so it starts at once and keeps the sound the browser has already allowed. */
-let vLoaded = null, vReady = false, needTap = false;
+let vLoaded = null, vReady = false, needTap = false, vAdvAt = 0;
 function tapHint(on) { needTap = on; $('taphint').classList.toggle('on', on); }
 function dropVimeo() { killVimeo(); if (vFrame) vFrame.remove(); vFrame = null; vLoaded = null; vReady = false; }
 function filmState() { tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
@@ -1258,7 +1266,14 @@ function makeVimeo(id) {
 function filmStarted() {
   // the player can ignore sound and play until it's ready, so say them now, then check they stuck
   vSend({ method: 'getDuration' }); vSend({ method: 'disableTextTrack' }); vKick();   // no captions over the picture
-  const f = vId; [700, 1600, 3200].forEach(t => setTimeout(() => { if (vId === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
+  const f = vId; vAdvAt = performance.now();
+  [800, 2000].forEach(t => setTimeout(() => { if (vId === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
+  // a film still loading looks paused too, so only once it has had time and still isn't moving is the sound taken to be blocked:
+  // then the picture carries on silently and a tap brings the sound in
+  setTimeout(() => {
+    if (vId !== f || !soundOn || userPaused || needTap || performance.now() - vAdvAt < 2500) return;
+    tapHint(true); vSend({ method: 'setMuted', value: true }); vSend({ method: 'play' });
+  }, 5000);
 }
 /* In the room the set plays a loop of random sections of the film; stepping in plays it whole, from the top. */
 let vDur = 0, snipAt = 0, snipping = false;
@@ -1276,12 +1291,8 @@ addEventListener('message', e => {
   else if (!vId) return;
   else if (d.method === 'getDuration' && d.value > 0) { vDur = d.value; snipAt = 0; }
   else if (d.method === 'getMuted' && d.value !== !soundOn && !needTap) vimeoSound();
-  else if (d.method === 'getPaused' && d.value === true && powered && !userPaused) {
-    // the browser stopped it for having sound before you'd touched the page: keep the picture going, silently, and ask for a tap
-    if (soundOn && !needTap) { tapHint(true); vSend({ method: 'setMuted', value: true }); }
-    vSend({ method: 'play' });
-  }
-  else if (d.event === 'timeupdate' && d.data) { if (!scrubbing) vTime = d.data.seconds; if (d.data.duration > 0) vDur = d.data.duration; }
+  else if (d.method === 'getPaused' && d.value === true && powered && !userPaused) vSend({ method: 'play' });
+  else if (d.event === 'timeupdate' && d.data) { if (d.data.seconds !== vTime) vAdvAt = performance.now(); if (!scrubbing) vTime = d.data.seconds; if (d.data.duration > 0) vDur = d.data.duration; }
   else if (d.event === 'pause' || d.event === 'play') { vPaused = d.event === 'pause'; $('scPlay').textContent = vPaused ? '▶' : '❚❚'; $('scPlay').setAttribute('aria-label', vPaused ? 'Play' : 'Pause'); }
 });
 function snippets(now) {
@@ -1481,6 +1492,7 @@ function drawPsy(now, zp) {
 const born = performance.now();
 const ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
 let idleN = 0, psyClear = false;
+let picN = 0, shadowFrames = 3;
 function loop(now) {
   requestAnimationFrame(loop);
   const life = (now - born) / 1000;
@@ -1490,7 +1502,9 @@ function loop(now) {
   const covered = vId && (fullP > .99 || zoomTo === 1 && zoomProgress(now) > .999);
   if (covered && ++idleN % 20) { if (!psyClear) { pctx.clearRect(0, 0, psyW, psyH); psyClear = true; } syncVimeo(now); return; }
   psyClear = false;
-  if (powered || ps.vis > 0) { renderPicture(now); drawOSD(now); picTex.needsUpdate = true; if (++frameN % 5 === 0) sampleScreen(); }
+  // phones repaint the picture on the glass every other frame, which is plenty for a CRT, and halves the texture uploads
+  if ((powered || ps.vis > 0) && (!PHONE || ++picN % 2)) { renderPicture(now); drawOSD(now); picTex.needsUpdate = true; if (++frameN % (PHONE ? 8 : 5) === 0) sampleScreen(); }
+  if (shadowFrames > 0) { shadowFrames--; renderer.shadowMap.needsUpdate = true; }
   Object.assign(tubeUniforms.sx, { value: ps.sx }); tubeUniforms.sy.value = ps.sy; tubeUniforms.bright.value = ps.b;
   tubeUniforms.sat.value = ps.sat; tubeUniforms.vis.value = ps.vis; tubeUniforms.glow.value = ps.glow; tubeUniforms.time.value = life;
 
