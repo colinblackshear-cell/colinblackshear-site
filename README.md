@@ -13,3 +13,5 @@ Colin Blackshear's site. Visitors land on a 3D 1970s TV that powers on and plays
 ### Many Doors
 
 `lab/many-doors/` is the Many Doors series. The hub (`lab/many-doors/`) is a short visual intro and then a hall of doors, one per tradition. Behind each door is a journey, a few minutes of click-through at `lab/many-doors/<book>/`, with the full illustrated book at `<book>/book/` and the daily walk at `<book>/walk/`. The atlas of twenty-six traditions is at `atlas/` and the capstone book at `doors/`. The Tibetan pair (The Bardo Manual and The Forty-Nine Day Walk) is at `lab/many-doors/tibetan/` and `tibetan/walk/`; those two are kept by hand. `lab/bardo/` only redirects there, for old links. The pages are built in the Spirit Project, not by hand here. To add or update books, run `python3 tools/many-doors.py <spirit-books folder>`, which copies every page in its `books.json` and points the links between them at the site. Bump `doors` in the lab entry when the shelf grows.
+
+The Rhythm Composer's MP3 download uses LAME (https://lame.sourceforge.net) through lamejs, included unmodified under the LGPL in `lab/808/vendor/`.

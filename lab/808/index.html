@@ -96,6 +96,13 @@ body.arrive .machine{animation:arrive 1s cubic-bezier(.2,.7,.2,1)}
 .lenbox{display:flex;align-items:center;gap:6px}
 .lenbox .amber{font-size:1.35rem;min-width:2.4ch;text-align:center}
 .tsrow .meter{font:500 .56rem/1.5 var(--f-hw);letter-spacing:.12em;text-transform:uppercase;color:var(--print-soft);align-self:center;margin-top:14px}
+.pages{display:flex;flex-wrap:wrap;gap:5px}
+.pbtn{min-width:30px;padding:0 4px}
+.pbtn.off{opacity:.38}
+.pbtn.play::before{background:#ffd27a;box-shadow:0 0 8px #ffb547, 0 0 0 1px #000}
+.pbtn[aria-pressed="true"]::before{background:#ff3d14;box-shadow:0 0 8px #ff3d14, 0 0 0 1px #000}
+.pbtn.minus,.pbtn.plus{min-width:26px;color:#5a5244}
+.pbtn.minus::before,.pbtn.plus::before{display:none}
 .key.out{opacity:.32}
 .cell.out{opacity:.25}
 .dl{display:flex;align-items:flex-end;gap:8px}
@@ -231,6 +238,7 @@ body.embed .machine{pointer-events:none;box-shadow:0 0 0 2px var(--edge)}
   .sampler{grid-template-columns:1fr}
   .scales{gap:5px}
   .sbtn{min-width:0;padding:0 6px;font-size:.56rem}
+  .pbtn{min-width:26px}
   .rack{padding:14px 44px 16px;gap:16px}
   .rack::before,.rack::after{width:26px}
   .rhead{min-width:0;width:100%}
@@ -286,9 +294,11 @@ body.embed .machine{pointer-events:none;box-shadow:0 0 0 2px var(--edge)}
         <button class="hwbtn" id="clear">Clear</button>
         <button class="hwbtn" id="share">Copy link</button>
         <div class="dl">
-          <div class="disp"><label for="bars">Loops</label>
-            <select id="bars"><option value="1">1</option><option value="2">2</option><option value="4" selected>4</option><option value="8">8</option></select></div>
-          <button class="hwbtn" id="dlbtn">Download WAV</button>
+          <div class="disp"><label for="loops">Loops</label>
+            <select id="loops"><option value="1">1</option><option value="2">2</option><option value="4" selected>4</option><option value="8">8</option></select></div>
+          <div class="disp"><label for="fmt">Format</label>
+            <select id="fmt"><option value="wav">WAV</option><option value="mp3">MP3</option></select></div>
+          <button class="hwbtn" id="dlbtn">Download</button>
         </div>
       </div>
       <div class="tsrow">
@@ -296,13 +306,15 @@ body.embed .machine{pointer-events:none;box-shadow:0 0 0 2px var(--edge)}
           <div class="scales" id="scales" role="group" aria-label="Time scale"></div></div>
         <div class="disp"><span class="lab">Length</span>
           <div class="lenbox"><button class="nudge" id="lenDn" aria-label="Shorter pattern">−</button><div class="amber" id="lenR" aria-live="polite">16</div><button class="nudge" id="lenUp" aria-label="Longer pattern">+</button></div></div>
+        <div class="disp"><span class="lab">Bars</span>
+          <div class="pages" id="pages" role="group" aria-label="Bar to edit"></div></div>
         <span class="meter" id="meter"></span>
       </div>
       <div class="keysw">
         <div class="ruler" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span></div>
         <div class="keys" id="keys" role="group" aria-label="Step keys"></div>
       </div>
-      <p class="keyhint">Tap once: hit · twice: accent · three times: clear · steps past the length are skipped</p>
+      <p class="keyhint">Tap once: hit · twice: accent · three times: clear · steps past the length are skipped · add bars with + and pick one to edit</p>
     </div>
     <span class="screw" style="left:8px;bottom:8px"></span><span class="screw" style="right:8px;bottom:8px"></span>
   </section>
@@ -361,12 +373,12 @@ body.embed .machine{pointer-events:none;box-shadow:0 0 0 2px var(--edge)}
       </div>
     </div>
   </section>
-  <p class="note" id="note">Your recordings stay in this browser and are never uploaded. The beat is saved here too. Copy link shares it (without the mic sounds), and Download WAV saves an audio file of it, mic sounds and effects included.</p>
+  <p class="note" id="note">Your recordings stay in this browser and are never uploaded. The beat is saved here too. Copy link shares it (without the mic sounds), and Download saves it as a WAV or MP3, mic sounds and effects included.</p>
 </main>
 
 <script>
 const $ = id => document.getElementById(id);
-const STEPS = 16;
+const STEPS = 16, MAXBARS = 8, CELLS = STEPS * MAXBARS;
 const EMBED = new URLSearchParams(location.search).has('embed');
 if (EMBED) document.body.classList.add('embed');
 try { if (sessionStorage.getItem('zoomTo') === '808') { sessionStorage.removeItem('zoomTo'); document.body.classList.add('arrive'); } } catch (e) {}
@@ -574,9 +586,9 @@ const fxOn = f => FXK.some(([k]) => f[k]);
 /* =========================================================
    STATE: 0 off, 1 hit, 2 accent; saved locally and shareable by link
    ========================================================= */
-const blank = () => ({ tempo: 104, swing: 12, echoT: 3, fb: .38, scale: '1/16', len: 16, rows: Object.fromEntries(ROWS.map(r => [r.id, { s: Array(STEPS).fill(0), v: 0, vol: .8, fx: { ...FX0 } }])) });
+const blank = () => ({ tempo: 104, swing: 12, echoT: 3, fb: .38, scale: '1/16', len: 16, bars: 1, rows: Object.fromEntries(ROWS.map(r => [r.id, { s: Array(CELLS).fill(0), v: 0, vol: .8, fx: { ...FX0 } }])) });
 let S = blank();
-const pat = str => [...str.padEnd(STEPS, '.')].map(c => c === 'X' ? 2 : c === 'x' ? 1 : 0);
+const pat = str => [...str.padEnd(CELLS, '.')].map(c => c === 'X' ? 2 : c === 'x' ? 1 : 0);
 // each step is a note of this length; n is steps per beat, and triplets don't swing
 const SCALES = { '1/4': { n: 1 }, '1/4T': { n: 1.5, t: 1 }, '1/8': { n: 2 }, '1/8T': { n: 3, t: 1 }, '1/16': { n: 4 }, '1/16T': { n: 6, t: 1 }, '1/32': { n: 8 } };
 const SCALE_IDS = Object.keys(SCALES);
@@ -599,7 +611,7 @@ const PRESETS = {
 function applyPreset(name) {
   const p = PRESETS[name]; if (!p) return;
   const keep = S; S = blank(); S.tempo = p.tempo; S.swing = p.swing; S.echoT = p.echoT || keep.echoT; S.fb = p.fb ?? keep.fb;
-  S.scale = p.scale || '1/16'; S.len = p.len || STEPS;
+  S.scale = p.scale || '1/16'; S.len = p.len || STEPS; S.bars = 1; page = 0;
   for (const r of ROWS) {
     const row = S.rows[r.id]; row.v = keep.rows[r.id].v; row.vol = keep.rows[r.id].vol; if (p[r.id]) row.s = pat(p[r.id]);
     // a pattern that comes with its own effects starts from a clean rack; the others leave yours alone
@@ -610,20 +622,21 @@ function applyPreset(name) {
 }
 function encode() {
   const rows = LINK.map(id => {
-    const r = S.rows[id]; let x = r.s.join('') + '.' + r.v;
+    const r = S.rows[id]; let x = r.s.slice(0, S.bars * STEPS).join('') + '.' + r.v;
     if (fxOn(r.fx)) x += '.' + FXK.map(([k, a, b]) => Math.round((r.fx[k] - a) / (b - a) * 34).toString(36)).join('');
     return x;
   }).join('-');
-  return `t${S.tempo}s${S.swing}e${S.echoT}f${Math.round(S.fb * 100)}d${SCALE_IDS.indexOf(S.scale)}l${S.len}-${rows}`;
+  return `t${S.tempo}s${S.swing}e${S.echoT}f${Math.round(S.fb * 100)}d${SCALE_IDS.indexOf(S.scale)}l${S.len}b${S.bars}-${rows}`;
 }
 function decode(h) {
-  const m = /^t(\d+)s(\d+)(?:e(\d+)f(\d+))?(?:d(\d)l(\d+))?-(.*)$/.exec(h); if (!m) return null;
+  const m = /^t(\d+)s(\d+)(?:e(\d+)f(\d+))?(?:d(\d)l(\d+))?(?:b(\d))?-(.*)$/.exec(h); if (!m) return null;
   const n = blank(); n.tempo = Math.min(180, Math.max(60, +m[1])); n.swing = Math.min(60, +m[2]);
   if (m[3]) { n.echoT = Math.min(8, Math.max(1, +m[3])); n.fb = Math.min(.85, +m[4] / 100); }
   if (m[5]) { n.scale = SCALE_IDS[+m[5]] || '1/16'; n.len = Math.min(STEPS, Math.max(1, +m[6])); }
-  m[7].split('-').forEach((p, i) => {
-    const [s, v, fx] = p.split('.'), id = LINK[i]; if (!id || !s || s.length !== STEPS) return;
-    n.rows[id].s = [...s].map(c => Math.min(2, +c || 0)); n.rows[id].v = Math.min(+v || 0, KITS[id].length - 1);
+  if (m[7]) n.bars = Math.min(MAXBARS, Math.max(1, +m[7]));
+  m[8].split('-').forEach((p, i) => {
+    const [s, v, fx] = p.split('.'), id = LINK[i]; if (!id || !s || s.length % STEPS || s.length > CELLS) return;
+    n.rows[id].s = [...s.padEnd(CELLS, '0')].map(c => Math.min(2, +c || 0)); n.rows[id].v = Math.min(+v || 0, KITS[id].length - 1);
     if (fx && fx.length === FXK.length) FXK.forEach(([k, a, b], j) => { n.rows[id].fx[k] = Math.round((a + Math.min(34, parseInt(fx[j], 36) || 0) / 34 * (b - a)) * 100) / 100; });
   });
   return n;
@@ -637,7 +650,11 @@ function load() {
     if (raw) { const x = JSON.parse(raw); if (x && x.rows) {
       S = blank(); Object.assign(S, { tempo: x.tempo, swing: x.swing }); if (x.echoT) S.echoT = x.echoT; if (x.fb != null) S.fb = x.fb;
       if (SCALES[x.scale]) S.scale = x.scale; if (x.len) S.len = Math.min(STEPS, Math.max(1, x.len));
-      for (const r of ROWS) if (x.rows[r.id]) S.rows[r.id] = { ...S.rows[r.id], ...x.rows[r.id], fx: { ...FX0, ...(x.rows[r.id].fx || {}) } };
+      if (x.bars) S.bars = Math.min(MAXBARS, Math.max(1, x.bars));
+      for (const r of ROWS) if (x.rows[r.id]) {
+        const o = x.rows[r.id], cells = Array(CELLS).fill(0); (o.s || []).slice(0, CELLS).forEach((v, i) => cells[i] = v);
+        S.rows[r.id] = { ...S.rows[r.id], ...o, s: cells, fx: { ...FX0, ...(o.fx || {}) } };
+      }
       return;
     } }
   } catch (e) {}
@@ -693,7 +710,7 @@ function finish(i, data) {
   slot.querySelectorAll('button:not(.rec), input').forEach(x => x.disabled = false);
   drawWave(slot.querySelector('canvas'), SAMPLES[i]);
   const row = S.rows['mic' + i];
-  if (!row.s.some(Boolean)) { row.s = pat(MIC_START[i]); save(); }
+  if (!row.s.some(Boolean)) { row.s = pat(MIC_START[i].repeat(S.bars)); save(); }
   renderStatus(); select('mic' + i); playSample(i, ac.currentTime + .02, G.strips['mic' + i].inp, .9);
   note(`Mic ${i + 1} is ready (${(n / ac.sampleRate).toFixed(2)}s). It's written into the pattern to start; move it anywhere, and shape it on the effects unit.`);
 }
@@ -792,6 +809,17 @@ function build() {
   const sc = $('scales');
   sc.innerHTML = SCALE_IDS.map(k => `<button class="sbtn" data-k="${k}" aria-pressed="false">${k}</button>`).join('');
   sc.addEventListener('click', e => { const b = e.target.closest('.sbtn'); if (b) { S.scale = b.dataset.k; paintScale(); save(); } });
+  // bars: + adds one (a copy of the last, so you can vary it), − drops the last; the numbers pick which bar the keys edit
+  const pg = $('pages');
+  pg.innerHTML = `<button class="sbtn pbtn minus" data-d="-1" aria-label="Fewer bars">−</button>` +
+    Array.from({ length: MAXBARS }, (_, i) => `<button class="sbtn pbtn" data-p="${i}" aria-pressed="false">${i + 1}</button>`).join('') +
+    `<button class="sbtn pbtn plus" data-d="1" aria-label="More bars">+</button>`;
+  pg.addEventListener('click', e => {
+    const b = e.target.closest('.pbtn'); if (!b) return;
+    if (b.dataset.d) setBars(S.bars + +b.dataset.d, +b.dataset.d > 0);
+    else { const p = +b.dataset.p; if (p >= S.bars) setBars(p + 1, true); page = p; }
+    paintScale(); paintSteps(); save();
+  });
   const lenBy = d => { S.len = Math.min(STEPS, Math.max(1, S.len + d)); paintScale(); paintSteps(); save(); };
   $('lenDn').addEventListener('click', () => lenBy(-1));
   $('lenUp').addEventListener('click', () => lenBy(1));
@@ -812,7 +840,7 @@ function build() {
   const sel = $('preset'); for (const k of Object.keys(PRESETS)) sel.insertAdjacentHTML('beforeend', `<option value="${k}">${k.toUpperCase()}</option>`);
   sel.addEventListener('change', () => { applyPreset(sel.value); sel.value = ''; });
   $('play').addEventListener('click', toggle);
-  $('clear').addEventListener('click', () => { for (const r of ROWS) S.rows[r.id].s = Array(STEPS).fill(0); paintSteps(); save(); });
+  $('clear').addEventListener('click', () => { for (const r of ROWS) S.rows[r.id].s = Array(CELLS).fill(0); S.bars = 1; page = 0; paintScale(); paintSteps(); save(); });
   $('share').addEventListener('click', async () => {
     const url = location.origin + location.pathname + '#' + encode(); history.replaceState(null, '', '#' + encode());
     try { await navigator.clipboard.writeText(url); note('Link copied. Anyone who opens it hears this beat (the mic sounds stay with you).'); }
@@ -837,7 +865,15 @@ function syncPitch(i) {
   slot.querySelector('.pitch').value = v; slot.querySelector('output').textContent = (v > 0 ? '+' : '') + v;
   knobs.forEach(p => p());
 }
+let page = 0;
+function setBars(n, grow) {
+  n = Math.min(MAXBARS, Math.max(1, n));
+  if (grow) for (let b = S.bars; b < n; b++) for (const r of ROWS) { const s = S.rows[r.id].s; for (let i = 0; i < STEPS; i++) s[b * STEPS + i] = s[(b - 1) * STEPS + i]; }
+  else for (const r of ROWS) S.rows[r.id].s.fill(0, n * STEPS);
+  S.bars = n; if (grow) page = n - 1; else page = Math.min(page, n - 1);
+}
 function hit(id, i) {
+  i += page * STEPS;
   const row = S.rows[id]; row.s[i] = (row.s[i] + 1) % 3; if (id !== selId) select(id);
   paintSteps(); save(); if (row.s[i] && !playing) trigger(id, audio().currentTime + .01, row.s[i]);
 }
@@ -859,19 +895,21 @@ function fxChanged(id) { if (G) setFx(G, id); cols[id].classList.toggle('fxon', 
 function paintScale() {
   document.querySelectorAll('.sbtn').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === S.scale));
   $('lenR').textContent = S.len;
+  document.querySelectorAll('.pbtn[data-p]').forEach(b => { const p = +b.dataset.p; b.setAttribute('aria-pressed', p === page); b.classList.toggle('off', p >= S.bars); });
   const beats = S.len / SCALES[S.scale].n, unit = { 1: 4, 2: 8, 4: 16, 8: 32 }[SCALES[S.scale].n];
+  const bars = n => `${n} bar${n > 1 ? 's' : ''}`;
   let m;
-  if (SCALES[S.scale].t) m = `${S.len} triplet ${S.scale.slice(0, -1)}s · ${+beats.toFixed(2)} beat${beats === 1 ? '' : 's'}`;
-  else if (beats % 4 === 0) m = `4/4 · ${beats / 4} bar${beats > 4 ? 's' : ''}`;
-  else if (Number.isInteger(beats)) m = `${beats}/4 time`;
-  else { let top = S.len, bot = unit; while (top % 2 === 0 && bot > 8) { top /= 2; bot /= 2; } m = `${top}/${bot} time`; }
+  if (SCALES[S.scale].t) m = `${S.len} triplet ${S.scale.slice(0, -1)}s · ${+beats.toFixed(2)} beat${beats === 1 ? '' : 's'}` + (S.bars > 1 ? ` · ${bars(S.bars)}` : '');
+  else if (beats % 4 === 0) m = `4/4 · ${bars(beats / 4 * S.bars)}`;
+  else if (Number.isInteger(beats)) m = `${beats}/4 · ${bars(S.bars)}`;
+  else { let top = S.len, bot = unit; while (top % 2 === 0 && bot > 8) { top /= 2; bot /= 2; } m = `${top}/${bot} · ${bars(S.bars)}`; }
   $('meter').textContent = m;
 }
 function render() { $('tempoR').textContent = S.tempo; paintScale(); ROWS.forEach(r => cols[r.id].classList.toggle('fxon', fxOn(S.rows[r.id].fx))); select(selId); renderStatus(); }
 function paintSteps() {
-  const s = S.rows[selId].s;
-  keyEls.forEach((k, i) => { k.classList.toggle('out', i >= S.len); k.classList.toggle('on', s[i] === 1); k.classList.toggle('acc', s[i] === 2); k.setAttribute('aria-pressed', s[i] > 0); });
-  for (const r of ROWS) cellEls[r.id].forEach((c, i) => { const v = S.rows[r.id].s[i]; c.classList.toggle('out', i >= S.len); c.classList.toggle('on', v === 1); c.classList.toggle('acc', v === 2); c.setAttribute('aria-pressed', v > 0); });
+  const o = page * STEPS, s = S.rows[selId].s;
+  keyEls.forEach((k, i) => { const v = s[o + i]; k.classList.toggle('out', i >= S.len); k.classList.toggle('on', v === 1); k.classList.toggle('acc', v === 2); k.setAttribute('aria-pressed', v > 0); });
+  for (const r of ROWS) cellEls[r.id].forEach((c, i) => { const v = S.rows[r.id].s[o + i]; c.classList.toggle('out', i >= S.len); c.classList.toggle('on', v === 1); c.classList.toggle('acc', v === 2); c.setAttribute('aria-pressed', v > 0); });
 }
 function renderStatus() {
   ROWS.filter(r => r.mic !== undefined).forEach(r => cols[r.id].classList.toggle('empty', !SAMPLES[r.mic].buf));
@@ -896,18 +934,18 @@ function trigger(id, t, lvl) {
 }
 function schedule() {
   while (nextT < ac.currentTime + .12) {
-    if (step >= S.len) step = 0;
-    const dur = stepDur(), sw = swingAt(step, dur);
-    for (const r of ROWS) { const v = S.rows[r.id].s[step]; if (v) trigger(r.id, nextT + sw, v); }
-    queue.push({ step, t: nextT + sw });
-    nextT += dur; step = (step + 1) % S.len;
+    if (step >= S.len * S.bars) step = 0;
+    const b = Math.floor(step / S.len), st = step % S.len, dur = stepDur(), sw = swingAt(st, dur);
+    for (const r of ROWS) { const v = S.rows[r.id].s[b * STEPS + st]; if (v) trigger(r.id, nextT + sw, v); }
+    queue.push({ b, st, t: nextT + sw });
+    nextT += dur; step = (step + 1) % (S.len * S.bars);
   }
 }
 function toggle() {
   audio(); G.master.gain.value = masterVol; playing = !playing;
   $('play').setAttribute('aria-pressed', playing);
   if (playing) { step = 0; nextT = ac.currentTime + .06; schedule(); timer = setInterval(schedule, 25); requestAnimationFrame(draw); }
-  else { clearInterval(timer); queue.length = 0; lit(-1); }
+  else { clearInterval(timer); queue.length = 0; lit(-1); playBar(-1); }
 }
 let litStep = -1;
 function lit(s) {
@@ -916,9 +954,15 @@ function lit(s) {
   litStep = s; if (s < 0) return;
   keyEls[s].classList.add('now'); for (const r of ROWS) cellEls[r.id][s].classList.add('now');
 }
+// the bar that is sounding gets an amber light, whichever bar you are editing
+let litBar = -1;
+function playBar(b) {
+  if (b === litBar) return; litBar = b;
+  document.querySelectorAll('.pbtn[data-p]').forEach(x => x.classList.toggle('play', +x.dataset.p === b && S.bars > 1));
+}
 function draw() {
   if (!playing) return;
-  while (queue.length && queue[0].t <= ac.currentTime) lit(queue.shift().step);
+  while (queue.length && queue[0].t <= ac.currentTime) { const q = queue.shift(); lit(q.b === page ? q.st : -1); playBar(q.b); }
   requestAnimationFrame(draw);
 }
 
@@ -929,23 +973,45 @@ async function download() {
   const btn = $('dlbtn'); if (btn.disabled) return;
   audio(); btn.disabled = true; btn.textContent = 'Rendering…';
   try {
-    const loops = +$('bars').value, dur = stepDur(), sr = ac.sampleRate, len = .02 + loops * S.len * dur + 2.5;
+    const loops = +$('loops').value, dur = stepDur(), sr = ac.sampleRate, total = S.len * S.bars, len = .02 + loops * total * dur + 2.5;
     const off = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(2, Math.ceil(len * sr), sr);
     const live = [ac, G];
     try {
       ac = off; G = graph(off, masterVol);
-      for (let i = 0; i < loops * S.len; i++) {
-        const st = i % S.len, sw = swingAt(st, dur);
-        for (const r of ROWS) { const v = S.rows[r.id].s[st]; if (v) sound(r.id, .02 + i * dur + sw, v); }
+      for (let i = 0; i < loops * total; i++) {
+        const b = Math.floor(i % total / S.len), st = i % S.len, sw = swingAt(st, dur);
+        for (const r of ROWS) { const v = S.rows[r.id].s[b * STEPS + st]; if (v) sound(r.id, .02 + i * dur + sw, v); }
       }
     } finally { [ac, G] = live; }
     const buf = await off.startRendering();
-    const a = document.createElement('a'); a.href = URL.createObjectURL(wav(buf));
-    a.download = `cb-808-${S.tempo}bpm-${loops}-loop${loops > 1 ? 's' : ''}.wav`;
+    const fmt = $('fmt').value;
+    if (fmt === 'mp3') btn.textContent = 'Encoding…';
+    const file = fmt === 'mp3' ? await mp3(buf, f => { btn.textContent = `Encoding ${Math.round(f * 100)}%`; }) : wav(buf);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(file);
+    a.download = `cb-808-${S.tempo}bpm-${loops}-loop${loops > 1 ? 's' : ''}.${fmt}`;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    note(`Saved ${loops} loop${loops > 1 ? 's' : ''} of the pattern at ${S.tempo} BPM as a WAV, with a little room at the end for the echo and reverb to ring out.`);
+    note(`Saved ${loops} loop${loops > 1 ? 's' : ''} of the pattern at ${S.tempo} BPM as ${fmt === 'mp3' ? 'an MP3' : 'a WAV'}, with a little room at the end for the echo and reverb to ring out.`);
   } catch (e) { note('The download did not work in this browser. Try a current Chrome, Firefox or Safari.', true); }
-  btn.disabled = false; btn.textContent = 'Download WAV';
+  btn.disabled = false; btn.textContent = 'Download';
+}
+// the MP3 encoder is fetched the first time someone asks for one
+let lame = null;
+function loadLame() {
+  return lame || (lame = new Promise((ok, no) => {
+    const sc = document.createElement('script'); sc.src = 'vendor/lame.min.js';
+    sc.onload = () => ok(window.lamejs); sc.onerror = () => { lame = null; no(new Error('encoder')); }; document.head.appendChild(sc);
+  }));
+}
+async function mp3(b, progress) {
+  const lj = await loadLame(), enc = new lj.Mp3Encoder(2, b.sampleRate, 192), n = b.length, out = [];
+  const pcm = c => { const d = b.getChannelData(c), x = new Int16Array(n); for (let i = 0; i < n; i++) { const v = Math.max(-1, Math.min(1, d[i])); x[i] = v < 0 ? v * 0x8000 : v * 0x7fff; } return x; };
+  const L = pcm(0), R = pcm(b.numberOfChannels > 1 ? 1 : 0);
+  for (let i = 0; i < n; i += 1152) {
+    const chunk = enc.encodeBuffer(L.subarray(i, i + 1152), R.subarray(i, i + 1152)); if (chunk.length) out.push(new Uint8Array(chunk));
+    if (i % (1152 * 100) === 0) { progress(i / n); await new Promise(res => setTimeout(res)); }
+  }
+  const end = enc.flush(); if (end.length) out.push(new Uint8Array(end));
+  return new Blob(out, { type: 'audio/mpeg' });
 }
 function wav(b) {
   const ch = b.numberOfChannels, n = b.length, size = n * ch * 2, dv = new DataView(new ArrayBuffer(44 + size));
