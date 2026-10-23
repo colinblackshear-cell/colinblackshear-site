@@ -1047,6 +1047,46 @@ function startGroove(b, tr, syncToPicture) {
   const tk = () => { while (next < actx.currentTime + .15) { play(step, next); next += STEP; step++; } };
   tk(); grooveTimer = setInterval(tk, 25);
 }
+/* The intro: dark, minimal warehouse techno in F minor. Four-to-the-floor kick with a dubby rumble,
+   off-beat hats, an acid line whose filter slowly opens and closes, and a chord stab lost in delay. */
+const ACID = [41, 41, 53, 41, 44, 41, 48, 41, 41, 51, 41, 44, 41, 53, 46, 41], ACID_ON = [1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1], ACID_ACC = [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0];
+function startUnderground(b) {
+  const STEP = 60 / 124 / 4;
+  // rumble: the kick sent into a dark, feeding-back delay
+  const rumble = actx.createDelay(1), rfb = actx.createGain(), rlp = actx.createBiquadFilter(), rIn = actx.createGain();
+  rumble.delayTime.value = STEP * 2; rfb.gain.value = .55; rlp.type = 'lowpass'; rlp.frequency.value = 180; rIn.gain.value = .5;
+  rIn.connect(rlp); rlp.connect(rumble); rumble.connect(rfb); rfb.connect(rlp); rumble.connect(b);
+  // dub delay for the stab, dotted eighths, darker each repeat
+  const dub = actx.createDelay(1), dfb = actx.createGain(), dlp = actx.createBiquadFilter();
+  dub.delayTime.value = STEP * 3; dfb.gain.value = .5; dlp.type = 'lowpass'; dlp.frequency.value = 1400;
+  dub.connect(dlp); dlp.connect(dfb); dfb.connect(dub); dlp.connect(b);
+  const acidF = (time, f, acc) => {
+    const o = actx.createOscillator(), fl = actx.createBiquadFilter(), g = actx.createGain();
+    o.type = 'sawtooth'; o.frequency.value = mtof(f);
+    fl.type = 'lowpass'; fl.Q.value = 13;
+    fl.frequency.setValueAtTime(cut * (acc ? 3.2 : 1.9), time); fl.frequency.exponentialRampToValueAtTime(Math.max(80, cut * .5), time + .16);
+    env(g, time, acc ? .085 : .055, .003, .16);
+    o.connect(fl); fl.connect(g); g.connect(b); o.start(time); o.stop(time + .25);
+  };
+  let cut = 300, step = 0, next = actx.currentTime + .05;
+  const play = (n, time) => {
+    const bar = Math.floor(n / 16) % 16, p = n % 16;
+    cut = 260 + 900 * (.5 - .5 * Math.cos((n % 256) / 256 * Math.PI * 2));   // the filter breathes over 16 bars
+    const kick = bar >= 2 && bar !== 15;
+    if (kick && p % 4 === 0) {
+      const k = tone('sine', 150, time, .34, .9, b); k.frequency.exponentialRampToValueAtTime(44, time + .09);
+      tone('sine', 150, time, .06, .25, rIn).frequency.exponentialRampToValueAtTime(44, time + .09);
+      noise(time, .012, 'highpass', 3000, .12, b);
+    }
+    if (p % 4 === 2) noise(time, .09, 'highpass', 8200, bar < 2 ? .05 : .09, b, .7);              // open hat on the off-beat
+    if (bar >= 4 && p % 2 === 1) noise(time, .02, 'highpass', 10000, p % 4 === 3 ? .03 : .018, b);  // ticking sixteenths
+    if (bar >= 4 && (p === 4 || p === 12)) { noise(time, .2, 'bandpass', 1300, .1, b, 1.4); noise(time + .012, .14, 'bandpass', 1100, .06, dub, 1.2); }
+    if (ACID_ON[p] && bar !== 15) acidF(time, ACID[p] - (bar % 8 >= 6 ? 2 : 0), ACID_ACC[p]);
+    if (p === 6 && bar % 2 === 1) [65, 68, 72, 75].forEach(m => tone('sawtooth', mtof(m), time, .12, .018, dub, .004));
+  };
+  const tk = () => { while (next < actx.currentTime + .15) { play(step, next); next += STEP; step++; } };
+  tk(); grooveTimer = setInterval(tk, 25);
+}
 function startPad(b, root) {
   const f = actx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 700; f.Q.value = 2;
   const lfo = actx.createOscillator(), lg = actx.createGain(); lfo.frequency.value = .09; lg.gain.value = 380;
@@ -1064,7 +1104,7 @@ function startChannelAudio() {
   if (!soundOn || !powered) return;
   bus = actx.createGain(); bus.connect(master);
   const b = bus, k = kindOf(cur);
-  if (k === 'montage') startGroove(b, TRACKS[0], true);
+  if (k === 'montage') startUnderground(b);
   else if (k === 'music') { trackAt = performance.now(); startGroove(b, TRACKS[trackIdx], false); }
   else if (k === 'work') { const w = WORKS.find(w => w.ch === cur); if (!w.vimeo || vimeoBlocked) startPad(b, w.root); }
   else if (k === 'bars') { const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = 1000; g.gain.value = .03; o.connect(g); g.connect(b); o.start(); held.push(o); }
