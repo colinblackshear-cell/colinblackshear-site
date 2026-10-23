@@ -326,7 +326,7 @@ const WORD = wordLayout('COLIN BLACKSHEAR');
   requestAnimationFrame(tick);
 })();
 const BPM = 96, BEAT = 60 / BPM, STEP = BEAT / 4;
-const STATIC_MS = reduce ? 120 : 300;
+const STATIC_MS = reduce ? 100 : 160;
 
 /* film grain overlay texture */
 (() => {
@@ -1380,7 +1380,9 @@ function syncVimeo(now) {
   // and stays out of sight under the static until the picture settles
   const want = powered && now - powerAt > 1000 && w && w.vimeo && !vimeoBlocked ? w.vimeo : null;
   if (want !== vId) { if (want && vId) filmState(); else killVimeo(); if (want) makeVimeo(want); }
-  if (vWait && now - vWaitAt > (vWaitCut ? 1500 : 3500)) vWait = false;
+  // a channel change shows only a short burst of static; if the film is still coming, the screen waits in black
+  if (vWait && !vWaitCut && now - vWaitAt > 250) vWaitCut = true;
+  if (vWait && now - vWaitAt > 2000) vWait = false;
   if (vWait && !vWaitCut) staticUntil = Math.max(staticUntil, now + 40);
   vbox.classList.toggle('cut', vWait && vWaitCut);
   if (vId) vbox.style.opacity = now < staticUntil ? 0 : '';
