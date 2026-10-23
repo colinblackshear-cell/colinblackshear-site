@@ -389,6 +389,7 @@ try { if (sessionStorage.getItem('zoomTo') === '808') { sessionStorage.removeIte
 let ac = null, G = null, noise;
 function audio() {
   if (ac) { if (ac.state !== 'running') ac.resume(); return ac; }
+  setSession('playback');
   ac = new (window.AudioContext || window.webkitAudioContext)();
   noise = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
   const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
@@ -400,7 +401,7 @@ function audio() {
    It is built once for the speakers and again, offline, when a beat is downloaded. */
 function graph(c, vol) {
   const comp = c.createDynamicsCompressor();
-  comp.threshold.value = -14; comp.ratio.value = 4; comp.attack.value = .003; comp.release.value = .2;
+  comp.threshold.value = -10; comp.knee.value = 8; comp.ratio.value = 3; comp.attack.value = .004; comp.release.value = .18;
   const master = c.createGain(); master.gain.value = vol; master.connect(comp); comp.connect(c.destination);
   const echo = c.createGain(), delay = c.createDelay(3), fb = c.createGain(), tone = c.createBiquadFilter(), ewet = c.createGain();
   tone.type = 'lowpass'; tone.frequency.value = 3200; ewet.gain.value = .7;
@@ -669,15 +670,23 @@ const MIC_START = ['....x.......x...', '......x.......x.', '..x.......x.....'];
 function playSample(i, t, out, v) {
   const sm = SAMPLES[i]; const b = sm.reverse ? sm.rev : sm.buf; if (!b) return;
   const s = ac.createBufferSource(); s.buffer = b; s.playbackRate.value = Math.pow(2, sm.pitch / 12);
-  const g = ac.createGain(); g.gain.value = v; s.connect(g); g.connect(out); s.start(t);
+  const g = ac.createGain(); g.gain.setValueAtTime(v, t); s.connect(g); g.connect(out); s.start(t);
+  // like a hardware sampler, a new hit cuts off the last one, so long recordings don't pile up and swamp the mix
+  const ch = G.choke || (G.choke = {}), prev = ch[i];
+  if (prev && prev.t < t) { prev.g.gain.setTargetAtTime(0, t, .006); try { prev.s.stop(t + .05); } catch (e) {} }
+  ch[i] = { s, g, t };
 }
+// Phones and Bluetooth headphones switch to call mode while the mic is open, which makes everything quiet.
+// Where the browser lets us (Safari), ask for normal playback again as soon as recording stops.
+function setSession(type) { try { if (navigator.audioSession) navigator.audioSession.type = type; } catch (e) {} }
 let recording = null;
 async function record(i, btn) {
   if (recording) { recording.stop(); return; }
   audio();
   let stream;
+  setSession('play-and-record');
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); }
-  catch (e) { note('The mic is blocked. Allow microphone access for this page in your browser, then try again.', true); return; }
+  catch (e) { setSession('playback'); note('The mic is blocked. Allow microphone access for this page in your browser, then try again.', true); return; }
   const src = ac.createMediaStreamSource(stream);
   const proc = ac.createScriptProcessor(2048, 1, 1), mute = ac.createGain(); mute.gain.value = 0;
   const chunks = []; let len = 0; const max = ac.sampleRate * 3;
@@ -690,6 +699,7 @@ async function record(i, btn) {
   btn.setAttribute('aria-pressed', 'true'); btn.lastChild.textContent = 'Stop';
   recording = { stop() {
     recording = null; proc.disconnect(); src.disconnect(); stream.getTracks().forEach(tr => tr.stop());
+    setSession('playback'); if (ac.state !== 'running') ac.resume();
     btn.setAttribute('aria-pressed', 'false'); btn.lastChild.textContent = 'Record';
     const all = new Float32Array(len); let o = 0; for (const c of chunks) { all.set(c, o); o += c.length; }
     finish(i, all);
@@ -924,7 +934,7 @@ let playing = false, step = 0, nextT = 0, timer = 0;
 const queue = [];
 function sound(id, t, lvl) {
   const row = S.rows[id], v = (lvl === 2 ? 1 : .62) * row.vol, r = ROWS.find(x => x.id === id), out = G.strips[id].inp;
-  if (r.mic !== undefined) playSample(r.mic, t, out, v * 1.2); else KITS[id][row.v].play(t, out, v);
+  if (r.mic !== undefined) playSample(r.mic, t, out, v * .85); else KITS[id][row.v].play(t, out, v);
 }
 function trigger(id, t, lvl) {
   sound(id, t, lvl);
