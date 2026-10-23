@@ -27,3 +27,6 @@ a{color:inherit}
 .sections a:hover,.sections a[aria-current="true"]{color:var(--title);border-bottom-color:rgba(239,232,216,.5)}
 .eyebrow{font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--title-soft)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* the name in the corner is the same neon pen line as the TV room's title */
+.home.wm{display:inline-flex;align-items:center;line-height:0}
+.home.wm svg{display:block;height:clamp(20px, 3.4vw, 28px);width:auto;max-width:62vw;overflow:visible}

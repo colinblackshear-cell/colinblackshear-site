@@ -250,10 +250,10 @@ body.embed .machine{pointer-events:none;box-shadow:0 0 0 2px var(--edge)}
 <body>
 <div class="grain" aria-hidden="true"></div>
 <div class="top">
-  <a class="home" href="../../">Colin Blackshear</a>
+  <a class="home wm" href="../../"><span class="sr">Colin Blackshear</span><svg data-wordmark aria-hidden="true"></svg></a>
   <nav class="sections" aria-label="Sections">
     <a href="../../#films">Films</a>
-    <a href="../../#music">Music</a>
+    <a href="../../music/">Music</a>
     <a href="../" aria-current="true">Interactive</a>
   </nav>
 </div>
@@ -1038,5 +1038,6 @@ build(); load(); render();
 // in the lab, the machine sits on the table running its lights silently
 if (EMBED) { let s = 0; setInterval(() => { lit(s); s = (s + 1) % STEPS; }, 60000 / 104 / 4); }
 </script>
+<script src="../../wordmark.js"></script>
 </body>
 </html>

@@ -87,10 +87,10 @@ body.leaving .title, body.leaving .top, body.leaving .station:not(.chosen), body
 <body>
 <div class="grain" aria-hidden="true"></div>
 <div class="top">
-  <a class="home" href="../">Colin Blackshear</a>
+  <a class="home wm" href="../"><span class="sr">Colin Blackshear</span><svg data-wordmark aria-hidden="true"></svg></a>
   <nav class="sections" aria-label="Sections">
     <a href="../#films">Films</a>
-    <a href="../#music">Music</a>
+    <a href="../music/">Music</a>
     <a href="./" aria-current="true">Interactive</a>
   </nav>
 </div>
@@ -210,5 +210,6 @@ function fall(e, el, href, slug) {
 // coming back with the browser's back button: undo the fall
 addEventListener('pageshow', e => { if (e.persisted) { document.body.classList.remove('leaving'); document.getElementById('veil').classList.remove('on'); document.querySelectorAll('.chosen').forEach(c => c.classList.remove('chosen')); document.querySelectorAll('.tilt, .slip, .also').forEach(t => { t.style.transform = ''; t.style.transition = ''; }); } });
 </script>
+<script src="../wordmark.js"></script>
 </body>
 </html>
