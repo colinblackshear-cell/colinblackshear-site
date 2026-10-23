@@ -78,6 +78,9 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
     radial-gradient(120% 110% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.6));
   box-shadow:inset 0 0 24px rgba(0,0,0,.8)}
 .vbox[hidden]{display:none}
+/* a cut between sections in the room: the picture blinks out and back, like a hard edit */
+.vbox.cut iframe{opacity:.08;transition:opacity .08s}
+.vbox iframe{transition:opacity .35s}
 .psy{width:100%;height:100%;mix-blend-mode:screen}
 /* phone turned sideways: the film sits in a walnut set at its true shape, with a side panel for channels */
 .tvframe{position:fixed;inset:0;z-index:19;display:none;opacity:0;
@@ -1171,13 +1174,33 @@ if (document.fullscreenEnabled && fsEl.requestFullscreen) {
   $('tvfFull').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : fsEl.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}));
 }
 tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
-function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; laid = null; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
+function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; laid = null; vDur = 0; snipping = false; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
 function makeVimeo(id) {
   vFrame = document.createElement('iframe');
   vFrame.src = `https://player.vimeo.com/video/${id}?autoplay=1&muted=${soundOn ? 0 : 1}&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0`;
   vFrame.allow = 'autoplay; fullscreen; picture-in-picture'; vFrame.title = 'Film'; vFrame.tabIndex = -1;
   vFrame.addEventListener('load', () => setTimeout(vimeoSound, 400));
   vbox.appendChild(vFrame); vbox.hidden = false; vId = id; vAt = performance.now();
+}
+/* In the room the set plays a loop of random sections of the film; stepping in plays it whole, from the top. */
+let vDur = 0, snipAt = 0, snipping = false;
+function vSend(m) { if (vFrame && vFrame.contentWindow) vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com'); }
+addEventListener('message', e => {
+  if (!vFrame || e.source !== vFrame.contentWindow || e.origin !== 'https://player.vimeo.com') return;
+  let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
+  if (d.event === 'ready') vSend({ method: 'getDuration' });
+  else if (d.method === 'getDuration' && d.value > 0) { vDur = d.value; snipAt = 0; }
+});
+function snippets(now) {
+  const inRoom = zoomTo < 1 && fullP < .01;
+  if (!vFrame || !vDur) return;
+  if (!inRoom) { if (snipping) { snipping = false; vSend({ method: 'setCurrentTime', value: 0 }); vSend({ method: 'play' }); } return; }
+  if (!snipping || now - snipAt > 9000) {
+    snipping = true; snipAt = now;
+    const t = vDur * (.06 + Math.random() * .82);
+    vbox.classList.add('cut'); vSend({ method: 'setCurrentTime', value: t }); vSend({ method: 'play' });
+    setTimeout(() => vbox.classList.remove('cut'), 160);
+  }
 }
 function vimeoSound() {
   if (!vFrame || !vFrame.contentWindow) return;
@@ -1190,6 +1213,7 @@ function syncVimeo(now) {
   const want = powered && now - powerAt > 1000 && now >= staticUntil && w && w.vimeo && !vimeoBlocked ? w.vimeo : null;
   if (want !== vId) { killVimeo(); if (want) makeVimeo(want); }
   if (!vFrame) return;
+  snippets(now);
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
   for (const c of vCorners) {
     const v = c.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
