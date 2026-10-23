@@ -81,13 +81,6 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
 /* a cut between sections in the room: the picture blinks out and back, like a hard edit */
 .vbox.cut iframe{opacity:.08;transition:opacity .08s}
 .vbox iframe{transition:opacity .35s}
-.vbox iframe.reel{transition:none}
-.vbox .reeltext{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;padding:0 8%;text-align:center;pointer-events:none;
-  font:italic 400 var(--rs,28px)/1.1 "Instrument Serif",Georgia,serif;color:#f6eedb;text-shadow:0 0 22px rgba(0,0,0,.9),0 0 5px rgba(0,0,0,.7);
-  background:radial-gradient(70% 55% at 50% 50%,rgba(0,0,0,.5),rgba(0,0,0,.12));opacity:0;transition:opacity 1s}
-.vbox .reeltext.on{opacity:1}
-.vbox .reeltext span{opacity:0;transition:opacity .7s}
-.vbox .reeltext span.show{opacity:1}
 .psy{width:100%;height:100%;mix-blend-mode:screen}
 /* phone turned sideways: the film sits in a walnut set at its true shape, with a side panel for channels */
 .tvframe{position:fixed;inset:0;z-index:19;display:none;opacity:0;
@@ -339,7 +332,6 @@ const WORKS = [
   { ch: 7, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968' },
   { ch: 8, title: 'The Bread Bejkr', kind: 'Film',       year: '',     role: '',                  scene: leaks,   root: 52, vimeo: '71693536' },
 ];
-const MONTAGE_ORDER = [0, 3, 1, 4, 2, 5];
 const MUSIC_CH = 9;
 /* placeholder songs, synthesized live; real tracks would be audio files */
 const TRACKS = [
@@ -486,25 +478,45 @@ const SAYINGS = [
   'The light remembers.',
   'Watch. That is enough.',
 ];
-function sayingCard(line, lt, dur) {
-  ctx.fillStyle = '#050505'; ctx.fillRect(0, 0, W, H);
-  const fade = Math.max(0, Math.min(1, (lt - .6) / 1.6, (dur - lt) / 1.2));
-  const g = ctx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, 240);
-  g.addColorStop(0, `rgba(255,190,110,${.08 * fade})`); g.addColorStop(1, 'rgba(255,190,110,0)');
+/* Channel 2 is a hallucination: a slow kaleidoscope of melting colour, painted small and blown up soft */
+const HW = 80, HH = 60, hallu = document.createElement('canvas'); hallu.width = HW; hallu.height = HH;
+const hctx = hallu.getContext('2d'), himg = hctx.createImageData(HW, HH);
+function hallucinate(t) {
+  const d = himg.data, s = reduce ? 4 : t;
+  const cx = Math.sin(s * .23) * .22, cy = Math.cos(s * .19) * .16;
+  for (let y = 0; y < HH; y++) for (let x = 0; x < HW; x++) {
+    const u = x / HW - .5, v = (y / HH - .5) * .75, r = Math.hypot(u, v), a = Math.atan2(v, u);
+    // six-fold mirror, turning slowly, over ripples that breathe out from a wandering eye
+    const k = Math.abs(((a * 3 / Math.PI + s * .04) % 1 + 1) % 1 - .5);
+    const f = Math.sin(r * 17 - s * 1.2) + Math.sin(k * 8 + r * 7 + s * .6) + Math.sin((u - v) * 6 + s * .35)
+      + Math.sin(Math.hypot(u - cx, v - cy) * 15 - s * .9);
+    const h = f * .95 + s * .22 + r * 2.5, lit = .55 + .45 * Math.sin(f * 1.3 + s * .5), i = (y * HW + x) * 4;
+    d[i] = (120 + 120 * Math.sin(h)) * lit; d[i + 1] = (105 + 105 * Math.sin(h + 2.2)) * lit; d[i + 2] = (125 + 125 * Math.sin(h + 4.3)) * lit; d[i + 3] = 255;
+  }
+  hctx.putImageData(himg, 0, 0);
+  ctx.imageSmoothingEnabled = true; ctx.drawImage(hallu, 0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, H / 2, 40, W / 2, H / 2, 430);
+  g.addColorStop(0, 'rgba(0,0,0,.1)'); g.addColorStop(1, 'rgba(0,0,0,.8)');
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  ctx.globalAlpha = fade; ctx.fillStyle = '#f6eedb'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.font = 'italic 36px "Instrument Serif", Georgia, serif';
-  ctx.fillText(line, W / 2, H / 2 + (1 - fade) * 6);
-  ctx.globalAlpha = 1; ctx.textBaseline = 'alphabetic';
+}
+function sayingCard(line, sub, lt, dur) {
+  const fade = Math.max(0, Math.min(1, (lt - .5) / 1.4, (dur - lt) / 1.2));
+  const g = ctx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, 260);
+  g.addColorStop(0, `rgba(0,0,0,${.45 * fade})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.globalAlpha = fade; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(255,214,150,.9)'; ctx.shadowBlur = 18; ctx.fillStyle = '#fff6e4';
+  ctx.font = 'italic 46px "Instrument Serif", Georgia, serif';
+  ctx.fillText(line, W / 2, H / 2 - (sub ? 14 : 0) + (1 - fade) * 6);
+  if (sub) { ctx.shadowBlur = 8; ctx.font = '24px "VT323", monospace'; ctx.fillStyle = '#ffd9a0'; ctx.fillText(sub, W / 2, H / 2 + 34); }
+  ctx.shadowBlur = 0; ctx.globalAlpha = 1; ctx.textBaseline = 'alphabetic';
 }
 function drawMontage(t) {
-  if (reel) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }  // the reel of real footage sits over the glass
-  const intro = BEAT * 10, cut = BEAT * 2, cycle = intro + cut * 24, lt = t % cycle;
-  if (lt < intro) { sayingCard(SAYINGS[Math.floor(t / cycle) % SAYINGS.length], lt, intro); return; }
-  const k = Math.floor((lt - intro) / cut), local = lt - intro - k * cut, w = WORKS[MONTAGE_ORDER[k % 6]];
-  w.scene(t + k * 3.7);
-  if (local < .07 && !reduce) { ctx.fillStyle = 'rgba(255,250,235,.5)'; ctx.fillRect(0, 0, W, H); }
-  burnIn(`${w.title.toUpperCase()}  ${w.year}`.trim(), .85);
+  hallucinate(t);
+  // a saying, then the invitation to turn the dial, round and round
+  const lt = t % 16, n = Math.floor(t / 16);
+  if (lt < 8) sayingCard(SAYINGS[n % SAYINGS.length], '', lt, 8);
+  else sayingCard('Change the channel', '◂  TURN THE DIAL  ▸', lt - 8, 8);
 }
 function drawWork(w, t) {
   if (w.vimeo && !vimeoBlocked) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); return; }  // the Vimeo player sits over the glass
@@ -940,14 +952,14 @@ function drawOSD(now) {
   }
   octx.shadowBlur = 0;
 }
-const showCh = () => { osd = { text: String(cur).padStart(2, '0'), sub: cur === 2 ? 'REEL' : '', until: performance.now() + 2600 }; };
+const showCh = () => { osd = { text: String(cur).padStart(2, '0'), sub: cur === 2 ? 'TRIP' : '', until: performance.now() + 2600 }; };
 
 /* --- caption + channel --- */
 function caption() {
   document.querySelectorAll('.sections a[data-ch]').forEach(a => a.setAttribute('aria-current', a.dataset.ch === 'music' ? cur === MUSIC_CH : cur !== MUSIC_CH));
   const k = kindOf(cur), w = WORKS.find(w => w.ch === cur);
   $('lNum').textContent = `Channel ${cur}`;
-  if (k === 'montage') { $('lTitle').innerHTML = 'Selected <em>Work</em>'; $('lMeta').textContent = 'Quick cuts from the films'; }
+  if (k === 'montage') { $('lTitle').innerHTML = 'Selected <em>Work</em>'; $('lMeta').textContent = 'Be here. Now playing.'; }
   else if (k === 'music') { $('lTitle').innerHTML = '<em>Music</em>'; $('lMeta').textContent = `${TRACKS[trackIdx].title} · track ${trackIdx + 1} of ${TRACKS.length} · placeholder`; }
   else if (k === 'work') { $('lTitle').innerHTML = `<em>${w.title}</em>`; $('lMeta').textContent = metaOf(w) + (w.vimeo ? ' · via Vimeo' : ''); }
   else if (k === 'bars') { $('lTitle').textContent = 'Please stand by'; $('lMeta').textContent = 'More films coming soon'; }
@@ -958,7 +970,7 @@ function caption() {
 function updateDeck() {
   const k = kindOf(cur), w = WORKS.find(w => w.ch === cur);
   const name = k === 'montage' ? 'Selected Work' : k === 'music' ? 'Music' : w ? w.title : k === 'bars' ? 'Please stand by' : 'No signal';
-  const sub = k === 'montage' ? 'Reel · cut to music' : k === 'music' ? `${soundOn ? '▶' : '❚❚'} ${TRACKS[trackIdx].title} · ${trackIdx + 1}/${TRACKS.length}` : w ? metaOf(w) || 'Details to come' : k === 'bars' ? 'More films coming' : 'Keep turning';
+  const sub = k === 'montage' ? 'Be here. Now playing.' : k === 'music' ? `${soundOn ? '▶' : '❚❚'} ${TRACKS[trackIdx].title} · ${trackIdx + 1}/${TRACKS.length}` : w ? metaOf(w) || 'Details to come' : k === 'bars' ? 'More films coming' : 'Keep turning';
   $('readout').innerHTML = `CH ${String(cur).padStart(2, '0')} · ${name.toUpperCase()}<small>${sub}</small>`;
   $('transport').hidden = k !== 'music'; $('trPrev').hidden = $('trNext').hidden = k !== 'music';
   $('dtPlay').textContent = soundOn ? '❚❚' : '▶';
@@ -1096,7 +1108,7 @@ const presetWrap = $('presets');
 for (let c = 2; c <= 13; c++) {
   const b = document.createElement('button'); b.className = 'key' + (kindOf(c) === 'snow' ? ' dead' : ''); b.textContent = c;
   const w = WORKS.find(w => w.ch === c);
-  const name = c === 2 ? 'Selected Work (reel)' : c === MUSIC_CH ? 'Music' : w ? w.title : c === 13 ? 'Stand by' : 'No signal';
+  const name = c === 2 ? 'Selected Work' : c === MUSIC_CH ? 'Music' : w ? w.title : c === 13 ? 'Stand by' : 'No signal';
   b.title = name; b.setAttribute('aria-label', `Channel ${c}: ${name}`);
   b.addEventListener('click', () => setChannel(c)); presetWrap.appendChild(b);
 }
@@ -1182,7 +1194,7 @@ if (document.fullscreenEnabled && fsEl.requestFullscreen) {
   $('tvfFull').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen() : fsEl.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}));
 }
 tvf.addEventListener('pointerdown', e => { if (!e.target.closest('button') && !soundOn) setSound(true); });
-function killVimeo() { vbox.querySelectorAll('iframe').forEach(f => f.remove()); vFrame = null; reel = null; reelText.classList.remove('on'); laid = null; vDur = 0; snipping = false; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
+function killVimeo() { if (vFrame) vFrame.remove(); vFrame = null; laid = null; vDur = 0; snipping = false; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull'); }
 function makeVimeo(id) {
   vFrame = document.createElement('iframe');
   vFrame.src = `https://player.vimeo.com/video/${id}?autoplay=1&muted=${soundOn ? 0 : 1}&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0`;
@@ -1194,7 +1206,7 @@ function makeVimeo(id) {
 let vDur = 0, snipAt = 0, snipping = false;
 function vSend(m) { if (vFrame && vFrame.contentWindow) vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com'); }
 addEventListener('message', e => {
-  if (!vFrame || reel || e.source !== vFrame.contentWindow || e.origin !== 'https://player.vimeo.com') return;
+  if (!vFrame || e.source !== vFrame.contentWindow || e.origin !== 'https://player.vimeo.com') return;
   let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
   if (d.event === 'ready') {
     // the player can ignore sound and play until it's ready, so say them again now, then check they stuck
@@ -1216,68 +1228,21 @@ function snippets(now) {
     setTimeout(() => vbox.classList.remove('cut'), 160);
   }
 }
-/* Channel 2 opens on a reel: quick, chaotic cuts from the films, under the sayings.
-   A few muted players run at once; one is on screen while the others jump somewhere new, ready for the next cut. */
-const REEL_SHAPE = { aspect: 16 / 9 }, REEL_FILMS = WORKS.filter(w => w.vimeo).map(w => w.vimeo);
-let reel = null;
-const reelText = document.createElement('div'); reelText.className = 'reeltext'; reelText.innerHTML = '<span></span>'; vbox.appendChild(reelText);
-function reelSrc(id) { return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0&quality=360p`; }
-function makeReel() {
-  const n = Math.min(REEL_FILMS.length, matchMedia('(pointer: coarse)').matches ? 2 : 3);
-  const order = REEL_FILMS.slice().sort(() => Math.random() - .5);
-  reel = { frames: [], on: 0, next: 0, said: -1, sayAt: 0, order, pick: n };
-  for (let i = 0; i < n; i++) {
-    const el = document.createElement('iframe');
-    el.className = 'reel'; el.src = reelSrc(order[i]); el.allow = 'autoplay'; el.title = 'Reel'; el.tabIndex = -1; el.style.opacity = i ? 0 : 1;
-    vbox.insertBefore(el, reelText); reel.frames.push({ el, dur: 0 });
-  }
-  vFrame = reel.frames[0].el; vbox.hidden = false; vId = 'reel'; vAt = performance.now();
-  reelText.classList.add('on');
-}
-const reelSend = (f, m) => f.el.contentWindow && f.el.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
-const reelJump = f => { if (f.dur) { reelSend(f, { method: 'setCurrentTime', value: f.dur * (.04 + Math.random() * .88) }); reelSend(f, { method: 'play' }); } };
-function reelTick(now) {
-  // a new saying every few seconds, fading through
-  const si = Math.floor((now - vAt) / 6500) % SAYINGS.length;
-  if (si !== reel.said) {
-    reel.said = si; const sp = reelText.firstChild; sp.classList.remove('show');
-    setTimeout(() => { sp.textContent = SAYINGS[si]; sp.classList.add('show'); }, reel.sayAt ? 700 : 0); reel.sayAt = now;
-  }
-  if (now < reel.next) return;
-  const ready = reel.frames.map((f, i) => i).filter(i => i !== reel.on && reel.frames[i].dur);
-  if (!ready.length) { reel.next = now + 300; return; }
-  const was = reel.frames[reel.on], to = ready[Math.floor(Math.random() * ready.length)];
-  reel.frames[to].el.style.opacity = 1; was.el.style.opacity = 0; reel.on = to;
-  reel.next = now + (reduce ? 4000 : 700 + Math.random() * 1600);
-  // the one just cut away from goes somewhere else: usually another moment, now and then another film
-  if (REEL_FILMS.length > reel.frames.length && Math.random() < .3) {
-    was.dur = 0; was.el.src = reelSrc(reel.order[reel.pick++ % reel.order.length]);
-  } else reelJump(was);
-}
-addEventListener('message', e => {
-  if (!reel || e.origin !== 'https://player.vimeo.com') return;
-  const f = reel.frames.find(f => f.el.contentWindow === e.source); if (!f) return;
-  let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
-  if (d.event === 'ready') { reelSend(f, { method: 'setVolume', value: 0 }); reelSend(f, { method: 'getDuration' }); }
-  else if (d.method === 'getDuration' && d.value > 0) { f.dur = d.value; reelJump(f); }
-});
-function vKick() { if (reel) return; vimeoSound(); vSend({ method: 'play' }); }
+function vKick() { vimeoSound(); vSend({ method: 'play' }); }
 // any tap while a film is on gives the player another go at sound, in case the browser held it back
 addEventListener('pointerdown', () => { if (vFrame && soundOn) setTimeout(vKick, 0); }, true);
 function vimeoSound() {
-  if (reel) return;
   if (!vFrame || !vFrame.contentWindow) return;
   const send = m => vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
   send({ method: 'setMuted', value: !soundOn }); send({ method: 'setVolume', value: soundOn ? 1 : 0 });
 }
 const vCorners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => new THREE.Vector3(SX + a * SW / 2 * .985, CY + b * SH / 2 * .985, FZ + .04));
 function syncVimeo(now) {
-  const w = WORKS.find(w => w.ch === cur) || REEL_SHAPE;
-  const ready = powered && now - powerAt > 1000 && now >= staticUntil && !vimeoBlocked;
-  const want = !ready ? null : kindOf(cur) === 'montage' ? (REEL_FILMS.length ? 'reel' : null) : w.vimeo || null;
-  if (want !== vId) { killVimeo(); if (want === 'reel') makeReel(); else if (want) makeVimeo(want); }
+  const w = WORKS.find(w => w.ch === cur);
+  const want = powered && now - powerAt > 1000 && now >= staticUntil && w && w.vimeo && !vimeoBlocked ? w.vimeo : null;
+  if (want !== vId) { killVimeo(); if (want) makeVimeo(want); }
   if (!vFrame) return;
-  if (reel) reelTick(now); else snippets(now);
+  snippets(now);
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
   for (const c of vCorners) {
     const v = c.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
@@ -1316,7 +1281,7 @@ function syncVimeo(now) {
   const live = zp * (1 - fullP);
   vOver.x = (fw - bw) * live; vOver.y = (fh - bh) * live;
   // the first time a cropped film is up on a touch screen, say that it can be moved
-  if (!dragHinted && !reel && zp === 1 && fullP === 0 && vOver.x + vOver.y > 40 && now - vAt > 1800 && matchMedia('(pointer: coarse)').matches) {
+  if (!dragHinted && zp === 1 && fullP === 0 && vOver.x + vOver.y > 40 && now - vAt > 1800 && matchMedia('(pointer: coarse)').matches) {
     dragHinted = true; $('draghint').classList.add('on'); setTimeout(() => $('draghint').classList.remove('on'), 2800);
   }
   placeFilm(bx, by, bw, bh, fw, fh, (bw - fw) / 2 + pan.x * vOver.x / 2, (bh - fh) / 2 + pan.y * vOver.y / 2, radius, crt);
@@ -1326,17 +1291,15 @@ function syncVimeo(now) {
 // it is only resized when the shape really changes (stepping in, turning the phone).
 let laid = null;
 function placeFilm(bx, by, bw, bh, fw, fh, fl, ft, radius, crt) {
-  const frames = reel ? reel.frames.map(f => f.el) : [vFrame];
   const off = (a, b) => Math.abs(a - b) / Math.max(1, b) > .04;
   if (!laid || laid.f !== vFrame || off(bw, laid.bw) || off(bh, laid.bh) || off(fw, laid.fw)) {
     laid = { f: vFrame, bw, bh, fw, fh };
-    vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px'; vbox.style.setProperty('--rs', Math.max(13, Math.min(bh * .085, bw * .075)) + 'px');
-    frames.forEach(f => { f.style.width = fw + 'px'; f.style.height = fh + 'px'; });
+    vbox.style.width = bw + 'px'; vbox.style.height = bh + 'px';
+    vFrame.style.width = fw + 'px'; vFrame.style.height = fh + 'px';
   }
   const sx = bw / laid.bw, sy = bh / laid.bh, k = fw / laid.fw;
   vbox.style.transform = `translate(${bx}px, ${by}px) scale(${sx}, ${sy})`;
-  const tf = `translate(${fl / sx}px, ${ft / sy}px) scale(${k / sx}, ${k / sy})`;
-  frames.forEach(f => f.style.transform = tf);
+  vFrame.style.transform = `translate(${fl / sx}px, ${ft / sy}px) scale(${k / sx}, ${k / sy})`;
   vbox.style.borderRadius = radius + 'px'; vbox.style.setProperty('--crt', crt);
 }
 
