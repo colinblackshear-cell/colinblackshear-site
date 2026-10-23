@@ -3,167 +3,469 @@
 <title>The Ten Courts</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Antique&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
-/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+/* Layout: one full-screen "flight" — a thin instrument bar on top, the scene card in the middle, the narrator's caption card below it. Single deliberate look: the safety-card palette. */
 :root{
-  color-scheme:light;
-  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
-  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+  color-scheme: light;
+  --cream:#F6EBD2; --parchment:#FBF3DF; --ink:#1E2A2B; --ink-soft:#44524F;
+  --teal:#1F5E63; --teal-deep:#123D40; --brown:#8A4B22; --lamp:#F2B640;
+  --red:#B8352A; --ok:#2F6B2B;
+  --scene-bg: var(--cream);
+  --display:'Jost', 'Futura', 'Century Gothic', sans-serif;
+  --body:'Atkinson Hyperlegible', 'Verdana', sans-serif;
 }
-html,body{min-height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
-a{color:var(--accent)}
-button{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
-.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
-.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
-.bar .sp{flex:1}
-.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
-.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
-.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-.btn.alt{background:var(--paper);color:var(--ink)}
-.btn.gold{background:var(--gold);color:var(--ink)}
-.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
-svg text{font-family:var(--display)}
+html,body{height:100%}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--body);overflow:hidden;-webkit-tap-highlight-color:transparent}
+#app{height:100%;display:flex;flex-direction:column;background:var(--scene-bg);transition:background-color 2.2s ease}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:2px solid var(--ink);background:var(--parchment);transition:opacity 1.5s,filter 1.5s}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;font-size:.8rem;text-transform:uppercase}
+#stageLabel{font-family:var(--display);font-weight:500;font-size:.85rem;color:var(--ink-soft);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#stageLabel b{color:var(--brown);font-weight:700;margin-right:8px;font-variant-numeric:tabular-nums}
+.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:var(--cream);color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;min-height:36px}
+.tog[aria-pressed="false"]{background:transparent;color:var(--ink-soft);border-style:dashed}
+.pick{font-family:var(--body);font-size:.8rem;border:2px solid var(--ink);background:var(--cream);color:var(--ink);border-radius:8px;padding:6px 8px;min-height:36px;max-width:190px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pick:focus-visible,.tog:focus-visible,.btn:focus-visible,.spot:focus-visible{outline:3px solid var(--lamp);outline-offset:3px}
+#stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:18px;padding-block:18px;padding-inline:16px;cursor:pointer;user-select:none}
+#visual{width:100%;display:flex;justify-content:center;flex:none}
+.frame{position:relative;width:min(100%, calc((100dvh - 380px) * 1.5), 980px);min-width:min(100%,300px);aspect-ratio:3/2;max-width:100%;border-radius:18px;overflow:hidden;transition:filter 3s ease, transform 3s ease}
+.frame>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:filter 3s ease}
+.frame canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.caption{flex:none;max-width:720px;width:100%;box-sizing:border-box;background:var(--parchment);border:2px solid var(--ink);border-radius:6px;padding:16px 20px;min-height:4.6em;transition:opacity .8s, filter 1.5s, transform 1.5s, border-color 1.5s}
+.caption p{margin:0;font-size:clamp(1.02rem, 2.3vw, 1.3rem);line-height:1.45;text-wrap:pretty}
+.caption.quiet{background:transparent;border-color:transparent;text-align:center}
+.caption.dark{background:#141413;color:var(--parchment);border-color:#141413}
+.caption[hidden]{display:none!important}
+#hint{margin:0;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);opacity:0;transition:opacity .6s;min-height:1em}
+#hint.on{opacity:.8;animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.35}}
+#choices{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.04em;border:2px solid var(--ink);background:var(--teal);color:var(--parchment);border-radius:999px;padding:12px 22px;cursor:pointer;min-height:48px}
+.btn.alt{background:var(--parchment);color:var(--ink)}
 
-/* ---------- full-screen player (manual and daily session) ---------- */
-body.insession{overflow:hidden}
-a.sbtn.home{text-decoration:none;display:inline-flex;align-items:center}
-body.insession .mdhome{display:none}
-.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
-.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
-.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
-.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
-.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
-.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
-.sbtn[aria-pressed="false"]{opacity:.55}
-.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
-.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
-.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
-.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
-.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
-@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
-@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
-.art{position:absolute;inset:0;width:100%;height:100%;display:block}
-.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
-.layer{position:absolute;inset:0}
-.layer:empty{pointer-events:none}
-.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
-.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
-.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
-.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
-.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
-.sgo.alt{background:transparent;color:var(--ink)}
-.sgo.wrong{animation:nope .4s}
-@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+/* dissolution: the manual's chrome comes apart; the narration always stays sharp */
+body.d1 .bar{opacity:.85}
+body.d2 .bar{filter:blur(.6px);opacity:.6}
+body.d2 .frame{border-radius:28px}
+body.d3 .bar{filter:blur(1.5px);opacity:.3}
+body.d3 .frame{border-radius:40px}
+body.void .bar,body.void #hint{opacity:0!important}
 
-/* interactions on the stage */
-.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
-.holdpill svg{width:28px;height:28px;margin-left:-8px}
-.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
-.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
-.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
-.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
-.spot b{cursor:pointer;box-shadow:0 3px 0 var(--ink);position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+/* title */
+.title-card{width:min(100%,640px);background:var(--teal);color:var(--parchment);border:2px solid var(--ink);border-radius:18px;padding:36px 28px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;align-items:flex-start;cursor:default}
+.title-card .eyebrow{font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:.75rem;color:var(--lamp);text-transform:uppercase}
+.title-card h1{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,7vw,3.6rem);line-height:1;text-wrap:balance;text-transform:uppercase;letter-spacing:.02em}
+.title-card p{margin:0;font-size:1.05rem;line-height:1.5;max-width:46ch}
+.title-card ol{margin:4px 0 8px;padding-left:1.3em;display:flex;flex-direction:column;gap:4px;font-size:.98rem}
+.title-card .btn{background:var(--lamp);color:var(--ink)}
+
+/* hotspots */
+.spot{position:absolute;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;border:3px solid #FFF3D6;background:rgba(242,182,64,.35);cursor:pointer;padding:0}
+.spot::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid #FFF3D6;animation:ping 1.8s ease-out infinite}
 .spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
-@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
-.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
-.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
-.pk.gone{opacity:.25;pointer-events:none}
-.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
-.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
-.half svg{width:100%;height:100%;display:block;transition:transform .5s}
-.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
-.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
-.half+.half{border-left:3px solid var(--night)}
-.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
-.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
-.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
-.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
-.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
-.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
-@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
-.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
-.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
-.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
-.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
-.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
-.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
-.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
-.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
-.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
-.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+@keyframes ping{from{transform:scale(.7);opacity:.9}to{transform:scale(1.4);opacity:0}}
+.heartglow{position:absolute;width:12%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(var(--s,0.4));background:radial-gradient(circle,#FFFBEA 0%,rgba(255,221,120,.85) 35%,rgba(255,200,80,0) 70%);transition:transform 1.2s ease;pointer-events:none}
 
-/* svg motion helpers */
-.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+/* breath ring */
+.breath{position:absolute;left:50%;top:50%;width:26%;aspect-ratio:1;transform:translate(-50%,-50%) scale(.6);border-radius:50%;border:4px solid var(--parchment);box-shadow:0 0 0 12px rgba(251,243,223,.15);transition:transform 1s ease-in-out, opacity 1s}
+
+/* svg scenes */
+.svgscene{position:absolute;inset:0;width:100%;height:100%}
+.flicker{transform-origin:300px 262px;animation:flick 1.3s ease-in-out infinite}
+@keyframes flick{0%,100%{transform:scaleY(1) skewX(0)}30%{transform:scaleY(.9) skewX(3deg)}60%{transform:scaleY(1.06) skewX(-2deg)}}
+.orb-down{animation:down 7s ease-in-out forwards}
+.orb-up{animation:up 7s ease-in-out forwards}
+@keyframes down{to{transform:translateY(91px)}}
+@keyframes up{to{transform:translateY(-55px)}}
+.dots{stroke-dasharray:2 7;stroke-linecap:round}
+
+/* guide entry */
+.guide{position:absolute;inset:0;background:var(--parchment);display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:4%;padding:5%;box-sizing:border-box}
+.guide .tag,.doorsteps .tag{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:clamp(.55rem,1.4vw,.75rem);background:var(--teal);color:var(--parchment);padding:5px 10px;border-radius:4px;text-transform:uppercase}
+.guide h2{margin:10px 0 8px;font-family:var(--display);font-weight:800;font-size:clamp(1.1rem,3.4vw,2.2rem);line-height:1.05;text-transform:uppercase;color:var(--brown);text-wrap:balance}
+.guide p{margin:0;font-size:clamp(.85rem,1.8vw,1.15rem);line-height:1.45}
+.guide .fig{height:100%;display:flex;align-items:center;justify-content:center;background:var(--teal);border-radius:12px;min-height:0}
+.frame.guideframe{aspect-ratio:auto;width:min(100%,860px)}
+.frame.guideframe .guide{position:relative;inset:auto;padding:24px;gap:24px}
+.guide .fig{align-self:stretch;min-height:200px;padding:12px}
+.guide .fig svg{height:220px;width:auto}
+.guide .gtext{box-sizing:border-box}
+.guide .gtext:focus-visible{outline:3px solid var(--lamp)}
+@media (max-width:760px){
+  .frame.guideframe .guide{grid-template-columns:1fr;gap:16px;padding:18px}
+  .guide .fig{min-height:0}
+  .guide .fig svg{height:150px}
+  .guide h2{font-size:1.5rem}
+  .guide p{font-size:1.02rem}
+}
+
+/* clear light */
+.crack{stroke-dasharray:900;stroke-dashoffset:900;animation:crack 1.2s ease-out forwards}
+@keyframes crack{to{stroke-dashoffset:0}}
+.bubble{opacity:0;transform:scale(.6);transform-origin:80% 80%;transition:opacity .8s, transform .8s}
+.bubble.on{opacity:1;transform:scale(1)}
+.ring{position:absolute;left:49.8%;top:43%;width:8%;aspect-ratio:1;border-radius:50%;border:3px solid rgba(242,182,64,.55);transform:translate(-50%,-50%);animation:ring 4.5s ease-out infinite;pointer-events:none}
+@keyframes ring{from{transform:translate(-50%,-50%) scale(.3);opacity:1}to{transform:translate(-50%,-50%) scale(9);opacity:0}}
+
+
+/* chapters 4-5 */
+.rise{animation:rise 4.5s ease-out forwards}
+@keyframes rise{from{transform:translateY(80px);opacity:0}to{transform:none;opacity:1}}
+.walk{animation:walk 9s ease-in forwards}
+@keyframes walk{to{transform:translateY(-22px);opacity:.25}}
+.steam path{animation:steam 2.4s ease-in-out infinite}
+.steam path+path{animation-delay:1.2s}
+@keyframes steam{0%{opacity:0;transform:translateY(6px)}50%{opacity:.9}100%{opacity:0;transform:translateY(-10px)}}
+.balloon{opacity:0}
+.balloon.on{animation:shout 4s ease-out forwards}
+@keyframes shout{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+.mug{opacity:0}
+.mug.on{opacity:1;animation:shake .35s linear 2}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.drawer{transition:transform 1s ease}
+.drawer.open{transform:translateX(60px)}
+.page{transform-box:fill-box;transform-origin:center;animation:fly 1.6s ease-in forwards}
+.page.f2{animation-delay:.35s}.page.f3{animation-delay:.7s}
+@keyframes fly{to{transform:translate(160px,-190px) rotate(30deg);opacity:0}}
+.glass.flash{animation:flash .9s ease}
+@keyframes flash{40%{fill:#FFFFFF}}
+.popped{transform-box:fill-box;transform-origin:center;animation:pop 1.2s ease 1s forwards}
+@keyframes pop{to{transform:scale(1.5);opacity:0}}
+.drops{opacity:0;animation:drops 1s ease 2s forwards}
+@keyframes drops{to{opacity:1}}
+.drawerbtn{position:absolute;background:transparent;border:2px dashed rgba(251,243,223,.75);border-radius:6px;cursor:pointer;padding:0}
+.drawerbtn:hover{background:rgba(242,182,64,.2)}
+.drawerbtn:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.run{background:var(--red);font-size:1.2rem;letter-spacing:.24em;text-transform:uppercase;padding:14px 34px;animation:pulse .9s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.checks{position:absolute;inset:0;background:var(--parchment);padding:5%;box-sizing:border-box;display:flex;flex-direction:column;gap:4%}
+.ck-head span{display:block;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(.95rem,3.4vw,2rem);color:var(--brown);letter-spacing:.03em}
+.ck-head small{display:block;font-size:clamp(.7rem,1.6vw,1rem);color:var(--ink-soft);margin-top:4px}
+.ck-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4%;flex:1}
+.ck{display:flex;align-items:center;gap:6%;padding:4%;border:2px solid var(--ink);border-radius:12px;background:var(--cream);color:var(--ink);font-family:var(--body);font-size:clamp(.7rem,1.9vw,1.15rem);line-height:1.25;text-align:left;cursor:pointer;min-width:0}
+.ck:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.box{flex:none;width:clamp(18px,3vw,32px);aspect-ratio:1;border:3px solid var(--ink);border-radius:6px;position:relative;background:#FFFFFF}
+.ck[aria-pressed="true"] .box{background:var(--ok)}
+.ck[aria-pressed="true"] .box::after{content:"";position:absolute;left:30%;top:6%;width:28%;height:58%;border:solid #FFFFFF;border-width:0 4px 4px 0;transform:rotate(45deg)}
+
+
+/* epilogue */
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:none;overflow:hidden;transition:filter .4s}
+.half svg{width:100%;height:100%;display:block}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-family:var(--display);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:clamp(.68rem,1.6vw,.95rem);background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;white-space:nowrap}
+.duo:hover .half:not(:hover){filter:brightness(.55)}
+.half:focus-visible{outline:4px solid var(--lamp);outline-offset:-4px}
+.rules{position:relative;background:var(--parchment);padding:24px;display:flex;flex-direction:column;gap:18px}
+.rule-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rule{display:flex;flex-direction:column;gap:8px;border:2px solid var(--ink);border-radius:12px;padding:12px;background:var(--cream);min-width:0}
+.rule svg{width:100%;height:auto;border-radius:8px;background:#E9DDBF}
+.rule b{font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--teal)}
+.rule p{margin:0;font-size:clamp(.9rem,1.6vw,1.05rem);line-height:1.35}
+.spin{transform-origin:300px 170px;animation:spinr 40s linear infinite}
+@keyframes spinr{to{transform:rotate(360deg)}}
+.bluerise{animation:brise 3s ease-out forwards}
+@keyframes brise{to{opacity:.85;transform:translateY(-40px)}}
+
+/* volume 2 */
+.approach{transform-origin:300px 205px;animation:approach 9s ease-in forwards}
+@keyframes approach{from{transform:scale(.8)}to{transform:scale(1.14)}}
+.pulse{transform-origin:300px 205px;animation:pulseg 1.24s ease-in-out infinite}
+@keyframes pulseg{50%{opacity:.12;transform:scale(.92)}}
+.morph .pulse{animation:none;opacity:0;transition:opacity 1s}
+.wrath{transform-origin:300px 205px;transition:transform 1.6s ease, opacity 1.4s ease}
+.fl{transform-origin:300px 205px;animation:flick2 .45s ease-in-out infinite alternate}
+@keyframes flick2{to{transform:scale(1.04) rotate(1.5deg)}}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 3.6s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.peace{opacity:0;transform-origin:300px 205px;transform:scale(.3);transition:opacity 1.6s ease .5s, transform 1.6s ease .5s}
+.morph .wrath{transform:scale(.12) rotate(90deg);opacity:0}
+.morph .peace{opacity:1;transform:scale(1)}
+.frame.facing{transition:none;animation:shake2 .12s linear infinite}
+@keyframes shake2{25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+.holdbtn{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px 8px 8px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:clamp(.72rem,1.7vw,.95rem);white-space:nowrap}
+.holdpill svg{width:30px;height:30px}
+.holdbtn:focus-visible .holdpill{outline:3px solid var(--lamp);outline-offset:3px}
+.zone{position:absolute;background:transparent;border:2px dashed rgba(255,255,255,.55);border-radius:50%;cursor:pointer;padding:0}
+.zone:focus-visible{outline:3px solid var(--lamp)}
+.closing{transform-origin:300px 205px;animation:closing 10s ease-in forwards}
+@keyframes closing{from{transform:scale(1.35)}to{transform:scale(.82)}}
+.orbit{transform-origin:300px 210px;animation:spinr 18s linear infinite}
+
+
+/* chapters menu */
+#app{position:relative}
+.chap{position:absolute;right:16px;top:calc(100% + 0px);z-index:20;width:min(340px,calc(100% - 32px));max-height:min(70vh,560px);overflow-y:auto;background:var(--parchment);border:2px solid var(--ink);border-radius:14px;box-shadow:0 12px 30px rgba(20,20,19,.25);padding:14px;box-sizing:border-box}
+.chapwrap{position:relative;z-index:20}
+.chap h3{margin:10px 6px 6px;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brown)}
+.chap h3:first-child{margin-top:2px}
+.chap ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.chap button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:10px 8px;font-family:var(--body);font-size:1rem;color:var(--ink);cursor:pointer;min-height:44px}
+.chap button:hover,.chap button:focus-visible{background:var(--cream);outline:none}
+.chap button[aria-current="true"]{background:var(--cream);font-weight:700}
+.chap button small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.4em;font-variant-numeric:tabular-nums}
+
+
+/* volume 3 */
+.streaks{animation:streak 1.1s linear infinite}
+@keyframes streak{from{transform:translateX(-140px)}to{transform:translateX(140px)}}
+.blown{animation:blown 2.6s ease-in-out infinite}
+@keyframes blown{50%{transform:translate(40px,-8px)}}
+.elgrid{position:absolute;inset:0;background:#1B2224;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4%;padding:6%;box-sizing:border-box}
+.el{background:#2A3335;border-radius:14px;display:flex;align-items:center;justify-content:center;opacity:.22;transition:opacity .4s, transform .4s;min-height:0}
+.el svg{width:62%;height:auto;max-height:90%}
+.el.on{opacity:1;transform:scale(1.04)}
+.peb{opacity:0}
+.pebs.on .peb{animation:drop .5s ease-in forwards}
+@keyframes drop{from{opacity:0;transform:translateY(-70px)}to{opacity:1;transform:none}}
+.mref{opacity:0;transition:opacity 1.2s}
+.mref.on{opacity:1}
+.approach2{transform-origin:230px 200px;animation:approach 9s ease-in forwards}
+.leaf{transform-origin:20px 115px;transform:scaleX(.12);transition:transform .15s}
+.doorwrap{position:relative;background:var(--parchment);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:24px;padding:24px;align-items:center}
+.doorsteps ol{margin:12px 0 0;padding-left:1.4em;display:flex;flex-direction:column;gap:8px;font-size:clamp(.95rem,1.8vw,1.1rem);line-height:1.35}
+.doorpic svg{width:100%;height:auto;max-height:260px;display:block}
+.doorgrid{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px;background:#10181B}
+.doorcard{display:flex;flex-direction:column;gap:8px;background:var(--parchment);border:2px solid var(--ink);border-radius:12px;padding:8px;cursor:pointer;font-family:var(--body);font-size:clamp(.82rem,1.6vw,1rem);line-height:1.25;color:var(--ink);text-align:left;min-width:0}
+.doorcard svg{width:100%;height:auto;border-radius:8px;display:block}
+.doorcard:hover{transform:translateY(-2px)}
+.doorcard.nope{opacity:.4;filter:grayscale(1)}
+.doorcard:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+/* pilot: shared production layer */
+#visual{position:relative}
+.leaving{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;pointer-events:none;z-index:4;animation:leave .7s ease forwards}
+@keyframes leave{to{opacity:0;transform:scale(.985)}}
+.entering{animation:enter .8s cubic-bezier(.2,.7,.2,1)}
+@keyframes enter{from{clip-path:inset(0 0 0 100% round 18px)}to{clip-path:inset(0 0 0 0 round 18px)}}
+.amb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.kb{animation:kb 24s ease-out forwards;transform-origin:62% 48%}
+@keyframes kb{to{transform:scale(1.09)}}
+.glowspot{position:absolute;width:22%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,214,120,.55) 0%,rgba(255,190,90,.18) 40%,rgba(255,190,90,0) 70%);mix-blend-mode:screen;pointer-events:none;animation:candle 2.3s steps(9,end) infinite;transition:opacity 1.2s ease}
+@keyframes candle{0%{opacity:.85;transform:translate(-50%,-50%) scale(1)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}35%{opacity:.75}55%{opacity:.95;transform:translate(-50%,-50%) scale(.97)}75%{opacity:.8}100%{opacity:.9;transform:translate(-50%,-50%) scale(1.02)}}
+.callout{position:absolute;z-index:3;transform:translate(-50%,-50%) scale(0);background:var(--parchment);border:2px solid var(--ink);border-radius:8px;padding:5px 10px;display:flex;flex-direction:column;align-items:center;gap:1px;animation:pop .45s cubic-bezier(.3,1.6,.5,1) forwards;box-shadow:0 3px 0 var(--ink);pointer-events:none;white-space:nowrap}
+.callout b{font-family:var(--display);font-weight:800;font-size:clamp(.52rem,1.2vw,.66rem);letter-spacing:.14em;text-transform:uppercase;color:var(--brown)}
+.callout span{font-family:var(--display);font-weight:700;font-size:clamp(.72rem,1.7vw,1rem);color:var(--ink)}
+@keyframes pop{to{transform:translate(-50%,-50%) scale(1)}}
+.guidechip{position:absolute;top:10px;right:10px;z-index:5;display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:36px}
+.guidechip svg{width:16px;height:16px}
+.guidechip:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.gpop{position:absolute;inset:6%;z-index:6;background:var(--parchment);border:2px solid var(--ink);border-radius:14px;padding:clamp(14px,3vw,26px);overflow:auto;display:flex;flex-direction:column;gap:10px;align-items:flex-start;animation:pop2 .35s ease;cursor:default;box-shadow:0 6px 0 var(--ink)}
+.gpop .tag{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:.7rem;background:var(--teal);color:var(--parchment);padding:5px 10px;border-radius:4px;text-transform:uppercase}
+.gpop h2{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(1.2rem,3vw,1.9rem);text-transform:uppercase;color:var(--brown);line-height:1.05}
+.gpop p{margin:0;font-size:clamp(.95rem,1.9vw,1.15rem);line-height:1.45;max-width:60ch}
+@keyframes pop2{from{opacity:0;transform:scale(.96)}}
+.brief{position:relative;background:var(--parchment);padding:24px;display:flex;flex-direction:column;gap:18px}
+.brief-row{display:flex;align-items:center;gap:8px}
+.stage{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;opacity:0;animation:stagein .5s ease forwards}
+.stage svg{width:78%;max-width:110px;height:auto}
+.stage b{font-family:var(--display);font-weight:800;font-size:clamp(.85rem,1.8vw,1.1rem)}
+.stage small{font-size:clamp(.75rem,1.5vw,.95rem);color:var(--ink-soft)}
+@keyframes stagein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.melt{transform-box:fill-box;transform-origin:50% 100%;animation:melt 2.4s ease-in-out infinite}
+@keyframes melt{50%{transform:scaleY(.86) scaleX(1.08)}}
+.arrowr{font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--teal);flex:none}
+.dnarr{animation:dn 1.3s ease-in-out infinite}
+@keyframes dn{50%{transform:translateY(8px)}}
+.drop{position:absolute;z-index:3;width:30px;height:30px;margin:-15px 0 0 -15px;border:2.5px solid var(--ink);background:#7FC4E0;border-radius:50% 50% 50% 0;transform:rotate(-45deg);cursor:pointer;padding:0;animation:bob 1.8s ease-in-out infinite}
+.drop::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(30,42,43,.35)}
+.drop.gone{animation:evap 1s ease-out forwards;pointer-events:none}
+.drop:focus-visible{outline:3px solid var(--lamp);outline-offset:4px}
+@keyframes bob{50%{margin-top:-21px}}
+@keyframes evap{to{transform:rotate(-45deg) translate(24px,-24px) scale(.2);opacity:0}}
+.smoke{transition:opacity 2.5s ease}
+.puff{animation:puff 7s ease-in-out infinite alternate}
+@keyframes puff{to{transform:translate(40px,-14px)}}
+.flicker2{transform-box:fill-box;transform-origin:50% 100%;animation:flick3 .7s ease-in-out infinite alternate}
+@keyframes flick3{to{transform:scaleY(1.12) scaleX(.9) skewX(-4deg)}}
+.glowpulse{transform-box:fill-box;transform-origin:center;animation:gp 2.6s ease-in-out infinite}
+@keyframes gp{50%{transform:scale(1.08);opacity:.25}}
+.band{animation:band 9s ease-in-out infinite alternate}
+@keyframes band{to{transform:translateY(16px)}}
+.curl{stroke-dasharray:120;stroke-dashoffset:120}
+.curl.on{animation:curl 3s ease-out forwards}
+@keyframes curl{0%{opacity:0}15%{opacity:.9}100%{stroke-dashoffset:0;opacity:0;transform:translateY(-24px)}}
+@media (max-width:700px){.gpop{position:fixed;top:72px;left:12px;right:12px;bottom:12px;inset:72px 12px 12px 12px;z-index:50}}
+
+/* adventure */
+.toast{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--parchment);font-family:var(--display);font-weight:700;font-size:.85rem;letter-spacing:.02em;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+.toast.out{opacity:0;transition:opacity .5s}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.rewind{position:absolute;inset:0;z-index:55;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 5px);display:flex;align-items:center;justify-content:center;animation:rw 1.5s ease forwards}
+.rewind span{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,6vw,3rem);letter-spacing:.2em;text-transform:uppercase;color:#FBF3DF;background:rgba(20,20,19,.75);padding:10px 22px;border-radius:10px;animation:rwj .18s steps(2) infinite}
+@keyframes rw{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes rwj{50%{transform:translateX(3px)}}
+.frame.spinback{transition:transform 1.1s ease-in, filter 1.1s ease-in;transform:rotate(-8deg) scale(.9);filter:blur(3px) saturate(.3)}
+.pathp{outline:none}
+.pathp ol,.pathp ul{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:4px}
+.lesson{display:flex;gap:10px;align-items:flex-start;padding:8px;border-radius:8px;background:transparent}
+.lesson b{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:.8rem;border:2px dashed var(--ink-soft);color:var(--ink-soft)}
+.lesson.got b{border:2px solid var(--ink);background:var(--ok);color:#FFFFFF}
+.lesson span{display:flex;flex-direction:column;gap:2px;font-size:.95rem;line-height:1.3}
+.lesson strong{font-family:var(--display);font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--brown)}
+.lesson:not(.got) strong{color:var(--ink-soft)}
+.lesson small{color:var(--ink-soft)}
+.realms{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px!important}
+.realm{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px;border:2px dashed rgba(68,82,79,.4);opacity:.55;font-size:.85rem;line-height:1.2}
+.realm svg{width:34px;height:34px;flex:none}
+.realm small{display:block;font-size:.72rem;color:var(--ink-soft)}
+.realm.seen{opacity:1;border:2px solid var(--ink);background:var(--cream)}
+.pathnote{margin:6px 4px 0;font-size:.85rem;color:var(--ink-soft);line-height:1.35}
+.drift{animation:driftc 14s ease-in-out infinite alternate}
+@keyframes driftc{to{transform:translateX(26px)}}
+.wilt .flower{transition:fill 2.5s ease, transform 2.5s ease;fill:#7A6A4A;transform:translateY(8px)}
+.clash{animation:clash .9s steps(2) infinite}
+@keyframes clash{50%{transform:translateX(4px)}}
+.life{opacity:0;animation:stagein .6s ease forwards}
+.alarmring{transform-box:fill-box;transform-origin:center;animation:shake .12s linear infinite}
+.graze{transform-box:fill-box;transform-origin:0% 0%;animation:graze 2.2s ease-in-out infinite}
+@keyframes graze{50%{transform:rotate(18deg)}}
+.fly{animation:fly 1.6s ease-in-out infinite alternate}
+@keyframes fly{25%{transform:translate(30px,-16px)}50%{transform:translate(-10px,-30px)}75%{transform:translate(20px,10px)}to{transform:translate(-20px,-6px)}}
+.fizz{animation:fizz .8s ease-out infinite}
+@keyframes fizz{to{transform:translateY(-16px);opacity:0}}
+.trudge{animation:clash 1.4s steps(2) infinite}
+
+/* meditation layer */
+.mcv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.medbg{position:absolute;inset:0}
+.dissolving{animation:diss 6s ease-in-out infinite alternate}
+@keyframes diss{from{opacity:.25}to{opacity:.6}}
+.enso.draw{stroke-dasharray:100;stroke-dashoffset:100;animation:ensod 2.2s cubic-bezier(.4,.1,.3,1) forwards}
+@keyframes ensod{to{stroke-dashoffset:0}}
+.mspin{animation:spinr 60s linear infinite}
+
+
+/* title sequence */
+.frame.titleframe{aspect-ratio:16/9;width:min(100%, calc((100dvh - 150px) * 1.777), 1100px)}
+.tdot{animation:tdot 1.6s ease-out forwards}
+@keyframes tdot{0%{opacity:0;r:1}40%{opacity:1;r:6}100%{opacity:0;r:40}}
+.titleframe .enso.draw{animation-delay:.5s}
+.tveil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(11,18,36,.72) 0%,rgba(11,18,36,.45) 45%,rgba(11,18,36,0) 75%);pointer-events:none;opacity:0;animation:fadein 1.2s ease 2s forwards}
+.ttext{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.4vw,14px);text-align:center;padding:16px;cursor:default}
+.teye{font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.4vw,.8rem);letter-spacing:.3em;text-transform:uppercase;color:#D4A546;opacity:0;animation:fadein 1s ease 4.4s forwards}
+.tname{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,6.6vw,4.4rem);line-height:1;letter-spacing:.06em;text-transform:uppercase;color:#F3E9D2;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.tname span{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(8px);animation:letter .9s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(2.3s + var(--i) * 70ms)}
+.tname .tw{display:inline-block;white-space:nowrap}
+@keyframes letter{to{opacity:1;filter:blur(0);transform:none}}
+.tsub{margin:0;font-size:clamp(.85rem,2vw,1.2rem);color:#F3E9D2;opacity:0;animation:fadein 1s ease 3.7s forwards;text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.tbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:clamp(4px,1.2vw,12px);opacity:0;animation:fadein .8s ease 5s forwards}
+.tgo{background:#D4A546;color:var(--ink)}
+.tnote{font-size:clamp(.65rem,1.4vw,.8rem);color:rgba(243,233,210,.75);opacity:0;animation:fadein .8s ease 5.4s forwards}
+@keyframes fadein{to{opacity:1}}
+.soundcheck{background:transparent;border:1.5px solid rgba(243,233,210,.6);color:#F3E9D2;border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;min-height:34px;opacity:0;animation:fadein .8s ease 5.2s forwards}
+.soundcheck:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+.skipi{font-size:.85rem;padding:9px 16px;min-height:40px}
+.map49{display:grid;grid-template-columns:repeat(auto-fill,minmax(22px,1fr));gap:6px;max-width:560px}
+.map49 i{aspect-ratio:1;border-radius:50%;background:var(--c);border:2px solid var(--ink);opacity:0;animation:stagein .4s ease forwards}
+.map49k{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.9rem;color:var(--ink-soft)}
+.map49k b{display:inline-block;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);margin-right:6px;vertical-align:-1px}
+.howgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.how{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:12px 8px;border:2px solid var(--ink);border-radius:12px;background:var(--cream);opacity:0;animation:stagein .5s ease forwards;min-width:0}
+.how svg{width:56px;height:56px}
+.how b{font-family:var(--display);font-weight:800;font-size:clamp(.8rem,1.6vw,1rem)}
+.how small{font-size:clamp(.75rem,1.4vw,.9rem);color:var(--ink-soft);line-height:1.3}
+.bookopen{transform-origin:300px 290px;animation:bookopen 1.4s ease-out}
+@keyframes bookopen{from{transform:scaleY(.2);opacity:0}}
+
+.vpanel ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.vrow{width:100%;display:flex;gap:10px;align-items:center;text-align:left;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-family:var(--body);font-size:.98rem;color:var(--ink);cursor:pointer;min-height:44px}
+.vrow small{display:block;font-size:.76rem;color:var(--ink-soft)}
+.vrow:hover,.vrow:focus-visible{background:var(--cream);outline:none}
+.vdot{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--ink)}
+.vrow[aria-pressed="true"] .vdot{background:var(--teal);box-shadow:inset 0 0 0 3px var(--parchment)}
+.vrow[aria-pressed="true"]{font-weight:700}
+.vspeeds{display:flex;gap:6px;padding:2px 6px 4px}
+.chap .vchip{flex:1;width:auto;justify-content:center;text-align:center;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:8px 6px;cursor:pointer;min-height:40px}
+.chap .vchip[aria-pressed="true"]{background:var(--teal);color:var(--parchment)}
+.chap .vchip:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+@media (max-width:560px){.howgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.frame.titleframe{aspect-ratio:3/4;width:100%}.tname{font-size:clamp(1.7rem,9vw,2.4rem)}.tnote{max-width:26ch}}
+
+@media (max-width:560px){.pick{display:none!important}}
+
+@media (max-width:560px){.brief-row{flex-wrap:wrap;justify-content:center}.stage{flex:0 0 42%}.arrowr{display:none}.guidechip{padding:5px 9px}}
+
+@media (max-width:560px){.doorwrap{grid-template-columns:1fr}.doorpic svg{max-height:170px}.doorgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media (max-width:560px){.rule-row{grid-template-columns:1fr}.rule{flex-direction:row;align-items:center}.rule svg{width:38%;flex:none}}
+
+@media (max-width:560px){
+  .pick{max-width:80px}
+  #stageLabel{display:none}
+  .brand{display:none}
+  .tog{padding:6px 9px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* animations the woodcut kits use */
 .flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
 .flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
-.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
-.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
-.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
-.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
-.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
 .shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{translate:0 -8px}}
+.fade{transition:opacity 1.6s ease, transform 1.6s ease}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+/* on a phone the bar keeps just the arrow home */
+.brand{font-size:1rem;padding:6px 4px}
+@media (max-width:560px){ .brand{display:inline-block!important;font-size:1.3rem;line-height:1} .brand .bname{display:none} }
+.tog{white-space:nowrap}
 
-/* ---------- landing pages ---------- */
-.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
-h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
-.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
-.note{font-size:.88rem;color:var(--ink-soft)}
-.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
-.cover svg{display:block;width:100%;height:auto}
-.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
-.sec{margin-top:34px}
-.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
-.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
-.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
-.ck span{font-size:.86rem;color:var(--ink-soft)}
-.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
-.ck:hover{background:#FFFFFF}
-.ck.seen b::after{content:" ✓";color:var(--accent)}
-.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
-.how div{border-top:3px solid var(--ink);padding-top:8px}
-.how>h2{grid-column:1/-1}
-.how b{font-family:var(--display);font-weight:800;display:block}
-.how p{margin:2px 0 0;font-size:.93rem}
-details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
-details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
-details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
-details.all p{margin:0 0 6px;max-width:68ch}
-.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
-@media (max-width:760px){.hero{grid-template-columns:1fr}}
-
-/* The Ten Courts: a temple mural at night. Cinnabar lacquer, black ink, gold leaf and jade. */
+/* The Ten Courts, full book: the Bardo Manual's layout as a temple mural at night. Cinnabar lacquer, black ink, gold leaf and jade. */
 :root{
-  --bg:#F2E6CC; --paper:#FBF3E0; --ink:#1A1414; --ink-soft:#5A4A40; --accent:#B22A1E; --accent2:#2F7A62; --gold:#D9A441; --night:#120C0C; --nightink:#FBF3E0;
-  --display:'Zen Antique','Jost','Georgia',serif;
+  --cream:#F2E6CC; --parchment:#FBF3E0; --ink:#1A1414; --ink-soft:#5A4A40;
+  --teal:#2A1C1C; --teal-deep:#120C0C; --brown:#B22A1E; --lamp:#D9A441; --red:#B22A1E; --ok:#2F7A62;
+  --display:'Zen Antique',Georgia,serif;
 }
-h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display);font-weight:400}
-h1{letter-spacing:.01em}
-.brand{letter-spacing:.08em;font-size:1rem}
-.cover{background:#2A1C1C}
+.brand,.title-card h1,.gpop h2,.guide h2,.rewind span,.callout b,.callout span,.chap h3,.lesson strong{font-weight:400;text-transform:none;letter-spacing:.01em}
+.title-card h1{line-height:1.05}
+.title-card .eyebrow{font-family:'Jost',sans-serif;font-weight:700;text-transform:uppercase}
+.tog,#hint,.btn,.gpop .tag,.guide .tag,.guidechip{font-family:'Jost','Futura',sans-serif}
+.caption p{font-family:'Atkinson Hyperlegible',Verdana,sans-serif}
+.frame{border-radius:10px}
+#holdring{stroke:var(--brown)}
+.spot{border-color:#FFF6D8;background:rgba(217,164,65,.5);box-shadow:0 0 0 2px #1A1414}
+.mdhome{display:none!important}
+.endlinks{display:flex;gap:16px;flex-wrap:wrap;font-family:'Jost',sans-serif;font-size:.9rem}
+.endlinks a{color:var(--lamp)}
+.draft{font-size:.85rem!important;opacity:.85}
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{translate:20px -6px}}
 
 </style>
-<header class="bar" id="bar"></header>
-<main class="wrap" id="wrap"></main>
-<script>
-/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
+<div id="app">
+  <header class="bar">
+    <a class="brand" href="../../index.html#doors" style="color:inherit;text-decoration:none" title="Back to Many Doors" aria-label="Back to Many Doors">←<span class="bname"> Many Doors</span></a>
+    <span id="stageLabel" aria-live="polite"></span>
+    <button class="tog" id="chapBtn" aria-expanded="false" aria-controls="chapters" type="button">Chapters</button>
+    <button class="tog" id="pathBtn" aria-expanded="false" aria-controls="pathpanel" type="button">Path 0/8</button>
+    <button class="tog" id="soundBtn" aria-pressed="true" type="button">Sound</button>
+    <button class="tog" id="voiceBtn" aria-expanded="false" aria-controls="voicepanel" type="button">Voice</button>
+  </header>
+  <div class="chapwrap"><nav class="chap" id="chapters" aria-label="Chapters" hidden></nav><section class="chap pathp" id="pathpanel" aria-label="Your path" tabindex="-1" hidden></section><section class="chap vpanel" id="voicepanel" aria-label="Narrator voice" tabindex="-1" hidden></section></div>
+  <main id="stage" aria-label="Story. Tap, or press Space, to continue.">
+    <div id="visual"></div>
+    <div id="caption" class="caption" hidden><p id="captionText" aria-live="polite"></p></div>
+    <div id="choices"></div>
+    <p id="hint">Tap to continue</p>
+  </main>
+</div>
+
+<script>
+/* The deep-book engine, forked from the Bardo Manual: scenes of beats with a typed, narrated caption; branching choices that play out and rewind; Guide entries; lessons gathered on a path; chapters, voice and sound. A book supplies BOOK, S (scenes), CHAPTERS and LESSONS. */
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const app = $('#app'), visual = $('#visual'), cap = $('#caption'), capText = $('#captionText'), hint = $('#hint'), choices = $('#choices'), label = $('#stageLabel');
+const IMG={};
 /* ---------------- sound ---------------- */
-const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{},drone:null};
+let ctx=null, master=null, noiseBuf=null, brownBuf=null, soundOn=true;
+const loops={}; let hbOn=false, hbBpm=62, hbTimer=null, clockTimer=null;
+let unlockEl=null;
+function unlockMedia(){ try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
+  try{ if(!unlockEl){ unlockEl=new Audio('data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='); unlockEl.loop=true; unlockEl.setAttribute('playsinline',''); unlockEl.volume=0.01; } const p=unlockEl.play(); p&&p.catch(()=>{}); }catch(e){} }
 /* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
 function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
   const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
@@ -172,194 +474,281 @@ function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.ga
     const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
   return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
     stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+let DRONE=null;
+function initAudio(){
+  unlockMedia();
+  if(ctx) return;
+  try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  master=ctx.createGain(); master.gain.value=soundOn?0.9:0; master.connect(ctx.destination); DRONE=makeDrone(ctx,master,.035);
+  const n=ctx.sampleRate*2; noiseBuf=ctx.createBuffer(1,n,ctx.sampleRate); brownBuf=ctx.createBuffer(1,n,ctx.sampleRate);
+  const w=noiseBuf.getChannelData(0), b=brownBuf.getChannelData(0); let last=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; last=(last+0.02*r)/1.02; b[i]=last*3.5; }
+}
+const now=()=>ctx.currentTime;
+function env(g,t,peak,a,d){ g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+a); g.gain.exponentialRampToValueAtTime(0.0001,t+a+d); }
+function burst({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7}={}){
+  if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf;
+  const f=ctx.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=ctx.createGain(); env(g,t,peak,a,d);
+  s.connect(f).connect(g).connect(master); s.start(t, Math.random()*1.5); s.stop(t+a+d+.05);
+}
+function startLoop(name, build, vol, fade=2){
+  if(!ctx||loops[name]) return; const g=ctx.createGain(); g.gain.value=0.0001; g.connect(master);
+  const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol, now()+fade); loops[name]={g,nodes};
+}
+function stopLoop(name, fade=1.5){
+  const L=loops[name]; if(!L) return; delete loops[name]; const t=now();
+  L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,0.0001),t); L.g.gain.exponentialRampToValueAtTime(0.0001,t+fade);
+  setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000);
+}
+function roomTone(){ startLoop('room', g=>{ const s=ctx.createBufferSource(); s.buffer=brownBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=420; s.connect(f).connect(g); s.start(); return [s]; }, .16); }
+function clockOn(){ if(!ctx||clockTimer) return; clockTimer=setInterval(()=>burst({freq:3200,peak:.05,d:.02}),1000); }
+function clockOff(){ clearInterval(clockTimer); clockTimer=null; }
+function thump(vol){ const t=now(); const o=ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(62,t); o.frequency.exponentialRampToValueAtTime(38,t+.14);
+  const g=ctx.createGain(); env(g,t,vol,.006,.2); o.connect(g).connect(master); o.start(t); o.stop(t+.3); }
+function heartbeat(bpm){ hbBpm=bpm; if(!ctx) return; if(hbOn) return; hbOn=true; const beat=()=>{ if(!hbOn) return; thump(.55); setTimeout(()=>hbOn&&thump(.35),280); hbTimer=setTimeout(beat,60000/hbBpm); }; beat(); }
+function heartStop(){ hbOn=false; clearTimeout(hbTimer); }
+function breath(inDur,outDur){
+  if(!ctx) return; wakeAudio(); const t=now(); const T=inDur+outDur;
+  const layer=(type,freq,q,pin,pout,f2)=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true;
+    const f=ctx.createBiquadFilter(); f.type=type; f.Q.value=q; f.frequency.setValueAtTime(freq,t); f.frequency.linearRampToValueAtTime(f2,t+T);
+    const g=ctx.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(pin,t+inDur*.75); g.gain.exponentialRampToValueAtTime(pin*.12,t+inDur);
+    g.gain.exponentialRampToValueAtTime(pout,t+inDur+outDur*.2); g.gain.exponentialRampToValueAtTime(pout*.35,t+inDur+outDur*.7); g.gain.exponentialRampToValueAtTime(0.0001,t+T);
+    s.connect(f).connect(g).connect(master); s.start(t,Math.random()); s.stop(t+T+.1); };
+  layer('bandpass',1500,.7,.42,.5,800);   /* the airy part */
+  layer('lowpass',420,.5,.28,.34,300);     /* the body of the breath */
+  const L=loops.room; if(L){ const g=L.g.gain; g.cancelScheduledValues(t); g.setValueAtTime(Math.max(g.value,.0001),t); g.linearRampToValueAtTime(.05,t+.3); g.linearRampToValueAtTime(.16,t+T+.4); }
+}
+function wakeAudio(){ if(ctx&&ctx.state!=='running'){ try{ ctx.resume(); }catch(e){} } if(ctx&&unlockEl&&unlockEl.paused){ const p=unlockEl.play(); p&&p.catch(()=>{}); } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,wakeAudio,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wakeAudio(); });
+function crackle(ms=1400){ if(!ctx) return; const end=performance.now()+ms; const tick=()=>{ if(performance.now()>end) return; burst({freq:2000+Math.random()*3000,peak:.03+Math.random()*.04,d:.012}); setTimeout(tick,30+Math.random()*90); }; tick(); }
+function pad(name,freqs,vol){ startLoop(name, g=>{ const out=[]; freqs.forEach((fr,i)=>{ const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=fr; o.detune.value=(i%2?4:-4);
+  const tg=ctx.createGain(); tg.gain.value=.5; const l=ctx.createOscillator(); l.frequency.value=.12+i*.07; const lg=ctx.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain);
+  o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; }, vol, 4); }
+function drone(){ startLoop('drone', g=>{ const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=82.4; const o2=ctx.createOscillator(); o2.type='sine'; o2.frequency.value=41.2;
+  const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=300; o.connect(f).connect(g); o2.connect(g); o.start(); o2.start(); return [o,o2]; }, .12, 4); }
+function crackSound(){ if(!ctx) return; const t=now(); const o=ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(2600,t); o.frequency.exponentialRampToValueAtTime(500,t+.5);
+  const g=ctx.createGain(); env(g,t,.12,.005,.55); o.connect(g).connect(master); o.start(t); o.stop(t+.7); burst({freq:1500,peak:.18,d:.25}); }
+function puff(){ burst({type:'lowpass',freq:700,peak:.25,a:.02,d:.5}); }
+function chime(){ if(!ctx) return; [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>{ const t=now()+i*.14; const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=fr;
+  const g=ctx.createGain(); env(g,t,.12,.01,3.2); o.connect(g).connect(master); o.start(t); o.stop(t+3.4); }); }
+function silenceAll(f=1.5){ Object.keys(loops).forEach(k=>stopLoop(k,f)); clockOff(); heartStop(); clearInterval(roarTimer); roarTimer=null; }
 
-function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
-  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
-  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
-  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
-  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
-  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; }
-  SND.drone=makeDrone(c,SND.m); }
-['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
-const T=()=>SND.ctx.currentTime;
-function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
-function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
-function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
-function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
-function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
-function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
-function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
-function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
-function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
-function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
-function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
-function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
-function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
-function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
-function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
-function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
-function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
-function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
-function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
-function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
-
-/* ---------------- narration ---------------- */
-const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
-function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+/* ---------------- voice ---------------- */
+let voiceOn=('speechSynthesis' in window), voice=null, voiceList=[], speakToken=0;
+function score(v){ let n=0; const nm=v.name.toLowerCase();
+  if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20;
+  if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
   if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
-  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
-function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
-if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
-function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
-  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
-  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
-  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
-function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
-
-/* ---------------- the player ---------------- */
-class Abort extends Error{}
-let PS=null; /* the live player session */
-function alive(s){ if(!s||PS!==s) throw new Abort(); }
-function openPlayer({title,sub,steps=[],menu=null,color}){
-  aInit(); closePlayer(true);
-  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
-  if(color) el.style.setProperty('--c',color);
-  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
-    ${window.MD_HOME?`<a class="sbtn home" href="${MD_HOME}">← Doors</a>`:''}
-    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
-    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
-    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
-    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
-    <div class="menu" id="pPanel" hidden></div></div>
-    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
-    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
-    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
-  document.body.appendChild(el); document.body.classList.add('insession');
-  const s={el,menu}; PS=s;
-  el.querySelector('#pClose').onclick=()=>closePlayer();
-  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
-  const panel=el.querySelector('#pPanel');
-  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
-  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
-  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
-  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
-  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
-  return s;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60;
+  return n; }
+let voiceRate=.84; const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+{ const r=parseFloat(store.get('bm-rate')); if(r) voiceRate=r; if(store.get('bm-voiceon')==='0') voiceOn=false; }
+const ACC={'en-GB':'British','en-US':'American','en-AU':'Australian','en-IE':'Irish','en-IN':'Indian','en-ZA':'South African','en-NZ':'New Zealand','en-CA':'Canadian','en-SG':'Singaporean'};
+function vName(v){ return v.name.replace(/Microsoft |Google |\(.*?\)| - .*$|Online|Natural|Enhanced|Premium/g,'').replace(/\s+/g,' ').trim()||v.name; }
+function loadVoices(){ const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>score(b)-score(a)); if(!vs.length) return;
+  voiceList=vs; const saved=store.get('bm-voice'); const keep=(voice&&voice.name)||saved;
+  const k=keep?vs.findIndex(v=>v.name===keep):0; voice=vs[Math.max(k,0)]; if(!$('#voicepanel').hidden) buildVoicePanel(); }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; } else { $('#voiceBtn').hidden=true; }
+function buildVoicePanel(){ const p=$('#voicepanel'); const list=voiceList.slice(0,16);
+  const speeds=[['Slow',.74],['Normal',.84],['Brisk',.96]];
+  p.innerHTML=`<h3>Narrator</h3><button type="button" class="vrow vtoggle" aria-pressed="${voiceOn}"><span class="vdot"></span><span>${voiceOn?'Narrator on':'Narrator off'}<small>${voiceOn?'Tap to turn off and read silently':'Tap to turn on'}</small></span></button>
+    <h3>Speed</h3><div class="vspeeds">${speeds.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(voiceRate-r)<.01}">${l}</button>`).join('')}</div>
+    <h3>Voice${list.length?' · '+list.length+' on this device':''}</h3>${list.length?'':'<p class="pathnote">No voices have loaded yet. Tap Begin, then open this menu again.</p>'}<ol>${list.map((v,i)=>`<li><button type="button" class="vrow vpick" data-i="${i}" aria-pressed="${voice&&v.name===voice.name}"><span class="vdot"></span><span>${vName(v)}<small>${ACC[v.lang.replace('_','-')]||v.lang}${/natural|neural|premium|enhanced|siri/i.test(v.name)?' · high quality':''}</small></span></button></li>`).join('')}</ol>
+    <p class="pathnote">Tap a voice to hear it. The choices depend on your device; Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('.vtoggle').onclick=e=>{ e.stopPropagation(); voiceOn=!voiceOn; store.set('bm-voiceon',voiceOn?'1':'0'); if(!voiceOn) hush(); buildVoicePanel(); };
+  p.querySelectorAll('.vchip').forEach(b=>b.onclick=e=>{ e.stopPropagation(); voiceRate=+b.dataset.r; store.set('bm-rate',voiceRate); buildVoicePanel(); if(voiceOn) speak(BOOK.voiceSample); });
+  p.querySelectorAll('.vpick').forEach(b=>b.onclick=e=>{ e.stopPropagation(); voice=voiceList[+b.dataset.i]; store.set('bm-voice',voice.name); if(!voiceOn){ voiceOn=true; store.set('bm-voiceon','1'); } buildVoicePanel(); speak(BOOK.voiceSample); const nb=$('#voicepanel .vpick[data-i="'+b.dataset.i+'"]'); nb&&nb.focus({preventScroll:true}); }); }
+function openVoice(){ closeChapters(); closePath(); buildVoicePanel(); $('#voicepanel').hidden=false; $('#voiceBtn').setAttribute('aria-expanded','true'); $('#voicepanel').focus({preventScroll:true}); }
+function closeVoice(){ const p=$('#voicepanel'); if(!p||p.hidden) return; p.hidden=true; $('#voiceBtn').setAttribute('aria-expanded','false'); }
+const VOICE={};
+const vnorm=t=>t.replace(/[*_]/g,'').replace(/\s+/g,' ').trim();
+let voiceEl=null, voiceBlessed=false;
+const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+function blessVoice(){ if(voiceBlessed) return; try{ if(!voiceEl){ voiceEl=document.createElement('audio'); voiceEl.setAttribute('playsinline',''); voiceEl.preload='auto'; document.body.appendChild(voiceEl); }
+    voiceEl.src=SILENT; const p=voiceEl.play(); if(p&&p.then){ p.then(()=>{ voiceBlessed=true; }).catch(()=>{}); } else voiceBlessed=true; }catch(e){} }
+['pointerdown','touchend','keydown','click'].forEach(ev=>addEventListener(ev,blessVoice,{capture:true,passive:true}));
+function duck(on){ if(master&&ctx) master.gain.setTargetAtTime(soundOn?(on?.5:.9):0, now(), .25); }
+function ttsSpeak(clean,my){ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel();
+  const parts=clean.match(/[^.!?:]+[.!?:]*/g)||[clean];
+  let i=0; const nextPart=()=>{ if(my!==speakToken||i>=parts.length) return; const u=new SpeechSynthesisUtterance(parts[i++].trim().replace(/:$/,'…'));
+    if(voice) u.voice=voice; u.rate=voiceRate; u.pitch=.88; u.volume=.85; u.onend=()=>setTimeout(nextPart, 520); speechSynthesis.speak(u); };
+  setTimeout(nextPart, 350); }
+function playClip(src,clean,my){
+  if(!voiceEl){ blessVoice(); }
+  if(!voiceEl) return ttsSpeak(clean,my);
+  let fell=false; const fallback=()=>{ if(fell||my!==speakToken) return; fell=true; try{ voiceEl.pause(); }catch(e){} duck(false); ttsSpeak(clean,my); };
+  try{ voiceEl.pause(); voiceEl.onended=()=>{ if(my===speakToken) duck(false); }; voiceEl.onerror=fallback; voiceEl.src=src; voiceEl.currentTime=0; duck(true);
+    const p=voiceEl.play(); if(p&&p.catch) p.catch(fallback);
+  }catch(e){ fallback(); } }
+function speak(text){
+  if(!voiceOn) return; const my=++speakToken; const clean=vnorm(text);
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  if(VOICE[clean]){ setTimeout(()=>{ if(my===speakToken) playClip(VOICE[clean],clean,my); },200); return; }
+  ttsSpeak(clean,my);
 }
-function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
-  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
-  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
-  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
-  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
-  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
-  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
-  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+function hush(){ speakToken++; if('speechSynthesis' in window) speechSynthesis.cancel(); if(voiceEl){ try{ voiceEl.pause(); }catch(e){} } duck(false); }
+
+$('#soundBtn').onclick=e=>{ e.stopPropagation(); soundOn=!soundOn; e.currentTarget.setAttribute('aria-pressed',soundOn); if(master) master.gain.setTargetAtTime(soundOn?.9:0,now(),.1); };
+$('#voiceBtn').onclick=e=>{ e.stopPropagation(); $('#voicepanel').hidden?openVoice():closeVoice(); };
+
+let roarTimer=null;
+const frame = (inner,cls='') => `<div class="frame ${cls}" id="frame">${inner}</div>`;
+let stillState=null;
+const idx=k=>S.findIndex(s=>s.key===k);
+const sv=(inner,lab)=>`<svg class="svgscene" viewBox="0 0 600 400" role="img" aria-label="${lab}">${inner}</svg>`;
+function whoosh(v=.15){ if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2;
+  f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2600,t+.55); const g=ctx.createGain(); env(g,t,v,.2,.45); s.connect(f).connect(g).connect(master); s.start(t,Math.random()); s.stop(t+.8); }
+function tickSnd(){ burst({freq:3800,peak:.1,d:.035}); setTimeout(()=>burst({freq:2600,peak:.06,d:.03}),60); }
+function spotAt(x,y,label,fn){ const b=document.createElement('button'); b.className='spot'; b.type='button'; b.setAttribute('aria-label',label); b.style.left=x+'%'; b.style.top=y+'%';
+  b.onclick=e=>{ e.stopPropagation(); fn(b); }; $('#frame').appendChild(b); return b; }
+function holdHum(c,dest,ms,p0=0){ if(!c||!dest) return {stop(){}}; const t=c.currentTime,s=Math.max(.05,ms*(1-p0)/1000),g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(dest);
+  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k*Math.pow(2,p0),t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
+  return {stop(full){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7));
+    if(full) [784,1568*1.003,2352*1.01].forEach((fr,i)=>{ const o=c.createOscillator(),bg=c.createGain(); o.frequency.value=fr; bg.gain.setValueAtTime(.0001,n); bg.gain.exponentialRampToValueAtTime(.08/(i+1),n+.005); bg.gain.exponentialRampToValueAtTime(.0001,n+3); o.connect(bg).connect(dest); o.start(n); o.stop(n+3.1); }); }}; }
+function holdGeneric(o){
+  const fr=$('#frame'); fr.insertAdjacentHTML('beforeend',`<button type="button" class="holdbtn" id="hold" aria-label="${o.label}"><span class="holdpill"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(30,42,43,.25)" stroke-width="4"/><circle id="holdring" cx="18" cy="18" r="15" fill="none" stroke="#1F5E63" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2" transform="rotate(-90 18 18)"/></svg>${o.label}</span></button>`);
+  const b=$('#hold'), ring=$('#holdring'); let t0=0, raf=0, done=false, holding=false, hm=null;
+  const tick=()=>{ const p=Math.min((performance.now()-t0)/o.ms,1); ring.setAttribute('stroke-dashoffset',(94.2*(1-p)).toFixed(1)); o.onProgress&&o.onProgress(p);
+    if(p>=1){ done=true; if(hm){ hm.stop(true); hm=null; } b.remove(); o.onDone(); return; } raf=requestAnimationFrame(tick); };
+  const start=()=>{ if(done||holding) return; holding=true; t0=performance.now(); initAudio(); hm=holdHum(ctx,master,o.ms); tick(); };
+  const stop=()=>{ if(done||!holding) return; holding=false; cancelAnimationFrame(raf); if(hm){ hm.stop(false); hm=null; } ring.setAttribute('stroke-dashoffset','94.2'); o.onProgress&&o.onProgress(0); };
+  b.addEventListener('pointerdown',e=>{ e.stopPropagation(); e.preventDefault(); b.setPointerCapture&&b.setPointerCapture(e.pointerId); start(); });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,stop));
+  b.addEventListener('click',e=>e.stopPropagation());
+  b.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); if(!e.repeat) start(); } });
+  b.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); stop(); } });
+  b.addEventListener('blur',stop); b.focus({preventScroll:true});
 }
-function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
-function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
-function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
-function layer(){ return $('#pLayer'); }
-function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
-function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
-function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
-function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
-/* show a passage, one or two sentences at a time, each with Continue */
-async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
-  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
-function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
-  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
-  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
-  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
-function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
-/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
-function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
-  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
-  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
-  row.querySelector('button').focus({preventScroll:true}); }); }
-/* press and hold the stage */
-function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
-  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false,hm=null;
-  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; if(hm){ hm.stop(true); hm=null; } z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
-  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); hm=holdHum(ms); raf=requestAnimationFrame(tick); };
-  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; if(hm){ hm.stop(false); hm=null; } z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
-  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
-  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
-  z.focus({preventScroll:true}); }); }
-/* the sound of a press and hold: a soft hum that climbs an octave as the ring fills, a bell when it's full */
-function holdHum(ms){ aInit(); if(!SND.ctx) return {stop(){}}; const c=SND.ctx,t=T(),s=ms/1000,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(SND.m);
-  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k,t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
-  return {stop(full){ const n=T(); g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7)); if(full) bell(784,.08); }}; }
-/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
-function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
-  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
-  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
-  l.querySelector('.spot').focus({preventScroll:true}); }); }
-/* two pictures side by side; pick one */
-function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
-  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
-/* words to clear: tap each to let it go */
-function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
-  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
-/* hold still (pointer/keys); ms of stillness needed */
-function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); if(SND.drone) SND.drone.level(0,2.5); return new Promise(r0=>{ const res=v=>{ if(SND.drone) SND.drone.level(1,4); r0(v); }; const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
-  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
-  addEventListener('pointermove',mv); addEventListener('keydown',mv);
-  const tick=()=>{ if(PS!==s){ cleanup(); if(SND.drone) SND.drone.level(1,2); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
-  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
-/* count taps (beads, breaths, pebbles) */
-function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
-  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
 
-/* ---------------- sitting: a minute with a breathing ring ---------------- */
-let cvRaf=0;
-function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
-function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
-  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
-    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
-    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
-    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
-    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
-    cvRaf=requestAnimationFrame(fr); }; fr(); }
-async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
-  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
-    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
-    l.querySelector('.ghost').onclick=end;
-    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
-  cvStop(); alive(s); }
+function callouts(list){ const fr=$('#frame'); if(!fr) return; list.forEach(([x,y,k,v],i)=>{ const d=document.createElement('div'); d.className='callout'; d.style.left=x+'%'; d.style.top=y+'%'; d.style.animationDelay=(i*.45)+'s';
+  d.innerHTML=`<b>${k}</b><span>${v}</span>`; fr.appendChild(d); }); }
+/* optional guide entries */
+function addGuideChip(gd){ const fr=$('#frame'); if(!fr) return;
+  fr.insertAdjacentHTML('beforeend',`<button type="button" class="guidechip" aria-haspopup="dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h5a2 2 0 0 1 2 2v10a2 2 0 0 0-2-2H3zM17 4h-5a2 2 0 0 0-2 2v10a2 2 0 0 1 2-2h5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Guide</button>`);
+  const chip=fr.querySelector('.guidechip');
+  chip.onclick=e=>{ e.stopPropagation(); if(fr.querySelector('.gpop')) return; tickSnd();
+    fr.insertAdjacentHTML('beforeend',`<div class="gpop" role="dialog" aria-label="${gd.title}"><span class="tag">Guide entry</span><h2>${gd.title}</h2><p>${gd.text}</p><button type="button" class="btn gclose">${BOOK.guideBack}</button></div>`);
+    const pop=fr.querySelector('.gpop'); pop.addEventListener('click',ev=>ev.stopPropagation()); speak(gd.title+'. '+gd.text);
+    const close=()=>{ pop.remove(); hush(); chip.focus({preventScroll:true}); }; pop.querySelector('.gclose').onclick=ev=>{ ev.stopPropagation(); close(); }; pop.querySelector('.gclose').focus({preventScroll:true});
+    pop.addEventListener('keydown',ev=>{ if(ev.key==='Escape'){ ev.stopPropagation(); close(); } }); }; }
+function tss(){ burst({freq:4200,peak:.07,a:.02,d:.35}); }
+let pathState=null;
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; app.appendChild(t); setTimeout(()=>t.classList.add('out'),2600); setTimeout(()=>t.remove(),3200); }
+function rewindSnd(){ if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=2;
+  f.frequency.setValueAtTime(3200,t); f.frequency.exponentialRampToValueAtTime(260,t+1.1); const g=ctx.createGain(); env(g,t,.25,.05,1.1); s.connect(f).connect(g).connect(master); s.start(t); s.stop(t+1.3);
+  const o=ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(900,t); o.frequency.exponentialRampToValueAtTime(120,t+1.1); const og=ctx.createGain(); env(og,t,.06,.05,1.05); o.connect(og).connect(master); o.start(t); o.stop(t+1.2); }
+function rewind(){ if(!pathState) return go(idx(BOOK.home)); const p=pathState; pathState=null; hush(); rewindSnd();
+  const ov=document.createElement('div'); ov.className='rewind'; ov.setAttribute('aria-hidden','true'); ov.innerHTML='<span>◀◀ Rewind</span>'; app.appendChild(ov);
+  const f=$('#frame'); f&&f.classList.add('spinback');
+  setTimeout(()=>{ go(idx(p.back), p.beat); }, 1100); setTimeout(()=>ov.remove(), 1500); }
+function rewindButton(){ choices.innerHTML='<button class="btn" type="button" id="rw">◀◀ Rewind to the choice</button>'; $('#rw').onclick=e=>{ e.stopPropagation(); rewind(); }; $('#rw').focus({preventScroll:true}); }
 
-/* ---------------- svg helpers shared by the books ---------------- */
+/* lessons and detours: what the reader has learned, and which wrong turns they have walked down */
+const journey={ visited:new Set(), learned:new Set() };
+function learn(k){ if(journey.learned.has(k)) return; journey.learned.add(k); const l=LESSONS.find(x=>x[0]===k); if(l){ toast(BOOK.toast+l[2]); if(ctx) chime(); } updatePathBadge(); }
+function updatePathBadge(){ const b=$('#pathBtn'); if(b) b.textContent=`${BOOK.pathLabel} ${journey.learned.size}/${LESSONS.length}`; }
+/* take a wrong turn on purpose: it plays out, then rewinds to the choice */
+function detour(key, backKey, backBeat){ journey.visited.add(key); pathState={back:backKey, beat:backBeat}; go(idx(key)); }
+function buildPath(){
+  const l=LESSONS.map(([k,t,rule,where],i)=>{ const got=journey.learned.has(k); return `<li class="lesson ${got?'got':''}"><b>${i+1}</b><span>${got?`<strong>${t}</strong>${rule}`:`<strong>Not learned yet</strong><small>Found in: ${where}</small>`}</span></li>`; }).join('');
+  const r=DETOURS.map(([k,name,icon])=>{ const seen=journey.visited.has(k); return `<li class="realm ${seen?'seen':''}"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="var(--teal)"/>${icon}</svg><span>${name}<small>${seen?'Walked':'Not yet'}</small></span></li>`; }).join('');
+  $('#pathpanel').innerHTML=`<h3>${BOOK.pathTitle} · ${journey.learned.size} of ${LESSONS.length}</h3><ol class="lessons">${l}</ol><h3>${BOOK.detourTitle} · ${journey.visited.size} of ${DETOURS.length}</h3><ul class="realms">${r}</ul><p class="pathnote">${BOOK.pathNote}</p>`; }
+function openPath(){ closeChapters(); closeVoice(); buildPath(); $('#pathpanel').hidden=false; $('#pathBtn').setAttribute('aria-expanded','true'); $('#pathpanel').focus({preventScroll:true}); }
+function closePath(){ const p=$('#pathpanel'); if(!p||p.hidden) return; p.hidden=true; $('#pathBtn').setAttribute('aria-expanded','false'); }
+function stillTest({ms,pass,fail,glow,events=[],grace=900,onTick=null}){
+  const t0=performance.now(); let raf=0; const recent=[]; const g=glow?$(glow):null; const fired=new Set();
+  const disturb=e=>{ if(performance.now()-t0<grace) return; if(e.target&&e.target.closest&&e.target.closest('.bar,#chapters,#pathpanel,#voicepanel')) return; if(!$('#chapters').hidden||!$('#pathpanel').hidden||!$('#voicepanel').hidden) return; if(e.type==='pointermove'){ const tn=performance.now(); recent.push([tn,Math.abs(e.movementX||0)+Math.abs(e.movementY||0)]); while(recent.length&&tn-recent[0][0]>500) recent.shift(); if(recent.reduce((x,r)=>x+r[1],0)<40) return; } stopStillness(); go(idx(fail)); };
+  const evs=['pointermove','pointerdown','keydown','touchstart'];
+  evs.forEach(ev=>addEventListener(ev,disturb,{capture:true,passive:true}));
+  const tick=()=>{ const el=performance.now()-t0; events.forEach((ev,i)=>{ if(!fired.has(i)&&el>=ev.at){ fired.add(i); ev.fn(); } });
+    if(g) g.style.setProperty('--s', .5+el/ms*2.2); onTick&&onTick(Math.min(el/ms,1)); if(el>=ms){ stopStillness(); go(idx(pass)); return; } raf=requestAnimationFrame(tick); };
+  tick(); stillState={ stop(){ evs.forEach(ev=>removeEventListener(ev,disturb,{capture:true})); cancelAnimationFrame(raf); } };
+}
+function stopStillness(){ if(stillState){ stillState.stop(); stillState=null; } }
+let si=0, bi=0, typing=null, canAdvance=false, autoTimer=null, cleanups=[];
+function go(i, sb=0){
+  { const prev=S[si]; if(go.ran&&prev&&prev.learn&&i!==si) learn(prev.learn); } /* tapping through fast still counts */
+  wakeAudio(); closeChapters(); closePath(); closeVoice(); hush(); clearTimeout(autoTimer); stopStillness(); choices.innerHTML=''; cleanups.forEach(f=>f()); cleanups=[];
+  si=i; bi=0; const sc=S[i]; if(!go.ran){ go.ran=true; app.style.transition='none'; requestAnimationFrame(()=>requestAnimationFrame(()=>{ app.style.transition=''; })); }
+  app.style.setProperty('--scene-bg', sc.bg); document.body.classList.remove('d1','d2','d3','void');
+  if(sc.dissolve) document.body.classList.add('d'+sc.dissolve); if(sc.void) document.body.classList.add('void');
+  label.textContent = sc.label||'';
+  const oldNode=visual.firstElementChild; visual.innerHTML = sc.view();
+  if(oldNode&&!reduce&&oldNode.classList.contains('frame')){ oldNode.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id')); oldNode.removeAttribute('id'); oldNode.querySelectorAll('button').forEach(b=>b.remove());
+    const lv=document.createElement('div'); lv.className='leaving'; lv.setAttribute('aria-hidden','true'); lv.appendChild(oldNode); visual.appendChild(lv); setTimeout(()=>lv.remove(),750);
+    const nf=visual.firstElementChild; if(nf&&nf.classList.contains('frame')){ nf.classList.add('entering'); setTimeout(()=>nf.classList.remove('entering'),850); } }
+  if(DRONE) DRONE.level(sc.void?0:1,sc.void?1:5); /* the black screen of death is the one silence on purpose */
+  sc.enter&&sc.enter(); if(sc.guide) addGuideChip(sc.guide); showBeat(sb);
+  if(sc.learn) setTimeout(()=>{ if(S[si]===sc) learn(sc.learn); },1600);
+  if(sc.detour) journey.visited.add(sc.detour);
+}
+function showBeat(j){
+  const sc=S[si], b=sc.beats[j]; bi=j; canAdvance=false; hint.classList.remove('on'); clearTimeout(autoTimer);
+  cap.className='caption'+(b.cls?' '+b.cls:'');
+  if(b.text===null){ cap.hidden=true; } else { cap.hidden = b.text==='' ; }
+  b.show&&b.show(); if(b.say) speak(b.say);
+  const finish=()=>{ typing=null; b.afterType&&b.afterType(); if(b.choice) renderChoice(b); if(!b.lock) armAdvance(); if(b.auto) autoTimer=setTimeout(next,b.auto); };
+  if(b.text){ const d=b.delay||0; setTimeout(()=>{ if(S[si]!==sc||bi!==j) return; typeOut(b.text, finish); speak(b.text); }, d); }
+  else { capText.textContent=''; if(b.delay){ autoTimer=setTimeout(()=>{ if(!b.lock) armAdvance(); },b.delay); } else finish(); }
+}
+function renderChoice(b){ choices.innerHTML=b.choice.map((c,i)=>`<button class="btn${i?' alt':''}" type="button" data-i="${i}">${c.label}</button>`).join('');
+  choices.querySelectorAll('button').forEach(btn=>btn.onclick=e=>{ e.stopPropagation(); const c=b.choice[+btn.dataset.i]; choices.innerHTML=''; tickSnd(); typeOut(c.reply, armAdvance); speak(c.reply); }); }
+function typeOut(text, done){
+  if(reduce){ capText.textContent=text; done(); return; }
+  let k=0; capText.textContent=''; clearInterval(typing&&typing.id);
+  const id=setInterval(()=>{ k+=2; capText.textContent=text.slice(0,k); if(k>=text.length){ clearInterval(id); done(); } },34);
+  typing={id, text, done};
+}
+function armAdvance(){ canAdvance=true; setTimeout(()=>{ if(canAdvance) hint.classList.add('on'); },900); }
+function next(){ const sc=S[si]; if(bi<sc.beats.length-1) showBeat(bi+1); else if(si<S.length-1) go(nextScene()); }
+function nextScene(){ const n=S[si].next; return n?idx(n):si+1; }
+function advance(){
+  if(typing){ clearInterval(typing.id); capText.textContent=typing.text; const d=typing.done; typing=null; d(); return; }
+  if(canAdvance) next();
+}
+$('#stage').addEventListener('click', e=>{ if(e.target.closest('button,.gpop')) return; advance(); });
+addEventListener('keydown', e=>{ if(e.key==='Escape'&&!$('#chapters').hidden){ closeChapters(); $('#chapBtn').focus(); return; } if(e.key==='Escape'&&!$('#pathpanel').hidden){ closePath(); $('#pathBtn').focus(); return; } if(e.key==='Escape'&&!$('#voicepanel').hidden){ closeVoice(); $('#voiceBtn').focus(); return; } if(!$('#chapters').hidden||!$('#pathpanel').hidden||!$('#voicepanel').hidden) return; if(stillState) return; if([' ','Enter','ArrowRight'].includes(e.key)){ if(document.activeElement&&document.activeElement.tagName==='BUTTON'&&e.key!=='ArrowRight') return; e.preventDefault(); advance(); } });
+
+/* warmth interaction */
+function buildChapters(){ const cur=S[si]&&S[si].key; let n=0;
+  $('#chapters').innerHTML=CHAPTERS.map(([vol,items])=>`<h3>${vol}</h3><ol>${items.map(([t,k])=>{ n++; return `<li><button type="button" data-k="${k}" ${k===cur?'aria-current="true"':''}><small>${String(n).padStart(2,'0')}</small><span>${t}</span></button></li>`; }).join('')}</ol>`).join('');
+  $('#chapters').querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); initAudio(); if(ctx&&ctx.state==='suspended') ctx.resume(); if('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance('')); go(idx(b.dataset.k)); }); }
+function openChapters(focus){ closeVoice(); closePath(); buildChapters(); $('#chapters').hidden=false; $('#chapBtn').setAttribute('aria-expanded','true'); if(focus!==false){ const c=$('#chapters [aria-current]')||$('#chapters button'); c&&c.focus({preventScroll:false}); } }
+function closeChapters(){ const c=$('#chapters'); if(!c||c.hidden) return; c.hidden=true; $('#chapBtn').setAttribute('aria-expanded','false'); }
+$('#chapBtn').onclick=e=>{ e.stopPropagation(); closePath(); $('#chapters').hidden?openChapters():closeChapters(); };
+$('#pathBtn').onclick=e=>{ e.stopPropagation(); $('#pathpanel').hidden?openPath():closePath(); };
+document.addEventListener('click',e=>{ if(!$('#chapters').hidden&&!e.target.closest('#chapters,#chapBtn')) closeChapters(); if(!$('#pathpanel').hidden&&!e.target.closest('#pathpanel,#pathBtn')) closePath(); if(!$('#voicepanel').hidden&&!e.target.closest('#voicepanel,#voiceBtn')) closeVoice(); },true);
+
+/* the small helpers the woodcut kits share with the short books */
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
-function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
-function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+/* moods: named sound beds a book defines in MOODS; mood('a','b') keeps those playing and fades the rest */
+const MOODS={};
+function bell(f=392,v=.1,d=4){ if(!ctx) return; const t=now(); [1,2.01,2.76,4.1,5.4].forEach((k,i)=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.frequency.value=f*k; env(g,t,v/(1+i*.9),.004,d/(1+i*.4)); o.connect(g).connect(master); o.start(t); o.stop(t+d+.1); }); }
+function knell(n=3,f=146.8){ for(let i=0;i<n;i++) setTimeout(()=>bell(f,.14,6),i*2600); }
+function mood(...on){ if(!ctx) return; Object.keys(loops).forEach(k=>{ if(!on.includes(k)) stopLoop(k,2.5); }); on.forEach(k=>{ if(!loops[k]&&MOODS[k]) MOODS[k](); }); }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
-}
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
-  try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
-  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
-}
+/* ---------- things to do on a page ---------- */
+const sayCap=(t,done=()=>{})=>{ typeOut(t,done); speak(t); };
+/* tap every glowing spot; each one answers in the caption, and the last one lets you go on */
+function tapAll(items,done){ let n=0; items.forEach(([x,y,lab,line,fn],i)=>spotAt(x,y,lab,b=>{ b.classList.add('done'); initAudio(); bell([392,440,493.9,587.3,659.3,784][i%6],.06,2.6); fn&&fn(); const last=++n===items.length; sayCap(line,last?(done||armAdvance):undefined); })); }
+/* a choice that matters: a wrong answer walks you down it, then rewinds to here */
+function pick(opts){ choices.innerHTML=opts.map((o,i)=>`<button class="btn" type="button" data-i="${i}"${o.go?` data-go="${o.go}"`:''}>${o.label}</button>`).join('');
+  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const o=opts[+b.dataset.i]; choices.innerHTML=''; tickSnd(); if(o.go) detour(o.go,S[si].key,bi); else next(); }); }
+/* open your hands: tap each thing to give it up, and it fades from the picture */
+function letGo(items){ choices.innerHTML=items.map(([w],i)=>`<button class="btn alt" type="button" data-i="${i}">${w}</button>`).join(''); let n=0;
+  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const [,id,line]=items[+b.dataset.i]; b.disabled=true; b.style.opacity='.3'; whoosh(.12); bell(523.25-n*40,.05,3);
+    const el=document.getElementById(id); if(el){ el.classList.add('fade'); el.style.opacity='0'; el.style.transform='translateY(-20px)'; }
+    const last=++n===items.length; sayCap(line,last?()=>{ choices.innerHTML=''; armAdvance(); }:undefined); }); }
+/* the bedside questions: each gets a yes */
+function askAll(qs,label='Yes'){ let k=0; const ask=()=>{ sayCap(qs[k],()=>{ choices.innerHTML=`<button class="btn" type="button" id="yes">${label}</button>`; const y=$('#yes'); y.focus({preventScroll:true});
+    y.onclick=e=>{ e.stopPropagation(); choices.innerHTML=''; bell(293.7+k*36,.07,3); k++; k<qs.length?ask():next(); }; }); }; ask(); }
+function holdOn(o){ holdGeneric({...o, onDone:()=>{ o.onDone&&o.onDone(); setTimeout(next,o.wait||300); }}); }
+function tryAgain(label,key,beat){ choices.innerHTML=`<button class="btn" type="button" id="again">${label}</button>`; $('#again').onclick=e=>{ e.stopPropagation(); go(idx(key),beat); }; $('#again').focus({preventScroll:true}); }
+const card=(eye,h,p,btns='')=>`<div class="title-card"><span class="eyebrow">${eye}</span><h1>${h}</h1><p>${p}</p>${btns}</div>`;
 
 /* Temple-mural kit for The Ten Courts: cinnabar lacquer, black ink, gold leaf and jade, framed in a key-fret border. */
 const K='#1A1414', CINN='#B22A1E', GOLD='#D9A441', JADE='#2F7A62', PAPER='#F2E6CC', INK='#24324A', PALE='#E9E4D8', SKIN='#D9A77A', PLUM='#5E2A4A', SMOKE='#8A8478';
@@ -410,122 +799,317 @@ const KINGS=[['Qinguang','秦廣'],['Chujiang','楚江'],['Songdi','宋帝'],['W
 function seal(x,y,n,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-22" y="-22" width="44" height="44" rx="4" fill="${CINN}" stroke="${K}" stroke-width="2"/><text x="0" y="8" text-anchor="middle" font-family="serif" font-size="22" fill="${PAPER}" font-weight="700">${n}</text></g>`; }
 function cnCover(){ return cn(`${floor(300)}${pillars()}${lantern(120,90,.9)}${lantern(480,90,.9)}${king(300,330,1.1,{fierce:true})}${guard(140,330,.9)}${guard(460,330,.9,{head:'horse',flip:true})}${soul(300,380,.5)}`); }
 
-/* The Ten Courts: the Chinese popular passage, after the Scripture on the Ten Kings and the Jade Records. */
-const BOOK={key:'tcourts',brand:'The Ten Courts',brandSub:'A Chinese book of the dead',title:'The Ten Courts',eyebrow:'From the Scripture on the Ten Kings and the Jade Records',
- lede:'In Chinese popular religion, the dead pass through ten courts of the underworld, one king at a time, while the living mark every seventh day with offerings. At the end comes a bowl of soup, a bridge, and a new life.',
- note:'About 35 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../../many-doors/chinese/walk/',walkName:'The Ten Kings\' Road',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['A blended tradition','This picture mixes Buddhist, Daoist and Confucian ideas, and practice differs across China, Taiwan, Hong Kong, Southeast Asia and the diaspora. This follows widely shared popular forms.'],['Your part','You face the mirror, look home from the terrace, send gifts by fire and choose at the bridge.'],['Not forever','The courts are more like a purgatory than a hell. Everyone passes through and is reborn.']],
- sources:'The Scripture on the Ten Kings (Shiwang jing, 9th–10th c.), tr. Stephen F. Teiser, The Scripture on the Ten Kings and the Making of Purgatory in Medieval Chinese Buddhism (1994); the Jade Records (Yuli chaozhuan, 19th c. popular editions); the Sutra of the Fundamental Vows of Ksitigarbha; the Yulanpen Sutra and Mulian stories (Teiser, The Ghost Festival in Medieval China, 1988); the Book of Rites (Liji) on hun and po.',
- cover:cnCover,
- chapters:[
- {name:'Two Souls',short:'Two souls',sub:'Hun rises, po stays',col:'#D9A441',run:async s=>{
-   art(cn(`${floor(310)}<rect x="160" y="270" width="280" height="40" fill="${K}" stroke="${GOLD}" stroke-width="2"/><g class="rise">${soul(300,200,.8)}</g><path d="M175 270 Q170 246 196 244 L404 248 Q428 252 424 270Z" fill="${PALE}" stroke="${K}" stroke-width="2"/><path d="M240 246 V270 M300 247 V270 M360 248 V270" stroke="${K}" stroke-width="1"/><circle cx="300" cy="200" r="70" fill="url(#lamp)" opacity=".5"/>${lantern(90,110)}${lantern(510,110)}`));
-   if(SND.ctx) pad('pad',[110,165,220],.03);
-   await say(s,'Ancient Chinese thought gave each person more than one soul. The hun is light and yang; at death it rises toward heaven. The po is heavy and yin; it stays with the body and sinks into the earth. Daoist texts count three hun and seven po.',{eye:'The Book of Rites'});
-   await say(s,'The Book of Rites puts it simply: the bones and flesh return to the earth, but the vital breath goes everywhere. Later, Buddhism brought a third idea: karma, and rebirth. Chinese popular religion holds all of these at once, and doesn\'t worry much about the contradictions.');
-   await choose(s,'Which soul rises at death?',['The hun, light and yang','The po, heavy and yin'],{right:0,wrong:'The po stays with the body. Try the other.'});
-   await say(s,'Families honour both. The po is cared for at the grave. The hun is cared for in the ancestor tablet at home, and, for a while, on its journey through the courts.');
- }},
- {name:'The Escorts',short:'Escorts',sub:'Ox-Head, Horse-Face and the two Impermanences',col:'#2F7A62',run:async s=>{
-   art(cn(`${floor(320)}${guard(110,330,.9)}${wuchang(230,330,.8)}${wuchang(370,330,.8,{black:true})}${guard(490,330,.9,{head:'horse',flip:true})}`,{sky:'mist'}));
-   if(SND.ctx){ windLoop(); }
-   await say(s,'When someone dies, messengers come from the underworld to fetch the soul. Every Chinese temple of the underworld shows them.',{eye:'The messengers'});
-   await spots(s,{ask:'Tap each messenger.',items:[
-     {x:18,y:60,label:'Ox-Head',say:'Ox-Head and Horse-Face are the underworld\'s guards. They lead the soul away and stand at the courts with their tridents.'},
-     {x:38,y:40,label:'White Impermanence',say:'Bai Wuchang, White Impermanence, tall and pale, with a long tongue and a tall hat that often reads: Fortune at first sight.'},
-     {x:62,y:40,label:'Black Impermanence',say:'Hei Wuchang, Black Impermanence, short and stern. His hat often reads: Peace under heaven. Together they are a reminder that no one is spared.'},
-     {x:82,y:60,label:'Horse-Face',say:'Horse-Face, Ox-Head\'s partner. In many tellings, they are fair: they come only when the person\'s time, written in the register of life and death, has run out.'}]});
-   loopOff('wind');
-   await say(s,'Families sometimes call out the dead person\'s name at the moment of death, so the soul knows it is time, and isn\'t frightened.');
- }},
- {name:'The First Court',short:'Mirror',sub:'King Qinguang and the Mirror of Retribution',col:'#B22A1E',run:async s=>{
-   art(cn(`${floor(320)}${pillars()}${king(170,330,.9)}${mirror(410,330,1)}${soul(300,380,.55)}`));
-   if(SND.ctx) pad('pad',[98,147,196],.03);
-   await say(s,'Seven days after death, the soul arrives at the first court, ruled by King Qinguang. Beside his desk stands a great bronze mirror: the Mirror of Retribution.',{eye:'The first court'});
-   await say(s,'In the Jade Records, the soul looks into it and sees its whole life replayed, every kindness and every harm, with nothing left out. There is no point arguing. The mirror simply shows.');
-   await hold(s,{label:'Look into the mirror',ms:6000,ask:'Press and hold, and look honestly at your life.',early:'Look again. Hold a little longer.',onP:p=>{ const m=$('#pArt circle[r="64"]'); if(m) m.style.opacity=.5+p*.5; }});
-   if(SND.ctx) bell(260,.08);
-   await say(s,'The Jade Records say those who did mostly good pass quickly through the courts. Everyone else is sent on, court by court, to work off what they did.');
- }},
- {name:'The Middle Courts',short:'Courts 2–9',sub:'A purgatory with an end',col:'#5E2A4A',run:async s=>{
-   art(cn(`${floor(320)}${KINGS.slice(1,9).map((k,i)=>seal(60+i*68,150,['二','三','四','五','六','七','八','九'][i],.9)).join('')}${king(300,330,.8,{fierce:true,robe:PLUM})}`));
-   await say(s,'The courts that follow each deal with particular wrongs. The Jade Records describe them in great detail, as do the painted scrolls hung at funerals: cheats, liars, the cruel, the ungrateful.',{eye:'Courts two to nine'});
-   await say(s,'The punishments are grim, and meant to be. But these are not eternal hells. A soul stays only until its debt is paid, and every soul eventually moves on to the tenth court and rebirth.');
-   const i=await choose(s,'Which wrong do you think the courts are hardest on?',['Unkindness to parents','Lying and cheating','Cruelty to animals','Wasting food'],{});
-   await say(s,['Filial piety runs through the Jade Records. Neglecting parents is among the worst wrongs.','Merchants with false weights and scales are a favourite target of the court scrolls.','Many courts punish killing animals needlessly, a Buddhist concern.','Yes, even wasting rice appears. The courts are about small daily choices, not just great crimes.'][i]+' The point is the same throughout: what you do here is what you meet there.');
- }},
- {name:'Homeward Terrace',short:'Terrace',sub:'King Yanluo, and one last look home',col:'#24324A',run:async s=>{
-   art(cn(`${hills(330,'#2A3A4A')}<path d="M200 400 L230 200 H370 L400 400Z" fill="#5A4A3A" stroke="${K}" stroke-width="2"/><rect x="215" y="190" width="170" height="14" fill="${CINN}" stroke="${K}"/>${soul(300,190,.6)}<g opacity=".8">${paperHouse(520,330,.5)}</g>`,{sky:'mist'}));
-   if(SND.ctx) pad('pad',[87.3,130.8,174.6],.03);
-   await say(s,'The fifth court belongs to King Yanluo, the Chinese form of Yama. The Jade Records tell that he once ruled the first court, but was moved to the fifth because he was too merciful: he kept sending wronged souls back to life.',{eye:'The fifth court'});
-   await say(s,'Here stands the Wangxiang Tai, the Terrace for Viewing Home. The soul climbs it and looks back, and sees its family, its house, the things it left undone.');
-   await still(s,{ask:'Stand on the terrace. Look home for a while.',ms:9000});
-   await say(s,'It is the saddest place in the underworld, and one of the kindest. Even here, the dead are allowed to look back once and say goodbye.');
- }},
- {name:'The Seventh Night',short:'Return',sub:'The soul comes home',col:'#D9A441',run:async s=>{
-   art(cn(home(`${table(300,330,1)}${incense(300,276,.6)}${lantern(110,120)}<g class="fadein" style="animation-delay:1s">${soul(470,330,.75)}</g>`),{border:true}));
-   if(SND.ctx){ allOff(1); pad('pad',[110,165,220],.025); }
-   await say(s,'Many families believe the soul comes home once, on the night of the seventh day, the tóuqī. It doesn\'t yet know it has died, and it wants to see the house again.',{eye:'The tóuqī'});
-   await say(s,'The family prepares the dead person\'s favourite food, leaves the lights on, and goes to bed early or stays in their rooms, so as not to make the soul sad when it sees them. Some sprinkle ash or flour by the door, and look for footprints in the morning.');
-   await count(s,{ask:'Set the table: rice, fruit, tea. Tap three times.',n:3,label:'Set a dish',onTap:()=>{ if(SND.ctx) plop(); }});
-   await say(s,'Then the family steps away, and lets the dead have the house to themselves for one night.');
- }},
- {name:'Gifts by Fire',short:'Joss paper',sub:'What the living send',col:'#E2641E',run:async s=>{
-   art(cn(`${floor(320)}${burner(300,330,1.2)}${jossStack(140,330,1.4)}${paperHouse(470,330,.8)}`));
-   if(SND.ctx) fireLoop();
-   await say(s,'The dead need money in the courts, to pay fees and smooth the way, and for their life in the other world. So the living send it, by burning it.',{eye:'Joss paper'});
-   await say(s,'Families burn joss paper and "hell bank notes", and paper models of what the dead might need: houses, clothes, cars, and these days even paper phones. The fire carries them across.');
-   await hold(s,{label:'Burn the offerings',ms:5000,ask:'Press and hold to feed the paper into the fire.',onP:p=>{ if(SND.ctx&&Math.random()<.04) nz({freq:800,peak:.05,d:.08}); }});
-   await say(s,'Some people find it strange. But it\'s a way of doing something, when there\'s nothing left to do. And the gifts go on, at every seventh day, at Qingming, and at the Ghost Festival.');
- }},
- {name:'Dizang',short:'Dizang',sub:'The bodhisattva of the underworld',col:'#C9822E',run:async s=>{
-   art(cn(`${floor(320)}${dizang(300,330,1.2)}${soul(130,330,.6)}${soul(470,330,.6)}`));
-   if(SND.ctx){ allOff(1); pad('pad',[130.8,196,261.6],.03); bowl(); }
-   await say(s,'Into this grim place walks a monk carrying a ringed staff and a shining pearl. He is Dizang, known in Sanskrit as Kṣitigarbha, the bodhisattva who visits the underworld to help those who suffer there.',{eye:'Dizang Pusa'});
-   await say(s,'His vow is famous: Until the hells are empty, I will not become a Buddha. Families chant his sutra for the dead, especially in the forty-nine days, and his image watches over cemeteries across East Asia.');
-   await count(s,{ask:'Shake the ringed staff. Each ring opens a gate. Tap six times.',n:6,label:'Shake the staff',onTap:k=>{ if(SND.ctx) bell(500+k*40,.06); }});
-   await say(s,'The courts are about justice. Dizang is about mercy. Chinese religion insists on both.');
- }},
- {name:'Mulian\'s Mother',short:'Mulian',sub:'The origin of the Ghost Festival',col:'#2F7A62',run:async s=>{
-   art(cn(`${hills(330,'#2A3A4A')}${cfig(180,340,1,{robe:'#C9822E',hair:'shaved',mono:true,arms:'pray'})}<g opacity=".8">${cfig(410,340,.9,{robe:'#5A5A6A',ghost:true,hair:'bun'})}</g>${lantern(300,90,.8)}`,{sky:'mist'}));
-   await say(s,'The best-loved story of the underworld is about a monk named Mulian. When his mother died, he searched for her through the hells, and found her starving: every bite she lifted burst into flames.',{eye:'Mulian saves his mother'});
-   await say(s,'The Buddha told him that his strength alone wasn\'t enough. On the fifteenth day of the seventh month, he should offer food to the whole community of monks, and the merit of their gratitude would free her. He did, and she was saved.');
-   await choose(s,'What freed Mulian\'s mother?',['A gift shared with many','Mulian\'s magic powers'],{right:0,wrong:'His powers weren\'t enough. Try again.'});
-   await say(s,'That day became the Ghost Festival, Yulanpen. The gates of the underworld open for the whole seventh month; families feed their ancestors and also the hungry ghosts who have no one. Lanterns are floated on rivers to guide them.');
- }},
- {name:'The Tenth Court',short:'The wheel',sub:'King Zhuanlun turns the wheel',col:'#D9A441',run:async s=>{
-   art(cn(`${floor(330)}${wheel(300,190,1.1)}${soul(300,380,.55)}`));
-   if(SND.ctx) pad('pad',[98,147,196,246.9],.03);
-   await say(s,'At last every soul comes to the tenth court and King Zhuanlun, the King Who Turns the Wheel. He decides the next life: human or animal, rich or poor, long-lived or short, according to what the earlier courts have found.',{eye:'The tenth court'});
-   await spots(s,{ask:'The wheel has six paths. Tap two of them.',items:[
-     {x:56,y:31,label:'Gods',say:'Heavenly beings, long-lived and happy, but still not free; their good fortune runs out too.'},
-     {x:56,y:64,label:'Humans',say:'A human birth, which Buddhists call precious: the only one in which you can really change.'},
-     {x:37,y:47,label:'Animals',say:'Animals, driven by instinct. Many Chinese Buddhists free captive animals to earn merit for the dead.'}]});
-   await say(s,'Before anyone leaves, there is one last thing to do.');
- }},
- {name:'Meng Po\'s Soup',short:'Meng Po',sub:'The bridge of forgetting',col:'#5E2A4A',run:async s=>{
-   art(cn(`${naihe(290)}${mengpo(150,280,.9)}${soul(300,190,.5)}`,{sky:'mist'}));
-   if(SND.ctx){ waterLoop(); }
-   await say(s,'At the foot of the Naihe Bridge, the Bridge of Helplessness, sits an old woman: Meng Po, Lady Meng. She serves every soul a bowl of soup brewed from herbs and the waters of forgetting.',{eye:'Naihe Bridge'});
-   await say(s,'One bowl, and you forget everything: your name, your family, your loves and your sorrows. Then you cross the bridge into a new life, unburdened. In folklore, the souls who refuse are said to be born remembering, and some people say that\'s why a few children seem to recall a past life.');
-   const k=await choose(s,'Meng Po offers you the bowl.',['Drink, and be free to begin again','Ask to remember one thing'],{});
-   await say(s,k===0?'You drink. It tastes of nothing at all. The weight lifts, and you walk up the arch of the bridge.':'She smiles, and the bowl stays in your hands. In the end everyone drinks. But it\'s worth knowing what you would have wanted to keep.');
-   loopOff('water');
- }},
- {name:'The Ancestors',short:'Ancestors',sub:'The tablet and the grave',col:'#B22A1E',run:async s=>{
-   art(cn(`<rect width="600" height="400" fill="#3A2A22"/>${table(300,350,1.3,false)}${tablet(300,290,1)}${incense(190,290,.8)}${incense(410,290,.8)}${lantern(90,110)}${lantern(510,110)}`));
-   if(SND.ctx){ allOff(1); pad('pad',[110,165,220],.03); }
-   await say(s,'Even as the soul goes on to a new life, it stays an ancestor at home. A wooden tablet with the person\'s name is placed on the family altar, and incense is lit before it on the first and fifteenth of every month.',{eye:'The ancestor tablet'});
-   await say(s,'The rites go on: the seven sevens, the hundredth day, the first anniversary, the third. Every spring at Qingming, families sweep the graves, bring food, and burn paper. It\'s a sad day and also a family outing, with picnics on the hillsides.');
-   await count(s,{ask:'Light three sticks of incense and bow three times.',n:3,label:'Bow',onTap:k=>{ if(SND.ctx) bell(392,.06); }});
-   await say(s,'Confucius said: serve the dead as you would serve the living. The courts may judge, Meng Po may make us forget, but the family remembers.');
- }}],
- finale:async s=>{ art(cnCover()); if(SND.ctx) chime();
-   await say(s,'That is the passage: two souls parting, the messengers, ten kings, a mirror that hides nothing, one last look home, gifts sent by fire, a monk who won\'t give up on anyone, and a bowl of soup.',{eye:'The end of the book'});
-   await say(s,'And on this side, a family that keeps setting the table. The dead are judged, and also fed. Both, the tradition says, matter.'); }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+/* The Ten Courts, the full book. Your death at home, the two souls parting, the messengers, the mirror of the first court, the courts that follow,
+   the seventh night home, gifts by fire, the terrace for viewing home, Dizang and Mulian, the wheel, Meng Po's soup and the bridge, and the family that remembers.
+   After the Scripture on the Ten Kings, the Jade Records, the Dizang sutra, the Mulian stories and the Book of Rites. Practice differs a great deal by region and family. */
+const BOOK={home:'hall', toast:'Learned: ', pathLabel:'Path', pathTitle:'What you have learned', detourTitle:'Wrong turns you walked',
+  pathNote:'Every wrong turn rewinds. The courts are a purgatory, not a prison: everyone moves on in the end.',
+  guideBack:'Back to the book', voiceSample:'Serve the dead as you would serve the living.'};
+
+/* ---------- pictures ---------- */
+const PG=(inner,lab,o)=>frame(sv(cn(inner,o),lab));
+const WHITE_='#EEE8DA', HEMP='#C8BCA0';
+const mourner=(x,y,s=.8)=>cfig(x,y,s,{robe:WHITE_,sash:HEMP,arms:'pray'});
+const lying=(x,y,s=.8,o={})=>`<g transform="translate(${x} ${y}) rotate(-90)">${cfig(0,0,s,{robe:'#6A5A7A',sash:GOLD,...o})}</g>`;
+function coveredMirror(x,y){ return `<g transform="translate(${x} ${y})"><rect x="-34" y="-50" width="68" height="84" rx="6" fill="${GOLD}" stroke="${K}" stroke-width="2"/><path d="M-40 -54 H40 L34 40 Q0 50 -34 40Z" fill="${PALE}" stroke="${K}" stroke-width="1.5"/><path d="M-20 -50 Q-24 0 -16 40 M10 -50 Q14 0 8 42" stroke="${HEMP}" stroke-width="2" fill="none"/></g>`; }
+function shrine(x,y){ return `<g transform="translate(${x} ${y})"><rect x="-56" y="-110" width="112" height="110" fill="${CINN}" stroke="${K}" stroke-width="2"/><path d="M-66 -110 H66 L56 -126 H-56Z" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/><rect x="-30" y="-96" width="60" height="70" fill="#E23A2A" stroke="${K}" stroke-width="1.5"/><path d="M-30 -96 L30 -26 M30 -96 L-30 -26" stroke="${GOLD}" stroke-width="1" opacity=".5"/><rect x="-70" y="0" width="140" height="10" fill="${K}"/></g>`; }
+function plank(x,y){ return `<rect x="${x-130}" y="${y}" width="260" height="14" fill="#7A5A3A" stroke="${K}" stroke-width="2"/><path d="M${x-120} ${y+14} V${y+44} M${x+120} ${y+14} V${y+44}" stroke="${K}" stroke-width="6"/>`; }
+function hall(inner=''){ return `${floor(300)}${coveredMirror(100,180)}${shrine(500,300)}${plank(300,270)}${inner}`; }
+function door(x,shut=true){ return `<g transform="translate(${x} 300)"><rect x="-40" y="-170" width="80" height="170" fill="${shut?'#4A2E22':'#1A1414'}" stroke="${K}" stroke-width="3"/><path d="M0 -170 V0" stroke="${K}" stroke-width="2"/><circle cx="-8" cy="-80" r="4" fill="${GOLD}"/><circle cx="8" cy="-80" r="4" fill="${GOLD}"/><rect x="-40" y="-14" width="80" height="4" fill="#FFE7A8" opacity=".7"/></g>`; }
+const LIFE=[['ml0',-36,.26,'#C9822E'],['ml1',0,.34,JADE],['ml2',36,.38,PLUM]];
+const lifeIn=()=>LIFE.map(([id,dx,s,c])=>`<g id="${id}" opacity="0" style="transition:opacity .6s">${cfig(dx,-96,s,{robe:c})}</g>`).join('');
+const BANK=`<path d="M0 296 H120 L140 400 H0Z" fill="#3A2A22" stroke="${K}" stroke-width="2"/>`;
+const bridgeAt=t=>{ const x=60+480*t, y=(1-t)*(1-t)*300+2*(1-t)*t*140+t*t*300-9; return [x,y]; };
+const riverLamp=(x,y,id='')=>`<g ${id?`id="${id}" opacity="0" style="transition:opacity .8s"`:''} transform="translate(${x} ${y})"><circle r="26" fill="url(#lamp)" class="flick"/><path d="M-14 0 H14 L10 8 H-10Z" fill="${CINN}" stroke="${K}"/><path d="M-10 0 Q0 -22 10 0" fill="#F4D58A" stroke="${K}"/></g>`;
+
+/* ---------- sound ---------- */
+const gong=(f=98,v=.16)=>bell(f,v,7);
+Object.assign(MOODS,{ room:()=>roomTone(), drone:()=>drone(),
+  hall:()=>pad('hall',[98,146.83,196],.03), mist:()=>pad('mist',[87.31,130.81,174.61],.03), warm:()=>pad('warm',[110,164.81,220,277.18],.03),
+  fire:()=>startLoop('fire',g=>{ const s=ctx.createBufferSource(); s.buffer=brownBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=320; f.Q.value=.8; s.connect(f).connect(g); s.start(); return [s]; },.18),
+  water:()=>startLoop('water',g=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=650; s.connect(f).connect(g); s.start(); return [s]; },.05),
+  wind:()=>startLoop('wind',g=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=500; f.Q.value=2; s.connect(f).connect(g); s.start(); return [s]; },.05) });
+function tapCount(n,lab,onTap){ let k=0; choices.innerHTML=`<button class="btn" type="button" id="tc">${lab} · 0 of ${n}</button>`; const b=$('#tc'); b.focus({preventScroll:true});
+  b.onclick=e=>{ e.stopPropagation(); initAudio(); k++; onTap&&onTap(k); b.textContent=`${lab} · ${k} of ${n}`; if(k>=n){ b.disabled=true; setTimeout(()=>{ choices.innerHTML=''; next(); },700); } }; }
+
+/* ---------- the book ---------- */
+const HALLBG='#2A1C1C', MISTBG='#2B3550', NIGHTC='#120C0C';
+const S=[
+{ key:'title', label:'', bg:HALLBG,
+  view:()=>`<div class="title-card" role="dialog" aria-label="Start"><span class="eyebrow">Many Doors · Chinese tradition · the full book</span><h1>The Ten Courts</h1>
+    <p>In Chinese popular religion, the dead pass through ten courts of the underworld, one king at a time, while the living mark every seventh day with offerings. At the end comes a bowl of soup, a bridge, and a new life. This is that passage, as temple murals and the old scriptures tell it.</p>
+    <ol><li>Headphones make it better.</li><li>Tap, or press Space, to move on.</li><li>When the book asks you something, answer it yourself.</li></ol>
+    <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="begin" type="button">Begin</button><button class="btn alt" id="pickch" type="button">Choose a chapter</button></div></div>`,
+  enter(){ $('#pickch').onclick=e=>{ e.stopPropagation(); openChapters(true); }; $('#begin').onclick=e=>{ e.stopPropagation(); initAudio(); if(ctx&&ctx.state==='suspended') ctx.resume(); if('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance('')); go(1); }; },
+  beats:[{text:null,lock:true}] },
+
+{ key:'hall', label:'The main hall', bg:HALLBG,
+  view:()=>PG(hall(`${lying(300,262,.75)}${mourner(200,330)}${mourner(410,330,.75)}${lantern(300,70,.8)}`),'The main hall of a house. A dying person lies on a plank bed. Mourners in white kneel beside it. A mirror on the wall is draped with cloth, and the family shrine is covered in red paper.'),
+  enter(){ mood('room','hall'); heartbeat(60); clockOn(); },
+  guide:{title:'Dying in the main hall',text:"Traditionally, a dying person was carried into the main hall of the house, the room of the family altar, so that they died at home and in the right place. The phrase for a good death, shòu zhōng zhèng qǐn, means to end your life in the principal room. Today most people die in hospitals, and families do what they can there, or bring the body home afterwards."},
+  beats:[
+    {text:"It's your turn. You're old and very ill, and your family has carried you into the main hall of the house, where the ancestors' altar is. Fear not. Look around, and tap the three things.", lock:true, show(){ tapAll([
+      [17,46,'The mirror',"The mirrors are covered. Many families believe a soul that sees its own reflection may be frightened, or lose its way."],
+      [83,52,'The shrine',"The images of the gods are covered with red paper, so that death doesn't touch them."],
+      [33,72,'Your family',"Your children, already wearing white, the colour of mourning. Undyed cloth and coarse hemp: they've put away colour for you."] ]); }},
+    {text:"Your eldest son holds your hand. When your breath stops, the family will call your name out loud, so that your soul knows it is time, and isn't afraid."} ]},
+
+{ key:'souls', label:'Two souls', bg:HALLBG,
+  view:()=>PG(hall(`${lying(300,262,.75)}<g id="hun" style="transition:transform .2s">${soul(300,250,.6)}</g>${mourner(200,330)}${mourner(410,330,.75)}`),'The body lies still. A pale soul rises from it.'),
+  enter(){ mood('hall'); heartStop(); clockOff(); breath(1.5,5); },
+  beats:[
+    {text:"Your breath goes out. Your family calls your name. And you come apart, the way the old books said you would."},
+    {text:"Ancient Chinese thought gives every person more than one soul. The hun is light, and yang, and at death it rises. The po is heavy, and yin, and stays with the body and goes down into the earth. Hold, and let the hun rise.", lock:true, show(){ holdOn({label:'Let the hun rise',ms:5000,wait:500,onProgress:p=>{ const g=$('#hun'); if(g) g.setAttribute('transform',`translate(0 ${-150*p})`); },onDone:()=>gong(147,.12)}); }} ]},
+
+{ key:'twosouls', label:'Two souls', bg:HALLBG, learn:'hunpo',
+  view:()=>PG(`${hills(330,'#2A3A4A')}${tomb(160,370,.8)}${tablet(440,330,.8)}${soul(300,170,.55)}`,'A grave on a hillside on one side, a red ancestor tablet on the other, and the pale soul between them.',{sky:'mist'}),
+  enter(){ mood('mist'); },
+  beats:[{text:"The Book of Rites puts it simply: the bones and flesh return to the earth, but the breath goes everywhere. So the family will care for you twice: at the grave, where the po rests, and at a wooden tablet on the altar, where the hun can come home. Later, Buddhism added karma and rebirth. Chinese religion holds all of it at once."}] },
+
+{ key:'escorts', label:'The messengers', bg:MISTBG,
+  view:()=>PG(`${floor(320)}${guard(110,330,.9)}${wuchang(230,330,.8)}${wuchang(370,330,.8,{black:true})}${guard(490,330,.9,{head:'horse',flip:true})}${soul(300,380,.45)}`,'Four underworld messengers: Ox-Head with a trident, tall White Impermanence, short Black Impermanence, and Horse-Face.',{sky:'mist'}),
+  enter(){ mood('wind','mist'); gong(); },
+  beats:[
+    {text:"Out of the mist, the messengers come for you. Every Chinese temple of the underworld has them painted on its walls. Tap each one.", lock:true, show(){ tapAll([
+      [18,60,'Ox-Head',"Ox-Head, a guard of the underworld with a trident. He and his partner lead the soul away."],
+      [38,32,'White Impermanence',"Bai Wuchang, White Impermanence, tall and pale, with a long tongue. His tall hat often reads: Fortune at first sight."],
+      [62,32,'Black Impermanence',"Hei Wuchang, Black Impermanence, short and stern. His hat often reads: Peace under heaven."],
+      [82,60,'Horse-Face',"Horse-Face, Ox-Head's partner. They come only when your name in the Register of Life and Death says your time is up."] ]); }},
+    {text:"Ox-Head reaches for your arm.", lock:true, afterType(){ pick([{label:'Run back into the house',go:'x_run'},{label:'Go with them'}]); }} ]},
+
+{ key:'go', label:'The messengers', bg:MISTBG,
+  view:()=>PG(`${hills(330,'#2A3A4A')}${guard(190,340,.7)}${soul(300,340,.5)}${guard(410,340,.7,{head:'horse',flip:true})}`,'The soul walks between Ox-Head and Horse-Face into the mist.',{sky:'mist'}),
+  enter(){ mood('mist'); },
+  beats:[{text:"You go. They're not cruel. They're officials, doing a job, and the underworld is run like an empire: courts, judges, scribes, registers and paperwork. Seven days' walk ahead is the first court."}] },
+
+/* ===== Volume 1: the courts ===== */
+{ key:'v1', label:'Volume 1', bg:'var(--teal)',
+  view:()=>card('Volume 1','The Courts',"The Scripture on the Ten Kings, from the ninth or tenth century, sets the dead before a different king on each seventh day for seven weeks, then at a hundred days, a year and three years. Ten kings in all."),
+  enter(){ mood('hall'); gong(); }, beats:[{text:null}] },
+
+{ key:'mirror', label:'The first court', bg:HALLBG,
+  view:()=>PG(`${floor(320)}${pillars()}${king(170,330,.9)}${mirror(410,330,1)}<g transform="translate(410 330)">${lifeIn()}</g>${soul(300,380,.5)}`,'The first court. King Qinguang sits at his desk. Beside him stands a great bronze mirror.'),
+  enter(){ mood('hall'); gong(110,.14); },
+  beats:[
+    {text:"Seven days after you die, you reach the first court, and King Qinguang. Beside his desk stands a great bronze mirror: the Mirror of Retribution. It shows your whole life, everything you did, with nothing left out."},
+    {text:"Hold, and look into the mirror. Don't look away.", lock:true, show(){ let last=0; holdOn({label:'Look into the mirror',ms:7000,wait:600,onProgress:p=>{
+        if(p===0&&last>.06&&last<1&&S[si].key==='mirror'){ last=0; setTimeout(()=>detour('x_lookaway','mirror',1),350); return; } last=p;
+        LIFE.forEach(([id],i)=>{ const e=$('#'+id); if(e) e.setAttribute('opacity',p*3>i+.3?'1':'0'); }); }}); }} ]},
+
+{ key:'mirror2', label:'The first court', bg:HALLBG, learn:'mirror',
+  view:()=>PG(`${floor(320)}${pillars()}${king(170,330,.9)}${mirror(410,330,1)}<g transform="translate(410 330)">${lifeIn().replace(/opacity="0"/g,'opacity="1"')}</g>${soul(300,380,.5)}`,'The mirror shows three figures: a child, a grown person and an old one. All of them are you.'),
+  enter(){ mood('hall'); bell(260,.08); },
+  beats:[
+    {text:"There you are. The child who stole from your mother's purse. The grown-up who cared for a sick neighbour for years and never told anyone. The old one who never forgave your brother."},
+    {text:"The mirror doesn't argue, and there's no point arguing with it. Those whose lives were mostly good pass quickly through the courts. Everyone else goes on, court by court, to settle what they owe."} ]},
+
+{ key:'courts', label:'Courts two to nine', bg:'#3A1C2A', learn:'purgatory',
+  view:()=>PG(`${floor(320)}${['二','三','四','五','六','七','八','九'].map((n,i)=>seal(60+i*68,90,n,.85)).join('')}${king(300,330,.8,{fierce:true,robe:PLUM})}`,'A row of eight red seals, one for each court from two to nine, above a fierce king in plum robes.'),
+  enter(){ mood('hall','drone'); },
+  guide:{title:'Paper and bureaucracy',text:"The courts look like an imperial government because they were modelled on one. Souls carry documents, scribes check registers, and fees are paid. Scholars such as Stephen Teiser have shown how the Ten Kings joined Buddhist karma to Chinese law and family duty. The punishments shown on temple scrolls are frightening on purpose: they were meant to keep the living honest."},
+  beats:[
+    {text:"Each of the next courts deals with its own kinds of wrong. The Jade Records, a book of the nineteenth century, describes them in detail, and the scrolls hung at funerals paint them. Tap four of the wrongs.", lock:true, show(){ tapAll([
+      [21,22,'False weights',"Merchants who cheated with false weights and short measures."],
+      [44,22,'Parents',"Children who neglected their parents. Filial piety runs through every court."],
+      [67,22,'Animals',"Killing animals for no reason, a Buddhist concern."],
+      [89,22,'Rice',"Even wasting rice. The courts care about small daily choices as much as great crimes."] ]); }},
+    {text:"The punishments are grim, and meant to be. But these aren't eternal hells. You stay only until your debt is paid, and then you move on. Every soul reaches the tenth court in the end."} ]},
+
+{ key:'seventh', label:'The seventh night', bg:'#3A2A22',
+  view:()=>PG(home(`${table(300,330,1)}${incense(300,276,.6)}${lantern(110,120)}${door(80)}${door(520)}<g class="fadein" style="animation-delay:1s">${soul(400,330,.7)}</g>`),'Night in the house. A table set with rice, fruit and tea. The bedroom doors are shut, light under them. A pale soul stands by the table.',{border:true}),
+  enter(){ mood('room','warm'); },
+  beats:[
+    {text:"On the seventh night, many families believe, the soul comes home once. It may not yet understand that it has died. It wants to see the house."},
+    {text:"Your family has cooked your favourite food and left the lights on. Then they've gone to their rooms early and shut the doors, so they won't make you sad. Some have scattered ash by the door to look for your footprints in the morning.", lock:true, afterType(){ pick([{label:'Wait for them to come out',go:'x_linger'},{label:'Eat, look around, and go on'}]); }} ]},
+
+{ key:'home', label:'The seventh night', bg:'#3A2A22', learn:'home',
+  view:()=>PG(home(`${table(300,330,1,false)}${incense(300,276,.6)}${lantern(110,120)}${door(80)}${door(520)}<path d="M380 380 l10 -4 M410 366 l10 -4 M440 352 l10 -4" stroke="${PALE}" stroke-width="5" stroke-linecap="round"/>`),'The table is cleared. Faint footprints in the ash lead away toward the window.',{border:true}),
+  enter(){ mood('warm'); chime(); },
+  beats:[{text:"You eat. You look at everything for the last time. Then you leave. In the morning, your daughter finds marks in the ash by the door and cries, and is glad. You came home, and you went on."}] },
+
+{ key:'joss', label:'Gifts by fire', bg:HALLBG,
+  view:()=>PG(`${floor(320)}<g id="burn">${burner(300,330,1.2,{lit:false})}</g>${jossStack(140,330,1.4)}${paperHouse(470,330,.8)}${mourner(560,360,.6)}`,'An iron burner in a courtyard. Beside it, a stack of joss paper and a paper model of a house.'),
+  enter(){ mood('hall'); },
+  beats:[
+    {text:"Back home, the family is sending you things. The dead need money in the courts, to pay fees and smooth the way, and for their life in the other world. So the living send it by burning it."},
+    {text:"Joss paper and hell bank notes, paper houses, paper clothes, paper cars, and these days, paper phones. Hold, and feed the paper into the fire.", lock:true, show(){ holdOn({label:'Burn the offerings',ms:5000,wait:600,onProgress:p=>{ if(p>.05&&!loops.fire){ mood('fire','hall'); const b=$('#burn'); if(b) b.innerHTML=burner(300,330,1.2); } },onDone:()=>crackle(1500)}); }},
+    {text:"Some people find it odd. But it's something to do when there's nothing left to do. And the gifts go on, every seventh day, at Qingming, and at the Ghost Festival."} ]},
+
+{ key:'terrace', label:'The terrace for viewing home', bg:MISTBG,
+  view:()=>PG(`${hills(330,'#2A3A4A')}<path d="M200 400 L230 200 H370 L400 400Z" fill="#5A4A3A" stroke="${K}" stroke-width="2"/><rect x="215" y="190" width="170" height="14" fill="${CINN}" stroke="${K}"/>${soul(300,190,.6)}<g opacity=".8">${paperHouse(520,330,.5)}</g>`,'A tall stone terrace in the mist. The soul stands on top, looking toward a tiny house far away.',{sky:'mist'}),
+  enter(){ mood('mist'); },
+  guide:{title:'The merciful king',text:"King Yanluo is the Chinese form of Yama, the Indian lord of death. The Jade Records tell that he once ruled the first court, but was moved down to the fifth because he was too merciful: he kept sending people who had been wronged back to life."},
+  beats:[
+    {text:"In the fifth court, King Yanluo's, there's a tall terrace called the Wangxiang Tai: the Terrace for Viewing Home. Every soul climbs it and looks back, at its family, its house, the things it left undone."},
+    {text:"Stand on the terrace. Look home for a while. Don't tap.", lock:true, cls:'quiet', afterType(){ stillTest({ms:10000,pass:'dizang',fail:'terraceFail'}); }} ]},
+
+{ key:'terraceFail', label:'The terrace for viewing home', bg:MISTBG,
+  view:()=>PG(`${hills(330,'#2A3A4A')}<path d="M200 400 L230 200 H370 L400 400Z" fill="#5A4A3A" stroke="${K}" stroke-width="2"/><rect x="215" y="190" width="170" height="14" fill="${CINN}" stroke="${K}"/>${soul(300,190,.6)}`,'The terrace again. The house has gone into the mist.',{sky:'mist'}),
+  beats:[{text:"You moved, and the house went back into the mist. It's the saddest place in the underworld, and one of the kindest. You're allowed to look. Try again, and take your time.", lock:true, afterType(){ tryAgain('Look home again','terrace',1); }}] },
+
+{ key:'dizang', label:'Dizang', bg:HALLBG, learn:'mercy',
+  view:()=>PG(`${floor(320)}${dizang(300,330,1.2)}${soul(130,330,.6)}${soul(470,330,.6)}`,'A monk in saffron with a ringed staff and a glowing pearl walks among pale souls.'),
+  enter(){ mood('warm'); bell(196,.12,6); },
+  beats:[
+    {text:"Into this grim place walks a monk with a ringed staff and a shining pearl. He is Dizang, Kṣitigarbha in Sanskrit, the bodhisattva who goes down into the underworld to help the people suffering there."},
+    {text:"His vow is famous: until the hells are empty, I will not become a Buddha. Families chant his sutra for the dead through the forty-nine days. Shake his staff. Each ring opens a gate.", lock:true, afterType(){ tapCount(6,'Shake the staff',k=>bell(500+k*40,.06,2.5)); }},
+    {text:"The courts are about justice. Dizang is about mercy. Chinese religion insists on both."} ]},
+
+{ key:'mulian', label:'Mulian’s mother', bg:MISTBG,
+  view:()=>PG(`${hills(330,'#2A3A4A')}${cfig(180,340,1,{robe:'#C9822E',hair:'shaved',mono:true,arms:'pray'})}<g opacity=".8">${cfig(410,340,.9,{robe:'#5A5A6A',ghost:true,hair:'bun',arms:'hold'})}</g><g transform="translate(410 290) scale(.7)">${fireTongue()}</g>`,'A monk faces the ghost of his mother. The bowl in her hands is on fire.',{sky:'mist'}),
+  enter(){ mood('mist','drone'); },
+  beats:[
+    {text:"There's a story every Chinese family knows. When a monk named Mulian's mother died, he searched for her through the underworld, and found her starving. Every bite of food she lifted burst into flames before it reached her mouth."},
+    {text:"Mulian has great spiritual powers. How will he save her?", lock:true, afterType(){ pick([{label:'With his own powers',go:'x_powers'},{label:'Feed the whole community of monks'}]); }} ]},
+
+{ key:'ghostfest', label:'Mulian’s mother', bg:'#1A2436', learn:'sharing',
+  view:()=>PG(`<rect y="250" width="600" height="150" fill="#1E2A3A"/>${[0,1,2].map(k=>`<path d="M0 ${280+k*30} q30 -8 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0" stroke="#4A6A88" stroke-width="2" fill="none"/>`).join('')}${riverLamp(150,300,'rl0')}${riverLamp(300,330,'rl1')}${riverLamp(450,300,'rl2')}${lantern(300,100,.8)}`,'A dark river at night. Paper lanterns wait to be floated on it.',{sky:'mist'}),
+  enter(){ mood('water','warm'); },
+  beats:[
+    {text:"The Buddha told Mulian his own strength wasn't enough. On the fifteenth day of the seventh month, he should offer food to the whole community of monks, and the merit of that one shared gift would free her. He did, and she was free."},
+    {text:"That day became the Ghost Festival. For the whole seventh month the gates of the underworld open. Families feed their own ancestors, and also the hungry ghosts who have no one. Float three lanterns, to guide them.", lock:true, afterType(){ tapCount(3,'Float a lantern',k=>{ const e=$('#rl'+(k-1)); if(e) e.setAttribute('opacity','1'); bell([392,440,523.25][k-1],.06,3); }); }} ]},
+
+/* ===== Volume 2: the wheel ===== */
+{ key:'v2', label:'Volume 2', bg:'var(--teal)',
+  view:()=>card('Volume 2','The Wheel',"After the forty-nine days and the later courts, every soul comes before the tenth king, who sends it on to its next life. But first there is a bowl of soup, and a bridge."),
+  enter(){ mood('hall'); gong(); }, beats:[{text:null}] },
+
+{ key:'wheel', label:'The tenth court', bg:HALLBG,
+  view:()=>PG(`${floor(330)}${wheel(300,190,1.1)}${soul(300,380,.55)}`,'A great wheel of six coloured paths turns slowly above the soul.'),
+  enter(){ mood('hall','drone'); },
+  beats:[
+    {text:"At last you reach the tenth court and King Zhuanlun, the King Who Turns the Wheel. He decides your next life, human or animal, rich or poor, long or short, from what the other courts found."},
+    {text:"The wheel has six paths. Tap three of them.", lock:true, show(){ tapAll([
+      [56,26,'Gods',"Heavenly beings, long-lived and happy, but still not free. Their good fortune runs out too."],
+      [56,68,'Humans',"A human birth, which Buddhists call precious: the one life in which you can really change."],
+      [37,47,'Animals',"Animals. Many Chinese Buddhists set captive animals free to make merit for the dead."] ]); }} ]},
+
+{ key:'mengpo', label:'Meng Po’s soup', bg:MISTBG,
+  view:()=>PG(`${naihe(290)}${BANK}${mengpo(52,330,.8)}${soul(112,330,.5)}`,'The Naihe Bridge arches over a dark river. At its foot an old woman in plum robes holds out a steaming bowl.',{sky:'mist'}),
+  enter(){ mood('water','mist'); },
+  beats:[
+    {text:"At the foot of the Naihe Bridge, the Bridge of Helplessness, sits an old woman: Meng Po, Lady Meng. She gives every soul a bowl of soup brewed from herbs and the waters of forgetting."},
+    {text:"One bowl, and you forget everything: your name, your family, your loves and your sorrows. She holds it out to you.", lock:true, afterType(){ pick([{label:'Refuse. I want to remember.',go:'x_refuse'},{label:'Drink'}]); }} ]},
+
+{ key:'bridge', label:'The bridge', bg:MISTBG, learn:'forget',
+  view:()=>PG(`${naihe(290)}${BANK}${mengpo(52,330,.8)}<g id="sb">${soul(0,0,.42)}</g>`,'The soul begins to climb the arch of the bridge.',{sky:'mist'}),
+  enter(){ mood('water','warm'); const [x,y]=bridgeAt(.14); const b=$('#sb'); b&&b.setAttribute('transform',`translate(${x} ${y})`); },
+  beats:[
+    {text:"You drink. It tastes of nothing at all. And the weight lifts: every grudge, every grief, every shame. Hold, and cross the bridge.", lock:true, show(){ holdOn({label:'Cross the bridge',ms:6000,wait:600,onProgress:p=>{ const [x,y]=bridgeAt(.14+.82*p); const b=$('#sb'); if(b) b.setAttribute('transform',`translate(${x} ${y})`); },onDone:()=>chime()}); }},
+    {text:"On the far side, somewhere, a baby is born, and cries, and doesn't know why. It's you. You get to begin again."} ]},
+
+/* ===== Volume 3: the family remembers ===== */
+{ key:'v3', label:'Volume 3', bg:'var(--teal)',
+  view:()=>card('Volume 3','The Family Remembers',"Even as the soul goes on to a new life, it stays an ancestor at home. The courts may judge, Meng Po may make you forget, but the family remembers."),
+  enter(){ mood('warm'); bell(196,.1,6); }, beats:[{text:null}] },
+
+{ key:'tablet', label:'The ancestors', bg:'#3A2A22',
+  view:()=>PG(`<rect width="600" height="400" fill="#3A2A22"/>${table(300,350,1.3,false)}${tablet(300,290,1)}${incense(190,290,.8)}${incense(410,290,.8)}${lantern(90,110)}${lantern(510,110)}`,'The family altar: a red wooden ancestor tablet between two incense burners and two lanterns.'),
+  enter(){ mood('warm','room'); },
+  beats:[
+    {text:"A wooden tablet with your name is placed on the family altar. Incense is lit in front of it on the first and fifteenth of every month. The rites go on: the seven sevens, the hundredth day, the first anniversary, the third."},
+    {text:"You're on the other side of it now. Your grandson lights three sticks of incense for you and bows. Bow with him.", lock:true, afterType(){ tapCount(3,'Bow',()=>bell(392,.06,3)); }} ]},
+
+{ key:'qingming', label:'Qingming', bg:'#3A4A3A',
+  view:()=>PG(`${hills(320,'#4A6A4A')}${tomb(300,360,1.1)}${cfig(150,380,.7,{robe:'#4A6A8A'})}${cfig(460,380,.6,{robe:'#8A4A4A'})}${jossStack(410,384,.8)}`,'A grave on a green hillside in spring. Family members come up the slope carrying food and paper.',{sky:'dawn'}),
+  enter(){ mood('wind','warm'); },
+  beats:[
+    {text:"Every spring at Qingming, the festival of bright and clear, families travel to sweep their ancestors' graves. It's a sad day, and also a family outing, with picnics on the hillsides."},
+    {text:"Years later, it's your granddaughter's turn. It's a long trip. She's busy this year.", lock:true, afterType(){ pick([{label:'Skip it, just this once',go:'x_skip'},{label:'Go anyway'}]); }} ]},
+
+{ key:'sweep', label:'Qingming', bg:'#3A4A3A', learn:'ancestors',
+  view:()=>PG(`${hills(320,'#4A6A4A')}${tomb(300,360,1.1)}${cfig(210,380,.7,{robe:'#4A6A8A',arms:'pray'})}${incense(380,384,.7)}${table(300,398,.7)}`,'The grave is swept. Food is laid out, incense burns, and someone bows.',{sky:'dawn'}),
+  enter(){ mood('warm'); chime(); },
+  beats:[
+    {text:"She goes. She pulls the weeds, sweeps the stone, lays out food and burns paper, and tells you her news, out loud, the way you'd talk to anyone."},
+    {text:"Confucius said: serve the dead as you would serve the living. That's the whole tradition in a sentence."} ]},
+
+{ key:'lastpage', label:'The last page', bg:HALLBG,
+  view:()=>frame(sv(cnCover(),'A fierce king of the underworld at his desk, between Ox-Head and Horse-Face, under two red lanterns.')),
+  enter(){ mood('hall'); },
+  beats:[
+    {text:"That's the passage: two souls parting, the messengers, a mirror that hides nothing, the courts, one last night at home, gifts sent by fire, a last look from the terrace, a monk who won't give up on anyone, and a bowl of soup."},
+    {text:"And on this side, a family that keeps setting the table. The dead are judged, and also fed. Both, the tradition says, matter."} ]},
+
+{ key:'end', label:'The end', bg:'var(--teal)',
+  view:()=>`<div class="title-card" style="cursor:default"><span class="eyebrow">The end of the book</span><h1>Go in peace</h1>
+    <p>That was the whole road: the main hall, the two souls, the messengers, the mirror, the courts, the seventh night, the terrace, Dizang and Mulian, the wheel, the bridge and the family that remembers.</p><p id="endsum" style="font-weight:700"></p>
+    <p class="draft">Sources: the Scripture on the Ten Kings (tr. Stephen F. Teiser, 1994); the Jade Records (19th-century popular editions); the Sutra of the Fundamental Vows of Kṣitigarbha; the Yulanpen Sutra and Mulian stories; the Book of Rites. Chinese practice blends Buddhist, Daoist and Confucian ideas and differs a great deal by region and family.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="again" type="button">Read it again</button><button class="btn alt" id="pathend" type="button">See your path</button><button class="btn alt" id="chend" type="button">Choose a chapter</button></div>
+    <div class="endlinks"><a href="../walk/">Walk the Ten Kings' Road</a><a href="../../index.html#doors">Back to Many Doors</a></div></div>`,
+  enter(){ mood('hall'); $('#again').onclick=e=>{ e.stopPropagation(); go(idx('hall')); }; $('#chend').onclick=e=>{ e.stopPropagation(); openChapters(true); }; $('#pathend').onclick=e=>{ e.stopPropagation(); openPath(); };
+    $('#endsum').textContent=`You learned ${journey.learned.size} of ${LESSONS.length} lessons and walked ${journey.visited.size} of ${DETOURS.length} wrong turns.`+(journey.learned.size===LESSONS.length?' You know the way.':' Read again to learn the rest.'); },
+  beats:[{text:null,lock:true}] },
+
+/* ===== wrong turns ===== */
+{ key:'x_run', label:'A wrong turn', bg:MISTBG,
+  view:()=>PG(hall(`${soul(150,330,.55)}${guard(470,330,.8,{head:'horse',flip:true})}`),'The pale soul hides in a corner of the hall. Horse-Face waits patiently in the doorway.'),
+  enter(){ mood('drone','wind'); },
+  beats:[
+    {text:"You run back into the house and hide behind the covered mirror. Nobody can see you. Your family walks straight through you. Horse-Face waits in the doorway, patiently. He has all the time in the world."},
+    {text:"Your name is in the Register of Life and Death, and your time is written there. Running doesn't change the ink. It only makes the waiting lonelier. Rewind, and go with them.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_lookaway', label:'A wrong turn', bg:HALLBG,
+  view:()=>PG(`${floor(320)}${pillars()}${king(170,330,.9)}${mirror(410,330,1)}<g transform="translate(410 330)">${lifeIn().replace(/opacity="0"/g,'opacity="1"')}</g><g transform="translate(300 380) scale(-1 1)">${soul(0,0,.5)}</g>`,'The soul has turned its back on the mirror. The mirror goes on showing.'),
+  enter(){ mood('drone','hall'); },
+  beats:[
+    {text:"You turn away. The mirror goes on showing anyway. Everyone in the court can see it, except you."},
+    {text:"Not looking doesn't make it not have happened. It only means you're the last to know. Rewind, and look.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_linger', label:'A wrong turn', bg:'#1A1414',
+  view:()=>PG(home(`${table(300,330,1,false)}${door(80)}${door(520)}${soul(300,330,.7)}`).replace('fill="#3A2A22"','fill="#1A1414"'),'The table is bare. The soul still stands in the dark house, waiting.',{border:true}),
+  enter(){ mood('drone'); clockOn(); },
+  beats:[
+    {text:"You wait. The candles burn down. The food goes cold. Morning comes and the doors open, and your family can't see you, and you can't make them."},
+    {text:"Folk stories are full of souls that couldn't leave, and wander. That's what the shut doors are for: love that lets you go. Rewind, and go on.", lock:true, afterType(){ clockOff(); rewindButton(); }} ]},
+
+{ key:'x_powers', label:'A wrong turn', bg:'#2A1414',
+  view:()=>PG(`${hills(330,'#2A3A4A')}${cfig(180,340,1,{robe:'#C9822E',hair:'shaved',mono:true,arms:'up'})}<g opacity=".8">${cfig(410,340,.9,{robe:'#5A5A6A',ghost:true,hair:'bun',arms:'hold'})}</g><g transform="translate(410 280) scale(1.3)">${fireTongue()}</g>`,'The monk raises his arms. The bowl in his mother’s hands flares even higher.',{sky:'#3A1A1A'}),
+  enter(){ mood('drone','fire'); },
+  beats:[
+    {text:"Mulian fills a bowl with rice and carries it to her with all his power. The moment she lifts it, it bursts into flames again. Burning coals. She still can't eat."},
+    {text:"In the story, the Buddha tells him plainly: your mother's wrongs run too deep for one person's strength, however holy. Rewind, and try what the Buddha taught.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_refuse', label:'A wrong turn', bg:MISTBG,
+  view:()=>PG(`${naihe(290)}${BANK}${mengpo(52,330,.8)}${soul(112,330,.5)}${[0,1,2,3].map(i=>`<path d="M${200+i*40} ${120+i*14} q10 -14 20 0" stroke="${CINN}" stroke-width="4" fill="none" class="drift"/>`).join('')}`,'The soul stands at the foot of the bridge, refusing the bowl. Red shadows of old griefs hang over it.',{sky:'mist'}),
+  enter(){ mood('drone','water'); },
+  beats:[
+    {text:"You refuse. You want to keep it all: your name, your family, your loves. And your grudges, your shame, the brother you never forgave. It comes as one package."},
+    {text:"In folklore, those who won't drink are sometimes born remembering, and carry an old life's weight into a new one, or are tipped into the river of forgetting anyway. Meng Po's soup isn't a punishment. It's a mercy. Rewind, and drink.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_skip', label:'A wrong turn', bg:'#2A2A22',
+  view:()=>PG(`${hills(320,'#4A5A3A')}${tomb(300,360,1.1)}${[200,250,350,400].map(x=>`<path d="M${x} 360 q-6 -26 4 -40 M${x+8} 360 q8 -20 0 -34" stroke="#6A7A4A" stroke-width="4" fill="none"/>`).join('')}${soul(470,370,.45)}`,'An overgrown grave. Weeds have grown up around the stone. A pale soul waits beside it.',{sky:'mist'}),
+  enter(){ mood('drone','wind'); },
+  beats:[
+    {text:"Just this once becomes this year and next. The weeds grow over the stone. Nobody lights incense on the first of the month."},
+    {text:"In the old belief, the dead with no one to feed them become hungry ghosts: the wanderers the Ghost Festival is for. Ancestors aren't just remembered; they're looked after. Rewind, and go.", lock:true, afterType(){ rewindButton(); }} ]}
+];
+function fireTongue(){ return `<circle r="30" fill="url(#lamp)" class="flick"/>${[-8,0,8].map((d,i)=>`<path class="flame" style="animation-delay:${i*.15}s" d="M${d-6} 6 Q${d-4} -12 ${d} ${-26+i%2*8} Q${d+4} -12 ${d+6} 6Z" fill="${i%2?GOLD:'#E2641E'}" stroke="${K}" stroke-width="1"/>`).join('')}`; }
+
+const CHAPTERS=[
+  ['The parting',[['The main hall','hall'],['Two souls','souls'],['The messengers','escorts']]],
+  ['Volume 1 · The Courts',[['The mirror','mirror'],['Courts two to nine','courts'],['The seventh night','seventh'],['Gifts by fire','joss'],['The terrace','terrace'],['Dizang','dizang'],['Mulian’s mother','mulian']]],
+  ['Volume 2 · The Wheel',[['The tenth court','wheel'],['Meng Po’s soup','mengpo'],['The bridge','bridge']]],
+  ['Volume 3 · The Family Remembers',[['The ancestor tablet','tablet'],['Qingming','qingming']]] ];
+const LESSONS=[
+  ['hunpo','Two souls','One soul rises and one stays with the body, and the family cares for both.','Two souls'],
+  ['mirror','The mirror','Nothing is hidden. Look at your whole life honestly; arguing changes nothing.','The mirror'],
+  ['purgatory','Not for ever','The courts are a purgatory, not a prison. You stay only until the debt is paid.','Courts two to nine'],
+  ['home','One night home','The dead get one night at home. Then they go on, and the living let them.','The seventh night'],
+  ['mercy','Justice and mercy','The courts judge, and Dizang will not rest until the hells are empty. Both matter.','Dizang'],
+  ['sharing','A gift shared','What frees the dead is not one person’s strength but a gift shared with many.','Mulian’s mother'],
+  ['forget','Forgetting','Meng Po’s soup is a mercy: you begin again without the weight.','The bridge'],
+  ['ancestors','Serve the dead','Serve the dead as you serve the living. The family remembers.','Qingming'] ];
+const IC=(d)=>`<path d="${d}" fill="none" stroke="#FBF4E6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+const DETOURS=[
+  ['x_run','Running from the messengers',IC('M10 30 L18 20 L14 12 M18 20 L28 24 M24 10 a3 3 0 1 0 .1 0')],
+  ['x_lookaway','Looking away',IC('M20 8 a12 12 0 1 0 .1 0 M12 28 L28 12')],
+  ['x_linger','Staying in the house',IC('M10 30 V16 L20 8 L30 16 V30 Z M17 30 V22 H23 V30')],
+  ['x_powers','Saving her alone',IC('M20 30 Q10 22 16 12 Q20 18 22 10 Q30 20 20 30Z')],
+  ['x_refuse','Refusing the soup',IC('M10 18 H30 Q30 30 20 30 Q10 30 10 18Z M14 10 L26 22')],
+  ['x_skip','Skipping Qingming',IC('M8 30 Q20 14 32 30 M14 30 q-2 -8 2 -12 M26 30 q2 -8 -2 -12')] ];
+updatePathBadge();
+go(0);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
