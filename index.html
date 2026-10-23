@@ -329,7 +329,7 @@ const WORKS = [
   { ch: 4, title: 'Second Nature', kind: 'Sector 9 · Film', year: '',  role: '',                  scene: road,    root: 50, vimeo: '20973698' },
   { ch: 5, title: 'Free Ride',     kind: 'Film',         year: '',     role: '',                  scene: fog,     root: 53, vimeo: '19586969', aspect: 4 / 3 },
   { ch: 6, title: 'Remio',         kind: 'Film',         year: '',     role: '',                  scene: sunset,  root: 55, vimeo: '54697211' },
-  { ch: 7, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968' },
+  { ch: 7, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968', picture: 2.39 },
   { ch: 8, title: 'The Bread Bejkr', kind: 'Film',       year: '',     role: '',                  scene: leaks,   root: 52, vimeo: '71693536' },
 ];
 const MUSIC_CH = 9;
@@ -1250,7 +1250,7 @@ addEventListener('message', e => {
   let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
   if (d.event === 'ready') {
     // the player can ignore sound and play until it's ready, so say them again now, then check they stuck
-    vSend({ method: 'getDuration' }); vKick();
+    vSend({ method: 'getDuration' }); vSend({ method: 'disableTextTrack' }); vKick();   // no captions over the picture
     const f = vFrame; [700, 1600, 3200].forEach(t => setTimeout(() => { if (vFrame === f) { vSend({ method: 'getMuted' }); vSend({ method: 'getPaused' }); } }, t));
   }
   else if (d.method === 'getDuration' && d.value > 0) { vDur = d.value; snipAt = 0; }
