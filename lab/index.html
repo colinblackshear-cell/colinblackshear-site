@@ -28,12 +28,11 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
     repeating-linear-gradient(92deg, rgba(0,0,0,.18) 0 2px, rgba(0,0,0,0) 2px 14px),
     linear-gradient(180deg,#3a2618,#22160e 60%,#130c08);
   box-shadow:inset 0 2px 0 rgba(255,220,170,.12)}
-.station{position:relative;display:flex;flex-direction:column;align-items:center;gap:22px;min-width:0}
-.station.machine{flex:1.7}
-.station.book{flex:1.15}
-.station.doors{flex:1.3}
-.doors svg{display:block;width:100%;height:auto;overflow:visible}
-.station.card{flex:.8}
+.station{position:relative;flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:22px;min-width:0}
+/* every piece sits on the same footprint, so the room stays even however many there are */
+.stage{position:relative;width:100%;aspect-ratio:1180 / 496;display:flex;align-items:flex-end;justify-content:center}
+.stage > svg{display:block;width:100%;height:100%;overflow:visible}
+.stage > .mframe,.stage > .tile{width:100%;height:100%}
 /* a pool of light from above */
 .station::before{content:"";position:absolute;left:50%;bottom:58px;width:130%;aspect-ratio:2.2;transform:translateX(-50%);z-index:-1;pointer-events:none;
   background:radial-gradient(closest-side, rgba(255,226,170,.16), rgba(255,226,170,0))}
@@ -48,7 +47,7 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
 .obj:focus-visible .tilt{filter:drop-shadow(0 0 0 2px var(--title))}
 
 /* the machine is the real page, shrunk onto the table */
-.mframe{position:relative;width:100%;aspect-ratio:1180 / 496;overflow:hidden;border-radius:10px;box-shadow:0 2px 0 2px #0b0b0a}
+.mframe{position:relative;width:100%;overflow:hidden;border-radius:10px;box-shadow:0 2px 0 2px #0b0b0a}
 .mframe iframe{position:absolute;left:0;top:0;width:1180px;height:496px;border:0;transform-origin:0 0;pointer-events:none;background:transparent}
 .mframe::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(170deg,rgba(255,255,255,.07),rgba(255,255,255,0) 40%)}
 
@@ -65,7 +64,7 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
 .cap .also{font-size:.7rem;color:var(--title-soft);text-decoration:none}
 .cap .also b{font-weight:500;color:var(--title)}
 .cap .also:hover{color:var(--title)}
-.tile{display:grid;place-items:center;aspect-ratio:4/3;border:1px dashed var(--line);border-radius:10px;color:var(--title-soft);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase}
+.tile{display:grid;place-items:center;border:1px dashed var(--line);border-radius:10px;color:var(--title-soft);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase}
 
 /* the fall into an object */
 .veil{position:fixed;inset:0;z-index:99;background:#000;opacity:0;transition:opacity .55s ease .4s;pointer-events:none}
@@ -176,7 +175,7 @@ function station(x) {
   else if (x.object === 'doors') obj = DOORS(x.doors || 12);
   else obj = `<div class="tile">${live ? 'Enter' : 'Soon'}</div>`;
   el.innerHTML = `${live ? `<a class="obj" href="${x.slug}/" data-slug="${x.slug}" aria-label="Open ${x.title}">` : '<div class="obj">'}
-      <div class="tilt">${obj}</div><span class="shadow"></span>${live ? '</a>' : '</div>'}
+      <div class="tilt"><div class="stage">${obj.replace('<svg ', '<svg preserveAspectRatio="xMidYMax meet" ')}</div></div><span class="shadow"></span>${live ? '</a>' : '</div>'}
     <div class="cap"><span class="no">${x.no}</span><h2>${x.title}</h2><p>${x.blurb}</p>
       ${(x.also || []).map(y => `<a class="also" href="${y.href}">Also: <b>${y.label}</b>, ${y.note} →</a>`).join('')}</div>`;
   room.appendChild(el);
@@ -186,6 +185,13 @@ window.EXPERIMENTS.forEach(station);
 // keep the shrunken machine page scaled to its frame
 function fit() { document.querySelectorAll('.mframe').forEach(f => { const i = f.querySelector('iframe'); i.style.transform = `scale(${f.clientWidth / 1180})`; }); }
 addEventListener('resize', fit); fit();
+// captions share one height, so the pieces line up along the table whatever each one says
+function evenCaps() {
+  const caps = [...document.querySelectorAll('.station .cap')]; caps.forEach(c => c.style.minHeight = '');
+  if (matchMedia('(max-width:820px)').matches) return;
+  const h = Math.max(...caps.map(c => c.offsetHeight)); caps.forEach(c => c.style.minHeight = h + 'px');
+}
+addEventListener('resize', evenCaps); evenCaps(); document.fonts && document.fonts.ready.then(evenCaps);
 
 // clicking an object falls into it: it grows to fill the screen, the room goes dark, then the page opens
 room.addEventListener('click', e => {

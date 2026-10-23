@@ -1,5 +1,5 @@
 // The lab grows by adding a folder under lab/ and one entry here.
-// object: how it appears in the room ('machine', 'book', 'doors', or leave it out for a plain card).
+// object: how it appears in the room ('machine', 'book', 'doors', or leave it out for a plain card). Every piece gets the same footprint on the table.
 // status: 'live' links to the folder; 'soon' shows a quiet placeholder.
 window.EXPERIMENTS = [
   {
