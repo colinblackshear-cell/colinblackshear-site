@@ -1147,13 +1147,18 @@ function wrathArt(o){ const cx=300, cy=205;
    </g></g>
    <g class="peace"><circle cx="${cx}" cy="${cy}" r="150" fill="${lighten[o.peace]||'#FFFFFF'}" opacity=".45"/><circle cx="${cx}" cy="${cy}" r="96" fill="${o.peace==='#FFFFFF'?'#EAF1F4':o.peace}"/><circle cx="${cx}" cy="${cy}" r="52" fill="#FFFFFF"/></g>
    <g opacity=".95">${lf(300,384,.34)}</g>`; }
+/* the sound of a press and hold: a soft hum that climbs an octave as the ring fills, a bell when it's full */
+function holdHum(c,dest,ms,p0=0){ if(!c||!dest) return {stop(){}}; const t=c.currentTime,s=Math.max(.05,ms*(1-p0)/1000),g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(dest);
+  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k*Math.pow(2,p0),t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
+  return {stop(full){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7));
+    if(full) [784,1568*1.003,2352*1.01].forEach((fr,i)=>{ const o=c.createOscillator(),bg=c.createGain(); o.frequency.value=fr; bg.gain.setValueAtTime(.0001,n); bg.gain.exponentialRampToValueAtTime(.08/(i+1),n+.005); bg.gain.exponentialRampToValueAtTime(.0001,n+3); o.connect(bg).connect(dest); o.start(n); o.stop(n+3.1); }); }}; }
 function holdToFace(o){
   const fr=$('#frame'); fr.insertAdjacentHTML('beforeend',`<button type="button" class="holdbtn" id="hold" aria-label="Press and hold to face it"><span class="holdpill"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(30,42,43,.25)" stroke-width="4"/><circle id="holdring" cx="18" cy="18" r="15" fill="none" stroke="#B8352A" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2" transform="rotate(-90 18 18)"/></svg>Press and hold to face it</span></button>`);
-  const b=$('#hold'), ring=$('#holdring'); let t0=0, raf=0, done=false, holding=false;
+  const b=$('#hold'), ring=$('#holdring'); let t0=0, raf=0, done=false, holding=false, hm=null;
   const tick=()=>{ const p=Math.min((performance.now()-t0)/o.ms,1); ring.setAttribute('stroke-dashoffset',(94.2*(1-p)).toFixed(1));
-    if(p>=1){ done=true; holding=false; b.remove(); o.onDone(); return; } raf=requestAnimationFrame(tick); };
-  const start=e=>{ if(done||holding) return; e&&e.preventDefault&&e.preventDefault(); holding=true; t0=performance.now(); wrathLevel(.3,1.7); fr.classList.add('facing'); tick(); };
-  const stop=()=>{ if(done||!holding) return; holding=false; cancelAnimationFrame(raf); fr.classList.remove('facing'); ring.setAttribute('stroke-dashoffset','94.2');
+    if(p>=1){ done=true; holding=false; if(hm){ hm.stop(true); hm=null; } b.remove(); o.onDone(); return; } raf=requestAnimationFrame(tick); };
+  const start=e=>{ if(done||holding) return; e&&e.preventDefault&&e.preventDefault(); holding=true; t0=performance.now(); wrathLevel(.3,1.7); initAudio(); hm=holdHum(ctx,master,o.ms); fr.classList.add('facing'); tick(); };
+  const stop=()=>{ if(done||!holding) return; holding=false; cancelAnimationFrame(raf); if(hm){ hm.stop(false); hm=null; } fr.classList.remove('facing'); ring.setAttribute('stroke-dashoffset','94.2');
     if(performance.now()-t0>250){ drumHit(1); horn(); wrathLevel(.2,1.2); typeOut(o.flinch, ()=>{}); speak(o.flinch); } };
   b.addEventListener('pointerdown',e=>{ e.stopPropagation(); b.setPointerCapture&&b.setPointerCapture(e.pointerId); start(e); });
   ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,stop));
@@ -1312,11 +1317,11 @@ function thunk(){ drumHit(1); burst({type:'lowpass',freq:900,peak:.3,d:.15}); }
 
 function holdGeneric(o){
   const fr=$('#frame'); fr.insertAdjacentHTML('beforeend',`<button type="button" class="holdbtn" id="hold" aria-label="${o.label}"><span class="holdpill"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(30,42,43,.25)" stroke-width="4"/><circle id="holdring" cx="18" cy="18" r="15" fill="none" stroke="#1F5E63" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2" transform="rotate(-90 18 18)"/></svg>${o.label}</span></button>`);
-  const b=$('#hold'), ring=$('#holdring'); let t0=0, raf=0, done=false, holding=false;
+  const b=$('#hold'), ring=$('#holdring'); let t0=0, raf=0, done=false, holding=false, hm=null;
   const tick=()=>{ const p=Math.min((performance.now()-t0)/o.ms,1); ring.setAttribute('stroke-dashoffset',(94.2*(1-p)).toFixed(1)); o.onProgress&&o.onProgress(p);
-    if(p>=1){ done=true; b.remove(); o.onDone(); return; } raf=requestAnimationFrame(tick); };
-  const start=()=>{ if(done||holding) return; holding=true; t0=performance.now(); tick(); };
-  const stop=()=>{ if(done||!holding) return; holding=false; cancelAnimationFrame(raf); ring.setAttribute('stroke-dashoffset','94.2'); o.onProgress&&o.onProgress(0); };
+    if(p>=1){ done=true; if(hm){ hm.stop(true); hm=null; } b.remove(); o.onDone(); return; } raf=requestAnimationFrame(tick); };
+  const start=()=>{ if(done||holding) return; holding=true; t0=performance.now(); initAudio(); hm=holdHum(ctx,master,o.ms); tick(); };
+  const stop=()=>{ if(done||!holding) return; holding=false; cancelAnimationFrame(raf); if(hm){ hm.stop(false); hm=null; } ring.setAttribute('stroke-dashoffset','94.2'); o.onProgress&&o.onProgress(0); };
   b.addEventListener('pointerdown',e=>{ e.stopPropagation(); e.preventDefault(); b.setPointerCapture&&b.setPointerCapture(e.pointerId); start(); });
   ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,stop));
   b.addEventListener('click',e=>e.stopPropagation());

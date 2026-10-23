@@ -738,14 +738,19 @@ async function arrive(s,n){
 const K0=s=>PARTKEY[s.D.p][0];
 
 /* --- hold helper: press-and-hold with progress ring; drains if released --- */
+/* the sound of a press and hold: a soft hum that climbs an octave as the ring fills, a bell when it's full */
+function holdHum(c,dest,ms,p0=0){ if(!c||!dest) return {stop(){}}; const t=c.currentTime,s=Math.max(.05,ms*(1-p0)/1000),g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(dest);
+  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k*Math.pow(2,p0),t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
+  return {stop(full){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7));
+    if(full) [784,1568*1.003,2352*1.01].forEach((fr,i)=>{ const o=c.createOscillator(),bg=c.createGain(); o.frequency.value=fr; bg.gain.setValueAtTime(.0001,n); bg.gain.exponentialRampToValueAtTime(.08/(i+1),n+.005); bg.gain.exponentialRampToValueAtTime(.0001,n+3); o.connect(bg).connect(dest); o.start(n); o.stop(n+3.1); }); }}; }
 function holdBtn(s,{label,ms,onP,early,col='#E8B13A'}){ return new Promise(res=>{
   layer().insertAdjacentHTML('beforeend',`<button type="button" class="holdzone" id="hz" aria-label="${label}"><span class="holdpill"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hring" cx="18" cy="18" r="15" fill="none" stroke="${col}" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2" transform="rotate(-90 18 18)"/></svg><span id="hlab">${label}</span></span></button>`);
-  const b=$('#hz'), ring=$('#hring'); let p=0, holding=false, last=performance.now(), raf=0, fin=false, warned=false;
+  const b=$('#hz'), ring=$('#hring'); let p=0, holding=false, last=performance.now(), raf=0, fin=false, warned=false, hm=null;
   const tick=()=>{ if(SS!==s){ cancelAnimationFrame(raf); return; } const nw=performance.now(), dt=nw-last; last=nw;
     p=holding? Math.min(1,p+dt/ms) : Math.max(0,p-dt/(ms*1.6)); ring.setAttribute('stroke-dashoffset',(94.2*(1-p)).toFixed(1)); onP&&onP(p,holding);
-    if(p>=1&&!fin){ fin=true; b.remove(); res(); return; } raf=requestAnimationFrame(tick); };
-  const down=e=>{ e&&e.preventDefault&&e.preventDefault(); holding=true; b.classList.add('on'); };
-  const up=()=>{ if(!holding) return; holding=false; b.classList.remove('on'); if(p>.08&&p<1&&early&&!warned){ warned=true; prompt(early); setTimeout(()=>warned=false,4000); } };
+    if(p>=1&&!fin){ fin=true; if(hm){ hm.stop(true); hm=null; } b.remove(); res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ e&&e.preventDefault&&e.preventDefault(); holding=true; b.classList.add('on'); aInit(); if(!hm) hm=holdHum(actx,mstr,ms,p); };
+  const up=()=>{ if(!holding) return; holding=false; if(hm){ hm.stop(false); hm=null; } b.classList.remove('on'); if(p>.08&&p<1&&early&&!warned){ warned=true; prompt(early); setTimeout(()=>warned=false,4000); } };
   b.addEventListener('pointerdown',e=>{ b.setPointerCapture&&b.setPointerCapture(e.pointerId); down(e); });
   ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,up));
   b.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat){ e.preventDefault(); down(); } });
