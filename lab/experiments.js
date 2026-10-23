@@ -8,7 +8,7 @@ window.EXPERIMENTS = [
     no: '01',
     status: 'live',
     object: 'machine',
-    blurb: 'A sixteen-step drum machine in the spirit of the 808, with a sampler for your own sounds.',
+    blurb: 'A sixteen-step drum machine in the spirit of the 808, with sixteen voices, an effects unit, a sampler for your own sounds, and WAV download.',
   },
   {
     slug: 'many-doors',
