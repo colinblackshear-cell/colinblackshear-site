@@ -1,0 +1,539 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Hall of Two Truths</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{pointer-events:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* The Hall of Two Truths: a vignette from a papyrus. Papyrus ground, black outline, Egyptian blue, red ochre, malachite and gold. */
+:root{
+  --bg:#EAD9AE; --paper:#F6EBCB; --ink:#22180F; --ink-soft:#5A4A35; --accent:#1F5F8B; --accent2:#A8361F; --gold:#D9A321; --night:#120F0A; --nightink:#F6EBCB;
+  --display:'Marcellus','Jost','Futura',sans-serif;
+}
+h1,.brand,.ptitle b,.ck b,.how b{font-family:var(--display)}
+h1{font-weight:400;letter-spacing:.02em}
+.brand{font-weight:400;letter-spacing:.12em}
+.cover{background:#E3CB91}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{}};
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
+function manualLanding(B){
+  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
+    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
+    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
+  $('#begin').onclick=()=>playManual(B,next);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
+  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+}
+async function playManual(B,start){
+  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
+  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
+  s.onclose=()=>manualLanding(B);
+  try{
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
+      await c.run(s);
+      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
+      if(SND.ctx) allOff(1.2); }
+    store.set(B.key+'-next','0'); alive(s);
+    await B.finale(s); closePlayer();
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* Vignette kit for The Hall of Two Truths: figures in profile on papyrus, after the Papyrus of Ani (c. 1250 BCE). */
+const K='#22180F', PAP='#E9D3A1', BLUE='#1F5F8B', LAPIS='#2B4C8C', RED='#A8361F', GREEN='#3E8E5E', GOLD='#D9A321', SKIN='#B9653A', SKINF='#E2B27A', LINEN='#F7F1E1', BLACK='#1E1A16';
+const EG_DEFS=`<defs><pattern id="fib" width="7" height="400" patternUnits="userSpaceOnUse"><line x1="3" y1="0" x2="3" y2="400" stroke="#C9AE6E" stroke-width="1" opacity=".5"/></pattern><pattern id="fib2" width="600" height="9" patternUnits="userSpaceOnUse"><line x1="0" y1="4" x2="600" y2="4" stroke="#C9AE6E" stroke-width="1" opacity=".35"/></pattern>
+<radialGradient id="sun"><stop offset="0" stop-color="#FFE9A8"/><stop offset=".5" stop-color="${GOLD}" stop-opacity=".6"/><stop offset="1" stop-color="${GOLD}" stop-opacity="0"/></radialGradient><clipPath id="egclip"><rect x="0" y="0" width="600" height="400"/></clipPath></defs>`;
+function kheker(y){ let o=''; for(let x=0;x<600;x+=20){ const c=[BLUE,RED,GREEN][(x/20)%3]; o+=`<path d="M${x+3} ${y+30} V${y+8} Q${x+10} ${y-2} ${x+17} ${y+8} V${y+30}Z" fill="${c}" stroke="${K}" stroke-width="1.5"/><circle cx="${x+10}" cy="${y+14}" r="3" fill="${PAP}" stroke="${K}"/>`; } return o; }
+function papyrus(inner,{frieze=true,ground=340,bg=PAP}={}){ return `${EG_DEFS}<g clip-path="url(#egclip)"><rect width="600" height="400" fill="${bg}"/><rect width="600" height="400" fill="url(#fib)"/><rect width="600" height="400" fill="url(#fib2)"/>
+  ${frieze?`${kheker(0)}<rect x="0" y="30" width="600" height="6" fill="${BLUE}"/><rect x="0" y="36" width="600" height="3" fill="${K}"/>`:''}
+  ${inner}${ground?`<rect x="0" y="${ground}" width="600" height="4" fill="${K}"/>${[0,1,2,3,4,5].map(i=>`<rect x="${i*100}" y="${ground+4}" width="100" height="10" fill="${[RED,BLUE,GREEN][i%3]}" stroke="${K}" stroke-width="1.5"/>`).join('')}`:''}</g>`; }
+function eyeLine(){ return ''; }
+/* a striding figure facing right; head: human | jackal | ibis | falcon */
+function eg(x,y,s=1,{head='human',skin=SKIN,kilt=LINEN,flip=false,crown=null,hold=null,arms='forward'}={}){
+  const H={human:`<path d="M-9 -150 Q-10 -168 4 -170 Q16 -170 16 -158 L21 -153 L16 -150 L15 -143 L4 -140 Z" fill="${skin}" stroke="${K}" stroke-width="2"/><path d="M-12 -150 Q-14 -174 4 -174 Q14 -174 15 -164 L6 -162 L4 -146 L-4 -136 L-14 -136Z" fill="${BLACK}" stroke="${K}" stroke-width="1.5"/><path d="M-10 -162 l12 0 M-11 -156 l12 0 M-11 -150 l10 0 M-11 -144 l8 0" stroke="${BLUE}" stroke-width="1.5"/><path d="M9 -160 q3 -1 5 1" stroke="${K}" stroke-width="1.6" fill="none"/>`,
+   jackal:`<path d="M-8 -138 Q-12 -160 0 -164 L-4 -186 L6 -168 L10 -170 L12 -186 L14 -166 Q18 -164 22 -160 L38 -156 L36 -150 L16 -150 L6 -138Z" fill="${BLACK}" stroke="${K}" stroke-width="1.6"/><path d="M-8 -150 L-12 -132 L4 -134Z" fill="${LAPIS}" stroke="${K}"/><circle cx="16" cy="-160" r="1.8" fill="${GOLD}"/>`,
+   ibis:`<path d="M-8 -138 Q-12 -164 4 -166 Q14 -166 14 -158 Q30 -156 44 -138 Q30 -150 14 -152 L6 -138Z" fill="${LINEN}" stroke="${K}" stroke-width="1.6"/><path d="M-10 -160 Q-4 -168 6 -166 L4 -136 L-12 -134Z" fill="${LAPIS}" stroke="${K}"/><circle cx="8" cy="-158" r="1.8" fill="${K}"/>`,
+   falcon:`<path d="M-8 -138 Q-12 -164 4 -168 Q16 -168 18 -158 L24 -152 L16 -150 L8 -138Z" fill="${GREEN}" stroke="${K}" stroke-width="1.6"/><path d="M4 -156 q4 4 10 2" stroke="${K}" stroke-width="1.5" fill="none"/><circle cx="8" cy="-160" r="2" fill="${K}"/><path d="M-12 -158 L-12 -134 L4 -136Z" fill="${LAPIS}" stroke="${K}"/>`};
+  const C=crown==='double'?`<path d="M-8 -168 V-196 H12 V-176 Q20 -186 22 -200 L26 -198 Q24 -176 16 -168Z" fill="${RED}" stroke="${K}" stroke-width="1.5"/><path d="M-6 -168 Q-8 -200 2 -214 Q12 -200 10 -168Z" fill="${LINEN}" stroke="${K}" stroke-width="1.5"/>`:crown==='sun'?`<circle cx="2" cy="-188" r="16" fill="${RED}" stroke="${K}" stroke-width="1.5"/><path d="M-12 -178 q6 4 4 -6" stroke="${K}" fill="none"/>`:crown==='feather'?`<path d="M2 -170 Q-4 -200 6 -214 Q10 -196 6 -170Z" fill="${LINEN}" stroke="${K}" stroke-width="1.5"/>`:'';
+  const A=arms==='raise'?`<path d="M14 -118 L34 -140 L38 -136 L20 -112Z M-14 -116 L4 -140 L8 -136 L-8 -112Z" fill="${skin}" stroke="${K}" stroke-width="1.8"/>`:arms==='down'?`<path d="M14 -118 L18 -84 L12 -84 L8 -116Z" fill="${skin}" stroke="${K}" stroke-width="1.8"/>`:`<path d="M14 -118 L40 -100 L38 -94 L10 -110Z M-14 -116 L-18 -86 L-12 -84 L-8 -112Z" fill="${skin}" stroke="${K}" stroke-width="1.8"/>`;
+  const HO=hold==='ankh'?`<g transform="translate(42 -98)"><ellipse cx="0" cy="-8" rx="5" ry="7" fill="none" stroke="${GOLD}" stroke-width="3"/><path d="M-8 0 H8 M0 0 V18" stroke="${GOLD}" stroke-width="3.5"/></g>`:hold==='staff'?`<line x1="40" y1="-150" x2="40" y2="0" stroke="${K}" stroke-width="3"/><path d="M40 -150 l8 -6" stroke="${K}" stroke-width="3"/>`:hold==='palette'?`<rect x="34" y="-108" width="22" height="7" fill="${LINEN}" stroke="${K}" stroke-width="1.5"/><line x1="44" y1="-112" x2="54" y2="-132" stroke="${K}" stroke-width="2"/>`:'';
+  return `<g transform="translate(${x} ${y}) scale(${flip?-s:s} ${s})">
+   <path d="M-16 0 L-8 0 L-2 -64 L-12 -64Z M10 0 L20 0 L8 -64 L-2 -64Z" fill="${skin}" stroke="${K}" stroke-width="1.8"/><path d="M-20 0 H-6 M8 0 H24" stroke="${K}" stroke-width="3"/>
+   <path d="M-16 -64 L14 -64 L16 -92 L-14 -92Z" fill="${kilt}" stroke="${K}" stroke-width="1.8"/><path d="M0 -92 L10 -64" stroke="${K}" stroke-width="1"/>
+   <path d="M-12 -92 L12 -92 L20 -124 L-18 -124Z" fill="${skin}" stroke="${K}" stroke-width="1.8"/>${A}
+   <path d="M-18 -124 Q0 -112 20 -124 L18 -130 Q0 -122 -16 -130Z" fill="${BLUE}" stroke="${K}" stroke-width="1.5"/><path d="M-16 -130 Q0 -122 18 -130 L12 -136 L-10 -136Z" fill="${GOLD}" stroke="${K}" stroke-width="1.2"/>
+   <rect x="-6" y="-142" width="10" height="10" fill="${skin}" stroke="${K}" stroke-width="1.5"/>${H[head]}${C}${HO}</g>`; }
+function osiris(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})">
+  <path d="M-50 0 V-90 H-20 V-60 H10 V0Z" fill="${RED}" stroke="${K}" stroke-width="2"/><path d="M-46 -4 V-86 H-24 M-46 -40 H10" stroke="${GOLD}" stroke-width="3" fill="none"/>
+  <path d="M-24 -60 Q-30 -120 -14 -140 L14 -140 Q20 -100 18 -60 L30 -60 L32 0 L-4 0 L-4 -40 L-24 -40Z" fill="${LINEN}" stroke="${K}" stroke-width="2"/><path d="M-20 -100 h34 M-20 -80 h36" stroke="${K}" stroke-width="1"/>
+  <path d="M-12 -140 L16 -140 L18 -160 Q4 -176 -10 -160Z" fill="${GREEN}" stroke="${K}" stroke-width="1.8"/><path d="M16 -150 L22 -146 L16 -144" fill="${GREEN}" stroke="${K}" stroke-width="1.5"/><path d="M16 -142 q6 10 0 22" stroke="${K}" stroke-width="3" fill="none"/>
+  <path d="M-10 -160 Q-12 -200 2 -214 Q16 -200 14 -160Z" fill="${LINEN}" stroke="${K}" stroke-width="2"/><path d="M-12 -164 Q-20 -184 -22 -206 Q-12 -190 -10 -166Z M16 -164 Q24 -184 26 -206 Q16 -190 14 -166Z" fill="${LINEN}" stroke="${K}" stroke-width="1.5"/><circle cx="2" cy="-216" r="4" fill="${GOLD}" stroke="${K}"/>
+  <path d="M10 -122 Q30 -126 26 -142 Q20 -150 16 -142" fill="none" stroke="${GOLD}" stroke-width="3.5"/><path d="M4 -120 L34 -134 M34 -134 l6 -2 M34 -134 l4 6 M34 -134 l7 3" stroke="${LAPIS}" stroke-width="3"/>
+  <circle cx="8" cy="-152" r="1.8" fill="${K}"/></g>`; }
+function heart(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-10 0 Q-16 -14 -10 -22 L-8 -26 L8 -26 L10 -22 Q16 -14 10 0Z" fill="${RED}" stroke="${K}" stroke-width="1.8"/><path d="M-8 -26 L-12 -32 M8 -26 L12 -32" stroke="${K}" stroke-width="2"/></g>`; }
+function feather(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 V-40 Q10 -44 10 -34 Q10 -20 2 -8Z" fill="${LINEN}" stroke="${K}" stroke-width="1.8"/><path d="M2 -12 l6 -4 M2 -20 l7 -4 M2 -28 l7 -4" stroke="${K}" stroke-width="1"/></g>`; }
+function balance(x,y,s=1,tilt=0,{left='heart',right='feather',baboon=true}={}){ const L=left==='heart'?heart(0,0,1.1):left==='empty'?'':left; const R=right==='feather'?feather(0,0,1):right;
+  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-14 0 H14 L8 -12 H-8Z" fill="${GREEN}" stroke="${K}" stroke-width="1.8"/><rect x="-4" y="-150" width="8" height="140" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/>
+  ${baboon?`<g transform="translate(0 -152)"><path d="M-12 0 Q-14 -18 -2 -22 Q12 -22 12 -10 L18 -8 L12 -2 L10 0Z" fill="${GREEN}" stroke="${K}" stroke-width="1.5"/><circle cx="4" cy="-14" r="1.5" fill="${K}"/></g>`:''}
+  <g class="beam" style="transform:rotate(${tilt}deg);transform-origin:0 -130px;transition:transform 1.6s ease"><rect x="-76" y="-133" width="152" height="6" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/>
+   <g transform="translate(-70 -128)"><path d="M0 0 L-14 44 M0 0 L14 44" stroke="${K}" stroke-width="1.2"/><path d="M-20 44 Q0 54 20 44Z" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/><g transform="translate(0 44)">${L}</g></g>
+   <g transform="translate(70 -128)"><path d="M0 0 L-14 44 M0 0 L14 44" stroke="${K}" stroke-width="1.2"/><path d="M-20 44 Q0 54 20 44Z" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/><g transform="translate(0 44)">${R}</g></g></g></g>`; }
+function ammit(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-50 -40 Q-60 -10 -46 0 L-40 0 L-38 -16 L10 -14 L14 0 L20 0 L22 -30 Q30 -40 36 -50 L70 -46 L72 -40 L40 -38 Q30 -30 26 -24 Q20 -50 -10 -54 Q-40 -54 -50 -40Z" fill="#C9933A" stroke="${K}" stroke-width="2"/>
+  <path d="M-50 -40 Q-62 -30 -56 -6 L-46 0 Z" fill="${RED}" stroke="${K}" stroke-width="1.5"/>${[[-20,-40],[-6,-44],[6,-36],[-14,-28]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="3" fill="${K}"/>`).join('')}
+  <path d="M36 -50 L70 -46 L72 -40 L40 -38" fill="${GREEN}" stroke="${K}" stroke-width="2"/><path d="M44 -42 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4" stroke="${LINEN}" stroke-width="1.5" fill="none"/><circle cx="42" cy="-50" r="2" fill="${K}"/><path d="M30 -54 Q34 -66 42 -58" fill="${BLUE}" stroke="${K}" stroke-width="1.5"/></g>`; }
+function ba(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-30 -10 Q-10 -30 14 -24 L20 -10 Q0 4 -30 -10Z" fill="${GREEN}" stroke="${K}" stroke-width="1.8"/><path d="M-30 -10 L-44 -4 L-30 -16" fill="${LAPIS}" stroke="${K}" stroke-width="1.5"/><path d="M-10 -22 l6 10 M-2 -24 l6 10" stroke="${K}" stroke-width="1"/><path d="M-6 -6 V8 M4 -6 V8" stroke="${K}" stroke-width="2"/>
+  <circle cx="18" cy="-32" r="9" fill="${SKIN}" stroke="${K}" stroke-width="1.6"/><path d="M10 -36 Q12 -46 22 -42 L26 -34 L18 -28 L10 -26Z" fill="${BLACK}" stroke="${K}"/></g>`; }
+function sunDisk(x,y,r=34){ return `<circle cx="${x}" cy="${y}" r="${r*2.4}" fill="url(#sun)" class="shine"/><circle cx="${x}" cy="${y}" r="${r}" fill="${RED}" stroke="${K}" stroke-width="2"/><path d="M${x-r-4} ${y+r*.4} q-4 -14 6 -18" stroke="${K}" stroke-width="2.5" fill="${GOLD}"/>`; }
+function barque(x,y,s=1,{sun=true,riders=''}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-130 -20 Q-140 -50 -150 -54 Q-120 -40 -100 -10 H100 Q120 -40 150 -54 Q140 -50 130 -20 Q100 10 0 10 Q-100 10 -130 -20Z" fill="${GOLD}" stroke="${K}" stroke-width="2.5"/><path d="M-100 -4 H100" stroke="${K}" stroke-width="1.5"/>
+  ${sun?`<rect x="-20" y="-70" width="40" height="60" fill="${LAPIS}" stroke="${K}" stroke-width="2"/>${sunDisk(0,-88,24)}`:''}${riders}</g>`; }
+function apep(x,y,s=1){ let d=`M0 0`; for(let i=1;i<=8;i++) d+=` Q${i*30-15} ${i%2?-26:26} ${i*30} 0`; return `<g transform="translate(${x} ${y}) scale(${s})"><path d="${d}" fill="none" stroke="${K}" stroke-width="16" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#C9933A" stroke-width="11" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${K}" stroke-width="2" stroke-dasharray="4 8"/><path d="M240 0 l20 -8 l-4 8 l4 8Z" fill="#C9933A" stroke="${K}" stroke-width="2"/><circle cx="246" cy="-3" r="2" fill="${RED}"/></g>`; }
+function pylon(x,y,s=1,{open=false,guard=true}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-90 0 L-80 -150 H-24 L-18 0Z M18 0 L24 -150 H80 L90 0Z" fill="#D8BF85" stroke="${K}" stroke-width="2.5"/><path d="M-86 -120 H-22 M22 -120 H86 M-84 -140 H-24 M24 -140 H84" stroke="${K}" stroke-width="1.5"/>
+  <rect x="-24" y="-130" width="48" height="130" fill="${open?'#120F0A':BROWNDOOR}" stroke="${K}" stroke-width="2.5"/>${open?`<rect x="-24" y="-130" width="48" height="130" fill="url(#sun)" opacity=".7"/>`:`<path d="M0 -130 V0" stroke="${K}" stroke-width="2"/>`}<path d="M-30 -140 H30 L26 -130 H-26Z" fill="${BLUE}" stroke="${K}" stroke-width="1.8"/>
+  ${guard?`<g transform="translate(-60 0) scale(.55)">${eg(0,0,1,{head:'jackal',skin:BLACK,arms:'down'})}<path d="M38 -112 L46 -160" stroke="${LINEN}" stroke-width="5"/><path d="M38 -112 L46 -160" stroke="${K}" stroke-width="1.5" fill="none"/></g>`:''}</g>`; }
+const BROWNDOOR='#7A4A26';
+function jar(x,y,head,s=1){ const heads={human:SKIN,baboon:GREEN,jackal:BLACK,falcon:GREEN}; return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-16 0 Q-22 -30 -14 -50 H14 Q22 -30 16 0Z" fill="${LINEN}" stroke="${K}" stroke-width="2"/><path d="M-12 -12 H12 M-14 -24 H14" stroke="${BLUE}" stroke-width="2"/>
+  ${head==='jackal'?`<path d="M-10 -50 Q-12 -64 -2 -66 L-6 -80 L2 -68 L6 -80 L8 -66 L24 -60 L22 -54 L6 -54 L4 -50Z" fill="${BLACK}" stroke="${K}" stroke-width="1.5"/>`:head==='falcon'?`<path d="M-10 -50 Q-12 -68 4 -70 Q14 -68 14 -60 L20 -56 L12 -54 L8 -50Z" fill="${GREEN}" stroke="${K}" stroke-width="1.5"/>`:head==='baboon'?`<path d="M-10 -50 Q-14 -70 2 -70 Q14 -70 14 -60 L20 -58 L14 -52 L8 -50Z" fill="${GREEN}" stroke="${K}" stroke-width="1.5"/>`:`<path d="M-12 -50 Q-14 -72 2 -72 Q14 -72 14 -62 L18 -58 L12 -52 L6 -50Z" fill="${SKIN}" stroke="${K}" stroke-width="1.5"/><path d="M-12 -52 Q-14 -76 4 -74 L-2 -60 L-4 -50Z" fill="${BLACK}"/>`}</g>`; }
+function mummy(x,y,s=1,{upright=false}={}){ return upright?`<g transform="translate(${x} ${y}) scale(${s})"><path d="M-14 0 Q-20 -60 -16 -120 Q-14 -146 4 -148 Q22 -146 20 -120 Q22 -60 14 0Z" fill="${LINEN}" stroke="${K}" stroke-width="2"/><path d="M-16 -110 H20 M-17 -90 H19 M-17 -70 H18 M-16 -50 H17 M-15 -30 H16" stroke="${K}" stroke-width="1"/><path d="M-12 -142 Q4 -156 18 -140 L18 -112 L-14 -112Z" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/><path d="M-12 -132 Q2 -146 16 -132 L14 -118 L-10 -118Z" fill="${SKINF}" stroke="${K}" stroke-width="1.2"/></g>`
+  :`<g transform="translate(${x} ${y}) scale(${s})"><path d="M-150 -6 H150 L140 20 H-140Z" fill="${GOLD}" stroke="${K}" stroke-width="2"/><path d="M-130 -6 Q-140 -30 -100 -36 L110 -30 Q140 -26 130 -6Z" fill="${LINEN}" stroke="${K}" stroke-width="2"/><path d="M-80 -34 V-6 M-40 -34 V-6 M0 -33 V-6 M40 -32 V-6 M80 -31 V-6" stroke="${K}" stroke-width="1"/><path d="M110 -30 Q150 -30 140 -6 L110 -6Z" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/></g>`; }
+function reeds(x,y,n=10,h=60){ let o=''; const r=rnd(Math.round(x)); for(let i=0;i<n;i++){ const xx=x+i*9+r()*4; o+=`<path d="M${xx} ${y} Q${xx+4} ${y-h*.5} ${xx+2} ${y-h*(.7+r()*.3)}" stroke="${GREEN}" stroke-width="3" fill="none"/><ellipse cx="${xx+2}" cy="${y-h*(.75+r()*.25)}" rx="3" ry="8" fill="#7A5A2A" stroke="${K}" stroke-width="1"/>`; } return o; }
+function water(y,h=40){ let o=`<rect x="0" y="${y}" width="600" height="${h}" fill="${BLUE}"/>`; for(let k=0;k<h/10;k++){ let d=`M0 ${y+6+k*10}`; for(let x=0;x<600;x+=20) d+=` l10 -5 l10 5`; o+=`<path d="${d}" stroke="${K}" stroke-width="1.5" fill="none"/>`; } return o; }
+function textBand(y,t){ return `<rect x="40" y="${y-16}" width="520" height="26" fill="${PAP}" stroke="${K}" stroke-width="1.5"/><text x="300" y="${y+2}" text-anchor="middle" font-size="14" fill="${K}" style="font-family:'Marcellus',serif;letter-spacing:.08em">${esc(t)}</text>`; }
+function egCover(){ return papyrus(`${eg(110,340,1,{head:'jackal',skin:BLACK,arms:'down'})}${balance(260,340,1,0)}${ammit(380,340,.8)}${eg(470,340,1,{head:'ibis',hold:'palette'})}${sunDisk(520,90,22)}`); }
+
+/* The Hall of Two Truths: the journey of the Book of Coming Forth by Day, after the Papyrus of Ani. */
+const ANI=(x=430,o={})=>eg(x,340,1,{head:'human',...o});
+const BOOK={key:'htt',brand:'The Hall of Two Truths',brandSub:'An Egyptian book of the dead',title:'The Hall of Two Truths',eyebrow:'From the Book of Coming Forth by Day, c. 1550–50 BCE',
+ lede:'For fifteen centuries Egyptians were buried with a scroll of spells to get them through the underworld. This is that journey, told again: seventy days of preparation, the gates of the Duat, the weighing of your heart against a feather, and the fields beyond.',
+ note:'About 35 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
+ walkUrl:'../../../many-doors/egypt/walk/',walkName:'The Forty-Two Day Walk',
+ how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['Your guide','You travel as Ani, a royal scribe whose 3,200-year-old scroll is the most famous copy of the book. It is now in the British Museum.'],['Your part','Pass the gates, choose your forms, keep the scales steady and make the declarations yourself.'],['Spell numbers','Chapters cite the spell numbers scholars use, so you can look them up.']],
+ sources:'The Book of Coming Forth by Day (the "Book of the Dead"), especially the Papyrus of Ani, British Museum EA 10470 (c. 1250 BCE); spells 1, 6, 23, 30B, 77–88, 110, 125, 144–147, 175; R. O. Faulkner, The Ancient Egyptian Book of the Dead (1985); J. H. Taylor (ed.), Journey Through the Afterlife (British Museum, 2010); Herodotus, Histories 2.86 on embalming.',
+ cover:egCover,
+ chapters:[
+ {name:'Coming Forth by Day',short:'The book',sub:'What the scroll was for',col:'#D9A321',run:async s=>{
+   art(papyrus(`${mummy(300,300,1)}${eg(470,340,.9,{head:'jackal',skin:BLACK,arms:'down'})}${textBand(70,'Spells for coming forth by day')}`));
+   if(SND.ctx) pad('pad',[110,165,220],.035);
+   await say(s,'The Egyptians didn\'t call it the Book of the Dead. Its title was the Spells for Coming Forth by Day. It wasn\'t one book but a collection of about two hundred spells, and families chose which ones to have copied for their dead.',{eye:'The book'});
+   await say(s,'The scroll was laid in the coffin, or wrapped into the bandages. It was a guidebook and a phrasebook for a journey through the underworld: what you would meet, what to say, and what to do.');
+   art(papyrus(`${ANI(200,{hold:'palette'})}${eg(300,340,.85,{head:'human',skin:SKINF,kilt:LINEN,arms:'down'})}${textBand(70,'The Osiris Ani, true of voice')}`));
+   await spots(s,{ask:'You will travel as Ani. Tap to meet him.',items:[
+     {x:34,y:46,label:'Ani',say:'Ani was a royal scribe in Thebes, around 1250 BCE. He kept the accounts of the temple offerings.'},
+     {x:50,y:50,label:'Tutu',say:'Tutu was his wife, a chantress of the god Amun. She appears beside him all through the scroll.'},
+     {x:50,y:17,label:'His name',say:'In the scroll he is called "the Osiris Ani, true of voice." The dead were joined to Osiris, the god who died and rose, and "true of voice" means found innocent.'}]});
+   await say(s,'His scroll is about twenty-four metres long, painted in brilliant colours, and it\'s one of the most famous objects in the British Museum. We\'ll follow it, spell by spell.');
+ }},
+ {name:'The Many Selves',short:'Selves',sub:'Ka, ba, name, shadow and heart',col:'#3E8E5E',run:async s=>{
+   art(papyrus(`${ANI(300)}${ba(470,200,1.4)}<g opacity=".55">${eg(160,340,1,{head:'human',skin:'#3B2A1C',kilt:'#3B2A1C'})}</g>${heart(300,240,.9)}<path d="M120 90 h70 a14 14 0 0 1 0 28 h-70 a14 14 0 0 1 0 -28Z" fill="${PAP}" stroke="${K}" stroke-width="2.5"/><text x="155" y="109" text-anchor="middle" font-size="14" fill="${K}">ANI</text>`));
+   await say(s,'To an Egyptian, a person wasn\'t one thing. You were made of several parts, and death pulled them apart. The whole point of the rites was to keep them together, or bring them back together.',{eye:'The many selves'});
+   await spots(s,{ask:'Tap each part of Ani.',items:[
+     {x:50,y:45,label:'Body',say:'The khat, the body. It had to be preserved, because the other parts needed somewhere to come home to.'},
+     {x:50,y:60,label:'Heart',say:'The ib, the heart. It was the seat of thought, memory and conscience. This is the part that will be weighed.'},
+     {x:78,y:50,label:'Ba',say:'The ba, drawn as a bird with your own face. It could fly out of the tomb by day and return to the body at night.'},
+     {x:27,y:46,label:'Shadow',say:'The shut, your shadow. It went with you, and could even move on its own.'},
+     {x:26,y:26,label:'Name',say:'The ren, your name. As long as your name was spoken, you existed. Erasing a name from a monument was a way to kill someone a second time.'}]});
+   await say(s,'Two more parts can\'t be drawn. The ka was your life-force, your double, which lived on in the tomb and was fed by offerings. And the akh was what you hoped to become: a transfigured, shining spirit, once the journey was complete.');
+ }},
+ {name:'Seventy Days',short:'70 days',sub:'Making the body last',col:'#A8361F',run:async s=>{
+   art(papyrus(`${mummy(300,300,1)}${eg(470,340,.95,{head:'jackal',skin:BLACK,arms:'forward'})}${eg(130,340,.9,{head:'human',arms:'forward'})}`));
+   if(SND.ctx) windLoop();
+   await say(s,'When Ani died, his body went to the embalmers. The whole process took seventy days, about the length of time the star Sirius disappears from the night sky before it rises again.',{eye:'Seventy days'});
+   await say(s,'The brain was drawn out and thrown away; nobody thought it mattered. The body was packed in natron salt for about forty days to dry it, then oiled, wrapped in hundreds of metres of linen, and tucked with amulets.');
+   art(papyrus(`${jar(150,320,'human',1.4)}${jar(250,320,'baboon',1.4)}${jar(350,320,'jackal',1.4)}${jar(450,320,'falcon',1.4)}${textBand(70,'The four sons of Horus')}`));
+   await spots(s,{ask:'Four organs were kept in jars, each guarded by a son of Horus. Tap each jar.',items:[
+     {x:25,y:58,label:'Imsety',say:'Imsety, with a human head, guarded the liver.'},
+     {x:42,y:58,label:'Hapy',say:'Hapy, the baboon, guarded the lungs.'},
+     {x:58,y:58,label:'Duamutef',say:'Duamutef, the jackal, guarded the stomach.'},
+     {x:75,y:58,label:'Qebehsenuef',say:'Qebehsenuef, the falcon, guarded the intestines.'}]});
+   loopOff('wind');
+   await say(s,'One organ was always left inside: the heart. Ani would need it for the most important moment of his journey. A carved scarab was laid over it, inscribed with a spell we\'ll come back to.');
+ }},
+ {name:'Opening the Mouth',short:'The mouth',sub:'Waking the senses',col:'#1F5F8B',run:async s=>{
+   art(papyrus(`${mummy(330,340,1.15,{upright:true})}${eg(410,340,.95,{head:'jackal',skin:BLACK,arms:'forward',flip:true})}${eg(200,340,.95,{head:'human',arms:'forward',kilt:'#E8D9B0'})}<path d="M240 248 l30 -10 l4 8 l-28 8Z" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/>`));
+   if(SND.ctx) bowl(220,.12);
+   await say(s,'At the tomb door, the mummy was stood upright, and a priest touched its face with a small adze, a woodworking blade. This was the Opening of the Mouth.',{eye:'Spell 23'});
+   await say(s,'Spell 23 says: my mouth is opened by Ptah. The point was to give back the senses the body had lost, so the dead could breathe, eat the offerings, and above all speak the spells.');
+   await spots(s,{ask:'Tap each sense to open it.',items:[
+     {x:56,y:52,label:'Mouth',say:'The mouth, to speak and eat.'},{x:56,y:42,label:'Eyes',say:'The eyes, to see.'},{x:48,y:47,label:'Ears',say:'The ears, to hear.'},{x:64,y:47,label:'Nose',say:'The nose, to breathe.'}],onTap:()=>{ if(SND.ctx) bell(523,.06); }});
+   await say(s,'Then the mourners wept and threw dust on their heads, the coffin was carried down, and the tomb was sealed. Ani\'s journey through the underworld begins.');
+ }},
+ {name:'Into the Duat',short:'The Duat',sub:'The sun\'s night journey',col:'#2B4C8C',run:async s=>{
+   art(papyrus(`<rect x="0" y="40" width="600" height="300" fill="#141A2E"/>${stars(60,7,340,'#F6EBCB')}${barque(300,250,1,{riders:`${eg(-80,-10,.5,{head:'falcon',crown:'sun',arms:'down'})}${eg(80,-10,.5,{head:'human'})}`})}${apep(160,320,1)}`,{frieze:true}));
+   if(SND.ctx){ waterLoop(); pad('pad',[98,147,196],.03); }
+   await say(s,'Every evening the sun god Ra sank into the west and sailed his boat through the Duat, the underworld, during the twelve hours of the night. Every morning he was reborn in the east.',{eye:'The Duat'});
+   await say(s,'The dead hoped to ride with him. But the night was dangerous. The great serpent Apep lay in wait every night to swallow the sun, and the boat had to fight its way past him to reach the dawn.');
+   await hold(s,{label:'Hold the boat steady',ms:5000,ask:'Apep rises from the water. Press and hold to keep the boat on course.',early:'The serpent pulls. Hold again.',onP:p=>{}});
+   if(SND.ctx) chime();
+   await say(s,'The serpent sinks back. Apep is never killed for good; he returns every night. Order has to be kept, again and again. That was the Egyptian idea of the world.');
+ }},
+ {name:'The Gates',short:'Gates',sub:'Knowing the names',col:'#7A4A26',run:async s=>{
+   art(papyrus(pylon(300,340,1.3,{open:false})));
+   if(SND.ctx){ allOff(1); pad('pad',[110,165],.03); }
+   await say(s,'To reach the hall of judgment, the dead had to pass a series of gates. Each gate had a keeper, a watcher and a herald, often with knives in their hands and animal heads.',{eye:'Spells 144–147'});
+   await say(s,'The spells give the name of every gatekeeper. That was the key. In Egypt, to know a being\'s true name was to have power over it.');
+   const G=[['The first gatekeeper raises his knife. "Who are you?"'],['The second gatekeeper blocks the way. "Who are you?"'],['The third gatekeeper speaks: "Who are you?"']];
+   for(let i=0;i<3;i++){ art(papyrus(pylon(300,340,1.3,{open:false}))); await choose(s,G[i][0],['Run past him','“I know you, and I know your name.”','Offer him gold'],{right:1,wrong:'The book is clear: nothing gets you through except knowing the name. Try again.'}); art(papyrus(pylon(300,340,1.3,{open:true}))); if(SND.ctx){ thud(); whoosh(.1); } await sleep(900); }
+   await say(s,'Three gates open. The book lists twenty-one portals for the house of Osiris alone. And in front of him now is the doorway to the Hall of the Two Truths.');
+ }},
+ {name:'Changing Form',short:'Forms',sub:'Spells of transformation',col:'#3E8E5E',run:async s=>{
+   art(papyrus(`${ba(160,220,1.5)}<g transform="translate(300 230)"><path d="M0 0 Q-30 -10 -24 -40 Q0 -20 0 0 Q0 -50 0 -60 Q0 -50 0 0 Q24 -20 24 -40 Q30 -10 0 0Z" fill="#6A8FC9" stroke="${K}" stroke-width="2"/><path d="M0 0 V60" stroke="${GREEN}" stroke-width="4"/></g><g transform="translate(450 260)"><path d="M-30 -10 Q-10 -30 20 -22 L40 -40 L44 -36 L26 -16 Q10 4 -30 -10Z" fill="${LINEN}" stroke="${K}" stroke-width="1.8"/><path d="M-4 -4 V40 M6 -4 V40" stroke="${K}" stroke-width="2"/></g>`));
+   await say(s,'One whole group of spells, numbers 77 to 88, let the dead take on other forms: a golden falcon, a lotus, a heron, a swallow, a crocodile, even a god. Each one gave a different power.',{eye:'Spells 77–88'});
+   const i=await choose(s,'Which form would you take?',['A golden falcon','A lotus flower','A heron','A swallow'],{});
+   await say(s,['The falcon, spell 77: I have risen and gathered myself together like a golden falcon. It was the form of Horus, and of kings. It means strength and sight.','The lotus, spell 81: I am the pure lotus that came forth from the sunlight. The lotus closes at night and opens at dawn, so it meant rebirth every day.','The heron, spell 84. The heron was the Bennu bird, linked to the first sunrise at the creation of the world. It means beginning again.','The swallow, spell 86. Swallows return every year, and the spell lets the dead fly out of the tomb and back home to visit.'][i]);
+   await say(s,'The idea underneath all of these is freedom. The dead weren\'t meant to be shut in a dark box. They were meant to come forth by day, and go where they wished.');
+ }},
+ {name:'The Weighing of the Heart',short:'Weighing',sub:'Your heart against a feather',col:'#D9A321',run:async s=>{
+   art(papyrus(`${ANI(80,{arms:'raise'})}${eg(170,340,.95,{head:'jackal',skin:BLACK,arms:'forward'})}${balance(300,340,1,0)}${ammit(420,340,.75)}${eg(530,340,.95,{head:'ibis',hold:'palette'})}${textBand(60,'The Hall of the Two Truths')}`));
+   if(SND.ctx){ pad('pad',[98,147,196,247],.03); }
+   await say(s,'This is the scene everyone knows. Ani enters the Hall of the Two Truths. Anubis, the jackal god, leads him to a great balance. On one side goes Ani\'s heart. On the other, a single feather: the feather of Ma\'at, goddess of truth, justice and order.',{eye:'Spell 125'});
+   await say(s,'Thoth, the ibis-headed god of writing, stands ready to record the result. And crouching beside the scales is Ammit, the Devourer: part crocodile, part lion, part hippopotamus. If the heart is heavier than the feather, she eats it, and Ani ceases to exist.');
+   await say(s,'This is why the heart was left in the body, and why the scarab over it carried Spell 30B. It\'s a plea to your own heart: O my heart of my mother, do not stand up as a witness against me. Do not oppose me in the court.',{eye:'Spell 30B'});
+   const B=$('#pArt'); let beam=()=>B.querySelector('.beam');
+   await hold(s,{label:'Keep your heart steady',ms:7000,ask:'Press and hold. Keep your heart calm while it is weighed.',early:'The scales swing. Breathe, and hold again.',onP:p=>{ const b=beam(); if(b) b.style.transform=`rotate(${(1-p)*(Math.sin(performance.now()/300)*8)}deg)`; }});
+   if(SND.ctx) chime();
+   await say(s,'The beam settles level. Ani\'s heart is exactly as light as truth. Thoth writes it down, and Ammit goes hungry.');
+ }},
+ {name:'The Declarations',short:'Declarations',sub:'Before the forty-two judges',col:'#A8361F',run:async s=>{
+   const judges=Array.from({length:14},(_,i)=>`<g transform="translate(${60+i*36} 150) scale(.32)">${eg(0,0,1,{head:['human','jackal','falcon','ibis'][i%4],arms:'down',crown:'feather'})}</g>`).join('');
+   art(papyrus(`${judges}${judges.replace(/translate\((\d+) 150\)/g,(m,a)=>`translate(${a} 250)`)}${judges.replace(/translate\((\d+) 150\)/g,(m,a)=>`translate(${a} 340)`)}`));
+   await say(s,'Before the weighing, Ani must speak. Spell 125 has him stand before forty-two judges, one for each province of Egypt, and make a declaration of innocence to each by name. Scholars call it the negative confession.',{eye:'Spell 125 · the negative confession'});
+   await say(s,'It isn\'t a list of commandments. It\'s a list of what a decent life avoids, and it\'s strikingly practical: about cheating, cruelty, water, food and words.');
+   await release(s,{ask:'Make seven of the declarations. Tap each to speak it.',words:['I have not killed','I have not made anyone weep','I have not stolen','I have not told lies','I have not cheated the measure','I have not held back the water','I have not been quick to anger']});
+   await count(s,{ask:'Then Ani ends: I am pure, I am pure, I am pure, I am pure. Say it four times.',n:4,label:'I am pure',onTap:k=>{ if(SND.ctx) bell(330+k*50,.08); }});
+   await say(s,'Whether Ani had really never told a lie is beside the point. Saying the words, written in the scroll, made them true in the hall. The Forty-Two Day Walk takes one declaration a day.');
+ }},
+ {name:'True of Voice',short:'Osiris',sub:'Brought before the king of the dead',col:'#3E8E5E',run:async s=>{
+   art(papyrus(`${eg(170,340,1,{head:'falcon',crown:'double',arms:'forward'})}${ANI(90,{arms:'raise'})}${osiris(430,340,1.15)}<path d="M330 340 V120 Q380 90 520 120 V340" fill="none" stroke="${K}" stroke-width="3"/>${textBand(60,'Ani, true of voice')}`));
+   if(SND.ctx){ pad('pad',[130.8,196,261.6],.035); chime(); }
+   await say(s,'Thoth announces the verdict: Ani is true of voice. Horus, the falcon god, takes him by the hand and leads him to his father Osiris, enthroned in a shrine.',{eye:'True of voice'});
+   await say(s,'Osiris was the god who had been murdered, torn apart, gathered up and brought back to life. Every justified Egyptian became an Osiris: one who had died, and rose. That\'s why Ani\'s scroll calls him "the Osiris Ani" from the start.');
+   await hold(s,{label:'Kneel before Osiris',ms:3500,ask:'Press and hold to kneel before the king of the dead.'});
+   await say(s,'Spell 175 has a moving conversation between Osiris and the creator god Atum. Osiris asks what the afterlife will be like, with no water, no air, no love-making. Atum answers that he has given him spirit instead of water and air, and peace of heart instead of bread and beer.',{eye:'Spell 175'});
+ }},
+ {name:'The Field of Reeds',short:'The fields',sub:'Paradise, with chores',col:'#1F5F8B',run:async s=>{
+   art(papyrus(`${water(250,26)}${water(310,26)}<rect x="0" y="276" width="600" height="34" fill="#C9B66A"/>${reeds(20,250,8,70)}${reeds(500,250,8,70)}${eg(220,250,.6,{head:'human',arms:'forward'})}${eg(330,250,.6,{head:'human',skin:SKINF,arms:'forward'})}${reeds(380,250,10,90)}${sunDisk(520,90,24)}`,{ground:340}));
+   if(SND.ctx){ waterLoop(); pad('pad',[146.8,220,293.7],.03); }
+   await say(s,'Beyond the hall lies the Field of Reeds, a perfect Egypt. Spell 110 shows it: islands cut by canals, where the dead plough, sow and harvest, and the barley grows taller than a man.',{eye:'Spell 110'});
+   await say(s,'It\'s paradise as a farmer would picture it: the Nile always in flood, the harvest always good, your family beside you. But even paradise had work in it. Someone would be called to dig the canals.');
+   art(papyrus(`${water(250,26)}${water(310,26)}<rect x="0" y="276" width="600" height="34" fill="#C9B66A"/>${[0,1,2,3,4,5].map(i=>mummy(80+i*88,302,.48,{upright:true})).join('')}`,{ground:340}));
+   await count(s,{ask:'So the dead were buried with shabtis, small figures who would answer the call and do the work for them. Spell 6 tells them what to say. Tap each shabti to wake it.',n:6,label:'"Here I am!"',onTap:k=>{ if(SND.ctx) tone(392+k*30,{type:'triangle',peak:.08,d:.4}); }});
+   await say(s,'Here I am, says each shabti, in Spell 6. Some tombs held 401 of them: one worker for every day of the year, plus thirty-six overseers.');
+ }},
+ {name:'Coming Forth',short:'Dawn',sub:'Rising with the sun',col:'#D9A321',run:async s=>{
+   art(papyrus(`<rect x="0" y="40" width="600" height="300" fill="#E8B866"/>${sunDisk(300,190,50)}${barque(300,290,1,{sun:false,riders:`${eg(-60,-10,.5,{head:'falcon',crown:'sun',arms:'down'})}${eg(40,-10,.5,{head:'human',arms:'raise'})}`})}${ba(500,140,1.2)}`));
+   if(SND.ctx){ pad('pad',[130.8,196,261.6,329.6],.035); chime(); }
+   await say(s,'At dawn, Ra\'s boat rises out of the eastern horizon, and the justified dead come forth with it into the light of day. This is the title of the whole book: coming forth by day.',{eye:'Coming forth'});
+   await say(s,'Ani is now an akh, a shining spirit. His ba can fly out to visit the world of the living, sit in the shade of his garden, and come home to the tomb at night. His name is still spoken: we have been speaking it all along.');
+ }}],
+ finale:async s=>{ art(egCover()); if(SND.ctx) chime();
+   await say(s,'That is the journey. Seventy days to prepare the body, the gates to pass by knowing their names, a heart weighed against truth, and fields that never fail.',{eye:'The end of the scroll'});
+   await say(s,'The Egyptians didn\'t think you could bluff your way through. The scroll gave you the words, but the heart on the scale was the life you had actually lived. That\'s why the Forty-Two Day Walk goes one declaration at a time.'); }};
+header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
+manualLanding(BOOK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+</body></html>

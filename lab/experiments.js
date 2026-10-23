@@ -17,7 +17,7 @@ window.EXPERIMENTS = [
     status: 'live',
     object: 'doors',
     doors: 12, // one per book in the series, the Bardo included
-    blurb: 'What the world\'s traditions say happens after we die: an atlas of twenty-six of them, and a shelf of illustrated books you can walk through day by day.',
-    also: [{ label: 'Many Doors, the book', href: 'many-doors/doors/', note: 'every tradition side by side, one step at a time' }],
+    blurb: 'What happens after we die, according to everyone. Pick one of twelve doors and click through a few minutes of the afterlife it promises.',
+    also: [{ label: 'The atlas', href: 'many-doors/atlas/', note: 'twenty-six traditions side by side' }],
   },
 ];

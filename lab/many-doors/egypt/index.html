@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Hall of Two Truths</title>
+<title>The Hall of Two Truths · Many Doors</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
@@ -137,6 +137,49 @@ details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font
 details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* ---------- journeys: a full-bleed title, then the player at its biggest ---------- */
+body.jbody{background:var(--night)}
+body.jbody #bar{display:none}
+body.jbody .wrap{max-width:none;padding:0}
+.jsplash{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;color:var(--nightink);background:var(--night)}
+.jcover{position:absolute;inset:0;width:100%;height:100%;display:block;animation:jzoom 30s ease-out both}
+@keyframes jzoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.jshade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--night) 88%,transparent) 0%,color-mix(in srgb,var(--night) 60%,transparent) 45%,transparent 80%),linear-gradient(180deg,transparent 35%,var(--night) 100%)}
+@media (max-width:700px){.jshade{background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 55%,transparent) 30%,var(--night) 75%)}}
+.jback{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px));z-index:2;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:8px 14px;text-decoration:none}
+.jt{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:32vh max(16px,env(safe-area-inset-right,0px)) max(28px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.jdoor{display:inline-block;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;background:var(--c,var(--accent));color:#FFF6DE;border:2px solid #FFF6DE;border-radius:4px;padding:5px 10px}
+.jt h1{margin:12px 0 8px;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;color:#FFF6DE;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+.jtag{margin:0;font-size:clamp(1.05rem,2.6vw,1.4rem);max-width:36ch;line-height:1.35}
+.jt .cta{margin:22px 0 18px}
+.jt .btn{font-size:1.15rem;padding:13px 28px}
+.jt .btn.alt{background:transparent;color:#FFF6DE;border-color:#FFF6DE;box-shadow:none}
+.jstops{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.jstops button{display:flex;align-items:center;gap:8px;background:rgba(255,246,222,.08);border:1.5px solid rgba(255,246,222,.35);color:#FFF6DE;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.82rem;min-height:38px}
+.jstops button:hover{background:rgba(255,246,222,.2)}
+.jstops b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFF6DE;color:var(--night);font-size:.75rem}
+.jmeta{margin:16px 0 0;font-size:.85rem;color:rgba(255,246,222,.7)}
+.jmeta em{color:var(--gold);font-style:normal}
+
+.player.jplayer .stage{width:min(100%,1100px,calc(min(64vh,720px)*1.5))}
+@media (max-height:700px){.player.jplayer .stage{width:min(100%,calc(54vh*1.5))}}
+/* keep 3:2 on phones so tap spots stay on what they point at */
+@media (max-width:600px) and (orientation:portrait){.player.jplayer .stage{width:100%;aspect-ratio:3/2;max-height:none}.player.jplayer .scap p{font-size:1.08rem}}
+.player.jplayer .scap{min-height:0}
+.player.jplayer .scap p{font-size:clamp(1.08rem,2.4vw,1.32rem);min-height:1.5em}
+.gnote{margin-right:auto;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed var(--ink-soft);background:transparent;color:var(--ink-soft);border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
+.gnote[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--bg)}
+.gtext{margin:8px 0 0!important;font-size:.95rem!important;line-height:1.45;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:10px;min-height:0!important}
+a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.jend{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.7) 40%)}
+.jend>span{flex-basis:100%;text-align:center;font-family:var(--display);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFF6DE}
+.jend a,.jend button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;text-align:left}
+.jend small{font-family:var(--body);font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.dtrack{position:absolute;height:0;border-top:4px dashed rgba(255,246,222,.6);transform-origin:0 0}
+.dknob{position:absolute;transform:translate(-50%,-50%);width:clamp(54px,10%,78px);aspect-ratio:1;border-radius:50%;border:3px solid var(--ink);background:var(--gold);cursor:grab;touch-action:none;padding:0;box-shadow:0 0 0 8px rgba(255,246,222,.25)}
+.dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
+.dknob:active{cursor:grabbing}
 
 /* The Hall of Two Truths: a vignette from a papyrus. Papyrus ground, black outline, Egyptian blue, red ochre, malachite and gold. */
 :root{
@@ -315,33 +358,67 @@ function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
 function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+/* The journey: a short click-through trip behind one door. One picture, one line, one thing to do.
+   Data: const J={key,tradition,title,tag,mins,col,cover,stops:[{name,run}],end:{line,book,bookUrl,walk,walkUrl},review}. */
+const HUB=window.MD_HUB||'../#doors';
+/* the pages live in folders; anywhere but the site itself, spell out index.html */
+if(!/colinblackshear\.com$/.test(location.hostname)) document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const m=a.getAttribute('href').match(/^([^:#]*\/)(#.*)?$/); if(m) a.setAttribute('href',m[1]+'index.html'+(m[2]||'')); },true);
+function journeySplash(J){
+  document.body.classList.add('jbody');
+  const next=Math.min(+store.get(J.key+'-next')||0,J.stops.length-1);
+  $('#wrap').innerHTML=`<section class="jsplash" style="--c:${J.col}">
+    <svg class="jcover" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${J.cover()}</svg>
+    <div class="jshade"></div>
+    <a class="jback" href="${HUB}">← All doors</a>
+    <div class="jt">
+      <span class="jdoor">Door: ${esc(J.tradition)}</span>
+      <h1>${esc(J.title)}</h1>
+      <p class="jtag">${esc(J.tag)}</p>
+      <div class="cta"><button type="button" class="btn gold" id="jgo">${next?'Carry on':'Step through'} <span aria-hidden="true">→</span></button>${next?`<button type="button" class="btn alt" id="jre">Start over</button>`:''}</div>
+      <ol class="jstops">${J.stops.map((c,i)=>`<li><button type="button" data-i="${i}"><b>${i+1}</b>${esc(c.name)}</button></li>`).join('')}</ol>
+      <p class="jmeta">${J.mins} minutes · tap to move on · sound optional${J.review?` · <em>${esc(J.review)}</em>`:''}</p>
+    </div></section>`;
+  $('#jgo').onclick=()=>playJourney(J,next);
+  const r=$('#jre'); if(r) r.onclick=()=>{ store.set(J.key+'-next','0'); playJourney(J,0); };
+  document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
 }
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
+/* one short line with Continue, and an optional Guide note the curious can open */
+async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+  if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
+    n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
+    setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
+  await waitTap(s,spoke); const d=$('#pNote'); if(d) d.remove(); }
+
+async function playJourney(J,start){
+  const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
+  const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
+  s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+      s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
+      await c.run(s); if(SND.ctx) allOff(1.2); }
+    store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
+    await journeyEnd(s,J);
   }catch(e){ if(!(e instanceof Abort)) console.error(e); }
 }
+function journeyEnd(s,J){ alive(s); art(J.cover()); if(SND.ctx) chime(); eyebrow('End of the line');
+  s.el.querySelector('.ptitle').innerHTML=`<b>Arrived</b>${esc(J.title)}`;
+  $('#pText').textContent=J.end.line; narrate(J.end.line);
+  const E=J.end; $('#pRow').innerHTML=`<a class="sgo" href="${HUB}">Pick another door <span aria-hidden="true">→</span></a>`;
+  layer().innerHTML=`<div class="jend"><span>Want more than the short version?</span>${E.bookUrl?`<a href="${E.bookUrl}">${esc(E.book)}<small>the full illustrated book</small></a>`:''}${E.walkUrl?`<a href="${E.walkUrl}">${esc(E.walk)}<small>a few minutes a day</small></a>`:''}<button type="button" id="jagain">Ride again<small>from the first stop</small></button></div>`;
+  $('#jagain').onclick=()=>playJourney(J,0);
+  return new Promise(()=>{}); }
+/* drag a token along a path to a target, e.g. across a bridge: returns when it arrives */
+function drag(s,{ask:q,from,to,label='Drag',onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="dtrack" style="left:${from[0]}%;top:${from[1]}%;width:${Math.hypot(to[0]-from[0],(to[1]-from[1])*2/3)}%;transform:rotate(${Math.atan2((to[1]-from[1])*2/3,to[0]-from[0])}rad)"></div><button type="button" class="dknob" style="left:${from[0]}%;top:${from[1]}%" aria-label="${esc(label)}. Use the arrow keys."><span>${esc(label)}</span></button>`;
+  const k=l.querySelector('.dknob'); let p=0,on=false,done=false;
+  const set=v=>{ p=Math.max(0,Math.min(1,v)); k.style.left=(from[0]+(to[0]-from[0])*p)+'%'; k.style.top=(from[1]+(to[1]-from[1])*p)+'%'; onP&&onP(p); if(p>=.98&&!done){ done=true; l.innerHTML=''; res(); } };
+  const proj=e=>{ const r=l.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100; const dx=to[0]-from[0], dy=to[1]-from[1]; const ax=dx*r.width, ay=dy*r.height; return ((x-from[0])*r.width*ax+(y-from[1])*r.height*ay)/(ax*ax+ay*ay); };
+  k.addEventListener('pointerdown',e=>{ on=true; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+  k.addEventListener('pointermove',e=>{ if(on) set(proj(e)); });
+  k.addEventListener('pointerup',()=>{ on=false; }); k.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key===' '){ e.preventDefault(); set(p+.1); } if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); set(p-.1); } });
+  k.focus({preventScroll:true}); }); }
+/* a big tap-anywhere moment with a label, for drama (knock, ring, open) */
+function tapIt(s,{ask:q,label='Tap'}){ return count(s,{ask:q,n:1,label}); }
 
 /* Vignette kit for The Hall of Two Truths: figures in profile on papyrus, after the Papyrus of Ani (c. 1250 BCE). */
 const K='#22180F', PAP='#E9D3A1', BLUE='#1F5F8B', LAPIS='#2B4C8C', RED='#A8361F', GREEN='#3E8E5E', GOLD='#D9A321', SKIN='#B9653A', SKINF='#E2B27A', LINEN='#F7F1E1', BLACK='#1E1A16';
@@ -404,135 +481,71 @@ function water(y,h=40){ let o=`<rect x="0" y="${y}" width="600" height="${h}" fi
 function textBand(y,t){ return `<rect x="40" y="${y-16}" width="520" height="26" fill="${PAP}" stroke="${K}" stroke-width="1.5"/><text x="300" y="${y+2}" text-anchor="middle" font-size="14" fill="${K}" style="font-family:'Marcellus',serif;letter-spacing:.08em">${esc(t)}</text>`; }
 function egCover(){ return papyrus(`${eg(110,340,1,{head:'jackal',skin:BLACK,arms:'down'})}${balance(260,340,1,0)}${ammit(380,340,.8)}${eg(470,340,1,{head:'ibis',hold:'palette'})}${sunDisk(520,90,22)}`); }
 
-/* The Hall of Two Truths: the journey of the Book of Coming Forth by Day, after the Papyrus of Ani. */
+/* The Egyptian door: the mummy, the sun boat, the gates, the weighing of the heart and the Field of Reeds, in seven stops. After the Book of Coming Forth by Day. */
 const ANI=(x=430,o={})=>eg(x,340,1,{head:'human',...o});
-const BOOK={key:'htt',brand:'The Hall of Two Truths',brandSub:'An Egyptian book of the dead',title:'The Hall of Two Truths',eyebrow:'From the Book of Coming Forth by Day, c. 1550–50 BCE',
- lede:'For fifteen centuries Egyptians were buried with a scroll of spells to get them through the underworld. This is that journey, told again: seventy days of preparation, the gates of the Duat, the weighing of your heart against a feather, and the fields beyond.',
- note:'About 35 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../many-doors/egypt/walk/',walkName:'The Forty-Two Day Walk',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['Your guide','You travel as Ani, a royal scribe whose 3,200-year-old scroll is the most famous copy of the book. It is now in the British Museum.'],['Your part','Pass the gates, choose your forms, keep the scales steady and make the declarations yourself.'],['Spell numbers','Chapters cite the spell numbers scholars use, so you can look them up.']],
- sources:'The Book of Coming Forth by Day (the "Book of the Dead"), especially the Papyrus of Ani, British Museum EA 10470 (c. 1250 BCE); spells 1, 6, 23, 30B, 77–88, 110, 125, 144–147, 175; R. O. Faulkner, The Ancient Egyptian Book of the Dead (1985); J. H. Taylor (ed.), Journey Through the Afterlife (British Museum, 2010); Herodotus, Histories 2.86 on embalming.',
+const J={key:'j-egypt',tradition:'Ancient Egypt',title:'The Hall of Two Truths',col:'#B8902A',mins:6,
+ tag:'You\'ve been buried with a scroll of spells. Good. You\'re going to need every one of them.',
  cover:egCover,
- chapters:[
- {name:'Coming Forth by Day',short:'The book',sub:'What the scroll was for',col:'#D9A321',run:async s=>{
-   art(papyrus(`${mummy(300,300,1)}${eg(470,340,.9,{head:'jackal',skin:BLACK,arms:'down'})}${textBand(70,'Spells for coming forth by day')}`));
-   if(SND.ctx) pad('pad',[110,165,220],.035);
-   await say(s,'The Egyptians didn\'t call it the Book of the Dead. Its title was the Spells for Coming Forth by Day. It wasn\'t one book but a collection of about two hundred spells, and families chose which ones to have copied for their dead.',{eye:'The book'});
-   await say(s,'The scroll was laid in the coffin, or wrapped into the bandages. It was a guidebook and a phrasebook for a journey through the underworld: what you would meet, what to say, and what to do.');
-   art(papyrus(`${ANI(200,{hold:'palette'})}${eg(300,340,.85,{head:'human',skin:SKINF,kilt:LINEN,arms:'down'})}${textBand(70,'The Osiris Ani, true of voice')}`));
-   await spots(s,{ask:'You will travel as Ani. Tap to meet him.',items:[
-     {x:34,y:46,label:'Ani',say:'Ani was a royal scribe in Thebes, around 1250 BCE. He kept the accounts of the temple offerings.'},
-     {x:50,y:50,label:'Tutu',say:'Tutu was his wife, a chantress of the god Amun. She appears beside him all through the scroll.'},
-     {x:50,y:17,label:'His name',say:'In the scroll he is called "the Osiris Ani, true of voice." The dead were joined to Osiris, the god who died and rose, and "true of voice" means found innocent.'}]});
-   await say(s,'His scroll is about twenty-four metres long, painted in brilliant colours, and it\'s one of the most famous objects in the British Museum. We\'ll follow it, spell by spell.');
- }},
- {name:'The Many Selves',short:'Selves',sub:'Ka, ba, name, shadow and heart',col:'#3E8E5E',run:async s=>{
-   art(papyrus(`${ANI(300)}${ba(470,200,1.4)}<g opacity=".55">${eg(160,340,1,{head:'human',skin:'#3B2A1C',kilt:'#3B2A1C'})}</g>${heart(300,240,.9)}<path d="M120 90 h70 a14 14 0 0 1 0 28 h-70 a14 14 0 0 1 0 -28Z" fill="${PAP}" stroke="${K}" stroke-width="2.5"/><text x="155" y="109" text-anchor="middle" font-size="14" fill="${K}">ANI</text>`));
-   await say(s,'To an Egyptian, a person wasn\'t one thing. You were made of several parts, and death pulled them apart. The whole point of the rites was to keep them together, or bring them back together.',{eye:'The many selves'});
-   await spots(s,{ask:'Tap each part of Ani.',items:[
-     {x:50,y:45,label:'Body',say:'The khat, the body. It had to be preserved, because the other parts needed somewhere to come home to.'},
-     {x:50,y:60,label:'Heart',say:'The ib, the heart. It was the seat of thought, memory and conscience. This is the part that will be weighed.'},
-     {x:78,y:50,label:'Ba',say:'The ba, drawn as a bird with your own face. It could fly out of the tomb by day and return to the body at night.'},
-     {x:27,y:46,label:'Shadow',say:'The shut, your shadow. It went with you, and could even move on its own.'},
-     {x:26,y:26,label:'Name',say:'The ren, your name. As long as your name was spoken, you existed. Erasing a name from a monument was a way to kill someone a second time.'}]});
-   await say(s,'Two more parts can\'t be drawn. The ka was your life-force, your double, which lived on in the tomb and was fed by offerings. And the akh was what you hoped to become: a transfigured, shining spirit, once the journey was complete.');
- }},
- {name:'Seventy Days',short:'70 days',sub:'Making the body last',col:'#A8361F',run:async s=>{
+ end:{line:'That\'s the Egyptian map: a body kept whole, a book of passwords, a heart light as a feather, and an afterlife that looks a lot like a perfect Egypt.',
+  book:'The Hall of Two Truths',bookUrl:'../../many-doors/egypt/book/',walk:'The Forty-Two Day Walk',walkUrl:'../../many-doors/egypt/walk/'},
+ stops:[
+ {name:'Seventy days',short:'70 days',col:'#A8361F',run:async s=>{
    art(papyrus(`${mummy(300,300,1)}${eg(470,340,.95,{head:'jackal',skin:BLACK,arms:'forward'})}${eg(130,340,.9,{head:'human',arms:'forward'})}`));
-   if(SND.ctx) windLoop();
-   await say(s,'When Ani died, his body went to the embalmers. The whole process took seventy days, about the length of time the star Sirius disappears from the night sky before it rises again.',{eye:'Seventy days'});
-   await say(s,'The brain was drawn out and thrown away; nobody thought it mattered. The body was packed in natron salt for about forty days to dry it, then oiled, wrapped in hundreds of metres of linen, and tucked with amulets.');
+   if(SND.ctx) pad('pad',[110,165,220],.03);
+   await tell(s,'First, the paperwork. Your body will take seventy days to prepare, because you\'ll need it later.',{eye:'The embalmers',note:'This journey follows the Book of Coming Forth by Day (the "Egyptian Book of the Dead"), c. 1550–50 BCE, as it appears in the papyrus of the scribe Ani.'});
    art(papyrus(`${jar(150,320,'human',1.4)}${jar(250,320,'baboon',1.4)}${jar(350,320,'jackal',1.4)}${jar(450,320,'falcon',1.4)}${textBand(70,'The four sons of Horus')}`));
-   await spots(s,{ask:'Four organs were kept in jars, each guarded by a son of Horus. Tap each jar.',items:[
-     {x:25,y:58,label:'Imsety',say:'Imsety, with a human head, guarded the liver.'},
-     {x:42,y:58,label:'Hapy',say:'Hapy, the baboon, guarded the lungs.'},
-     {x:58,y:58,label:'Duamutef',say:'Duamutef, the jackal, guarded the stomach.'},
-     {x:75,y:58,label:'Qebehsenuef',say:'Qebehsenuef, the falcon, guarded the intestines.'}]});
-   loopOff('wind');
-   await say(s,'One organ was always left inside: the heart. Ani would need it for the most important moment of his journey. A carved scarab was laid over it, inscribed with a spell we\'ll come back to.');
+   await spots(s,{ask:'Your organs go into four jars, each with a guardian. Tap each jar.',items:[
+     {x:25,y:72,label:'Liver',say:'Imsety, with a human head, guards the liver.'},
+     {x:42,y:72,label:'Lungs',say:'Hapy, the baboon, guards the lungs.'},
+     {x:58,y:72,label:'Stomach',say:'Duamutef, the jackal, guards the stomach.'},
+     {x:75,y:72,label:'Intestines',say:'Qebehsenuef, the falcon, guards the intestines.'}]});
+   await tell(s,'Your heart stays inside. It has an appointment.');
  }},
- {name:'Opening the Mouth',short:'The mouth',sub:'Waking the senses',col:'#1F5F8B',run:async s=>{
-   art(papyrus(`${mummy(330,340,1.15,{upright:true})}${eg(410,340,.95,{head:'jackal',skin:BLACK,arms:'forward',flip:true})}${eg(200,340,.95,{head:'human',arms:'forward',kilt:'#E8D9B0'})}<path d="M240 248 l30 -10 l4 8 l-28 8Z" fill="${GOLD}" stroke="${K}" stroke-width="1.5"/>`));
-   if(SND.ctx) bowl(220,.12);
-   await say(s,'At the tomb door, the mummy was stood upright, and a priest touched its face with a small adze, a woodworking blade. This was the Opening of the Mouth.',{eye:'Spell 23'});
-   await say(s,'Spell 23 says: my mouth is opened by Ptah. The point was to give back the senses the body had lost, so the dead could breathe, eat the offerings, and above all speak the spells.');
-   await spots(s,{ask:'Tap each sense to open it.',items:[
-     {x:56,y:52,label:'Mouth',say:'The mouth, to speak and eat.'},{x:56,y:42,label:'Eyes',say:'The eyes, to see.'},{x:48,y:47,label:'Ears',say:'The ears, to hear.'},{x:64,y:47,label:'Nose',say:'The nose, to breathe.'}],onTap:()=>{ if(SND.ctx) bell(523,.06); }});
-   await say(s,'Then the mourners wept and threw dust on their heads, the coffin was carried down, and the tomb was sealed. Ani\'s journey through the underworld begins.');
- }},
- {name:'Into the Duat',short:'The Duat',sub:'The sun\'s night journey',col:'#2B4C8C',run:async s=>{
+ {name:'The sun boat',short:'The Duat',col:'#2B4C8C',run:async s=>{
    art(papyrus(`<rect x="0" y="40" width="600" height="300" fill="#141A2E"/>${stars(60,7,340,'#F6EBCB')}${barque(300,250,1,{riders:`${eg(-80,-10,.5,{head:'falcon',crown:'sun',arms:'down'})}${eg(80,-10,.5,{head:'human'})}`})}${apep(160,320,1)}`,{frieze:true}));
-   if(SND.ctx){ waterLoop(); pad('pad',[98,147,196],.03); }
-   await say(s,'Every evening the sun god Ra sank into the west and sailed his boat through the Duat, the underworld, during the twelve hours of the night. Every morning he was reborn in the east.',{eye:'The Duat'});
-   await say(s,'The dead hoped to ride with him. But the night was dangerous. The great serpent Apep lay in wait every night to swallow the sun, and the boat had to fight its way past him to reach the dawn.');
-   await hold(s,{label:'Hold the boat steady',ms:5000,ask:'Apep rises from the water. Press and hold to keep the boat on course.',early:'The serpent pulls. Hold again.',onP:p=>{}});
+   await tell(s,'Every night the sun god sails through the underworld, the Duat. You hitch a ride.',{eye:'The Duat'});
+   await hold(s,{label:'Hold the boat steady',ms:4500,ask:'Apep, the chaos serpent, rises from the water. Press and hold to keep the boat on course.',early:'The serpent pulls. Hold again.'});
    if(SND.ctx) chime();
-   await say(s,'The serpent sinks back. Apep is never killed for good; he returns every night. Order has to be kept, again and again. That was the Egyptian idea of the world.');
+   await tell(s,'Apep loses. He loses every single night. It never stops him trying.');
  }},
- {name:'The Gates',short:'Gates',sub:'Knowing the names',col:'#7A4A26',run:async s=>{
-   art(papyrus(pylon(300,340,1.3,{open:false})));
-   if(SND.ctx){ allOff(1); pad('pad',[110,165],.03); }
-   await say(s,'To reach the hall of judgment, the dead had to pass a series of gates. Each gate had a keeper, a watcher and a herald, often with knives in their hands and animal heads.',{eye:'Spells 144–147'});
-   await say(s,'The spells give the name of every gatekeeper. That was the key. In Egypt, to know a being\'s true name was to have power over it.');
-   const G=[['The first gatekeeper raises his knife. "Who are you?"'],['The second gatekeeper blocks the way. "Who are you?"'],['The third gatekeeper speaks: "Who are you?"']];
-   for(let i=0;i<3;i++){ art(papyrus(pylon(300,340,1.3,{open:false}))); await choose(s,G[i][0],['Run past him','“I know you, and I know your name.”','Offer him gold'],{right:1,wrong:'The book is clear: nothing gets you through except knowing the name. Try again.'}); art(papyrus(pylon(300,340,1.3,{open:true}))); if(SND.ctx){ thud(); whoosh(.1); } await sleep(900); }
-   await say(s,'Three gates open. The book lists twenty-one portals for the house of Osiris alone. And in front of him now is the doorway to the Hall of the Two Truths.');
+ {name:'The gates',short:'Gates',col:'#7A4A26',run:async s=>{
+   const G=['"I am the one who keeps the gate. Who are you?"','"You may not pass unless you know my name."','"Say my name, or turn back."'];
+   for(let i=0;i<3;i++){ art(papyrus(pylon(300,340,1.3,{open:false})));
+     await choose(s,G[i],['Run past','"I know you, and I know your name."','Offer gold'],{right:1,wrong:'The book is clear: only knowing the name gets you through.'});
+     art(papyrus(pylon(300,340,1.3,{open:true}))); if(SND.ctx){ thud(); whoosh(.1); } await sleep(700); }
+   await tell(s,'That\'s what the scroll is for: a cheat sheet of every guard\'s name. The Egyptians took no chances.',{eye:'The gates'});
  }},
- {name:'Changing Form',short:'Forms',sub:'Spells of transformation',col:'#3E8E5E',run:async s=>{
-   art(papyrus(`${ba(160,220,1.5)}<g transform="translate(300 230)"><path d="M0 0 Q-30 -10 -24 -40 Q0 -20 0 0 Q0 -50 0 -60 Q0 -50 0 0 Q24 -20 24 -40 Q30 -10 0 0Z" fill="#6A8FC9" stroke="${K}" stroke-width="2"/><path d="M0 0 V60" stroke="${GREEN}" stroke-width="4"/></g><g transform="translate(450 260)"><path d="M-30 -10 Q-10 -30 20 -22 L40 -40 L44 -36 L26 -16 Q10 4 -30 -10Z" fill="${LINEN}" stroke="${K}" stroke-width="1.8"/><path d="M-4 -4 V40 M6 -4 V40" stroke="${K}" stroke-width="2"/></g>`));
-   await say(s,'One whole group of spells, numbers 77 to 88, let the dead take on other forms: a golden falcon, a lotus, a heron, a swallow, a crocodile, even a god. Each one gave a different power.',{eye:'Spells 77–88'});
-   const i=await choose(s,'Which form would you take?',['A golden falcon','A lotus flower','A heron','A swallow'],{});
-   await say(s,['The falcon, spell 77: I have risen and gathered myself together like a golden falcon. It was the form of Horus, and of kings. It means strength and sight.','The lotus, spell 81: I am the pure lotus that came forth from the sunlight. The lotus closes at night and opens at dawn, so it meant rebirth every day.','The heron, spell 84. The heron was the Bennu bird, linked to the first sunrise at the creation of the world. It means beginning again.','The swallow, spell 86. Swallows return every year, and the spell lets the dead fly out of the tomb and back home to visit.'][i]);
-   await say(s,'The idea underneath all of these is freedom. The dead weren\'t meant to be shut in a dark box. They were meant to come forth by day, and go where they wished.');
- }},
- {name:'The Weighing of the Heart',short:'Weighing',sub:'Your heart against a feather',col:'#D9A321',run:async s=>{
+ {name:'The weighing',short:'Weighing',col:'#D9A321',run:async s=>{
    art(papyrus(`${ANI(80,{arms:'raise'})}${eg(170,340,.95,{head:'jackal',skin:BLACK,arms:'forward'})}${balance(300,340,1,0)}${ammit(420,340,.75)}${eg(530,340,.95,{head:'ibis',hold:'palette'})}${textBand(60,'The Hall of the Two Truths')}`));
-   if(SND.ctx){ pad('pad',[98,147,196,247],.03); }
-   await say(s,'This is the scene everyone knows. Ani enters the Hall of the Two Truths. Anubis, the jackal god, leads him to a great balance. On one side goes Ani\'s heart. On the other, a single feather: the feather of Ma\'at, goddess of truth, justice and order.',{eye:'Spell 125'});
-   await say(s,'Thoth, the ibis-headed god of writing, stands ready to record the result. And crouching beside the scales is Ammit, the Devourer: part crocodile, part lion, part hippopotamus. If the heart is heavier than the feather, she eats it, and Ani ceases to exist.');
-   await say(s,'This is why the heart was left in the body, and why the scarab over it carried Spell 30B. It\'s a plea to your own heart: O my heart of my mother, do not stand up as a witness against me. Do not oppose me in the court.',{eye:'Spell 30B'});
-   const B=$('#pArt'); let beam=()=>B.querySelector('.beam');
-   await hold(s,{label:'Keep your heart steady',ms:7000,ask:'Press and hold. Keep your heart calm while it is weighed.',early:'The scales swing. Breathe, and hold again.',onP:p=>{ const b=beam(); if(b) b.style.transform=`rotate(${(1-p)*(Math.sin(performance.now()/300)*8)}deg)`; }});
+   await tell(s,'The big one. Anubis puts your heart on the scales. On the other side: a single feather, the feather of truth.',{eye:'The Hall of Two Truths'});
+   const B=$('#pArt');
+   await hold(s,{label:'Keep your heart steady',ms:5000,ask:'Press and hold. Keep calm while it\'s weighed.',early:'The scales swing. Breathe, and hold again.',onP:p=>{ const b=B.querySelector('.beam'); if(b) b.style.transform=`rotate(${(1-p)*(Math.sin(performance.now()/300)*8)}deg)`; }});
    if(SND.ctx) chime();
-   await say(s,'The beam settles level. Ani\'s heart is exactly as light as truth. Thoth writes it down, and Ammit goes hungry.');
+   await spots(s,{ask:'It balances. Tap the two who were waiting.',items:[{x:70,y:70,label:'Ammit',say:'Ammit, the Devourer: part crocodile, part lion, part hippo. A heavy heart was her lunch. Not today.'},{x:88,y:60,label:'Thoth',say:'Thoth, the ibis-headed scribe, writes down the verdict: true of voice.'}]});
  }},
- {name:'The Declarations',short:'Declarations',sub:'Before the forty-two judges',col:'#A8361F',run:async s=>{
-   const judges=Array.from({length:14},(_,i)=>`<g transform="translate(${60+i*36} 150) scale(.32)">${eg(0,0,1,{head:['human','jackal','falcon','ibis'][i%4],arms:'down',crown:'feather'})}</g>`).join('');
-   art(papyrus(`${judges}${judges.replace(/translate\((\d+) 150\)/g,(m,a)=>`translate(${a} 250)`)}${judges.replace(/translate\((\d+) 150\)/g,(m,a)=>`translate(${a} 340)`)}`));
-   await say(s,'Before the weighing, Ani must speak. Spell 125 has him stand before forty-two judges, one for each province of Egypt, and make a declaration of innocence to each by name. Scholars call it the negative confession.',{eye:'Spell 125 · the negative confession'});
-   await say(s,'It isn\'t a list of commandments. It\'s a list of what a decent life avoids, and it\'s strikingly practical: about cheating, cruelty, water, food and words.');
-   await release(s,{ask:'Make seven of the declarations. Tap each to speak it.',words:['I have not killed','I have not made anyone weep','I have not stolen','I have not told lies','I have not cheated the measure','I have not held back the water','I have not been quick to anger']});
-   await count(s,{ask:'Then Ani ends: I am pure, I am pure, I am pure, I am pure. Say it four times.',n:4,label:'I am pure',onTap:k=>{ if(SND.ctx) bell(330+k*50,.08); }});
-   await say(s,'Whether Ani had really never told a lie is beside the point. Saying the words, written in the scroll, made them true in the hall. The Forty-Two Day Walk takes one declaration a day.');
+ {name:'The declarations',short:'Declarations',col:'#A8361F',run:async s=>{
+   art(papyrus(`${osiris(430,340,1.15)}${ANI(140,{arms:'raise'})}${textBand(60,'I have not…')}`));
+   await tell(s,'You also have to tell forty-two judges, one by one, what you didn\'t do.',{eye:'The negative confession',note:'Spell 125 lists forty-two "declarations of innocence," one for each judge. The full book has all of them.'});
+   await release(s,{ask:'Make five of the declarations. Tap each to say it.',words:['I have not killed','I have not stolen','I have not lied','I have not made anyone weep','I have not held back the water']});
+   await tell(s,'Holding back the water means hoarding irrigation from your neighbours. In Egypt, that was murder by other means.');
  }},
- {name:'True of Voice',short:'Osiris',sub:'Brought before the king of the dead',col:'#3E8E5E',run:async s=>{
-   art(papyrus(`${eg(170,340,1,{head:'falcon',crown:'double',arms:'forward'})}${ANI(90,{arms:'raise'})}${osiris(430,340,1.15)}<path d="M330 340 V120 Q380 90 520 120 V340" fill="none" stroke="${K}" stroke-width="3"/>${textBand(60,'Ani, true of voice')}`));
-   if(SND.ctx){ pad('pad',[130.8,196,261.6],.035); chime(); }
-   await say(s,'Thoth announces the verdict: Ani is true of voice. Horus, the falcon god, takes him by the hand and leads him to his father Osiris, enthroned in a shrine.',{eye:'True of voice'});
-   await say(s,'Osiris was the god who had been murdered, torn apart, gathered up and brought back to life. Every justified Egyptian became an Osiris: one who had died, and rose. That\'s why Ani\'s scroll calls him "the Osiris Ani" from the start.');
-   await hold(s,{label:'Kneel before Osiris',ms:3500,ask:'Press and hold to kneel before the king of the dead.'});
-   await say(s,'Spell 175 has a moving conversation between Osiris and the creator god Atum. Osiris asks what the afterlife will be like, with no water, no air, no love-making. Atum answers that he has given him spirit instead of water and air, and peace of heart instead of bread and beer.',{eye:'Spell 175'});
- }},
- {name:'The Field of Reeds',short:'The fields',sub:'Paradise, with chores',col:'#1F5F8B',run:async s=>{
+ {name:'The Field of Reeds',short:'The fields',col:'#1F5F8B',run:async s=>{
    art(papyrus(`${water(250,26)}${water(310,26)}<rect x="0" y="276" width="600" height="34" fill="#C9B66A"/>${reeds(20,250,8,70)}${reeds(500,250,8,70)}${eg(220,250,.6,{head:'human',arms:'forward'})}${eg(330,250,.6,{head:'human',skin:SKINF,arms:'forward'})}${reeds(380,250,10,90)}${sunDisk(520,90,24)}`,{ground:340}));
-   if(SND.ctx){ waterLoop(); pad('pad',[146.8,220,293.7],.03); }
-   await say(s,'Beyond the hall lies the Field of Reeds, a perfect Egypt. Spell 110 shows it: islands cut by canals, where the dead plough, sow and harvest, and the barley grows taller than a man.',{eye:'Spell 110'});
-   await say(s,'It\'s paradise as a farmer would picture it: the Nile always in flood, the harvest always good, your family beside you. But even paradise had work in it. Someone would be called to dig the canals.');
+   if(SND.ctx) waterLoop();
+   await tell(s,'Welcome to the Field of Reeds: Egypt, but perfect. The barley grows taller than you. There\'s still farm work, though.',{eye:'The Field of Reeds'});
    art(papyrus(`${water(250,26)}${water(310,26)}<rect x="0" y="276" width="600" height="34" fill="#C9B66A"/>${[0,1,2,3,4,5].map(i=>mummy(80+i*88,302,.48,{upright:true})).join('')}`,{ground:340}));
-   await count(s,{ask:'So the dead were buried with shabtis, small figures who would answer the call and do the work for them. Spell 6 tells them what to say. Tap each shabti to wake it.',n:6,label:'"Here I am!"',onTap:k=>{ if(SND.ctx) tone(392+k*30,{type:'triangle',peak:.08,d:.4}); }});
-   await say(s,'Here I am, says each shabti, in Spell 6. Some tombs held 401 of them: one worker for every day of the year, plus thirty-six overseers.');
+   await count(s,{ask:'Luckily you packed shabtis: little figures that do the work for you. Tap to wake them.',n:6,label:'"Here I am!"',onTap:k=>{ if(SND.ctx) tone(392+k*30,{type:'triangle',peak:.08,d:.4}); }});
+   loopOff('water');
+   await tell(s,'Some tombs had 401 of them: one worker for every day of the year, plus 36 foremen.');
  }},
- {name:'Coming Forth',short:'Dawn',sub:'Rising with the sun',col:'#D9A321',run:async s=>{
+ {name:'Coming forth',short:'Dawn',col:'#D9A321',run:async s=>{
    art(papyrus(`<rect x="0" y="40" width="600" height="300" fill="#E8B866"/>${sunDisk(300,190,50)}${barque(300,290,1,{sun:false,riders:`${eg(-60,-10,.5,{head:'falcon',crown:'sun',arms:'down'})}${eg(40,-10,.5,{head:'human',arms:'raise'})}`})}${ba(500,140,1.2)}`));
-   if(SND.ctx){ pad('pad',[130.8,196,261.6,329.6],.035); chime(); }
-   await say(s,'At dawn, Ra\'s boat rises out of the eastern horizon, and the justified dead come forth with it into the light of day. This is the title of the whole book: coming forth by day.',{eye:'Coming forth'});
-   await say(s,'Ani is now an akh, a shining spirit. His ba can fly out to visit the world of the living, sit in the shade of his garden, and come home to the tomb at night. His name is still spoken: we have been speaking it all along.');
- }}],
- finale:async s=>{ art(egCover()); if(SND.ctx) chime();
-   await say(s,'That is the journey. Seventy days to prepare the body, the gates to pass by knowing their names, a heart weighed against truth, and fields that never fail.',{eye:'The end of the scroll'});
-   await say(s,'The Egyptians didn\'t think you could bluff your way through. The scroll gave you the words, but the heart on the scale was the life you had actually lived. That\'s why the Forty-Two Day Walk goes one declaration at a time.'); }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+   if(SND.ctx) chime();
+   await tell(s,'The book\'s real name isn\'t "Book of the Dead." It\'s the Book of Coming Forth by Day.',{eye:'Coming forth'});
+   await hold(s,{label:'Rise with the sun',ms:3500,ask:'Every morning, your ba, a bird with your face, flies out into the daylight. Press and hold to rise.'});
+   await tell(s,'The goal was never to be dead. It was to rise with the sun, every day, forever.');
+ }}]};
+journeySplash(J);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>

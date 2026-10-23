@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>The Nine Levels of Mictlan</title>
+<title>Nine Levels Down · Many Doors</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 /* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
@@ -137,6 +137,49 @@ details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font
 details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+/* ---------- journeys: a full-bleed title, then the player at its biggest ---------- */
+body.jbody{background:var(--night)}
+body.jbody #bar{display:none}
+body.jbody .wrap{max-width:none;padding:0}
+.jsplash{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;color:var(--nightink);background:var(--night)}
+.jcover{position:absolute;inset:0;width:100%;height:100%;display:block;animation:jzoom 30s ease-out both}
+@keyframes jzoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+.jshade{position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--night) 88%,transparent) 0%,color-mix(in srgb,var(--night) 60%,transparent) 45%,transparent 80%),linear-gradient(180deg,transparent 35%,var(--night) 100%)}
+@media (max-width:700px){.jshade{background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 55%,transparent) 30%,var(--night) 75%)}}
+.jback{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:max(14px,env(safe-area-inset-top,0px));z-index:2;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:8px 14px;text-decoration:none}
+.jt{position:relative;z-index:1;width:100%;max-width:980px;margin:0 auto;padding:32vh max(16px,env(safe-area-inset-right,0px)) max(28px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-sizing:border-box}
+.jdoor{display:inline-block;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;background:var(--c,var(--accent));color:#FFF6DE;border:2px solid #FFF6DE;border-radius:4px;padding:5px 10px}
+.jt h1{margin:12px 0 8px;font-size:clamp(2.4rem,8vw,5rem);line-height:.95;color:#FFF6DE;text-shadow:0 3px 0 rgba(0,0,0,.45)}
+.jtag{margin:0;font-size:clamp(1.05rem,2.6vw,1.4rem);max-width:36ch;line-height:1.35}
+.jt .cta{margin:22px 0 18px}
+.jt .btn{font-size:1.15rem;padding:13px 28px}
+.jt .btn.alt{background:transparent;color:#FFF6DE;border-color:#FFF6DE;box-shadow:none}
+.jstops{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.jstops button{display:flex;align-items:center;gap:8px;background:rgba(255,246,222,.08);border:1.5px solid rgba(255,246,222,.35);color:#FFF6DE;border-radius:999px;padding:6px 14px 6px 6px;cursor:pointer;font-family:var(--display);font-weight:700;font-size:.82rem;min-height:38px}
+.jstops button:hover{background:rgba(255,246,222,.2)}
+.jstops b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFF6DE;color:var(--night);font-size:.75rem}
+.jmeta{margin:16px 0 0;font-size:.85rem;color:rgba(255,246,222,.7)}
+.jmeta em{color:var(--gold);font-style:normal}
+
+.player.jplayer .stage{width:min(100%,1100px,calc(min(64vh,720px)*1.5))}
+@media (max-height:700px){.player.jplayer .stage{width:min(100%,calc(54vh*1.5))}}
+/* keep 3:2 on phones so tap spots stay on what they point at */
+@media (max-width:600px) and (orientation:portrait){.player.jplayer .stage{width:100%;aspect-ratio:3/2;max-height:none}.player.jplayer .scap p{font-size:1.08rem}}
+.player.jplayer .scap{min-height:0}
+.player.jplayer .scap p{font-size:clamp(1.08rem,2.4vw,1.32rem);min-height:1.5em}
+.gnote{margin-right:auto;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:1.5px dashed var(--ink-soft);background:transparent;color:var(--ink-soft);border-radius:999px;padding:7px 12px;min-height:40px;cursor:pointer}
+.gnote[aria-expanded="true"]{border-style:solid;color:var(--ink);background:var(--bg)}
+.gtext{margin:8px 0 0!important;font-size:.95rem!important;line-height:1.45;color:var(--ink-soft);border-left:3px solid var(--gold);padding-left:10px;min-height:0!important}
+a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.jend{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:stretch;padding:14px;background:linear-gradient(transparent,rgba(0,0,0,.7) 40%)}
+.jend>span{flex-basis:100%;text-align:center;font-family:var(--display);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFF6DE}
+.jend a,.jend button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:12px;padding:8px 14px;font-family:var(--display);font-weight:800;font-size:.95rem;cursor:pointer;text-align:left}
+.jend small{font-family:var(--body);font-weight:400;font-size:.78rem;color:var(--ink-soft)}
+.dtrack{position:absolute;height:0;border-top:4px dashed rgba(255,246,222,.6);transform-origin:0 0}
+.dknob{position:absolute;transform:translate(-50%,-50%);width:clamp(54px,10%,78px);aspect-ratio:1;border-radius:50%;border:3px solid var(--ink);background:var(--gold);cursor:grab;touch-action:none;padding:0;box-shadow:0 0 0 8px rgba(255,246,222,.25)}
+.dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
+.dknob:active{cursor:grabbing}
 
 /* The Nine Levels of Mictlan: a painted codex. Deer-hide cream, codex red, turquoise, ochre and obsidian. */
 :root{
@@ -318,33 +361,67 @@ function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(
 function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
 function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
 
-/* The manual: a narrated, illustrated story in chapters. Each chapter is an async function that draws, speaks and asks. */
-function manualLanding(B){
-  const seen=JSON.parse(store.get(B.key+'-seen')||'[]'); const next=Math.min(+store.get(B.key+'-next')||0,B.chapters.length-1);
-  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(B.eyebrow)}</span><h1>${esc(B.title)}</h1><p class="lede">${esc(B.lede)}</p><p class="note">${esc(B.note)}</p>
-    <div class="cta"><button type="button" class="btn gold" id="begin">${next?`Continue: ${esc(B.chapters[next].name)}`:'Begin'}</button>${next?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${B.walkUrl?`<a class="pill" href="${B.walkUrl}" target="_blank" rel="noopener">${esc(B.walkName)}</a>`:''}</div></div>
-    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="${esc(B.title)}">${B.cover()}</svg></div></section>
-    <section class="sec"><h2>Chapters</h2><div class="cgrid">${B.chapters.map((c,i)=>`<button type="button" class="ck${seen.includes(i)?' seen':''}" data-i="${i}" style="--c:${c.col||'var(--accent)'}"><i></i><b>${i+1}. ${esc(c.name)}</b><span>${esc(c.sub)}</span></button>`).join('')}</div></section>
-    <section class="sec how"><h2>How it works</h2>${B.how.map(([a,b])=>`<div><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join('')}</section>
-    ${B.extra?B.extra():''}<section class="sec"><h2>Sources</h2><p class="sources">${B.sources}</p></section>`;
-  $('#begin').onclick=()=>playManual(B,next);
-  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(B.key+'-next','0'); playManual(B,0); };
-  document.querySelectorAll('.ck[data-i]').forEach(b=>b.onclick=()=>playManual(B,+b.dataset.i));
+/* The journey: a short click-through trip behind one door. One picture, one line, one thing to do.
+   Data: const J={key,tradition,title,tag,mins,col,cover,stops:[{name,run}],end:{line,book,bookUrl,walk,walkUrl},review}. */
+const HUB=window.MD_HUB||'../#doors';
+/* the pages live in folders; anywhere but the site itself, spell out index.html */
+if(!/colinblackshear\.com$/.test(location.hostname)) document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href]'); if(!a) return; const m=a.getAttribute('href').match(/^([^:#]*\/)(#.*)?$/); if(m) a.setAttribute('href',m[1]+'index.html'+(m[2]||'')); },true);
+function journeySplash(J){
+  document.body.classList.add('jbody');
+  const next=Math.min(+store.get(J.key+'-next')||0,J.stops.length-1);
+  $('#wrap').innerHTML=`<section class="jsplash" style="--c:${J.col}">
+    <svg class="jcover" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${J.cover()}</svg>
+    <div class="jshade"></div>
+    <a class="jback" href="${HUB}">← All doors</a>
+    <div class="jt">
+      <span class="jdoor">Door: ${esc(J.tradition)}</span>
+      <h1>${esc(J.title)}</h1>
+      <p class="jtag">${esc(J.tag)}</p>
+      <div class="cta"><button type="button" class="btn gold" id="jgo">${next?'Carry on':'Step through'} <span aria-hidden="true">→</span></button>${next?`<button type="button" class="btn alt" id="jre">Start over</button>`:''}</div>
+      <ol class="jstops">${J.stops.map((c,i)=>`<li><button type="button" data-i="${i}"><b>${i+1}</b>${esc(c.name)}</button></li>`).join('')}</ol>
+      <p class="jmeta">${J.mins} minutes · tap to move on · sound optional${J.review?` · <em>${esc(J.review)}</em>`:''}</p>
+    </div></section>`;
+  $('#jgo').onclick=()=>playJourney(J,next);
+  const r=$('#jre'); if(r) r.onclick=()=>{ store.set(J.key+'-next','0'); playJourney(J,0); };
+  document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
 }
-async function playManual(B,start){
-  const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
-  const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
-  s.onclose=()=>manualLanding(B);
+/* one short line with Continue, and an optional Guide note the curious can open */
+async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+  if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
+    n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
+    setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
+  await waitTap(s,spoke); const d=$('#pNote'); if(d) d.remove(); }
+
+async function playJourney(J,start){
+  const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
+  const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
+  s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
-      s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
-      await c.run(s);
-      const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
-      if(SND.ctx) allOff(1.2); }
-    store.set(B.key+'-next','0'); alive(s);
-    await B.finale(s); closePlayer();
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+      s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
+      await c.run(s); if(SND.ctx) allOff(1.2); }
+    store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
+    await journeyEnd(s,J);
   }catch(e){ if(!(e instanceof Abort)) console.error(e); }
 }
+function journeyEnd(s,J){ alive(s); art(J.cover()); if(SND.ctx) chime(); eyebrow('End of the line');
+  s.el.querySelector('.ptitle').innerHTML=`<b>Arrived</b>${esc(J.title)}`;
+  $('#pText').textContent=J.end.line; narrate(J.end.line);
+  const E=J.end; $('#pRow').innerHTML=`<a class="sgo" href="${HUB}">Pick another door <span aria-hidden="true">→</span></a>`;
+  layer().innerHTML=`<div class="jend"><span>Want more than the short version?</span>${E.bookUrl?`<a href="${E.bookUrl}">${esc(E.book)}<small>the full illustrated book</small></a>`:''}${E.walkUrl?`<a href="${E.walkUrl}">${esc(E.walk)}<small>a few minutes a day</small></a>`:''}<button type="button" id="jagain">Ride again<small>from the first stop</small></button></div>`;
+  $('#jagain').onclick=()=>playJourney(J,0);
+  return new Promise(()=>{}); }
+/* drag a token along a path to a target, e.g. across a bridge: returns when it arrives */
+function drag(s,{ask:q,from,to,label='Drag',onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="dtrack" style="left:${from[0]}%;top:${from[1]}%;width:${Math.hypot(to[0]-from[0],(to[1]-from[1])*2/3)}%;transform:rotate(${Math.atan2((to[1]-from[1])*2/3,to[0]-from[0])}rad)"></div><button type="button" class="dknob" style="left:${from[0]}%;top:${from[1]}%" aria-label="${esc(label)}. Use the arrow keys."><span>${esc(label)}</span></button>`;
+  const k=l.querySelector('.dknob'); let p=0,on=false,done=false;
+  const set=v=>{ p=Math.max(0,Math.min(1,v)); k.style.left=(from[0]+(to[0]-from[0])*p)+'%'; k.style.top=(from[1]+(to[1]-from[1])*p)+'%'; onP&&onP(p); if(p>=.98&&!done){ done=true; l.innerHTML=''; res(); } };
+  const proj=e=>{ const r=l.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*100, y=(e.clientY-r.top)/r.height*100; const dx=to[0]-from[0], dy=to[1]-from[1]; const ax=dx*r.width, ay=dy*r.height; return ((x-from[0])*r.width*ax+(y-from[1])*r.height*ay)/(ax*ax+ay*ay); };
+  k.addEventListener('pointerdown',e=>{ on=true; k.setPointerCapture(e.pointerId); e.preventDefault(); });
+  k.addEventListener('pointermove',e=>{ if(on) set(proj(e)); });
+  k.addEventListener('pointerup',()=>{ on=false; }); k.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='ArrowUp'||e.key===' '){ e.preventDefault(); set(p+.1); } if(e.key==='ArrowLeft'||e.key==='ArrowDown'){ e.preventDefault(); set(p-.1); } });
+  k.focus({preventScroll:true}); }); }
+/* a big tap-anywhere moment with a label, for drama (knock, ring, open) */
+function tapIt(s,{ask:q,label='Tap'}){ return count(s,{ask:q,n:1,label}); }
 
 /* Codex kit for The Nine Levels of Mictlan: flat colour on deer-hide, heavy black outline, step-fret borders, after the painted books. */
 const K='#1A1210', HIDE='#EFE2C4', RED='#B8322A', TURQ='#2E9A8E', OCHRE='#E0A82E', OBS='#2A2A33', BLUE='#4FA3B8', MAIZE='#F0C850', MARI='#F28C1E', SKIN='#C9814E', BONE='#F4EEDC', JADE='#3FA36A', DUSK='#2A1E2A', PINK='#D9667A';
@@ -384,115 +461,69 @@ function scroll(x,y,s=1,col=TURQ){ return `<g transform="translate(${x} ${y}) sc
 function milkTree(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-12 0 L-8 -120 H8 L12 0Z" fill="#7A4A2A" stroke="${K}" stroke-width="3"/><circle cx="0" cy="-160" r="80" fill="${JADE}" stroke="${K}" stroke-width="3"/>${Array.from({length:9},(_,i)=>{ const a=i/9*Math.PI*2; return `<path d="M${Math.cos(a)*50} ${-160+Math.sin(a)*50} q-8 10 0 18 q8 -8 0 -18Z" fill="${BONE}" stroke="${K}" stroke-width="1.5"/>`; }).join('')}</g>`; }
 function cxCover(){ return cx(`${ground(330)}${hill(110,330,.75,{col:'#4A6A5A'})}${hill(490,330,.75,{col:'#4A6A5A'})}${deathLord(300,330,1)}${xolo(190,330,.7)}${walker(420,330,.7)}`); }
 
-/* The Nine Levels of Mictlan: the Mexica (Aztec) passage, after the Florentine Codex, the Codex Vaticanus A and the Legend of the Suns. */
-const BOOK={key:'mictlan',brand:'The Nine Levels of Mictlan',brandSub:'A Mexica book of the dead',title:'The Nine Levels of Mictlan',eyebrow:'From the Florentine Codex and the painted books',
- lede:'The Mexica, the people we call the Aztecs, believed that how you died decided where you went. Most people went down to Mictlan, the place of the dead, on a four-year journey through nine levels with a small dog as their guide.',
- note:'About 30 minutes in twelve chapters. Turn the sound on; a narrator reads each page.',
- walkUrl:'../../many-doors/aztec/walk/',walkName:'The Road Down',
- how:[['Tap to continue','Each page is read aloud. Tap Continue, or press Space, when you are ready.'],['How we know','Almost everything comes from sources written after the Spanish conquest, above all the Nahua elders who spoke to Bernardino de Sahagún in the 1550s. The names of the nine levels vary between sources.'],['A living people','Nahua communities live in Mexico today, and many of these ideas live on in their languages and in Día de Muertos. This book is a first draft that should be read by Nahua scholars and communities.'],['Your part','You choose your dog, cross the river, walk through the obsidian wind and bring your gifts to the Lord of the Dead.']],
- sources:'Bernardino de Sahagún, Florentine Codex (General History of the Things of New Spain, 1577), Book 3 appendix, tr. Arthur J. O. Anderson and Charles E. Dibble; Codex Vaticanus A (Ríos), fol. 2–3; Legend of the Suns (1558), tr. John Bierhorst; Cantares Mexicanos, tr. John Bierhorst (1985) and Miguel León-Portilla, Aztec Thought and Culture (1963).',
+/* The Mexica door: how you died, the dog, the river, the clashing hills, the obsidian wind, the jaguars and the Lords of the Dead, in seven stops. After the Florentine Codex. */
+const J={key:'j-aztec',tradition:'The Mexica (Aztec)',title:'Nine Levels Down',col:'#2E9A8E',mins:6,
+ tag:'Four years, nine levels, one very good dog. Pack light.',
+ review:'A first draft, waiting for review by Nahua scholars and communities',
  cover:cxCover,
- chapters:[
- {name:'How You Die',short:'Roads',sub:'The manner of death decides',col:'#B8322A',run:async s=>{
+ end:{line:'That\'s the Mexica map: no judgment, just a long, hard road and a family that keeps feeding you along the way. Its marigolds still light the way home every Día de Muertos.',
+  book:'The Nine Levels of Mictlan',bookUrl:'../../many-doors/aztec/book/',walk:'The Road Down',walkUrl:'../../many-doors/aztec/walk/'},
+ stops:[
+ {name:'How you died',short:'Roads',col:'#B8322A',run:async s=>{
    art(cx(`${sun(120,120,.7)}${hill(470,330,.8,{col:BLUE})}${milkTree(300,330,.6)}<rect x="40" y="300" width="180" height="60" fill="${DUSK}" stroke="${K}" stroke-width="2"/>${deathLord(130,355,.32)}`,{bg:'hide'}));
    if(SND.ctx) pad('pad',[110,165,220],.03);
-   await say(s,'For the Mexica, what mattered was not how good you had been, but how you died. Sahagún\'s Nahua informants, and the painted books, describe several destinations.',{eye:'Florentine Codex, Book 3'});
-   await spots(s,{ask:'Tap each place.',items:[
-     {x:20,y:30,label:'The House of the Sun',say:'Warriors killed in battle or as captives went east to the House of the Sun. For four years they escorted the sun each morning to the top of the sky. Then they became hummingbirds and butterflies, drinking from flowers.'},
-     {x:20,y:86,label:'Mictlan',say:'Those who died ordinary deaths, from sickness or old age, went down to Mictlan, the place of the dead. That was most people.'},
-     {x:78,y:52,label:'Tlalocan',say:'Those taken by water, by drowning, lightning, or diseases linked to water went to Tlalocan, the paradise of the rain god Tlaloc, where it is always summer.'},
-     {x:50,y:30,label:'The Wet-Nurse Tree',say:'Some colonial sources say babies who died before eating maize went to Chichihuacuauhco, a tree dripping with milk, where they waited to be born again.'}]});
-   await say(s,'And women who died giving birth were honoured like warriors. They escorted the sun from noon to sunset, and were called the Cihuateteo, the divine women.');
+   await tell(s,'Here, nobody judges how you lived. What matters is how you died.',{eye:'Florentine Codex, Book 3',note:'Recorded by Bernardino de Sahagún with Nahua elders in the 1500s, after the conquest. Read it as a careful reconstruction, not a scripture.'});
+   await spots(s,{ask:'Tap each road.',items:[
+     {x:20,y:30,label:'The sun',say:'Warriors, and women who died in childbirth, go to join the sun. Later they come back as hummingbirds.'},
+     {x:78,y:70,label:'Tlālōcān',say:'Drowned? Struck by lightning? You go to Tlālōc\'s green paradise of rain.'},
+     {x:50,y:66,label:'The tree',say:'Babies go to a tree that drips milk.'},
+     {x:22,y:84,label:'Mictlan',say:'Everyone else, which is most people, walks down to Mictlan. That\'s you.'}]});
  }},
- {name:'Made from Bones',short:'Bones',sub:'Quetzalcoatl steals from the dead',col:'#2E9A8E',run:async s=>{
-   art(cx(`${ground(320,'#3A2A30')}${deathLord(450,320,.9)}${serpent(170,200,.6)}${bones(180,300,1)}`));
-   if(SND.ctx) pad('pad',[98,147,196],.03);
-   await say(s,'Mictlan is old. The Legend of the Suns says that after the last world was destroyed, the feathered serpent Quetzalcoatl went down to Mictlan to fetch the bones of the people who had lived before.',{eye:'The Legend of the Suns'});
-   await say(s,'The Lord of the Dead, Mictlantecuhtli, set him an impossible test: blow a conch shell with no holes. Quetzalcoatl had worms drill holes and bees fly inside to make it sound. He took the bones and ran. A quail startled him, he fell, and the bones broke.');
-   await count(s,{ask:'He ground the bones and bled on them. Tap to grind the bones.',n:4,label:'Grind',onTap:()=>{ if(SND.ctx) thud(); }});
-   await say(s,'From that paste, people were made, which is why they come in all sizes: the bones had broken unevenly. The Mexica word for us, macehualtin, was read as "the deserved ones": those the gods did penance for. We are made from the dead, and we return to them.');
- }},
- {name:'The Bundle',short:'Bundle',sub:'Jade, papers and a dog',col:'#E0A82E',run:async s=>{
-   art(cx(`${ground(320)}${bundle(300,320,1.1)}${jade(160,200,1)}${xolo(470,320,.8,{flip:true})}`,{bg:'hide'}));
-   await say(s,'When someone died, the body was dressed, seated with knees drawn up, and wrapped in cloth into a bundle. A mask might be placed over the face.',{eye:'Florentine Codex, Book 3'});
-   await say(s,'A small bead of jade, or for poorer people a green stone, was placed in the mouth. It stood for the heart, the yollotl, and some sources say it would be needed later on the road.');
-   await spots(s,{ask:'Tap what goes with the dead.',items:[
-     {x:27,y:50,label:'The jade bead',say:'Placed in the mouth. A heart that cannot be eaten.'},
-     {x:50,y:45,label:'Papers and water',say:'Cut papers to pass the dangers on the road, and a jar of water for the journey.'},
-     {x:78,y:72,label:'A dog',say:'A small reddish-yellow dog, killed and buried or burned with its master, with a loose cotton thread around its neck. It would be needed at the river.'}]});
-   await say(s,'Then most bodies were burned, and the ashes buried in a jar, sometimes under the floor of the house.');
- }},
- {name:'Choose Your Dog',short:'The dog',sub:'Who will carry you across',col:'#C9814E',run:async s=>{
+ {name:'Pick a dog',short:'The dog',col:'#C9814E',run:async s=>{
    art(cx(`${ground(320)}${xolo(130,320,.8,{col:BONE})}${xolo(300,320,.8,{col:'#C9814E'})}${xolo(470,320,.8,{col:OBS})}`,{bg:'hide'}));
-   await say(s,'The first level of Mictlan is a wide river, the Apanohuaya. The dead cannot cross it alone. Sahagún\'s informants were precise about which dog can take you.',{eye:'The first level'});
-   const i=await choose(s,'Three dogs wait on the bank. Which one will carry you?',['The white dog','The reddish-yellow dog','The black dog'],{right:1,wrong:'That dog won\'t take you. Try another.'});
-   await say(s,'The white dog says: I have just washed myself, I won\'t get wet again. The black dog says: I have just got dirty, I can\'t. Only the reddish-yellow dog will carry you. The xoloitzcuintli, the hairless dog of Mexico, is still linked to this role today.');
+   await tell(s,'You\'re buried with a jade bead in your mouth, some paper, and if possible, a dog.',{eye:'The xoloitzcuintli'});
+   await choose(s,'Three dogs wait at the river. Which one will carry you?',['The white dog','The reddish-yellow dog','The black dog'],{right:1,wrong:k=>k===0?'The white one says: "I just washed myself." Try another.':'The black one says: "I just got dirty." Try another.'});
+   if(SND.ctx) chime();
+   await tell(s,'The reddish-yellow one. Be nice to dogs while you\'re alive. You\'ll want one to like you.');
  }},
- {name:'The River',short:'Level 1',sub:'Apanohuaya, the crossing',col:'#4FA3B8',run:async s=>{
+ {name:'The river',short:'Level 1',col:'#4FA3B8',run:async s=>{
    art(cx(`${river(230)}${hill(80,232,.5)}${hill(540,232,.5,{col:'#4A6A5A'})}<g class="drift">${xolo(260,300,.9,{swim:true})}${walker(250,262,.5)}</g>`));
-   if(SND.ctx){ waterLoop(); }
-   await say(s,'The dog recognises its master, jumps into the water, and swims. You hold on.',{eye:'Apanohuaya'});
-   await hold(s,{label:'Hold on to the dog',ms:6000,ask:'Press and hold, and don\'t let go until the far bank.',early:'Hold on. The current is strong.'});
-   loopOff('water'); if(SND.ctx) plop();
-   await say(s,'You\'re across. That\'s why families kept dogs and took care of them: you never knew which one you would need.');
+   if(SND.ctx) waterLoop();
+   await hold(s,{label:'Hold on to the dog',ms:4500,ask:'Level one: a wide river. Grab the dog and press and hold until the far bank.',early:'Hold on. The current is strong.'});
+   loopOff('water');
+   await tell(s,'Across. Good dog. Eight levels to go.',{eye:'Apanohuaya'});
  }},
- {name:'Mountains and Obsidian',short:'Levels 2–3',sub:'Where the hills clash',col:'#3FA36A',run:async s=>{
+ {name:'The hills and the wind',short:'Levels 2–4',col:'#3FA36A',run:async s=>{
    art(cx(`${ground(330,'#3A2A30')}<g class="clashL">${hill(170,330,1)}</g><g class="clashR">${hill(430,330,1,{col:'#4A6A5A'})}</g>${walker(300,340,.5)}`));
-   if(SND.ctx) pad('pad',[87.3,130.8,174.6],.03);
-   await say(s,'The second level is Tepeme Monamictlan, the place where the mountains crash together. The dead must slip between them, choosing the moment.',{eye:'The second level'});
-   await count(s,{ask:'Wait for the gap, then go. Tap three times to run between the hills.',n:3,label:'Run',onTap:()=>{ if(SND.ctx) thud(); }});
-   art(cx(`${ground(330,'#3A2A30')}${hill(300,330,1.3,{col:OBS})}${[[120,140,20],[480,120,-30],[200,80,60],[420,240,10]].map(([a,b,r])=>blade(a,b,1,r)).join('')}${walker(300,340,.5)}`));
-   await say(s,'The third is Itztepetl, the obsidian mountain, its slopes covered in blades. The papers buried with the dead were meant for dangers like these.');
- }},
- {name:'The Obsidian Wind',short:'Level 4',sub:'Itzehecayan',col:'#2A2A33',run:async s=>{
+   await tell(s,'Level two: two mountains that slam together. Timing is everything.',{eye:'Where the hills clash'});
+   await count(s,{ask:'Wait for the gap, then go. Tap three times to run through.',n:3,label:'Run!',onTap:()=>{ if(SND.ctx) thud(); }});
    art(cx(`${ground(330,'#3A2A30')}${Array.from({length:12},(_,i)=>`<g class="drift" style="animation-duration:${2+i%4}s">${blade(40+i*48,90+(i*53)%200,.7,70+i*20)}</g>`).join('')}${walker(300,340,.6)}`));
-   if(SND.ctx){ windLoop(); }
-   await say(s,'The fourth level is Itzehecayan, the place of the obsidian wind. Sahagún\'s informants said a wind blows there so sharp it cuts like knives. This, they said, is why the dead were burned with their belongings: so they would have clothes to shield them.',{eye:'The fourth level'});
-   await hold(s,{label:'Walk into the wind',ms:6000,ask:'Wrap your cloak around you. Press and hold to walk through.',early:'Keep your head down. Hold again.'});
+   if(SND.ctx) windLoop();
+   await hold(s,{label:'Walk into the wind',ms:4500,ask:'Then a mountain of knives, then a wind full of obsidian blades. Wrap your cloak and press and hold.',early:'Head down. Hold again.'});
    loopOff('wind');
-   await say(s,'You come out the other side, cut and cold, but walking.');
  }},
- {name:'Banners and Arrows',short:'Levels 5–6',sub:'Weightless, then hunted',col:'#D9667A',run:async s=>{
+ {name:'The jaguars',short:'Levels 5–8',col:'#E0A82E',run:async s=>{
    art(cx(`${ground(330,'#3A2A30')}${[100,200,400,500].map((x,i)=>`<g class="bob" style="animation-delay:${i*.4}s">${banner(x,250,1,i%2?8:-8)}</g>`).join('')}<g class="bob">${walker(300,260,.6)}</g>`));
-   await say(s,'The fifth level is Pancuecuetlacayan, where the dead lose their weight and float like banners in the wind.',{eye:'The fifth level'});
-   await release(s,{ask:'Become weightless. Let these go.',words:['My name','My house','My work','My worries']});
-   art(cx(`${ground(330,'#3A2A30')}${[[120,120,10],[480,90,170],[160,240,-10],[440,220,190],[300,60,90]].map(([a,b,r])=>arrow(a,b,1,r)).join('')}${walker(300,340,.6)}`));
-   await say(s,'The sixth is Temiminaloyan, where arrows fly at you from hands no one can see. You keep going.');
- }},
- {name:'The Jaguars',short:'Level 7',sub:'Where hearts are eaten',col:'#E0A82E',run:async s=>{
+   await release(s,{ask:'A place where you float like a flag in the wind. Let these go.',words:['My name','My house','My worries']});
    art(cx(`${ground(330,'#3A2A30')}${jaguar(130,330,.9)}${jaguar(470,330,.9)}${walker(300,340,.6)}${jade(300,170,1)}`));
-   if(SND.ctx) drum();
-   await say(s,'The seventh level is Teocoyocualoyan, the place where wild beasts eat hearts. Jaguars wait there.',{eye:'The seventh level'});
-   await choose(s,'What do you give them?',['The jade bead from my mouth','My own heart'],{right:0,wrong:'Your heart is what they want. Is there anything else?'});
-   await say(s,'Modern retellings say this is what the jade bead was for: a heart of stone that the jaguars can\'t eat. Whether or not Sahagún\'s elders meant it that way, the jade went down with the dead, and it was green, the colour of what is precious and alive.');
+   if(SND.ctx) drum(.5);
+   await choose(s,'Then: jaguars. They want your heart. What do you give them?',['The jade bead from my mouth','My heart'],{right:0,wrong:'That\'s what they asked for. Got anything else?'});
+   await tell(s,'That\'s what the jade bead was for. The Mexica thought of everything.');
  }},
- {name:'The Dark Water',short:'Level 8',sub:'Narrow paths',col:'#4FA3B8',run:async s=>{
-   art(cx(`${river(300,{shells:false,col:'#1E3440'})}<path d="M0 300 Q150 280 300 300 T600 300" stroke="${OBS}" stroke-width="40" fill="none" opacity=".7"/>${walker(300,300,.55)}`,{bg:'#0E0A10'}));
-   if(SND.ctx){ allOff(1); pad('pad',[73.4,110,146.8],.03); }
-   await say(s,'The eighth level, Izmictlan Apochcalolca, is a place of narrow paths and dark water. It is very quiet.',{eye:'The eighth level'});
-   await still(s,{ask:'Be still, and walk carefully in the dark.',ms:9000});
-   await say(s,'Four years have passed since you died. The road down is long because the Mexica believed the dead deserved time.');
- }},
- {name:'The Lord of the Dead',short:'Level 9',sub:'Mictlantecuhtli and Mictecacihuatl',col:'#B8322A',run:async s=>{
+ {name:'The Lords of the Dead',short:'Level 9',col:'#B8322A',run:async s=>{
    art(cx(`${ground(330,'#3A2A30')}${deathLord(210,330,1)}${deathLord(390,330,.95,{lady:true})}${walker(300,380,.45,{arms:'offer'})}`));
-   if(SND.ctx) pad('pad',[98,147,196],.035);
-   await say(s,'At last you reach the ninth level, Chiconahuamictlan, and stand before Mictlantecuhtli, Lord of the Dead, and his wife Mictecacihuatl, Lady of the Dead.',{eye:'The ninth level'});
-   await say(s,'Sahagún\'s elders said the dead brought gifts: the papers, torches, incense and cloth burned for them by their families over four years. The Lord of the Dead received them.');
-   await spots(s,{ask:'Offer your gifts. Tap each one.',items:[{x:30,y:30,label:'Incense',say:'Copal, the sweet resin still burned at Mexican altars.'},{x:70,y:30,label:'Cloth',say:'Cloaks and cloth, burned for you by your family.'},{x:50,y:62,label:'Paper',say:'Cut paper, the oldest offering of all.'}]});
-   await say(s,'And then, the sources say, the dead went on into the ninth place and simply ended, or rested. Mictlan isn\'t punishment. It is the end of the road, and rest.');
+   await tell(s,'Four years later: the bottom. Mictlantecuhtli and Mictecacihuatl, Lord and Lady of the Dead.',{eye:'The ninth level'});
+   await spots(s,{ask:'Hand over the gifts your family sent. Tap each.',items:[{x:30,y:30,label:'Incense',say:'Copal, the sweet resin still burned on Mexican altars.'},{x:70,y:30,label:'Cloth',say:'Cloaks and cloth, burned for you back home.'},{x:50,y:62,label:'Paper',say:'Cut paper, the oldest offering of all.'}]});
+   await tell(s,'And then you rest. No heaven, no hell. Just the end of a very long walk.');
  }},
- {name:'Flower and Song',short:'Feasts',sub:'The feasts of the dead',col:'#F28C1E',run:async s=>{
+ {name:'The way home',short:'Ofrenda',col:'#F28C1E',run:async s=>{
    art(cx(`${papel(22)}${ofrenda(300,360,1.2)}${scroll(80,330,1.2)}${scroll(520,330,1.2,PINK)}`,{bg:'#2A1A2A'}));
-   if(SND.ctx){ allOff(1); pad('pad',[130.8,196,261.6],.035); chime(); }
-   await say(s,'The Mexica held two months of feasts for the dead each year, the Little Feast and the Great Feast of the Dead, with offerings of food and flowers. After the conquest, these blended with the Catholic days of All Saints and All Souls into what became Día de Muertos.',{eye:'The feasts of the dead'});
-   await count(s,{ask:'Build the ofrenda. Place four marigolds, cempōhualxōchitl, the flower whose scent guides the dead home.',n:4,label:'Place a flower',onTap:()=>{ if(SND.ctx) plop(); }});
-   await say(s,'Nahua poets sang of death in a way that still feels close. One song, attributed to the poet-king Nezahualcoyotl, asks: Is it true that we live on earth? Not forever on earth, only a little while here. Even jade breaks, even gold cracks, even quetzal plumes are torn. Not forever on earth, only a little while here.');
- }}],
- finale:async s=>{ art(cxCover()); if(SND.ctx) chime();
-   await say(s,'That is the passage: a death that decides your road, a bundle with a jade heart, a small dog at the river, mountains, blades, wind and jaguars, and four years later, rest.',{eye:'The end of the book'});
-   await say(s,'The Mexica didn\'t promise reward for the good or punishment for the bad. They promised a long road, a faithful companion, and a family that would keep burning gifts for you. Only a little while here.'); }};
-header({brand:BOOK.brand,brandSub:BOOK.brandSub,links:[['Many Doors','../../many-doors/'],[BOOK.walkName,BOOK.walkUrl]]});
-manualLanding(BOOK);
+   if(SND.ctx) chime();
+   await tell(s,'Back home, your family held feasts for the dead every year. Some of it survives in Día de Muertos.',{eye:'The feasts of the dead'});
+   await count(s,{ask:'Build the ofrenda. Place four marigolds: their scent guides the dead home.',n:4,label:'Place a marigold',onTap:()=>{ if(SND.ctx) plop(); }});
+   await tell(s,'Four years down. One night a year back up. Not a bad deal.');
+ }}]};
+journeySplash(J);
 
 </script>
 <script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
