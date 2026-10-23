@@ -4,7 +4,7 @@
    `freq` (88–108) pins a station to a spot on the dial; leave it out and stations spread evenly.
    Entries with `demo` are synthesized placeholders, to be replaced by real tracks. */
 window.TRACKS = [
-  { title: 'Late Bloom', note: 'Placeholder', demo: { bpm: 96, chords: [[53, 57, 60, 64], [53, 59, 64, 67], [52, 55, 59, 62], [55, 60, 64, 71]], roots: [38, 43, 36, 45] } },
-  { title: 'Avocado Sun', note: 'Placeholder', demo: { bpm: 104, chords: [[55, 59, 62, 66], [57, 60, 64, 67], [52, 55, 59, 64], [54, 57, 61, 64]], roots: [43, 45, 40, 42] } },
-  { title: 'Night Static', note: 'Placeholder', demo: { bpm: 84, chords: [[50, 53, 57, 60], [48, 52, 55, 59], [46, 50, 53, 57], [45, 49, 52, 57]], roots: [38, 36, 34, 33] } },
+  { title: 'Rinsginse', note: '2:43', src: 'tracks/rinsginse.mp3' },
+  { title: 'Zrrrgg', note: '2:11', src: 'tracks/zrrrgg.mp3' },
+  { title: 'Wiird', note: '1:33', src: 'tracks/wiird.mp3' },
 ];
