@@ -371,12 +371,14 @@ const MUSIC_CH = Math.max(...WORKS.map(w => w.ch)) + 1;
    key: semitones from F minor. kick: 'four' to the floor or broken 'electro'. */
 const TRACKS = [
   { title: 'Basement Hours',  bpm: 120, key: -2, kick: 'four',   acid: false, stab: 'dub',    sub: true },
-  { title: 'Concrete Garden', bpm: 132, key: 3,  kick: 'electro', acid: true,  stab: 'sparse', snare: true },
-  { title: 'Night Static',    bpm: 112, key: -5, kick: 'four',   acid: false, stab: 'none',   sub: true, bleeps: true, crackle: true },
+  // spares, kept for later: { title: 'Concrete Garden', bpm: 132, key: 3, kick: 'electro', acid: true, stab: 'sparse', snare: true },
+  //   { title: 'Night Static', bpm: 112, key: -5, kick: 'four', acid: false, stab: 'none', sub: true, bleeps: true, crackle: true },
 ];
 const INTRO = { bpm: 124, key: 0, kick: 'four', acid: true, stab: 'sparse' };
 let trackIdx = 0, trackAt = 0;
-const kindOf = c => c === 2 ? 'montage' : c === 13 ? 'bars' : c === MUSIC_CH ? 'music' : (WORKS.find(w => w.ch === c) ? 'work' : 'snow');
+// after the films: the music channel, one channel of static, the stand-by card, then round to channel 2 again
+const BARS_CH = MUSIC_CH + 2, CH_N = BARS_CH - 1, CH_STEP = Math.PI * 2 / CH_N;
+const kindOf = c => c === 2 ? 'montage' : c === BARS_CH ? 'bars' : c === MUSIC_CH ? 'music' : (WORKS.find(w => w.ch === c) ? 'work' : 'snow');
 const metaOf = w => [w.kind, w.year, w.role].filter(Boolean).join(' · ');
 function hash(a, b) { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); }
 
@@ -796,8 +798,8 @@ function drawPlate() {
   x.fillStyle = '#2a1f15'; x.textAlign = 'center';
   x.font = 'italic 62px "Instrument Serif", Georgia, serif'; x.fillText('Blackshear', 200, .058 * s);
   x.font = '500 17px "IBM Plex Mono", monospace'; x.fillText('S O L I D   S T A T E', 200, .078 * s);
-  for (let i = 0; i < 12; i++) {
-    const a = i * Math.PI / 6, cx = 200 + Math.sin(a) * .079 * s, cy = .17 * s - Math.cos(a) * .079 * s;
+  for (let i = 0; i < CH_N; i++) {
+    const a = i * CH_STEP, cx = 200 + Math.sin(a) * .079 * s, cy = .17 * s - Math.cos(a) * .079 * s;
     x.fillStyle = i + 2 === cur ? '#b3261e' : '#2f281f';
     x.font = `500 ${i + 2 === cur ? 26 : 22}px "IBM Plex Mono", monospace`; x.textBaseline = 'middle'; x.fillText(String(i + 2), cx, cy);
     x.fillRect(200 + Math.sin(a) * .064 * s - 1.5, .17 * s - Math.cos(a) * .064 * s - 1.5, 3, 3);
@@ -948,7 +950,7 @@ canvas.addEventListener('pointermove', e => {
       if (vOver.x > 1) pan.x = k(drag.px + (e.clientX - drag.x) / (vOver.x / 2));
       if (vOver.y > 1) pan.y = k(drag.py + (e.clientY - drag.y) / (vOver.y / 2));
       return; }
-    setChannel(Math.round(dialScreenAngle(e) / 30) % 12 + 2); return;
+    setChannel(Math.round(dialScreenAngle(e) / (360 / CH_N)) % CH_N + 2); return;
   }
   const a = pick(e); canvas.style.cursor = a === 'screen' && zoomTo < 1 ? 'zoom-in' : a ? 'pointer' : 'default';
 });
@@ -998,7 +1000,7 @@ function caption() {
   const k = kindOf(cur), w = WORKS.find(w => w.ch === cur);
   $('lNum').textContent = `Channel ${cur}`;
   if (k === 'montage') { $('lTitle').innerHTML = 'Selected <em>Work</em>'; $('lMeta').textContent = 'Be here. Now playing.'; }
-  else if (k === 'music') { $('lTitle').innerHTML = '<em>Music</em>'; $('lMeta').textContent = `${TRACKS[trackIdx].title} · track ${trackIdx + 1} of ${TRACKS.length}`; }
+  else if (k === 'music') { $('lTitle').innerHTML = '<em>Music</em>'; $('lMeta').textContent = TRACKS.length > 1 ? `${TRACKS[trackIdx].title} · track ${trackIdx + 1} of ${TRACKS.length}` : TRACKS[trackIdx].title; }
   else if (k === 'work') { $('lTitle').innerHTML = `<em>${w.title}</em>`; $('lMeta').textContent = metaOf(w) + (w.vimeo ? ' · via Vimeo' : ''); }
   else if (k === 'bars') { $('lTitle').textContent = 'Please stand by'; $('lMeta').textContent = 'More films coming soon'; }
   else { $('lTitle').textContent = 'No signal'; $('lMeta').textContent = 'Nothing on this channel. Keep turning.'; }
@@ -1008,17 +1010,17 @@ function caption() {
 function updateDeck() {
   const k = kindOf(cur), w = WORKS.find(w => w.ch === cur);
   const name = k === 'montage' ? 'Selected Work' : k === 'music' ? 'Music' : w ? w.title : k === 'bars' ? 'Please stand by' : 'No signal';
-  const sub = k === 'montage' ? 'Be here. Now playing.' : k === 'music' ? `${soundOn ? '▶' : '❚❚'} ${TRACKS[trackIdx].title} · ${trackIdx + 1}/${TRACKS.length}` : w ? metaOf(w) || 'Details to come' : k === 'bars' ? 'More films coming' : 'Keep turning';
+  const sub = k === 'montage' ? 'Be here. Now playing.' : k === 'music' ? `${soundOn ? '▶' : '❚❚'} ${TRACKS[trackIdx].title}${TRACKS.length > 1 ? ` · ${trackIdx + 1}/${TRACKS.length}` : ''}` : w ? metaOf(w) || 'Details to come' : k === 'bars' ? 'More films coming' : 'Keep turning';
   $('readout').innerHTML = `CH ${String(cur).padStart(2, '0')} · ${name.toUpperCase()}<small>${sub}</small>`;
-  $('transport').hidden = k !== 'music'; $('trPrev').hidden = $('trNext').hidden = k !== 'music';
+  $('transport').hidden = k !== 'music'; $('trPrev').hidden = $('trNext').hidden = k !== 'music' || TRACKS.length < 2;
   $('dtPlay').textContent = soundOn ? '❚❚' : '▶';
   document.querySelectorAll('#presets .key').forEach((b, i) => b.setAttribute('aria-pressed', i + 2 === cur));
 }
 function setChannel(c) {
-  c = ((c - 2) % 12 + 12) % 12 + 2;
+  c = ((c - 2) % CH_N + CH_N) % CH_N + 2;
   if (c === cur) return;
-  const delta = ((c - cur + 6 + 12) % 12) - 6;
-  dialAngle -= (delta === -6 ? 6 : delta) * Math.PI / 6;
+  let delta = ((c - cur) % CH_N + CH_N) % CH_N; if (delta > CH_N / 2) delta -= CH_N;   // the short way round
+  dialAngle -= delta * CH_STEP;
   cur = c; pan.x = pan.y = 0; if (PHONE) setTimeout(buildPool, 600);
   const now = performance.now(); staticUntil = now + STATIC_MS; chStart = now + STATIC_MS;
   caption();
@@ -1172,12 +1174,13 @@ function setTrack(i) {
   trackAt = performance.now(); caption();
 }
 [['trPrev', -1], ['dtPrev', -1], ['trNext', 1], ['dtNext', 1]].forEach(([id, d]) => $(id).addEventListener('click', () => setTrack(trackIdx + d)));
+if (TRACKS.length < 2) $('dtPrev').hidden = $('dtNext').hidden = true;
 $('dtPlay').addEventListener('click', () => setSound(!soundOn));
 const presetWrap = $('presets');
-for (let c = 2; c <= 13; c++) {
+for (let c = 2; c <= BARS_CH; c++) {
   const b = document.createElement('button'); b.className = 'key' + (kindOf(c) === 'snow' ? ' dead' : ''); b.textContent = c;
   const w = WORKS.find(w => w.ch === c);
-  const name = c === 2 ? 'Selected Work' : c === MUSIC_CH ? 'Music' : w ? w.title : c === 13 ? 'Stand by' : 'No signal';
+  const name = c === 2 ? 'Selected Work' : c === MUSIC_CH ? 'Music' : w ? w.title : c === BARS_CH ? 'Stand by' : 'No signal';
   b.title = name; b.setAttribute('aria-label', `Channel ${c}: ${name}`);
   b.addEventListener('click', () => setChannel(c)); presetWrap.appendChild(b);
 }
