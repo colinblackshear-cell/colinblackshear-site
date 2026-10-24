@@ -69,10 +69,10 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
 .sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--night), 0 0 0 3.5px var(--title)}
 .vbox{position:fixed;left:0;top:0;width:0;height:0;overflow:hidden;background:#000;pointer-events:none;transform-origin:0 0;
   display:flex;align-items:center;z-index:0}
-.vbox iframe{position:absolute;left:0;top:0;display:block;border:0;transform-origin:0 0;filter:contrast(1.06) saturate(.88) sepia(.08) brightness(1.04)}
+.vbox iframe,.vbox video{position:absolute;object-fit:fill;background:#000;left:0;top:0;display:block;border:0;transform-origin:0 0;filter:contrast(1.06) saturate(.88) sepia(.08) brightness(1.04)}
 /* phones: a filter on a playing video makes the browser redraw every frame by hand, which stalls playback */
 @media (pointer: coarse){
-  .vbox iframe{filter:none}
+  .vbox iframe,.vbox video{filter:none}
   /* phones: no live blending or blurring over the moving 3D set, which makes the browser recomposite the whole screen every frame */
   .grain{mix-blend-mode:normal;opacity:.05;animation:none}
   .psy{mix-blend-mode:normal}
@@ -85,11 +85,11 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   box-shadow:inset 0 0 24px rgba(0,0,0,.8)}
 .vbox[hidden]{display:none}
 /* a cut between sections in the room: the picture blinks out and back, like a hard edit */
-.vbox iframe{transition:none}
+.vbox iframe,.vbox video{transition:none}
 /* phones: the picture is a plain canvas laid over the glass of the set */
 .glass,.glassfx{position:fixed;left:0;top:0;width:640px;height:480px;transform-origin:0 0;pointer-events:none;border-radius:48px;display:block}
 .glassfx{background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px), radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%)}
-.vbox.cut iframe{opacity:0!important;transition:none}
+.vbox.cut iframe,.vbox.cut video{opacity:0!important;transition:none}
 /* the film's scrub bar, along the bottom of the picture when you're inside */
 .scrub{position:fixed;left:0;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:6px 12px 6px 6px;border-radius:12px;box-sizing:border-box;
   background:rgba(10,8,6,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#f3e9d6;font:500 12px/1 "IBM Plex Mono",monospace;
@@ -349,12 +349,18 @@ const out = document.createElement('canvas'); out.width = W; out.height = H;
 const octx = out.getContext('2d');
 
 const WORKS = [
-  { ch: 3, title: '000',           kind: 'Film',         year: '',     role: '',                  scene: waves,   root: 57, vimeo: '628896953', picture: 2.4 },
-  { ch: 4, title: 'Second Nature', kind: 'Sector 9 · Film', year: '',  role: '',                  scene: road,    root: 50, vimeo: '20973698' },
-  { ch: 5, title: 'Free Ride',     kind: 'Film',         year: '',     role: '',                  scene: fog,     root: 53, vimeo: '19586969', aspect: 4 / 3 },
-  { ch: 6, title: 'Remio',         kind: 'Film',         year: '',     role: '',                  scene: sunset,  root: 55, vimeo: '54697211' },
-  { ch: 7, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968', picture: 2.39, vol: .6 },
-  { ch: 8, title: 'The Bread Bejkr', kind: 'Film',       year: '',     role: '',                  scene: leaks,   root: 52, vimeo: '71693536' },
+  { ch: 3, title: '000',           kind: 'Film',         year: '',     role: '',                  scene: waves,   root: 57, vimeo: '628896953', picture: 2.4,
+    hls: 'https://player.vimeo.com/external/628896953.m3u8?s=173ce5c72eb76a65ef1013067f648b42a72434c1&logging=false' },
+  { ch: 4, title: 'Second Nature', kind: 'Sector 9 · Film', year: '',  role: '',                  scene: road,    root: 50, vimeo: '20973698',
+    hls: 'https://player.vimeo.com/external/20973698.m3u8?s=050e3294ee65d5c6c678d4cc387c8274e2768bfd&logging=false' },
+  { ch: 5, title: 'Free Ride',     kind: 'Film',         year: '',     role: '',                  scene: fog,     root: 53, vimeo: '19586969',
+    hls: 'https://player.vimeo.com/external/19586969.m3u8?s=c00e950a2fc3d3adac200de56c891b22811b54fd&logging=false', aspect: 4 / 3 },
+  { ch: 6, title: 'Remio',         kind: 'Film',         year: '',     role: '',                  scene: sunset,  root: 55, vimeo: '54697211',
+    hls: 'https://player.vimeo.com/external/54697211.m3u8?s=03e66d48081f2e040eb00d9730590b9c3d6959a3&logging=false' },
+  { ch: 7, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968',
+    hls: 'https://player.vimeo.com/external/1238949968.m3u8?s=a0793d41b6549e58290517cc049fdd0c0e1fd69c&logging=false', picture: 2.39, vol: .6 },
+  { ch: 8, title: 'The Bread Bejkr', kind: 'Film',       year: '',     role: '',                  scene: leaks,   root: 52, vimeo: '71693536',
+    hls: 'https://player.vimeo.com/external/71693536.m3u8?s=0d3900e341812c9d2d04d7cc87cc28a13a56ac2f&logging=false' },
 ];
 const MUSIC_CH = 9;
 /* placeholder songs, synthesized live; real tracks would be audio files */
@@ -1258,8 +1264,59 @@ let vWait = false, vWaitAt = 0, vWaitT = null, vWaitCut = false;
 function waitFor(t, cut) { vWait = true; vWaitAt = performance.now(); vWaitT = t; vWaitCut = !!cut; }
 const cueUp = p => { if (p.dur) { p.cue = p.dur * (.06 + Math.random() * .82); poolPost(p, { method: 'setCurrentTime', value: p.cue }); } };
 function tapHint(on) { needTap = on; $('taphint').classList.toggle('on', on); }
-const poolPost = (p, m) => p.el.contentWindow && p.el.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
+// a film with an `hls` link (Vimeo's direct stream) plays in our own <video>, which starts faster and holds its sound;
+// it answers the same commands as the Vimeo player, so everything else treats the two alike
+const sendTo = (el, m) => el.cmd ? el.cmd(m) : el.contentWindow && el.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
+const poolPost = (p, m) => sendTo(p.el, m);
+const nativeHls = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform))
+  || (/Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Android/.test(navigator.userAgent));
+let hlsLib = null;
+const loadHls = () => hlsLib || (hlsLib = new Promise((ok, no) => {
+  const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js';
+  sc.onload = () => ok(window.Hls); sc.onerror = no; document.head.appendChild(sc);
+}));
+function filePlayer(key, w, title) {
+  const el = document.createElement('video'), p = { el, ready: false, dur: 0 };
+  el.muted = true; el.loop = true; el.playsInline = true; el.preload = 'auto'; el.title = title; el.tabIndex = -1; el.style.opacity = 0;
+  el.setAttribute('playsinline', ''); el.setAttribute('muted', '');
+  const tell = d => setTimeout(() => onPlayer(p, d));
+  el.cmd = m => {
+    const v = m.value;
+    switch (m.method) {
+      case 'play': { const pr = el.play(); if (pr) pr.catch(() => { if (!el.muted) { el.muted = true; el.play().catch(() => {}); } }); break; }
+      case 'pause': el.pause(); break;
+      case 'setMuted': el.muted = !!v; break;
+      case 'setVolume': el.volume = Math.max(0, Math.min(1, v)); break;
+      case 'setCurrentTime': if (el.readyState > 0) el.currentTime = v; else el.addEventListener('loadedmetadata', () => { el.currentTime = v; }, { once: true }); break;
+      case 'getDuration': tell({ method: 'getDuration', value: el.duration || 0 }); break;
+      case 'getPaused': tell({ method: 'getPaused', value: el.paused }); break;
+      case 'getMuted': tell({ method: 'getMuted', value: el.muted }); break;
+    }
+  };
+  el.addEventListener('loadedmetadata', () => { if (!p.ready) tell({ event: 'ready' }); });
+  el.addEventListener('timeupdate', () => tell({ event: 'timeupdate', data: { seconds: el.currentTime, duration: el.duration || 0 } }));
+  el.addEventListener('play', () => tell({ event: 'play' })); el.addEventListener('pause', () => tell({ event: 'pause' }));
+  // if the stream won't play here, that film goes back to the Vimeo player
+  const fail = () => {
+    if (w.hlsFailed) return; w.hlsFailed = true;
+    Object.keys(POOL).filter(k => POOL[k].el.tagName === 'VIDEO' && k.replace('~', '') === w.vimeo).forEach(k => {
+      const was = POOL[k].el === vFrame; dropPlayer(POOL[k]); delete POOL[k];
+      if (was) { vFrame = null; vId = null; } else poolPlayer(k, w.vimeo, w.title);
+    });
+  };
+  el.addEventListener('error', () => setTimeout(fail));
+  if (nativeHls || !window.MediaSource) el.src = w.hls;
+  else loadHls().then(Hls => {
+    if (!Hls.isSupported()) { el.src = w.hls; return; }
+    const h = new Hls({ capLevelToPlayerSize: true, startLevel: -1 }); h.loadSource(w.hls); h.attachMedia(el); el.hls = h;
+    h.on(Hls.Events.ERROR, (ev, d) => { if (d.fatal) { console.warn('stream', w.title, d.details); setTimeout(fail); } });
+  }, () => { el.src = w.hls; });
+  vbox.appendChild(el); POOL[key] = p; laid = null;
+}
+function dropPlayer(p) { if (p.el.hls) p.el.hls.destroy(); p.el.remove(); }
 function poolPlayer(key, id, title) {
+  const w = WORKS.find(w => w.vimeo === id);
+  if (w && w.hls && !w.hlsFailed) return filePlayer(key, w, title);
   const el = document.createElement('iframe');
   el.src = `https://player.vimeo.com/video/${id}?autoplay=0&muted=1&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0&playsinline=1`;
   el.allow = 'autoplay; fullscreen; picture-in-picture'; el.title = title; el.tabIndex = -1; el.style.opacity = 0;
@@ -1274,7 +1331,7 @@ function buildPool() {
     const here = films[at] && films[at].ch === cur;
     keep = [films[(at - 1 + films.length) % films.length], films[at % films.length], films[(at + (here ? 1 : 0)) % films.length]].filter((w, j, a) => a.indexOf(w) === j);
     const ids = keep.map(w => w.vimeo);
-    Object.keys(POOL).forEach(k => { const p = POOL[k]; if ((k.endsWith('~') ? k.slice(0, -1) !== vId : !ids.includes(k)) && p.el !== vFrame) { p.el.remove(); delete POOL[k]; } });
+    Object.keys(POOL).forEach(k => { const p = POOL[k]; if ((k.endsWith('~') ? k.slice(0, -1) !== vId : !ids.includes(k)) && p.el !== vFrame) { dropPlayer(p); delete POOL[k]; } });
   }
   keep.filter(w => !POOL[w.vimeo]).forEach(w => poolPlayer(w.vimeo, w.vimeo, w.title));
 }
@@ -1282,7 +1339,7 @@ function buildPool() {
 const twinOf = id => id + '~';
 function ensureTwin(id) { const w = WORKS.find(w => w.vimeo === id); if (w && !POOL[twinOf(id)] && !vimeoBlocked) poolPlayer(twinOf(id), id, w.title + ' (next cut)'); }
 setTimeout(buildPool, 1200);
-function dropVimeo() { killVimeo(); Object.keys(POOL).forEach(k => { POOL[k].el.remove(); delete POOL[k]; }); }
+function dropVimeo() { killVimeo(); Object.keys(POOL).forEach(k => { dropPlayer(POOL[k]); delete POOL[k]; }); }
 function filmState() { vWait = false; tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
 function killVimeo() {
   if (vFrame) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; const old = Object.values(POOL).find(p => p.el === vFrame); if (old) cueUp(old); }
@@ -1309,11 +1366,15 @@ function filmStarted() {
 }
 /* In the room the set plays a loop of random sections of the film; stepping in plays it whole, from the top. */
 let vDur = 0, snipAt = 0, snipping = false;
-function vSend(m) { if (vFrame && vFrame.contentWindow) vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com'); }
+function vSend(m) { if (vFrame) sendTo(vFrame, m); }
 addEventListener('message', e => {
   if (e.origin !== 'https://player.vimeo.com') return;
   const p = Object.values(POOL).find(p => p.el.contentWindow === e.source); if (!p) return;
   let d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
+  onPlayer(p, d);
+});
+function onPlayer(p, d) {
+  if (!d || !Object.values(POOL).includes(p)) return;
   const active = p.el === vFrame && vId;
   if (d.event === 'ready') {
     p.ready = true; ['timeupdate', 'play', 'pause'].forEach(v => poolPost(p, { method: 'addEventListener', value: v }));
@@ -1335,7 +1396,7 @@ addEventListener('message', e => {
     vPaused = d.event === 'pause'; $('scPlay').textContent = vPaused ? '▶' : '❚❚'; $('scPlay').setAttribute('aria-label', vPaused ? 'Play' : 'Pause');
     if (d.event === 'play' && needTap) tapHint(false);
   }
-});
+}
 function snippets(now) {
   const inRoom = zoomTo < 1 && fullP < .01;
   if (!vId || !vDur) return;
@@ -1396,8 +1457,8 @@ function placeScrub(now, bx, by, bw, bh, inside) {
 // sound may only start as a tap ends (on phones), so every tap, click or key gives the film another go at it
 ['pointerup', 'touchend', 'click', 'keydown'].forEach(t => addEventListener(t, () => setTimeout(() => { if (vId && soundOn) { tapHint(false); vKick(); } }), true));
 function vimeoSound() {
-  if (!vFrame || !vFrame.contentWindow) return;
-  const send = m => vFrame.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
+  if (!vFrame) return;
+  const send = m => sendTo(vFrame, m);
   // `vol` on a film evens out its level against the others (1 is as uploaded)
   const w = WORKS.find(w => w.vimeo === vId), v = w && w.vol || 1;
   send({ method: 'setMuted', value: !soundOn }); send({ method: 'setVolume', value: soundOn ? v : 0 });
