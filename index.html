@@ -1134,7 +1134,7 @@ function startChannelAudio() {
 }
 const soundBtn = $('sound');
 function setSound(on) {
-  ensureAudio(); actx.resume();
+  soundAsked = true; ensureAudio(); actx.resume();
   soundOn = on; document.body.classList.toggle('sound-on', on);
   master.gain.setTargetAtTime(on ? .85 : 0, actx.currentTime, .06);
   volAngle = on ? -1.2 : 2.2;  // knob turns clockwise when on
@@ -1156,6 +1156,13 @@ function setPower(on) {
   } else if (actx) stopChannelAudio();
 }
 soundBtn.addEventListener('click', () => setSound(!soundOn));
+// browsers keep a page quiet until the visitor does something, so the first tap, click or key anywhere brings the sound up
+let soundAsked = false;
+['pointerup', 'touchend', 'click', 'keydown'].forEach(t => addEventListener(t, e => {
+  if (soundAsked) return; soundAsked = true;
+  if (soundOn || (e.target.closest && e.target.closest('#sound, #dvol, #dtPlay')) || (e.key && /^(m|Tab|Shift|Meta|Alt|Control)$/.test(e.key))) return;
+  setSound(true);
+}, true));
 $('dvol').addEventListener('click', () => setSound(!soundOn));
 $('dpow').addEventListener('click', () => setPower(!powered));
 $('back').addEventListener('click', () => setZoom(false));

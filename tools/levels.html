@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Level check</title><meta name="robots" content="noindex">
+<style>
+:root{--bg:#14110e;--ink:#efe6d6;--dim:#9a8f7e;--line:#3a332b;--acc:#e8a33d}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 ui-monospace,Menlo,monospace;padding:32px 16px}
+main{max-width:640px;margin:auto}h1{font-size:20px;letter-spacing:.08em;text-transform:uppercase}
+p{color:var(--dim)}button{font:inherit;background:var(--acc);color:#14110e;border:0;border-radius:999px;padding:10px 22px;cursor:pointer}
+button:disabled{opacity:.5}table{width:100%;border-collapse:collapse;margin:20px 0}td,th{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line)}
+th{color:var(--dim);font-weight:normal}textarea{width:100%;height:150px;background:#0b0907;color:var(--ink);border:1px solid var(--line);font:inherit;padding:8px;box-sizing:border-box}
+</style></head><body><main>
+<h1>Level check</h1>
+<p>Measures how loud each film on the TV plays, by listening to three stretches of each one. Use a computer with Chrome. It runs silently and takes about two minutes.</p>
+<button id="go">Measure the films</button>
+<table><thead><tr><th>Film</th><th>Loudness</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
+<p>When it's done, copy the box below and paste it into the chat.</p>
+<textarea id="out" readonly></textarea>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<script>
+(async () => {
+  const src = await (await fetch('../index.html', { cache: 'no-store' })).text();
+  const films = [...src.matchAll(/title: '([^']+)'[^\n]*?vimeo: '(\d+)'[^\n]*\n\s*hls: '([^']+)'/g)].map(m => ({ title: m[1], id: m[2], hls: m[3] }));
+  const rows = document.getElementById('rows'), out = document.getElementById('out');
+  films.forEach(f => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${f.title}</td><td>–</td><td>waiting</td>`; rows.appendChild(tr); f.tr = tr; });
+  const cell = (f, i, t) => f.tr.children[i].textContent = t;
+  document.getElementById('go').onclick = async e => {
+    e.target.disabled = true;
+    const ac = new AudioContext();
+    for (const f of films) {
+      cell(f, 2, 'listening…');
+      try { f.lufs = await measure(ac, f); cell(f, 1, f.lufs.toFixed(1) + ' LUFS'); cell(f, 2, 'done'); }
+      catch (x) { cell(f, 2, 'could not play: ' + x.message); }
+    }
+    const ok = films.filter(f => f.lufs != null), target = Math.min(...ok.map(f => f.lufs));
+    out.value = 'Level check results\n' + ok.map(f => `${f.title} (${f.id}): ${f.lufs.toFixed(1)} LUFS, vol ${Math.min(1, Math.pow(10, (target - f.lufs) / 20)).toFixed(2)}`).join('\n');
+  };
+  function measure(ac, f) {
+    return new Promise((ok, no) => {
+      const v = document.createElement('video'); v.crossOrigin = 'anonymous'; v.playsInline = true;
+      const h = new Hls(); h.loadSource(f.hls); h.attachMedia(v);
+      h.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) { h.destroy(); no(new Error(d.details)); } });
+      const s = ac.createMediaElementSource(v), shelf = ac.createBiquadFilter(), hp = ac.createBiquadFilter(), an = ac.createAnalyser(), mute = ac.createGain();
+      shelf.type = 'highshelf'; shelf.frequency.value = 1500; shelf.gain.value = 4; hp.type = 'highpass'; hp.frequency.value = 38;
+      an.fftSize = 16384; mute.gain.value = 0;
+      s.connect(shelf); shelf.connect(hp); hp.connect(an); an.connect(mute); mute.connect(ac.destination);
+      const buf = new Float32Array(an.fftSize), blocks = [];
+      v.addEventListener('loadedmetadata', async () => {
+        try {
+          for (const at of [.2, .5, .8]) {
+            v.currentTime = v.duration * at; await new Promise(r => v.addEventListener('seeked', r, { once: true }));
+            await v.play(); const end = performance.now() + 9000;
+            while (performance.now() < end) { await new Promise(r => setTimeout(r, 330)); an.getFloatTimeDomainData(buf); let ms = 0; for (const x of buf) ms += x * x; blocks.push(ms / buf.length); }
+            v.pause();
+          }
+          const abs = blocks.filter(b => -0.691 + 10 * Math.log10(b) > -70);
+          const l = a => -0.691 + 10 * Math.log10(a.reduce((p, b) => p + b, 0) / a.length);
+          const rel = abs.filter(b => -0.691 + 10 * Math.log10(b) > l(abs) - 10);
+          h.destroy(); ok(rel.length ? l(rel) : -99);
+        } catch (x) { h.destroy(); no(x); }
+      }, { once: true });
+    });
+  }
+})();
+</script></body></html>
