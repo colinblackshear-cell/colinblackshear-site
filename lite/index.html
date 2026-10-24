@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Colin Blackshear · Films</title>
+<meta name="description" content="Colin Blackshear, filmmaker. A 1970s television: turn the dial to change films.">
+<meta name="theme-color" content="#0c0d0c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="../neon-nav.css">
+<link rel="manifest" href="../site.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* The TV room, pre-rendered. The set is a still image rendered from the 3D room; only the picture on its glass is live,
+   so the page asks almost nothing of the phone: one video, one small canvas, and the slow wall. */
+:root{
+  --night:#0c0d0c; --title:#efe8d8; --title-soft:rgba(239,232,216,.62);
+  --f-display:"Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--night);color:var(--title);font-family:var(--f-mono)}
+button{font:inherit;color:inherit}
+button:focus-visible,a:focus-visible{outline:2px solid var(--title);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+.set{position:fixed;inset:0;background:#3a3826 center/cover no-repeat}
+/* the wall pattern (trip.js) lies over the rendered wall, faded out around the set */
+.tripwall{z-index:1 !important;mix-blend-mode:screen;opacity:.8;
+  -webkit-mask-image:radial-gradient(ellipse var(--mw) var(--mh) at var(--mx) var(--my), transparent 62%, #000 100%);
+          mask-image:radial-gradient(ellipse var(--mw) var(--mh) at var(--mx) var(--my), transparent 62%, #000 100%)}
+.fx{position:fixed;inset:0;pointer-events:none}
+.vignette{z-index:2;background:radial-gradient(120% 95% at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,.6) 100%)}
+.curtain{z-index:40;background:#000;transition:opacity 1.6s ease}
+.curtain.up{opacity:0}
+
+/* the glass: sized and placed over the rendered tube */
+.glass{position:fixed;z-index:3;overflow:hidden;border-radius:7% / 9.5%;background:#050605;cursor:pointer;transform-origin:50% 50%;
+  box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+.glass > *{position:absolute;inset:0;width:100%;height:100%}
+.glass video{object-fit:cover;background:#000;opacity:0;transition:opacity .25s}
+.glass video.on{opacity:1}
+.glass canvas{image-rendering:auto;opacity:0;transition:opacity .2s}
+.glass canvas.on{opacity:1}
+.glass .words{display:grid;place-content:center;text-align:center;gap:.3em;font:italic 400 clamp(1rem, 4.6vmin, 1.9rem)/1 var(--f-display);
+  color:#fff8e8;text-shadow:0 0 12px rgba(255,255,255,.5);opacity:0;transition:opacity .6s;pointer-events:none}
+.glass .words small{font:500 .38em/1 var(--f-mono);letter-spacing:.3em;text-transform:uppercase;font-style:normal}
+.glass .words.on{opacity:1}
+/* the tube itself: scan lines, a curved highlight and dark edges, over whatever is playing */
+.glass .tube{pointer-events:none;
+  background:
+    radial-gradient(90% 60% at 40% 8%, rgba(255,255,255,.16), rgba(255,255,255,0) 60%),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, rgba(0,0,0,0) 1px 3px);
+  box-shadow:inset 0 0 6vmin rgba(0,0,0,.85), inset 0 0 1.4vmin rgba(0,0,0,.9)}
+/* switching on: the picture opens from a bright line, like an old set warming up */
+.glass.off > :not(.tube){opacity:0 !important}
+.glass.warm{animation:warm .9s cubic-bezier(.2,.8,.2,1)}
+@keyframes warm{0%{transform:scale(1,.01);filter:brightness(4)}45%{transform:scale(1,.02);filter:brightness(3)}100%{transform:none;filter:none}}
+.knob{position:fixed;z-index:4;border:0;padding:0;background:none;border-radius:50%;cursor:pointer}
+
+.ui{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;
+  padding:18px max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  text-shadow:0 1px 12px rgba(0,0,0,.6)}
+.ui a,.ui button{pointer-events:auto}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.name{margin:0;line-height:0}
+.name svg{display:block;height:clamp(30px, 5.4vw, 50px);width:auto;max-width:min(78vw, 520px);overflow:visible}
+nav.sections{display:flex}
+.bottom{display:grid;gap:12px;justify-items:center}
+.label{text-align:center;max-width:60ch;display:grid;gap:4px}
+.label .num{font-size:.68rem;letter-spacing:.24em;text-transform:uppercase}
+.label h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(1.7rem, 4vw, 2.5rem);line-height:1.05;text-wrap:balance;
+  color:#fff3dc;text-shadow:-2px 1px 0 rgba(255,70,170,.35), 2px -1px 0 rgba(40,220,255,.32), 0 0 18px rgba(255,214,150,.18)}
+.label .meta{font-size:.76rem}
+.label .num,.label .meta,.foot{color:rgba(255,236,205,.55);text-shadow:-1px 0 0 rgba(255,70,170,.25), 1px 0 0 rgba(40,220,255,.22)}
+.controls{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.pill{border:0;border-radius:7px;padding:9px 16px 8px;cursor:pointer;font-size:.7rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:#2a1f15;text-shadow:0 1px 0 rgba(255,255,255,.55);display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(180deg,#f6efdf 0%,#e6dcc6 50%,#d2c6aa 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), inset 0 -3px 4px rgba(90,70,40,.18), 0 4px 0 #9a8b6c, 0 6px 0 #2b2219, 0 9px 14px rgba(0,0,0,.4);
+  transform:translateY(-3px);transition:transform .07s, box-shadow .07s}
+.pill:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 1px 0 #9a8b6c, 0 2px 0 #2b2219, 0 3px 5px rgba(0,0,0,.35)}
+.pill.sound::before{content:'';width:7px;height:7px;border-radius:50%;background:#5a2418;box-shadow:inset 0 1px 1px rgba(0,0,0,.5)}
+body.sound-on .pill.sound::before{background:#ff5a2e;box-shadow:0 0 7px #ff5a2e}
+.foot{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase}
+.foot a{color:inherit}
+/* the red label tape on the floor, inviting a tap on the glass */
+.invite{position:fixed;z-index:4;transform:translateX(-50%);pointer-events:none;opacity:0;transition:opacity .8s;perspective:420px;white-space:nowrap}
+.invite.on{opacity:1}
+.invite span{display:inline-block;padding:7px 16px 6px;font:600 .7rem/1 var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:#fff4ee;
+  background:linear-gradient(180deg,#d2352b 0%,#b8231b 45%,#9a1a14 100%);clip-path:polygon(0 0,100% 0,97% 50%,100% 100%,0 100%,3% 50%);
+  text-shadow:0 1px 0 rgba(60,0,0,.65), 0 -1px 0 rgba(255,255,255,.35);transform:rotateX(38deg) rotateZ(-2.5deg);filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
+/* watching: the film fills the window */
+body.watch .glass{left:0 !important;top:0 !important;width:100vw !important;height:100vh !important;height:100dvh !important;border-radius:0;z-index:20;cursor:default}
+body.watch .glass video{object-fit:contain}
+body.watch .glass .tube{opacity:.35}
+.back{position:fixed;z-index:21;top:max(14px, env(safe-area-inset-top, 0px));left:max(14px, env(safe-area-inset-left, 0px));display:none}
+body.watch .back{display:inline-flex}
+body.watch .ui,body.watch .invite{visibility:hidden}
+@media (prefers-reduced-motion: reduce){ .glass.warm{animation:none} }
+</style>
+</head>
+<body>
+<div class="set" id="set" role="img" aria-label="A 1970s television on a studio set"></div>
+<div class="fx vignette"></div>
+<div class="glass off" id="glass" role="button" tabindex="0" aria-label="Watch this film">
+  <canvas id="fxc" width="96" height="72"></canvas>
+  <video id="vid" playsinline muted preload="auto"></video>
+  <div class="words" id="words">Change the channel<small>◂ turn the dial ▸</small></div>
+  <div class="tube"></div>
+</div>
+<button class="knob" id="dial" aria-label="Next channel"></button>
+<button class="knob" id="vol" aria-label="Sound on or off"></button>
+<div class="invite" id="invite" aria-hidden="true"><span>Tap the screen to watch</span></div>
+<button class="pill back" id="back">‹ Back to the set</button>
+<div class="ui">
+  <header>
+    <h1 class="name"><span class="sr">Colin Blackshear</span><svg data-wordmark aria-hidden="true"></svg></h1>
+    <nav class="sections" aria-label="Sections">
+      <a href="./" aria-current="true"><span class="sr">Films</span><svg data-word="FILMS" aria-hidden="true"></svg></a>
+      <a href="../music/"><span class="sr">Music</span><svg data-word="MUSIC" aria-hidden="true"></svg></a>
+      <a href="../lab/"><span class="sr">Interactive</span><svg data-word="INTERACTIVE" aria-hidden="true"></svg></a>
+    </nav>
+  </header>
+  <div class="bottom">
+    <div class="label" aria-live="polite">
+      <span class="num" id="lNum">Channel 2</span>
+      <h2 id="lTitle">Selected Work</h2>
+      <span class="meta" id="lMeta">Be here. Now playing.</span>
+    </div>
+    <div class="controls">
+      <button class="pill" id="prev" aria-label="Previous channel">‹ Ch</button>
+      <button class="pill sound" id="sound" aria-pressed="false">Sound off</button>
+      <button class="pill" id="next" aria-label="Next channel">Ch ›</button>
+    </div>
+    <div class="foot"><a href="../films/">Film list</a><a href="../">3D version</a></div>
+  </div>
+</div>
+<div class="fx curtain" id="curtain"></div>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+// the two renders of the set, and where the glass and knobs sit in each (in the render's own pixels)
+const SETS = {
+  wide: { src: 'set-wide.jpg', w: 1600, h: 900, glass: [582, 266.6, 895, 502], dial: [970, 330, 30], vol: [970, 406, 18] },
+  tall: { src: 'set-tall.jpg', w: 430, h: 932, glass: [57.4, 332.6, 283.7, 502.8], dial: [338, 380, 30], vol: [338, 433, 18] },
+};
+const glass = $('glass'), vid = $('vid'), fxc = $('fxc'), fx = fxc.getContext('2d'), words = $('words');
+let set = null;
+function layout() {
+  const vw = innerWidth, vh = innerHeight, s = SETS[vw / vh > .9 ? 'wide' : 'tall'];
+  if (s !== set) { set = s; $('set').style.backgroundImage = `url(${s.src})`; }
+  // the image covers the window, so work out its scale and offset the same way the browser does
+  const k = Math.max(vw / s.w, vh / s.h), ox = (vw - s.w * k) / 2, oy = (vh - s.h * k) / 2, X = x => ox + x * k, Y = y => oy + y * k;
+  const [x0, y0, x1, y1] = s.glass;
+  Object.assign(glass.style, { left: X(x0) + 'px', top: Y(y0) + 'px', width: (x1 - x0) * k + 'px', height: (y1 - y0) * k + 'px' });
+  for (const [el, [cx, cy, r]] of [[$('dial'), s.dial], [$('vol'), s.vol]])
+    Object.assign(el.style, { left: X(cx - r) + 'px', top: Y(cy - r) + 'px', width: 2 * r * k + 'px', height: 2 * r * k + 'px' });
+  const inv = $('invite'); inv.style.left = X((x0 + x1) / 2 + (s === SETS.wide ? 40 : 30)) + 'px'; inv.style.top = Y(y1 + (s === SETS.wide ? 105 : 82)) + 'px';
+  const r = document.documentElement.style;
+  r.setProperty('--mx', X((x0 + x1) / 2 + (s === SETS.wide ? 45 : 35)) + 'px'); r.setProperty('--my', Y((y0 + y1) / 2) + 'px');
+  r.setProperty('--mw', (x1 - x0) * k * 1.4 + 'px'); r.setProperty('--mh', (y1 - y0) * k * 1.9 + 'px');
+}
+addEventListener('resize', layout); layout();
+
+/* the channels, read from the 3D page so both always carry the same films */
+let CH = [{ kind: 'reel', ch: 2 }], cur = 0, soundOn = false, hls = null, hlsLib = null, plasmaT = null;
+const nativeHls = !!vid.canPlayType('application/vnd.apple.mpegurl');
+const loadHls = () => hlsLib || (hlsLib = new Promise((ok, no) => {
+  const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js';
+  sc.onload = () => ok(window.Hls); sc.onerror = no; document.head.appendChild(sc);
+}));
+
+// the in-between pictures: snow, or the reel's slow colour bloom, drawn tiny and stretched over the glass
+let fxMode = null, fxAt = 0;
+function drawFx(now) {
+  if (!fxMode) return; requestAnimationFrame(drawFx);
+  if (now - fxAt < 50) return; fxAt = now;
+  const w = 96, h = 72, img = fx.createImageData(w, h), d = img.data, t = now / 1000;
+  for (let y = 0, i = 0; y < h; y++) for (let x = 0; x < w; x++, i += 4) {
+    if (fxMode === 'snow') { const v = Math.random() * 255; d[i] = d[i + 1] = d[i + 2] = v; }
+    else {
+      const dx = x - w / 2, dy = y - h / 2, r = Math.sqrt(dx * dx + dy * dy), a = Math.atan2(dy, dx);
+      const v = Math.sin(r * .22 - t * 1.4) + Math.sin(a * 6 + t * .5 + Math.sin(r * .1)) + Math.sin(x * .09 + t * .7);
+      d[i] = 128 + 127 * Math.sin(v * 1.6 + t * .4); d[i + 1] = 128 + 127 * Math.sin(v * 1.6 + 2.1 + t * .3); d[i + 2] = 128 + 127 * Math.sin(v * 1.6 + 4.2);
+    }
+    d[i + 3] = 255;
+  }
+  fx.putImageData(img, 0, 0);
+}
+function showFx(mode) { const was = fxMode; fxMode = mode; fxc.classList.toggle('on', !!mode); if (mode && !was) requestAnimationFrame(drawFx); }
+
+function stopVideo() { vid.classList.remove('on'); vid.pause(); if (hls) { hls.destroy(); hls = null; } vid.removeAttribute('src'); vid.load(); }
+function playFilm(f) {
+  stopVideo(); showFx('snow');
+  const token = {}; playFilm.token = token;
+  const ready = () => {
+    if (playFilm.token !== token) return;
+    // tuning in lands somewhere in the middle, like a broadcast already running
+    if (!document.body.classList.contains('watch') && vid.duration) vid.currentTime = vid.duration * (.06 + Math.random() * .8);
+    vid.volume = f.vol || 1; vid.muted = !soundOn; vid.play().catch(() => { vid.muted = true; vid.play().catch(() => {}); });
+  };
+  vid.addEventListener('loadedmetadata', ready, { once: true });
+  vid.onplaying = () => { if (playFilm.token === token) { vid.classList.add('on'); showFx(null); } };
+  vid.onerror = () => { if (playFilm.token === token) $('lMeta').innerHTML = `This film won't play here · <a href="../films/">film list</a>`; };
+  if (nativeHls || !window.MediaSource) { vid.src = f.hls; return; }
+  loadHls().then(Hls => {
+    if (playFilm.token !== token) return;
+    if (!Hls.isSupported()) { vid.src = f.hls; return; }
+    hls = new Hls({ capLevelToPlayerSize: true, maxBufferLength: 20 }); hls.loadSource(f.hls); hls.attachMedia(vid);
+  }, () => { vid.src = f.hls; });
+}
+function tune(i) {
+  cur = (i + CH.length) % CH.length; const c = CH[cur];
+  $('lNum').textContent = 'Channel ' + c.ch;
+  $('lTitle').innerHTML = c.kind === 'reel' ? 'Selected <em>Work</em>' : c.kind === 'snow' ? 'No signal' : c.title.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  $('lMeta').textContent = c.kind === 'reel' ? 'Be here. Now playing.' : c.kind === 'snow' ? 'Keep turning' : c.meta;
+  glass.setAttribute('aria-label', c.kind === 'film' ? 'Watch ' + c.title : 'Change the channel');
+  words.classList.toggle('on', c.kind === 'reel');
+  if (c.kind === 'film') playFilm(c); else { stopVideo(); showFx(c.kind === 'reel' ? 'plasma' : 'snow'); }
+  $('invite').classList.toggle('on', c.kind === 'film' && !stepped);
+}
+function setSound(on) {
+  soundOn = on; document.body.classList.toggle('sound-on', on);
+  $('sound').textContent = on ? 'Sound on' : 'Sound off'; $('sound').setAttribute('aria-pressed', on);
+  vid.muted = !on; if (on && vid.paused && vid.src) vid.play().catch(() => {});
+}
+let stepped = false;
+function watch(on) {
+  const c = CH[cur]; if (on && c.kind !== 'film') { tune(cur + 1); return; }
+  stepped = stepped || on; $('invite').classList.remove('on');
+  document.body.classList.toggle('watch', on);
+  if (on) { setSound(true); vid.controls = true; } else vid.controls = false;
+}
+$('prev').onclick = () => tune(cur - 1);
+$('next').onclick = $('dial').onclick = () => tune(cur + 1);
+$('sound').onclick = $('vol').onclick = () => setSound(!soundOn);
+glass.onclick = () => { if (!document.body.classList.contains('watch')) watch(true); };
+glass.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); glass.click(); } };
+$('back').onclick = () => watch(false);
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') watch(false);
+  else if (e.target === document.body && (e.key === 'ArrowRight' || e.key === 'ArrowUp')) tune(cur + 1);
+  else if (e.target === document.body && (e.key === 'ArrowLeft' || e.key === 'ArrowDown')) tune(cur - 1);
+});
+// sound comes on with the first touch anywhere, as browsers ask
+addEventListener('pointerdown', () => { if (!soundOn) setSound(true); }, { once: true, capture: true });
+
+fetch('../index.html', { cache: 'no-cache' }).then(r => r.text()).then(src => {
+  const films = [...src.matchAll(/\{ ch: (\d+), title: '([^']+)',\s*kind: '([^']*)'([^\n]*)\n\s*hls: '([^']+)'/g)].map(m => ({
+    kind: 'film', ch: +m[1], title: m[2], meta: m[3], hls: m[5], vol: +((m[4].match(/vol: ([\d.]+)/) || [])[1] || 1) }));
+  films.sort((a, b) => a.ch - b.ch);
+  CH = [CH[0], ...films, { kind: 'snow', ch: (films.length ? films[films.length - 1].ch : 2) + 1 }];
+}).catch(() => {});
+
+setTimeout(() => { $('curtain').classList.add('up'); }, 100);
+setTimeout(() => { glass.classList.remove('off'); glass.classList.add('warm'); tune(0); }, 900);
+})();
+</script>
+<script src="../wordmark.js"></script>
+<script>if (!/Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly/i.test(navigator.userAgent)) { const s = document.createElement('script'); s.src = '../trip.js'; document.body.appendChild(s); }</script>
+</body>
+</html>
