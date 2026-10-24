@@ -141,6 +141,8 @@ details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
 
+@media (max-width:560px){ #pBack .bl{display:none} .pbar{gap:5px} .pbar .sbtn{padding:5px 7px;letter-spacing:.04em} .pbar .sbtn.x{width:32px;padding:0} }
+
 /* The Ten Courts: a temple mural at night. Cinnabar lacquer, black ink, gold leaf and jade. */
 :root{
   --bg:#F2E6CC; --paper:#FBF3E0; --ink:#1A1414; --ink-soft:#5A4A40; --accent:#B22A1E; --accent2:#2F7A62; --gold:#D9A441; --night:#120C0C; --nightink:#FBF3E0;
@@ -266,7 +268,7 @@ function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$
 /* show a passage, one or two sentences at a time, each with Continue */
 async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
   for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
-function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ if(s) s.n=(s.n||0)+1; const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
   const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
   const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
   b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }

@@ -141,6 +141,8 @@ details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
 
+@media (max-width:560px){ #pBack .bl{display:none} .pbar{gap:5px} .pbar .sbtn{padding:5px 7px;letter-spacing:.04em} .pbar .sbtn.x{width:32px;padding:0} }
+
 /* Three Nights and a Bridge: a Persian night. Lapis sky, the fire's gold, white cotton and turquoise tile. */
 :root{
   --bg:#EFE6D2; --paper:#FAF4E4; --ink:#141C2E; --ink-soft:#4A5268; --accent:#1E5E78; --accent2:#B04A1E; --gold:#E8A93A; --night:#0B1020; --nightink:#FAF4E4;
@@ -266,7 +268,7 @@ function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$
 /* show a passage, one or two sentences at a time, each with Continue */
 async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
   for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
-function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ if(s) s.n=(s.n||0)+1; const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
   const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
   const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
   b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
@@ -350,8 +352,10 @@ async function playManual(B,start){
   const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
   const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
   s.onclose=()=>manualLanding(B);
+  s.el.querySelector('#pSound').insertAdjacentHTML('beforebegin','<button type="button" class="sbtn" id="pBack" aria-label="Back">◀<span class="bl"> Back</span></button>');
+  s.el.querySelector('#pBack').onclick=()=>{ const i=s.ch||0; playManual(B,(s.n||0)>1?i:Math.max(0,i-1)); };
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; s.n=0; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
       s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
       await c.run(s);
       const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
