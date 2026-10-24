@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Films · Colin Blackshear</title>
+<meta name="description" content="Colin Blackshear's films, as a plain list. Tap one to watch.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="../lab/lab.css">
+<link rel="stylesheet" href="../neon-nav.css">
+<link rel="manifest" href="../site.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+/* The plain way in: every film as a row, for a browser that can't run the TV. No 3D, no wall, nothing loads until a film is tapped. */
+main{max-width:860px;margin:0 auto;padding:26px 16px 70px}
+h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clamp(2.2rem, 6vw, 3.4rem);line-height:1;margin:6px 0 8px}
+.lede{margin:0 0 28px;color:var(--title-soft);font-size:.76rem;line-height:1.7}
+.lede a{color:var(--title)}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.film{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:rgba(239,232,216,.03)}
+.film button{display:flex;align-items:center;gap:14px;width:100%;padding:16px;border:0;background:none;cursor:pointer;text-align:left}
+.film .ch{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:.62rem;letter-spacing:.1em;
+  background:linear-gradient(180deg,#d2352b,#9a1a14);color:#fff4ee;text-shadow:0 1px 0 rgba(60,0,0,.65)}
+.film b{display:block;font:italic 400 1.5rem/1.1 var(--f-display)}
+.film small{display:block;margin-top:4px;color:var(--title-soft);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase}
+.film .go{margin-left:auto;color:var(--title-soft);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.frame{position:relative;aspect-ratio:16/9;background:#000}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.film .out{display:block;padding:10px 16px 14px;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--title-soft)}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="home wm" href="../"><span class="sr">Colin Blackshear</span><svg data-wordmark aria-hidden="true"></svg></a>
+  <nav class="sections" aria-label="Sections">
+    <a href="../#films" aria-current="true"><span class="sr">Films</span><svg data-word="FILMS" aria-hidden="true"></svg></a>
+    <a href="../music/"><span class="sr">Music</span><svg data-word="MUSIC" aria-hidden="true"></svg></a>
+    <a href="../lab/"><span class="sr">Interactive</span><svg data-word="INTERACTIVE" aria-hidden="true"></svg></a>
+  </nav>
+</div>
+<main>
+  <h1>Films</h1>
+  <p class="lede">The plain list, for when the TV won't play. Tap a film to watch it here. <a href="../">Back to the TV</a></p>
+  <ol id="list"><li class="lede">Loading the list…</li></ol>
+</main>
+<script>
+// the list is read straight from the TV page, so a film added to the TV shows up here too
+(async () => {
+  const list = document.getElementById('list');
+  let films = [];
+  try {
+    const src = await (await fetch('../index.html', { cache: 'no-cache' })).text();
+    films = [...src.matchAll(/\{ ch: (\d+), title: '([^']+)',\s*kind: '([^']*)'[^\n]*?vimeo: '(\d+)'/g)]
+      .map(m => ({ ch: +m[1], title: m[2], kind: m[3], id: m[4] }));
+  } catch (e) {}
+  if (!films.length) { list.innerHTML = '<li class="lede">The list could not load. <a href="https://vimeo.com/">Try Vimeo</a>.</li>'; return; }
+  const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  list.innerHTML = films.map(f => `<li class="film" data-id="${f.id}">
+    <button type="button"><span class="ch">CH ${f.ch}</span><span><b>${esc(f.title)}</b><small>${esc(f.kind)}</small></span><span class="go">▶ Play</span></button>
+  </li>`).join('');
+  list.addEventListener('click', e => {
+    const li = e.target.closest('.film'); if (!li || li.querySelector('.frame')) return;
+    // only one film plays at a time, so the phone has all its power for it
+    list.querySelectorAll('.frame, .out').forEach(el => el.remove());
+    list.querySelectorAll('.go').forEach(el => el.textContent = '▶ Play');
+    li.querySelector('.go').textContent = 'Playing';
+    const id = li.dataset.id;
+    li.insertAdjacentHTML('beforeend', `<div class="frame"><iframe src="https://player.vimeo.com/video/${id}?autoplay=1&title=0&byline=0&portrait=0&dnt=1&playsinline=1"
+      allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${esc(li.querySelector('b').textContent)}"></iframe></div>
+      <a class="out" href="https://vimeo.com/${id}" target="_blank" rel="noopener">Open on Vimeo ↗</a>`);
+  });
+})();
+</script>
+<script src="../wordmark.js"></script>
+</body>
+</html>

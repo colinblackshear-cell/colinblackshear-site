@@ -160,7 +160,11 @@ html.lift body{min-height:calc(100vh + 160px)}
 @media (prefers-reduced-motion: reduce){ .neon.on{animation:none} }
 .invite.on{opacity:1}
 /* inside Instagram and the like: the same tape across the top, asking to open in the phone's own browser */
-.invite.escape{left:50%;top:calc(66px + env(safe-area-inset-top, 0px));transform:translateX(-50%);z-index:9;opacity:1;pointer-events:auto;text-decoration:none}
+.rescue{position:fixed;left:50%;top:calc(98px + env(safe-area-inset-top, 0px));transform:translateX(-50%);z-index:9;display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none}
+.invite.escape{position:static;opacity:1;pointer-events:auto;text-decoration:none}
+/* the way out to the plain film list, put up only when the films stall or the browser is struggling */
+#filmlist{opacity:0;transition:opacity .8s;pointer-events:none}
+#filmlist.on{opacity:1;pointer-events:auto}
 .invite.escape .tape{transform:rotateZ(-2deg)}
 .invite.on .hop{animation:hop 1.1s ease-in-out infinite}
 @keyframes hop{50%{transform:translateY(-5px)}}
@@ -247,7 +251,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
 </div>
 <div class="draghint" id="draghint" aria-hidden="true"></div>
 <div class="invite" id="invite" aria-hidden="true"></div>
-<a class="invite escape" id="escape" hidden></a>
+<div class="rescue"><a class="invite escape" id="escape" hidden></a><a class="invite escape" id="filmlist" href="films/" tabindex="-1"><span class="tape">Trouble playing? See the film list ↗</span></a></div>
 <div class="invite" id="chinvite" aria-hidden="true"><span class="tape">◂ Change the channel ▸</span></div>
 <div class="chhop" id="hopL" aria-hidden="true"><span>▼</span></div><div class="chhop" id="hopR" aria-hidden="true"><span>▼</span></div>
 <button class="neon" id="neon" aria-label="Turn sound on"><span><svg data-word="TURN SOUND ON" aria-hidden="true"></svg></span></button>
@@ -694,14 +698,14 @@ function renderPicture(now) {
    3D SET
    ========================================================= */
 if (!window.THREE || !THREE.RoundedBoxGeometry) {
-  document.body.insertAdjacentHTML('beforeend', '<div class="nogl">The 3D set could not load in this browser.</div>');
+  document.body.insertAdjacentHTML('beforeend', '<div class="nogl"><p>The 3D set could not load in this browser.<br><a href="films/">Watch the films here</a></p></div>');
   return;
 }
 THREE.ColorManagement.legacyMode = false;
 const canvas = $('gl');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); }
-catch (e) { document.body.insertAdjacentHTML('beforeend', '<div class="nogl">This browser can’t show the 3D set (WebGL is off).</div>'); return; }
+catch (e) { document.body.insertAdjacentHTML('beforeend', '<div class="nogl"><p>This browser can’t show the 3D set (WebGL is off).<br><a href="films/">Watch the films here</a></p></div>'); return; }
 const PHONE = matchMedia('(pointer: coarse)').matches;
 // the browsers inside Instagram, Facebook, TikTok and the like get a small share of the phone, so the set asks even less of them
 const INAPP = /Instagram|FBAN|FBAV|FB_IAB|Line\/|TikTok|musical_ly|Snapchat|Twitter/i.test(navigator.userAgent);
@@ -1358,6 +1362,12 @@ let needTap = false, lastCheck = false;
 let vWait = false, vWaitAt = 0, vWaitT = null, vWaitCut = false;
 function waitFor(t, cut) { vWait = true; vWaitAt = performance.now(); vWaitT = t; vWaitCut = !!cut; }
 const cueUp = p => { if (p.dur) { p.cue = p.dur * (.06 + Math.random() * .82); poolPost(p, { method: 'setCurrentTime', value: p.cue }); } };
+// if a film won't come up, or the browser can barely draw the room, a tape offers the plain film list for a while
+let rescueAt = -1e9;
+function rescue() {
+  const now = performance.now(); if (now - rescueAt < 60000) return; rescueAt = now;
+  const a = $('filmlist'); a.classList.add('on'); a.tabIndex = 0; setTimeout(() => { a.classList.remove('on'); a.tabIndex = -1; }, 20000);
+}
 function tapHint(on) { needTap = on; $('taphint').classList.toggle('on', on); }
 // a film with an `hls` link (Vimeo's direct stream) plays in our own <video>, which starts faster and holds its sound;
 // it answers the same commands as the Vimeo player, so everything else treats the two alike
@@ -1393,7 +1403,7 @@ function filePlayer(key, w, title) {
   el.addEventListener('play', () => tell({ event: 'play' })); el.addEventListener('pause', () => tell({ event: 'pause' }));
   // if the stream won't play here, that film goes back to the Vimeo player
   const fail = () => {
-    if (w.hlsFailed) return; w.hlsFailed = true;
+    if (w.hlsFailed) return; w.hlsFailed = true; rescue();
     Object.keys(POOL).filter(k => POOL[k].el.tagName === 'VIDEO' && k.replace('~', '') === w.vimeo).forEach(k => {
       const was = POOL[k].el === vFrame; dropPlayer(POOL[k]); delete POOL[k];
       if (was) { vFrame = null; vId = null; } else poolPlayer(k, w.vimeo, w.title);
@@ -1819,8 +1829,16 @@ function placeGlass(ps) {
   glassFx.style.transform = `translate(${x0}px, ${y0}px) scale(${bw / W}, ${bh / H})`;
 }
 ['pointerdown', 'pointermove', 'touchmove'].forEach(t => addEventListener(t, () => lastTouch = performance.now(), { passive: true }));
+let fpsN = 0, fpsT = 0, fpsLast = 0, fpsDone = false;
 function loop(now) {
   requestAnimationFrame(loop);
+  // a film stuck loading, or under 15 frames a second over five seconds of drawing: offer the film list
+  if (vWait && now - vWaitAt > 9000 && !document.hidden) rescue();
+  if (!fpsDone && now - born > 3000) {
+    const dt = now - fpsLast; fpsLast = now;
+    if (dt < 1000) { fpsN++; fpsT += dt; }   // a gap this long is a hidden tab, not a slow one
+    if (fpsT > 5000) { fpsDone = true; if (fpsN / fpsT * 1000 < 15) rescue(); }
+  }
   const life = (now - born) / 1000;
   const ps = powerState(now);
   // while a film fills the view (stepped in, or the sideways set), the 3D room behind it is hidden: draw it only now and then,
