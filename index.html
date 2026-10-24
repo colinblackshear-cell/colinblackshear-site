@@ -158,7 +158,12 @@ html.lift body{min-height:calc(100vh + 160px)}
 .invite.on{opacity:1}
 .invite.on .hop{animation:hop 1.1s ease-in-out infinite}
 @keyframes hop{50%{transform:translateY(-5px)}}
-@media (prefers-reduced-motion: reduce){ .invite.on .hop{animation:none} }
+.chhop{position:fixed;left:0;top:0;z-index:5;pointer-events:none;color:#d2352b;font-size:1rem;line-height:1;opacity:0;transition:opacity .8s;
+  text-shadow:0 1px 0 rgba(60,0,0,.6), 0 3px 4px rgba(0,0,0,.4)}
+.chhop.on{opacity:1}
+.chhop.on span{display:block;animation:drop 1.1s ease-in-out infinite}
+@keyframes drop{50%{transform:translateY(5px)}}
+@media (prefers-reduced-motion: reduce){ .invite.on .hop, .chhop.on span{animation:none} }
 body.filmfull .psy{opacity:0}
 .tapsound{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:21;
   padding:7px 14px;border-radius:999px;background:rgba(10,10,9,.55);color:var(--title);font-size:.7rem;letter-spacing:.14em;
@@ -235,6 +240,8 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
 </div>
 <div class="draghint" id="draghint" aria-hidden="true"></div>
 <div class="invite" id="invite" aria-hidden="true"></div>
+<div class="invite" id="chinvite" aria-hidden="true"><span class="tape">◂ Change the channel ▸</span></div>
+<div class="chhop" id="hopL" aria-hidden="true"><span>▼</span></div><div class="chhop" id="hopR" aria-hidden="true"><span>▼</span></div>
 <button class="neon" id="neon" aria-label="Turn sound on"><span>Turn sound on</span></button>
 <div class="draghint" id="taphint" style="z-index:31">Tap for sound</div>
 <div class="scrub" id="scrub" hidden><button id="scPlay" aria-label="Pause">❚❚</button><span id="scA">0:00</span><div class="sctrack" id="scTrack" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100"><i id="scFill"></i><b id="scKnob"></b></div><span id="scB">0:00</span></div>
@@ -1047,6 +1054,7 @@ function updateDeck() {
   document.querySelectorAll('#presets .key').forEach((b, i) => b.setAttribute('aria-pressed', i + 2 === cur));
 }
 function setChannel(c) {
+  chChanged = true;
   c = ((c - 2) % CH_N + CH_N) % CH_N + 2;
   if (c === cur) return;
   let delta = ((c - cur) % CH_N + CH_N) % CH_N; if (delta > CH_N / 2) delta -= CH_N;   // the short way round
@@ -1277,13 +1285,22 @@ function placeNeon(now) {
   const v = tvTop.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
   neon.style.transform = `translate(${x - neon.offsetWidth / 2}px, ${Math.max(8, y - neon.offsetHeight - 26)}px)`;
 }
+// two strips of tape take turns on the floor: first how to watch, then how to change the channel (with arrows hopping over the buttons)
+const chInvite = $('chinvite'), hops = [[$('hopL'), $('prev')], [$('hopR'), $('next')]];
+let chChanged = false;
 function placeInvite(now) {
   placeNeon(now);
-  const on = !steppedIn && powered && now - born > 3500 && now - born < 18000 && zoomTo === 0 && zoomProgress(now) === 0 && !document.body.classList.contains('filmfull');
-  invite.classList.toggle('on', on); if (!on) return;
+  const room = powered && zoomTo === 0 && zoomProgress(now) === 0 && !document.body.classList.contains('filmfull'), t = now - born;
+  const watch = room && !steppedIn && t > 3500 && t < 11000, chan = room && !chChanged && t > 11500 && t < 20000;
+  invite.classList.toggle('on', watch); chInvite.classList.toggle('on', chan);
+  hops.forEach(([h, b]) => {
+    h.classList.toggle('on', chan && !b.hidden); if (!chan) return;
+    const r = b.getBoundingClientRect(); h.style.transform = `translate(${r.left + r.width / 2 - h.offsetWidth / 2}px, ${r.top - h.offsetHeight - 10}px)`;
+  });
+  if (!watch && !chan) return;
   // it sits on the floor, just in front of the set's feet
   const v = floorSpot.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
-  invite.style.transform = `translate(${x - invite.offsetWidth / 2}px, ${y - invite.offsetHeight / 2}px)`;
+  for (const el of [invite, chInvite]) el.style.transform = `translate(${x - el.offsetWidth / 2}px, ${y - el.offsetHeight / 2}px)`;
 }
 // the sideways set: a screen as large as the phone allows at the film's own shape, beside a slim control panel
 const insets = (() => { const d = document.createElement('div');
