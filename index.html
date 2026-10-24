@@ -1415,10 +1415,13 @@ function filePlayer(key, w, title) {
     if (!Hls.isSupported()) { el.src = w.hls; return; }
     // a film waiting off air keeps only a few seconds in hand, so the ones on either side don't crowd out the one you're watching
     const h = new Hls(Object.assign({ capLevelToPlayerSize: true, startLevel: -1 }, INAPP ? { maxBufferLength: 10, maxMaxBufferLength: 20, backBufferLength: 10 } : {})); h.loadSource(w.hls); h.attachMedia(el); el.hls = h;
+    if (el !== vFrame && !key.endsWith('~')) hlsTier(el, false);
     h.on(Hls.Events.ERROR, (ev, d) => { if (d.fatal) { console.warn('stream', w.title, d.details); setTimeout(fail); } });
   }, () => { el.src = w.hls; });
   vbox.appendChild(el); POOL[key] = p; laid = null;
 }
+// films waiting off air hold only a few seconds at the lowest picture; the one you tune to opens up to full quality
+function hlsTier(el, on) { const h = el.hls; if (!h) return; h.autoLevelCapping = on ? -1 : 0; h.config.maxBufferLength = on ? 30 : 6; }
 function dropPlayer(p) { if (p.el.hls) p.el.hls.destroy(); p.el.remove(); }
 function poolPlayer(key, id, title) {
   const w = WORKS.find(w => w.vimeo === id);
@@ -1450,13 +1453,13 @@ setTimeout(buildPool, 1200);
 function dropVimeo() { killVimeo(); Object.keys(POOL).forEach(k => { dropPlayer(POOL[k]); delete POOL[k]; }); }
 function filmState() { vWait = false; tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
 function killVimeo() {
-  if (vFrame) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; const old = Object.values(POOL).find(p => p.el === vFrame); if (old) cueUp(old); }
+  if (vFrame) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; hlsTier(vFrame, false); const old = Object.values(POOL).find(p => p.el === vFrame); if (old) cueUp(old); }
   filmState(); vFrame = null; vId = null; vbox.hidden = true; fullP = 0; vbox.style.zIndex = 0; document.body.classList.remove('filmfull');
 }
 function makeVimeo(id) {
   buildPool(); const p = POOL[id]; if (!p) return;
-  if (vFrame && vFrame !== p.el) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; const old = Object.values(POOL).find(o => o.el === vFrame); if (old) cueUp(old); }
-  vbox.hidden = false; vId = id; vAt = performance.now(); vFrame = p.el; vFrame.style.opacity = 1; vDur = p.dur; laid = null;
+  if (vFrame && vFrame !== p.el) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; hlsTier(vFrame, false); const old = Object.values(POOL).find(o => o.el === vFrame); if (old) cueUp(old); }
+  vbox.hidden = false; vId = id; vAt = performance.now(); vFrame = p.el; vFrame.style.opacity = 1; hlsTier(vFrame, true); vDur = p.dur; laid = null;
   waitFor(null); if (p.ready) filmStarted();
   setTimeout(() => { if (vId === id) ensureTwin(id); }, 1500);
 }
@@ -1752,12 +1755,12 @@ function drawTrip(now, room) {
 let psyAt = 0;
 function drawPsy(now, zp) {
   // inside Instagram and the like the slow wall is redrawn at 20 frames a second, leaving the rest of the phone for the film
-  if (INAPP && !trail.length && !energyWaves.length && now - psyAt < 50) return;
+  if ((INAPP || lowWall) && !trail.length && !energyWaves.length && now - psyAt < 50) return;
   psyAt = now;
   pctx.clearRect(0, 0, psyW, psyH);
   if (reduce) return;
   const v = tubeC.clone().project(camera), cx = (v.x + 1) / 2 * psyW, cy = (1 - v.y) / 2 * psyH, room = 1 - zp;
-  if (room > .01 && powered) drawTrip(now, room);
+  if (room > .01 && powered && !noWall) drawTrip(now, room);
   // the music throws a wave on strong low beats
   if (soundOn && analyser && kindOf(cur) === 'music') {
     analyser.getByteFrequencyData(freqData);
@@ -1829,15 +1832,25 @@ function placeGlass(ps) {
   glassFx.style.transform = `translate(${x0}px, ${y0}px) scale(${bw / W}, ${bh / H})`;
 }
 ['pointerdown', 'pointermove', 'touchmove'].forEach(t => addEventListener(t, () => lastTouch = performance.now(), { passive: true }));
-let fpsN = 0, fpsT = 0, fpsLast = 0, fpsDone = false;
+/* Self-tuning: for its first seconds the set watches how smoothly it is drawing. A device that can't keep up gets a softer
+   picture and a quieter wall, a step at a time, until it runs smoothly; a fast one is left exactly as it is. */
+let fpsN = 0, fpsT = 0, fpsLast = 0, fpsDone = false, tune = 0, lowWall = false, noWall = false;
+const DPR0 = renderer.getPixelRatio();
 function loop(now) {
   requestAnimationFrame(loop);
-  // a film stuck loading, or under 15 frames a second over five seconds of drawing: offer the film list
+  // a film stuck loading, or under 15 frames a second: offer the film list
   if (vWait && now - vWaitAt > 9000 && !document.hidden) rescue();
   if (!fpsDone && now - born > 3000) {
     const dt = now - fpsLast; fpsLast = now;
     if (dt < 1000) { fpsN++; fpsT += dt; }   // a gap this long is a hidden tab, not a slow one
-    if (fpsT > 5000) { fpsDone = true; if (fpsN / fpsT * 1000 < 15) rescue(); }
+    if (fpsT > 4000) {
+      const fps = fpsN / fpsT * 1000; fpsN = fpsT = 0;
+      if (fps < 15) rescue();
+      if (fps < 40 && tune < 2) {
+        tune++; lowWall = true; noWall = tune === 2;
+        renderer.setPixelRatio(tune === 1 ? Math.min(DPR0, 1) : .75); resize(); glDirty = true;
+      } else fpsDone = true;
+    }
   }
   const life = (now - born) / 1000;
   const ps = powerState(now);
