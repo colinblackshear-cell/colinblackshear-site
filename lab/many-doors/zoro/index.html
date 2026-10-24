@@ -184,6 +184,8 @@ a.sgo{text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .dknob span{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-family:var(--display);font-weight:700;font-size:clamp(.66rem,1.6vw,.85rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 10px;pointer-events:none}
 .dknob:active{cursor:grabbing}
 
+@media (max-width:560px){ #pBack .bl{display:none} }
+
 /* Three Nights and a Bridge: a Persian night. Lapis sky, the fire's gold, white cotton and turquoise tile. */
 :root{
   --bg:#EFE6D2; --paper:#FAF4E4; --ink:#141C2E; --ink-soft:#4A5268; --accent:#1E5E78; --accent2:#B04A1E; --gold:#E8A93A; --night:#0B1020; --nightink:#FAF4E4;
@@ -401,7 +403,7 @@ function journeySplash(J){
   document.querySelectorAll('.jstops [data-i]').forEach(b=>b.onclick=()=>playJourney(J,+b.dataset.i));
 }
 /* one short line with Continue, and an optional Guide note the curious can open */
-async function tell(s,text,{eye,note}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
+async function tell(s,text,{eye,note}={}){ alive(s); s.n=(s.n||0)+1; if(eye!==undefined) eyebrow(eye); const p=$('#pText'); p.textContent=text; $('#pRow').innerHTML=''; const spoke=narrate(text);
   if(note){ const n=document.createElement('button'); n.type='button'; n.className='gnote'; n.innerHTML='<span aria-hidden="true">✦</span> Guide note'; n.setAttribute('aria-expanded','false');
     n.onclick=()=>{ const open=n.getAttribute('aria-expanded')!=='true'; n.setAttribute('aria-expanded',open); let d=$('#pNote'); if(open){ if(!d){ d=document.createElement('p'); d.id='pNote'; d.className='gtext'; p.after(d); } d.textContent=note; } else if(d) d.remove(); };
     setTimeout(()=>$('#pRow')&&$('#pRow').prepend(n),0); }
@@ -411,8 +413,11 @@ async function playJourney(J,start){
   const menu={label:'Stops',build:()=>`<h3>Stops</h3><ol>${J.stops.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol><h3>Elsewhere</h3><ol><li><button type="button" data-go="hub"><small>←</small>All doors</button></li></ol>`,go:i=>i==='hub'?location.href=(/colinblackshear\.com$/.test(location.hostname)?HUB:HUB.replace(/\/(#|$)/,'/index.html$1')):playJourney(J,+i)};
   const s=openPlayer({title:J.title,sub:'',steps:J.stops.map(c=>c.short||c.name),menu,color:J.col});
   s.el.classList.add('jplayer'); s.onclose=()=>journeySplash(J);
+  /* Back: to the start of this stop, or to the stop before if you're already at its start */
+  s.el.querySelector('#pSound').insertAdjacentHTML('beforebegin','<button type="button" class="sbtn" id="pBack" aria-label="Back">◀<span class="bl"> Back</span></button>');
+  s.el.querySelector('#pBack').onclick=()=>{ const i=s.ch||0; playJourney(J,(s.n||0)>1?i:Math.max(0,i-1)); };
   try{
-    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
+    for(let i=start;i<J.stops.length;i++){ alive(s); s.ch=i; s.n=0; const c=J.stops[i]; store.set(J.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||J.col);
       s.el.querySelector('.ptitle').innerHTML=`<b>Stop ${i+1} of ${J.stops.length}</b>${esc(c.name)}`; clearLayer(); cvStop(); eyebrow(''); $('#pRow').style.justifyContent='';
       await c.run(s); if(SND.ctx) allOff(1.2); }
     store.set(J.key+'-next','0'); alive(s); stepTo(J.stops.length);
