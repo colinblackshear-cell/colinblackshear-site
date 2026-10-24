@@ -699,7 +699,9 @@ let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); }
 catch (e) { document.body.insertAdjacentHTML('beforeend', '<div class="nogl">This browser can’t show the 3D set (WebGL is off).</div>'); return; }
 const PHONE = matchMedia('(pointer: coarse)').matches;
-renderer.setPixelRatio(Math.min(devicePixelRatio || 1, PHONE ? 1.25 : 2));
+// the browsers inside Instagram, Facebook, TikTok and the like get a small share of the phone, so the set asks even less of them
+const INAPP = /Instagram|FBAN|FBAV|FB_IAB|Line\/|TikTok|musical_ly|Snapchat|Twitter/i.test(navigator.userAgent);
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, INAPP ? 1 : PHONE ? 1.25 : 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = .9;
@@ -1067,7 +1069,7 @@ function setChannel(c) {
   if (c === cur) return;
   let delta = ((c - cur) % CH_N + CH_N) % CH_N; if (delta > CH_N / 2) delta -= CH_N;   // the short way round
   dialAngle -= delta * CH_STEP;
-  cur = c; pan.x = pan.y = 0; if (PHONE) setTimeout(buildPool, 600);
+  cur = c; pan.x = pan.y = 0; setTimeout(buildPool, 600);
   const now = performance.now(); staticUntil = now + STATIC_MS; chStart = now + STATIC_MS;
   caption();
   if (actx) tick3d();
@@ -1366,7 +1368,7 @@ const loadHls = () => hlsLib || (hlsLib = new Promise((ok, no) => {
 }));
 function filePlayer(key, w, title) {
   const el = document.createElement('video'), p = { el, ready: false, dur: 0 };
-  el.muted = true; el.loop = true; el.playsInline = true; el.preload = 'auto'; el.title = title; el.tabIndex = -1; el.style.opacity = 0;
+  el.muted = true; el.loop = true; el.playsInline = true; el.preload = INAPP ? 'metadata' : 'auto'; el.title = title; el.tabIndex = -1; el.style.opacity = 0;
   el.setAttribute('playsinline', ''); el.setAttribute('muted', '');
   const tell = d => setTimeout(() => onPlayer(p, d));
   el.cmd = m => {
@@ -1397,7 +1399,8 @@ function filePlayer(key, w, title) {
   if (nativeHls || !window.MediaSource) el.src = w.hls;
   else loadHls().then(Hls => {
     if (!Hls.isSupported()) { el.src = w.hls; return; }
-    const h = new Hls({ capLevelToPlayerSize: true, startLevel: -1 }); h.loadSource(w.hls); h.attachMedia(el); el.hls = h;
+    // a film waiting off air keeps only a few seconds in hand, so the ones on either side don't crowd out the one you're watching
+    const h = new Hls({ capLevelToPlayerSize: true, startLevel: -1, maxBufferLength: 10, maxMaxBufferLength: 20, backBufferLength: 10 }); h.loadSource(w.hls); h.attachMedia(el); el.hls = h;
     h.on(Hls.Events.ERROR, (ev, d) => { if (d.fatal) { console.warn('stream', w.title, d.details); setTimeout(fail); } });
   }, () => { el.src = w.hls; });
   vbox.appendChild(el); POOL[key] = p; laid = null;
@@ -1413,20 +1416,20 @@ function poolPlayer(key, id, title) {
 }
 function buildPool() {
   if (vimeoBlocked) return;
-  // a phone on a mobile connection can't load every film at once, so it keeps only this film and the ones either side of it
-  let keep = WORKS.filter(w => w.vimeo);
-  if (PHONE) {
-    const films = keep, i = films.findIndex(w => w.ch >= cur), at = i < 0 ? films.length : i;
-    const here = films[at] && films[at].ch === cur;
-    keep = [films[(at - 1 + films.length) % films.length], films[at % films.length], films[(at + (here ? 1 : 0)) % films.length]].filter((w, j, a) => a.indexOf(w) === j);
-    const ids = keep.map(w => w.vimeo);
-    Object.keys(POOL).forEach(k => { const p = POOL[k]; if ((k.endsWith('~') ? k.slice(0, -1) !== vId : !ids.includes(k)) && p.el !== vFrame) { dropPlayer(p); delete POOL[k]; } });
-  }
+  // loading every film at once swamps the connection and the browser, so only this film and the ones either side of it
+  // wait in the wings (inside Instagram and the like, only this one)
+  const films = WORKS.filter(w => w.vimeo), i = films.findIndex(w => w.ch >= cur), at = i < 0 ? films.length : i;
+  const here = films[at] && films[at].ch === cur;
+  let keep = INAPP ? [films[at % films.length]]
+    : [films[(at - 1 + films.length) % films.length], films[at % films.length], films[(at + (here ? 1 : 0)) % films.length]];
+  keep = keep.filter((w, j, a) => a.indexOf(w) === j);
+  const ids = keep.map(w => w.vimeo);
+  Object.keys(POOL).forEach(k => { const p = POOL[k]; if ((k.endsWith('~') ? k.slice(0, -1) !== vId : !ids.includes(k)) && p.el !== vFrame) { dropPlayer(p); delete POOL[k]; } });
   keep.filter(w => !POOL[w.vimeo]).forEach(w => poolPlayer(w.vimeo, w.vimeo, w.title));
 }
 // the film on screen gets a twin, parked at the next moment, so a cut in the room is an instant swap: a true jump cut
 const twinOf = id => id + '~';
-function ensureTwin(id) { const w = WORKS.find(w => w.vimeo === id); if (w && !POOL[twinOf(id)] && !vimeoBlocked) poolPlayer(twinOf(id), id, w.title + ' (next cut)'); }
+function ensureTwin(id) { const w = WORKS.find(w => w.vimeo === id); if (w && !INAPP && !POOL[twinOf(id)] && !vimeoBlocked) poolPlayer(twinOf(id), id, w.title + ' (next cut)'); }
 setTimeout(buildPool, 1200);
 function dropVimeo() { killVimeo(); Object.keys(POOL).forEach(k => { dropPlayer(POOL[k]); delete POOL[k]; }); }
 function filmState() { vWait = false; tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
@@ -1730,7 +1733,11 @@ function drawTrip(now, room) {
   edge(0, y0, 0, y0 - e, x0, y0 - e, x1 - x0, e); edge(0, y1, 0, y1 + e, x0, y1, x1 - x0, e);
   pctx.restore();
 }
+let psyAt = 0;
 function drawPsy(now, zp) {
+  // the wall moves so slowly that 15 to 30 frames a second look the same as 60; only the pointer's echoes need every frame
+  if (!trail.length && !energyWaves.length && now - psyAt < (PHONE ? 66 : 33)) return;
+  psyAt = now;
   pctx.clearRect(0, 0, psyW, psyH);
   if (reduce) return;
   const v = tubeC.clone().project(camera), cx = (v.x + 1) / 2 * psyW, cy = (1 - v.y) / 2 * psyH, room = 1 - zp;
