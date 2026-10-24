@@ -400,12 +400,15 @@ body.void .bar,body.void #hint{opacity:0!important}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+#backBtn:disabled{opacity:.35;cursor:default}
+@media (max-width:560px){ .bar{gap:6px;padding:8px 10px} .tog{padding:5px 8px;font-size:.64rem;letter-spacing:.04em} #backBtn .bkl{display:none} }
 </style>
 
 <div id="app">
   <header class="bar">
     <a class="brand" href="../" style="color:inherit;text-decoration:none" title="Back to Many Doors">← The Bardo Manual</a>
     <span id="stageLabel" aria-live="polite"></span>
+    <button class="tog" id="backBtn" type="button" aria-label="Back one page" disabled>◀<span class="bkl"> Back</span></button>
     <button class="tog" id="chapBtn" aria-expanded="false" aria-controls="chapters" type="button">Chapters</button>
     <button class="tog" id="pathBtn" aria-expanded="false" aria-controls="pathpanel" type="button">Path 0/8</button>
     <button class="tog" id="soundBtn" aria-pressed="true" type="button">Sound</button>
@@ -2038,8 +2041,11 @@ function go(i, sb=0){
   sc.enter&&sc.enter(); if(sc.guide) addGuideChip(sc.guide); showBeat(sb);
   const LM={win:'clear',blueWin:'bright',reveal:'noise',whole:'fierce',yamaworst:'yama',birth:'return',pureland:'return'}; if(LM[sc.key]) setTimeout(()=>learn(LM[sc.key]),1600);
 }
+/* every page shown goes on a trail, so Back can step to the one before (skipping the black screen) */
+const trail=[];
 function showBeat(j){
-  const sc=S[si], b=sc.beats[j]; bi=j; canAdvance=false; hint.classList.remove('on'); clearTimeout(autoTimer);
+  const sc=S[si], b=sc.beats[j]; bi=j;
+  { const t=trail[trail.length-1]; if(!sc.void&&!(t&&t[0]===si&&t[1]===j)) trail.push([si,j]); updateBack(); } canAdvance=false; hint.classList.remove('on'); clearTimeout(autoTimer);
   cap.className='caption'+(b.cls?' '+b.cls:'');
   if(b.text===null){ cap.hidden=true; } else { cap.hidden = b.text==='' ; }
   b.show&&b.show(); if(b.say) speak(b.say);
@@ -2056,6 +2062,9 @@ function typeOut(text, done){
   typing={id, text, done};
 }
 function armAdvance(){ canAdvance=true; setTimeout(()=>{ if(canAdvance) hint.classList.add('on'); },900); }
+function updateBack(){ const b=$('#backBtn'); if(b) b.disabled=trail.length<2; }
+function back(){ if(trail.length<2) return; trail.pop(); const [ts,tb]=trail.pop(); if(ctx) tickSnd(); if(typing){ clearInterval(typing.id); typing=null; } go(ts,tb); }
+$('#backBtn').onclick=e=>{ e.stopPropagation(); back(); };
 function next(){ const sc=S[si]; if(bi<sc.beats.length-1) showBeat(bi+1); else if(si<S.length-1) go(nextScene()); }
 function nextScene(){ const n=S[si].next; return n?idx(n):si+1; }
 function advance(){
@@ -2063,7 +2072,7 @@ function advance(){
   if(canAdvance) next();
 }
 $('#stage').addEventListener('click', e=>{ if(e.target.closest('button,.gpop')) return; advance(); });
-addEventListener('keydown', e=>{ if(e.key==='Escape'&&!$('#chapters').hidden){ closeChapters(); $('#chapBtn').focus(); return; } if(e.key==='Escape'&&!$('#pathpanel').hidden){ closePath(); $('#pathBtn').focus(); return; } if(e.key==='Escape'&&!$('#voicepanel').hidden){ closeVoice(); $('#voiceBtn').focus(); return; } if(!$('#chapters').hidden||!$('#pathpanel').hidden||!$('#voicepanel').hidden) return; if(stillState) return; if([' ','Enter','ArrowRight'].includes(e.key)){ if(document.activeElement&&document.activeElement.tagName==='BUTTON'&&e.key!=='ArrowRight') return; e.preventDefault(); advance(); } });
+addEventListener('keydown', e=>{ if(e.key==='Escape'&&!$('#chapters').hidden){ closeChapters(); $('#chapBtn').focus(); return; } if(e.key==='Escape'&&!$('#pathpanel').hidden){ closePath(); $('#pathBtn').focus(); return; } if(e.key==='Escape'&&!$('#voicepanel').hidden){ closeVoice(); $('#voiceBtn').focus(); return; } if(!$('#chapters').hidden||!$('#pathpanel').hidden||!$('#voicepanel').hidden) return; if(stillState) return; if(e.key==='ArrowLeft'){ e.preventDefault(); back(); return; } if([' ','Enter','ArrowRight'].includes(e.key)){ if(document.activeElement&&document.activeElement.tagName==='BUTTON'&&e.key!=='ArrowRight') return; e.preventDefault(); advance(); } });
 
 /* warmth interaction */
 function setupWarmth(){
