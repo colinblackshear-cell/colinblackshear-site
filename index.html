@@ -11,7 +11,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:wght@500;700&family=VT323&family=Monoton&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:wght@500;700&family=VT323&display=swap">
 <style>[hidden]{display:none!important}body{margin:0}
 
 /* Layout: a full-bleed lit 3D set (one seamless wall color, a walnut 1970s TV under a key light); type floats over it like film titles */
@@ -57,6 +57,9 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
 .label .num{font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--title-soft)}
 .label h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(1.7rem, 4vw, 2.5rem);line-height:1.05;text-wrap:balance}
 .label .meta{font-size:.76rem;color:var(--title-soft)}
+/* the words under the set take on the name's look: warm, a little faded, with faint spectrum echoes instead of flat white */
+.label h2{color:#fff3dc;text-shadow:-2px 1px 0 rgba(255,70,170,.35), 2px -1px 0 rgba(40,220,255,.32), 0 0 18px rgba(255,214,150,.18)}
+.label .num,.label .meta,.foot{color:rgba(255,236,205,.55);text-shadow:-1px 0 0 rgba(255,70,170,.25), 1px 0 0 rgba(40,220,255,.22)}
 .controls{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
 .pill{border:0;border-radius:7px;padding:9px 16px 8px;cursor:pointer;font-size:.7rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
   color:#2a1f15;text-shadow:0 1px 0 rgba(255,255,255,.55);display:inline-flex;align-items:center;gap:8px;
@@ -149,8 +152,8 @@ html.lift body{min-height:calc(100vh + 160px)}
   transform:rotateX(38deg) rotateZ(-2.5deg);transform-origin:50% 100%;filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
 .invite .hop{display:block;color:#fff4ee;font-size:.8rem;line-height:1;margin-bottom:4px;text-shadow:0 2px 3px rgba(0,0,0,.5)}
 .neon{position:fixed;left:0;top:0;z-index:7;border:0;background:none;cursor:pointer;padding:6px 10px;white-space:nowrap;opacity:0;pointer-events:none;
-  font-family:Monoton, "IBM Plex Mono", monospace;font-size:clamp(1.05rem, 4.6vw, 1.6rem);letter-spacing:.06em;color:#ffd6ec;transition:opacity .6s;
-  text-shadow:0 0 2px #fff, 0 0 6px #ff4fa3, 0 0 14px #ff4fa3, 0 0 28px #ff2d8a, 0 0 46px #ff2d8a}
+  line-height:0;transition:opacity .6s}
+.neon svg{display:block;height:clamp(24px, 6.4vw, 34px);width:auto;overflow:visible}
 .neon.on{opacity:1;pointer-events:auto;animation:neon 4.2s linear infinite}
 .neon span{display:inline-block;transform:rotate(-4deg)}
 @keyframes neon{0%,18%,22%,25%,53%,57%,100%{filter:none;opacity:1}20%,24%,55%{filter:brightness(.35) saturate(.5);opacity:.55}}
@@ -243,7 +246,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
 <div class="invite" id="invite" aria-hidden="true"></div>
 <div class="invite" id="chinvite" aria-hidden="true"><span class="tape">◂ Change the channel ▸</span></div>
 <div class="chhop" id="hopL" aria-hidden="true"><span>▼</span></div><div class="chhop" id="hopR" aria-hidden="true"><span>▼</span></div>
-<button class="neon" id="neon" aria-label="Turn sound on"><span>Turn sound on</span></button>
+<button class="neon" id="neon" aria-label="Turn sound on"><span><svg data-word="TURN SOUND ON" aria-hidden="true"></svg></span></button>
 <div class="draghint" id="taphint" style="z-index:31">Tap for sound</div>
 <div class="scrub" id="scrub" hidden><button id="scPlay" aria-label="Pause">❚❚</button><span id="scA">0:00</span><div class="sctrack" id="scTrack" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100"><i id="scFill"></i><b id="scKnob"></b></div><span id="scB">0:00</span></div>
 <div class="tvf-tip" id="tvfTip" aria-hidden="true">Swipe up to hide the browser bar</div>
@@ -256,9 +259,9 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
   <header>
     <h1 class="name"><span class="sr">Colin Blackshear</span><svg id="wordmark" aria-hidden="true"></svg></h1>
     <nav class="sections" aria-label="Sections">
-      <a href="#films" data-ch="2">Films</a>
-      <a href="music/">Music</a>
-      <a href="lab/">Interactive</a>
+      <a href="#films" data-ch="2"><span class="sr">Films</span><svg data-word="FILMS" aria-hidden="true"></svg></a>
+      <a href="music/"><span class="sr">Music</span><svg data-word="MUSIC" aria-hidden="true"></svg></a>
+      <a href="lab/"><span class="sr">Interactive</span><svg data-word="INTERACTIVE" aria-hidden="true"></svg></a>
     </nav>
   </header>
   <div class="bottom">
@@ -275,7 +278,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
       <button class="pill tr" id="trNext" hidden aria-label="Next track">Track ›</button>
     </div>
     <div class="foot">
-      <span class="hint">Click the screen to step inside  ·  Turn the dial or use ← →</span>
+      <span class="hint"></span>
       <div class="swatches" id="swatches" aria-label="Wall color"></div>
     </div>
   </div>
@@ -1292,7 +1295,8 @@ let chChanged = false;
 function placeInvite(now) {
   placeNeon(now);
   const room = powered && zoomTo === 0 && zoomProgress(now) === 0 && !document.body.classList.contains('filmfull'), t = now - born;
-  const watch = room && !steppedIn && t > 3500 && t < 11000, chan = room && !chChanged && t > 11500 && t < 20000;
+  // the channel tape is switched off: the screen itself says 'change the channel', so one hint on the floor is enough
+  const watch = room && !steppedIn && t > 3500 && t < 18000, chan = false;
   invite.classList.toggle('on', watch); chInvite.classList.toggle('on', chan);
   hops.forEach(([h, b]) => {
     h.classList.toggle('on', chan && !b.hidden); if (!chan) return;
@@ -1644,10 +1648,42 @@ addEventListener('pointermove', e => {
 }, { passive: true });
 function spawnWave(strength) { if (!reduce) energyWaves.push({ t: performance.now(), s: strength }); }
 const tubeC = new THREE.Vector3(SX, CY, FZ + .04);
+/* The trip: slow patterns breathing across the wall and floor, shifting colour. It's worked out on a tiny 112-pixel-wide
+   picture a few times a second and simply stretched over the room, so it costs next to nothing; the set itself is left clear. */
+const trip = document.createElement('canvas'), tripCtx = trip.getContext('2d'), TRIP_W = 112;
+let tripImg = null, tripAt = 0;
+const tvBox = [-1, 1].flatMap(a => [0, 1].map(b => new THREE.Vector3(a * CW / 2, LEG + b * CH, CD / 2)));
+function drawTrip(now, room) {
+  const th = Math.max(24, Math.round(TRIP_W * psyH / psyW));
+  if (trip.width !== TRIP_W || trip.height !== th) { trip.width = TRIP_W; trip.height = th; tripImg = tripCtx.createImageData(TRIP_W, th); tripAt = 0; }
+  if (now - tripAt > 110) {
+    tripAt = now;
+    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    for (const c of tvBox) { const v = c.clone().project(camera); x0 = Math.min(x0, (v.x + 1) / 2 * TRIP_W); x1 = Math.max(x1, (v.x + 1) / 2 * TRIP_W); y0 = Math.min(y0, (1 - v.y) / 2 * th); y1 = Math.max(y1, (1 - v.y) / 2 * th); }
+    const t = now / 1000, d = tripImg.data, hueBase = t * 9, cxm = TRIP_W / 2, cym = th * .42;
+    for (let y = 0, i = 0; y < th; y++) for (let x = 0; x < TRIP_W; x++, i += 4) {
+      // a few slow waves folded into each other: the shapes melt and re-form rather than scroll
+      const dx = x - cxm, dy = y - cym, r = Math.sqrt(dx * dx + dy * dy), an = Math.atan2(dy, dx);
+      const w = Math.sin(x * .11 + t * .35) + Math.sin(y * .13 - t * .27 + Math.sin(x * .05 + t * .2) * 2)
+        + Math.sin(r * .21 - t * .6) + Math.sin(an * 6 + r * .05 + t * .15);
+      const band = .5 + .5 * Math.sin(w * 2.1 + t * .4);
+      const h = (hueBase + w * 38 + r * 1.2) % 360 / 60, k = h | 0, f = h - k;
+      const q = 1 - f, rgb = [[1, f, 0], [q, 1, 0], [0, 1, f], [0, q, 1], [f, 0, 1], [1, 0, q]][k % 6];
+      // fade out over the set, with a soft edge, so the TV stays solid
+      const ex = Math.max(x0 - x, x - x1, 0), ey = Math.max(y0 - y, y - y1, 0), clear = Math.min(1, Math.hypot(ex, ey) / 4);
+      const a = band * band * band * .85 * clear;
+      d[i] = 60 + rgb[0] * 195; d[i + 1] = 60 + rgb[1] * 195; d[i + 2] = 60 + rgb[2] * 195; d[i + 3] = a * 255;
+    }
+    tripCtx.putImageData(tripImg, 0, 0);
+  }
+  pctx.save(); pctx.globalAlpha = (PHONE ? .26 : .22) * room; pctx.imageSmoothingEnabled = true; pctx.imageSmoothingQuality = 'high';
+  pctx.drawImage(trip, 0, 0, psyW, psyH); pctx.restore();
+}
 function drawPsy(now, zp) {
   pctx.clearRect(0, 0, psyW, psyH);
   if (reduce) return;
   const v = tubeC.clone().project(camera), cx = (v.x + 1) / 2 * psyW, cy = (1 - v.y) / 2 * psyH, room = 1 - zp;
+  if (room > .01 && powered) drawTrip(now, room);
   // the music throws a wave on strong low beats
   if (soundOn && analyser && kindOf(cur) === 'music') {
     analyser.getByteFrequencyData(freqData);
@@ -1769,4 +1805,5 @@ const boot = () => setTimeout(() => { caption(); setPower(true); }, reduce ? 300
 })();
 </script>
 
+<script src="wordmark.js"></script>
 </body></html>

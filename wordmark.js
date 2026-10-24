@@ -1,5 +1,6 @@
 /* Colin's name as one neon pen line with spectrum echoes, the same mark as the TV room's title.
-   Any <svg data-wordmark> on the page gets drawn; data-draw="0" skips the write-on. */
+   Any <svg data-wordmark> on the page gets drawn; data-draw="0" skips the write-on.
+   <svg data-word="FILMS"> draws another word in the same hand, a little bolder so it holds up small (the section signs). */
 (() => {
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const GLYPHS = {
@@ -15,15 +16,22 @@ const GLYPHS = {
   H: { w: 70, d: 'M8 4 V96 M62 4 V96 M8 50 H62' },
   E: { w: 60, d: 'M56 4 H8 V96 H56 M8 50 H46' },
   R: { w: 68, d: 'M8 96 V4 H38 A24 24 0 0 1 38 52 H8 M32 52 L62 96' },
+  F: { w: 56, d: 'M54 4 H8 V96 M8 50 H44' },
+  M: { w: 84, d: 'M8 96 V4 L42 62 L76 4 V96' },
+  U: { w: 72, d: 'M8 4 V64 A28 28 0 0 0 64 64 V4' },
+  T: { w: 64, d: 'M4 4 H60 M32 4 V96' },
+  V: { w: 70, d: 'M4 4 L35 96 L66 4' },
+  D: { w: 72, d: 'M8 4 V96 H28 A40 46 0 0 0 28 4 H8' },
 };
 function layout(text, gap = 16, space = 40) {
   const out = []; let x = 0;
   for (const ch of text) { if (ch === ' ') { x += space; continue; } out.push({ x, g: GLYPHS[ch] }); x += GLYPHS[ch].w + gap; }
   return { glyphs: out, width: x - gap };
 }
-const WORD = layout('COLIN BLACKSHEAR'), NS = 'http://www.w3.org/2000/svg';
-document.querySelectorAll('svg[data-wordmark]').forEach((svg, idx) => {
-  const pad = 26, id = s => `wm${idx}${s}`;
+const NS = 'http://www.w3.org/2000/svg';
+document.querySelectorAll('svg[data-wordmark], svg[data-word]').forEach((svg, idx) => {
+  const small = svg.hasAttribute('data-word'), WORD = layout(small ? svg.dataset.word : 'COLIN BLACKSHEAR');
+  const pen = small ? 10 : 4.4, pad = small ? 30 : 26, id = s => `wm${idx}${s}`;
   const mk = (t, a, parent) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); parent.appendChild(e); return e; };
   svg.setAttribute('viewBox', `${-pad} ${-pad} ${WORD.width + pad * 2} ${100 + pad * 2}`);
   const defs = mk('defs', {}, svg);
@@ -35,20 +43,21 @@ document.querySelectorAll('svg[data-wordmark]').forEach((svg, idx) => {
   const group = attrs => { const g = mk('g', Object.assign({ fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, attrs), svg);
     const paths = WORD.glyphs.flatMap(({ x, g: gl }) => gl.d.split(/(?=M)/).map(d => mk('path', { d, transform: `translate(${x} 0)`, pathLength: 1, 'stroke-dasharray': 1 }, g)));
     paths.g = g; return paths; };
-  const echoes = [5, 4, 3, 2, 1].map(k => ({ k, paths: group({ stroke: `hsl(${k * 52 + 10},100%,62%)`, 'stroke-width': 4.4, opacity: 1 - k * .12 }) }));
-  const halo = group({ stroke: `url(#${id('Spec')})`, 'stroke-width': 12, filter: `url(#${id('Blur')})`, opacity: .45 });
-  const line = group({ stroke: `url(#${id('Sheen')})`, 'stroke-width': 4.4 });
+  const echoes = (small ? [3, 2, 1] : [5, 4, 3, 2, 1]).map(k => ({ k, paths: group({ stroke: `hsl(${k * 52 + 10},100%,62%)`, 'stroke-width': pen, opacity: 1 - k * .12 }) }));
+  const halo = group({ stroke: `url(#${id('Spec')})`, 'stroke-width': pen * 2.7, filter: `url(#${id('Blur')})`, opacity: .45 });
+  const line = group({ stroke: `url(#${id('Sheen')})`, 'stroke-width': pen });
   const n = line.length, born = performance.now(), quick = svg.dataset.draw === '0';
+  const sway = small ? 1.6 : 1;
   const DRAW = reduce || quick ? 0 : 2.2, DELAY = reduce || quick ? 0 : .3;
   const tick = now => {
     const t = (now - born) / 1000 - DELAY;
-    for (let i = 0; i < n; i++) {
+    if (t < DRAW + 1) for (let i = 0; i < n; i++) {
       const k = DRAW ? Math.min(1, Math.max(0, (t - i * (DRAW / n)) / .5)) : 1;
       line[i].style.strokeDashoffset = 1 - k; halo[i].style.strokeDashoffset = 1 - k;
       for (const e of echoes) { const ke = DRAW ? Math.min(1, Math.max(0, (t - e.k * .14 - i * (DRAW / n)) / .5)) : 1; e.paths[i].style.strokeDashoffset = 1 - ke; }
     }
     const a = reduce ? .8 : now / 1600;
-    for (const e of echoes) e.paths.g.setAttribute('transform', `translate(${Math.cos(a + e.k * .2) * e.k * 7.5} ${Math.sin(a * 1.3 + e.k * .2) * e.k * 5.5})`);
+    for (const e of echoes) e.paths.g.setAttribute('transform', `translate(${Math.cos(a + e.k * .2) * e.k * 7.5 * sway} ${Math.sin(a * 1.3 + e.k * .2) * e.k * 5.5 * sway})`);
     if (!reduce) {
       spec.setAttribute('gradientTransform', `translate(${Math.sin(now / 2400) * WORD.width * .35} 0)`);
       sheen.setAttribute('gradientTransform', `translate(${((now / 1000) % 8) / 1.6 * (WORD.width + 600)} 0)`);
