@@ -141,6 +141,12 @@ details.all p{margin:0 0 6px;max-width:68ch}
 .sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
 
+@media (max-width:560px){ .pbar{gap:5px} .pbar .sbtn{padding:5px 7px;letter-spacing:.04em} .pbar .sbtn.x{width:32px;padding:0} }
+.snav{display:flex;align-items:center;gap:10px}
+.snav .srow{flex:1}
+.snav .pbk{display:none;margin-top:8px;flex:none}
+.player.hasback .snav .pbk{display:inline-flex;align-items:center;gap:4px}
+
 /* Many Doors: the atlas palette. Cream, parchment, ink, teal, brown and lamp gold. */
 :root{
   --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#10181B; --nightink:#FBF3DF;
@@ -230,10 +236,11 @@ function openPlayer({title,sub,steps=[],menu=null,color}){
     <div class="menu" id="pPanel" hidden></div></div>
     ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
     <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
-    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="srow" id="pRow"></div></div>`;
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="snav"><button type="button" class="sgo alt pbk" id="pBk"><span aria-hidden="true">◀</span> Back</button><div class="srow" id="pRow"></div></div></div>`;
   document.body.appendChild(el); document.body.classList.add('insession');
   const s={el,menu}; PS=s;
   el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pBk').onclick=()=>{ if(s.back){ hush(); s.back(); } };
   el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
   const panel=el.querySelector('#pPanel');
   const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
@@ -263,9 +270,9 @@ function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$
 /* show a passage, one or two sentences at a time, each with Continue */
 async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
   for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
-function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ if(s) s.n=(s.n||0)+1; const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
   const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
-  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if(e.key==='ArrowLeft'&&s&&s.back&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); document.removeEventListener('keydown',kd); s.back(); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
   b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
 function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
 /* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
@@ -347,8 +354,9 @@ async function playManual(B,start){
   const menu={label:'Chapters',build:()=>`<h3>Chapters</h3><ol>${B.chapters.map((c,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===s.ch}"><small>${i+1}</small>${esc(c.name)}</button></li>`).join('')}</ol>`,go:i=>playManual(B,+i)};
   const s=openPlayer({title:B.title,sub:'',steps:B.chapters.map(c=>c.short||c.name),menu,color:B.chapters[start].col});
   s.onclose=()=>manualLanding(B);
+  s.el.classList.add('hasback'); s.back=()=>{ const i=s.ch||0; playManual(B,(s.n||0)>1?i:Math.max(0,i-1)); };
   try{
-    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
+    for(let i=start;i<B.chapters.length;i++){ alive(s); s.ch=i; s.n=0; const c=B.chapters[i]; store.set(B.key+'-next',String(i)); stepTo(i); s.el.style.setProperty('--c',c.col||'#1F5E63');
       s.el.querySelector('.ptitle').innerHTML=`<b>${i+1} · ${esc(c.name)}</b>`; clearLayer(); cvStop();
       await c.run(s);
       const seen=new Set(JSON.parse(store.get(B.key+'-seen')||'[]')); seen.add(i); store.set(B.key+'-seen',JSON.stringify([...seen]));
