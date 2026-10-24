@@ -1010,7 +1010,7 @@ function setChannel(c) {
   if (c === cur) return;
   const delta = ((c - cur + 6 + 12) % 12) - 6;
   dialAngle -= (delta === -6 ? 6 : delta) * Math.PI / 6;
-  cur = c; pan.x = pan.y = 0;
+  cur = c; pan.x = pan.y = 0; if (PHONE) setTimeout(buildPool, 600);
   const now = performance.now(); staticUntil = now + STATIC_MS; chStart = now + STATIC_MS;
   caption();
   if (actx) tick3d();
@@ -1267,7 +1267,16 @@ function poolPlayer(key, id, title) {
 }
 function buildPool() {
   if (vimeoBlocked) return;
-  WORKS.filter(w => w.vimeo && !POOL[w.vimeo]).forEach(w => poolPlayer(w.vimeo, w.vimeo, w.title));
+  // a phone on a mobile connection can't load every film at once, so it keeps only this film and the ones either side of it
+  let keep = WORKS.filter(w => w.vimeo);
+  if (PHONE) {
+    const films = keep, i = films.findIndex(w => w.ch >= cur), at = i < 0 ? films.length : i;
+    const here = films[at] && films[at].ch === cur;
+    keep = [films[(at - 1 + films.length) % films.length], films[at % films.length], films[(at + (here ? 1 : 0)) % films.length]].filter((w, j, a) => a.indexOf(w) === j);
+    const ids = keep.map(w => w.vimeo);
+    Object.keys(POOL).forEach(k => { const p = POOL[k]; if ((k.endsWith('~') ? k.slice(0, -1) !== vId : !ids.includes(k)) && p.el !== vFrame) { p.el.remove(); delete POOL[k]; } });
+  }
+  keep.filter(w => !POOL[w.vimeo]).forEach(w => poolPlayer(w.vimeo, w.vimeo, w.title));
 }
 // the film on screen gets a twin, parked at the next moment, so a cut in the room is an instant swap: a true jump cut
 const twinOf = id => id + '~';
