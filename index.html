@@ -159,6 +159,9 @@ html.lift body{min-height:calc(100vh + 160px)}
 @keyframes neon{0%,18%,22%,25%,53%,57%,100%{filter:none;opacity:1}20%,24%,55%{filter:brightness(.35) saturate(.5);opacity:.55}}
 @media (prefers-reduced-motion: reduce){ .neon.on{animation:none} }
 .invite.on{opacity:1}
+/* inside Instagram and the like: the same tape across the top, asking to open in the phone's own browser */
+.invite.escape{left:50%;top:calc(66px + env(safe-area-inset-top, 0px));transform:translateX(-50%);z-index:9;opacity:1;pointer-events:auto;text-decoration:none}
+.invite.escape .tape{transform:rotateZ(-2deg)}
 .invite.on .hop{animation:hop 1.1s ease-in-out infinite}
 @keyframes hop{50%{transform:translateY(-5px)}}
 .chhop{position:fixed;left:0;top:0;z-index:5;pointer-events:none;color:#d2352b;font-size:1rem;line-height:1;opacity:0;transition:opacity .8s;
@@ -244,6 +247,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
 </div>
 <div class="draghint" id="draghint" aria-hidden="true"></div>
 <div class="invite" id="invite" aria-hidden="true"></div>
+<a class="invite escape" id="escape" hidden></a>
 <div class="invite" id="chinvite" aria-hidden="true"><span class="tape">◂ Change the channel ▸</span></div>
 <div class="chhop" id="hopL" aria-hidden="true"><span>▼</span></div><div class="chhop" id="hopR" aria-hidden="true"><span>▼</span></div>
 <button class="neon" id="neon" aria-label="Turn sound on"><span><svg data-word="TURN SOUND ON" aria-hidden="true"></svg></span></button>
@@ -1865,5 +1869,22 @@ const boot = () => setTimeout(() => { caption(); setPower(true); }, reduce ? 300
 })();
 </script>
 
+<script>
+/* The browsers built into Instagram, Facebook, TikTok and the like get a small share of the phone, and the set struggles there.
+   So the site hands itself to the phone's own browser once (Safari on an iPhone, Chrome on Android), and keeps a tape up top
+   that does the same if the hand-off is refused. */
+(() => {
+  const ua = navigator.userAgent;
+  if (!/Instagram|FBAN|FBAV|FB_IAB|Line\/|TikTok|musical_ly|Snapchat|Twitter/i.test(ua)) return;
+  const url = location.href, android = /Android/i.test(ua);
+  const go = android
+    ? 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(url) + ';end'
+    : 'x-safari-' + url;
+  const a = document.getElementById('escape');
+  a.href = go; a.hidden = false;
+  a.innerHTML = `<span class="tape">Best in ${android ? 'Chrome' : 'Safari'} · tap to open ↗</span>`;
+  try { if (!sessionStorage.getItem('escaped')) { sessionStorage.setItem('escaped', '1'); location.href = go; } } catch (e) {}
+})();
+</script>
 <script src="wordmark.js"></script>
 </body></html>
