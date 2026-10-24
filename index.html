@@ -1648,9 +1648,9 @@ addEventListener('pointermove', e => {
 }, { passive: true });
 function spawnWave(strength) { if (!reduce) energyWaves.push({ t: performance.now(), s: strength }); }
 const tubeC = new THREE.Vector3(SX, CY, FZ + .04);
-/* The trip: a Moorish star lattice on the wall and floor that slowly comes and goes in drifting colour.
+/* The trip: a Moorish star lattice on the wall and floor that slowly turns, tips, swells and changes colour.
    The lattice is drawn once as a tile; a slow, tiny 112-pixel-wide colour field decides where it glows and in what hue.
-   The two are combined only a few times a second and the result is simply laid over the room, so it costs next to nothing.
+   The two are combined a few times a second into one sheet, and each frame only moves that sheet, so it costs next to nothing.
    The set itself is left clear. */
 const trip = document.createElement('canvas'), tripCtx = trip.getContext('2d'), TRIP_W = 112;
 const lay = document.createElement('canvas'), layCtx = lay.getContext('2d');
@@ -1677,34 +1677,54 @@ function makeLattice(S) {
   return c;
 }
 function drawTrip(now, room) {
-  const th = Math.max(24, Math.round(TRIP_W * psyH / psyW)), lw = Math.ceil(psyW / 2), lh = Math.ceil(psyH / 2);
+  // the lattice sheet is half the room's resolution but half again as big as the screen, so it can turn and breathe without showing an edge
+  const lw = Math.ceil(psyW * .75), lh = Math.ceil(psyH * .75), th = Math.max(24, Math.round(TRIP_W * lh / lw));
   if (trip.width !== TRIP_W || trip.height !== th) { trip.width = TRIP_W; trip.height = th; tripImg = tripCtx.createImageData(TRIP_W, th); tripAt = 0; }
-  if (lay.width !== lw || lay.height !== lh) { lay.width = lw; lay.height = lh; lattice = layCtx.createPattern(makeLattice(Math.round(Math.max(36, Math.min(lw, lh) / 7))), 'repeat'); tripAt = 0; }
+  if (lay.width !== lw || lay.height !== lh) { lay.width = lw; lay.height = lh; lattice = layCtx.createPattern(makeLattice(Math.round(Math.max(36, Math.min(psyW, psyH) / 14))), 'repeat'); tripAt = 0; }
   if (now - tripAt > 220) {
     tripAt = now;
-    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
-    for (const c of tvBox) { const v = c.clone().project(camera); x0 = Math.min(x0, (v.x + 1) / 2 * TRIP_W); x1 = Math.max(x1, (v.x + 1) / 2 * TRIP_W); y0 = Math.min(y0, (1 - v.y) / 2 * th); y1 = Math.max(y1, (1 - v.y) / 2 * th); }
-    // slow time: the glow takes a minute or so to wander across the room, and the colours turn over even more slowly
-    const t = now / 1000 * .3, d = tripImg.data, hueBase = t * 10, cxm = TRIP_W / 2, cym = th * .42;
+    // slow time: the glow takes a minute or so to wander across the sheet, and the colours turn over even more slowly
+    const t = now / 1000 * .3, d = tripImg.data, hueBase = t * 12, cxm = TRIP_W / 2, cym = th / 2;
     for (let y = 0, i = 0; y < th; y++) for (let x = 0; x < TRIP_W; x++, i += 4) {
       const dx = x - cxm, dy = y - cym, r = Math.sqrt(dx * dx + dy * dy);
       const w = Math.sin(x * .07 + t * .35) + Math.sin(y * .08 - t * .27 + Math.sin(x * .04 + t * .2) * 2) + Math.sin(r * .12 - t * .5);
       const band = .5 + .5 * Math.sin(w * 1.6 + t * .3);
       const h = (hueBase + w * 30 + r * .8) % 360 / 60, k = h | 0, f = h - k;
       const q = 1 - f, rgb = [[1, f, 0], [q, 1, 0], [0, 1, f], [0, q, 1], [f, 0, 1], [1, 0, q]][k % 6];
-      // fade out over the set, with a soft edge, so the TV stays solid
-      const ex = Math.max(x0 - x, x - x1, 0), ey = Math.max(y0 - y, y - y1, 0), clear = Math.min(1, Math.hypot(ex, ey) / 4);
-      d[i] = 90 + rgb[0] * 165; d[i + 1] = 90 + rgb[1] * 165; d[i + 2] = 90 + rgb[2] * 165; d[i + 3] = band * band * clear * 255;
+      d[i] = 90 + rgb[0] * 165; d[i + 1] = 90 + rgb[1] * 165; d[i + 2] = 90 + rgb[2] * 165; d[i + 3] = band * band * 255;
     }
     tripCtx.putImageData(tripImg, 0, 0);
-    // the lattice turns very slowly about the middle of the room; the colour field then tints it and decides where it shows
     layCtx.globalCompositeOperation = 'source-over'; layCtx.clearRect(0, 0, lw, lh);
-    layCtx.save(); layCtx.translate(lw / 2, lh * .42); layCtx.rotate(now / 1000 * .004); layCtx.translate(-lw, -lh);
-    layCtx.fillStyle = lattice; layCtx.fillRect(0, 0, lw * 2, lh * 2); layCtx.restore();
+    layCtx.fillStyle = lattice; layCtx.fillRect(0, 0, lw, lh);
     layCtx.globalCompositeOperation = 'source-in'; layCtx.imageSmoothingEnabled = true;
     layCtx.drawImage(trip, 0, 0, lw, lh); layCtx.globalCompositeOperation = 'source-over';
   }
-  pctx.save(); pctx.globalAlpha = (PHONE ? .3 : .24) * room; pctx.drawImage(lay, 0, 0, psyW, psyH); pctx.restore();
+  // Every frame the sheet is laid down twice, each copy slowly turning, tipping as if seen at an angle, and swelling and
+  // shrinking on its own rhythm; where the two cross they make a soft moiré, so the pattern seems to move in depth.
+  const t = now / 1000, cx = psyW / 2, cy = psyH * .42;
+  pctx.save();
+  for (const k of [0, 1]) {
+    const dir = k ? -1 : 1, ph = k * 2.1;
+    const grow = 1 + .14 * Math.sin(t * .05 + ph) + .05 * Math.sin(t * .13 + ph * 1.7);
+    const rot = dir * t * .008 + .18 * Math.sin(t * .021 + ph);
+    const tipX = Math.cos(.32 * Math.sin(t * .031 + ph)), tipY = Math.cos(.32 * Math.sin(t * .027 + ph + 1));
+    const skew = .1 * Math.sin(t * .037 + ph);
+    pctx.setTransform(1, 0, 0, 1, cx + 30 * Math.sin(t * .02 + ph), cy + 20 * Math.cos(t * .017 + ph));
+    pctx.rotate(rot); pctx.transform(grow * tipX * (k ? 1.27 : 1), 0, skew, grow * tipY * (k ? 1.27 : 1), 0, 0);
+    pctx.globalAlpha = (PHONE ? .3 : .24) * room * (k ? .55 : 1);
+    pctx.drawImage(lay, -psyW * .75, -psyH * .75, psyW * 1.5, psyH * 1.5);
+  }
+  pctx.setTransform(1, 0, 0, 1, 0, 0);
+  // and the set is left clear: rub the pattern out over the TV, with a soft edge
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+  for (const c of tvBox) { const v = c.clone().project(camera); x0 = Math.min(x0, (v.x + 1) / 2 * psyW); x1 = Math.max(x1, (v.x + 1) / 2 * psyW); y0 = Math.min(y0, (1 - v.y) / 2 * psyH); y1 = Math.max(y1, (1 - v.y) / 2 * psyH); }
+  const e = Math.max(14, (x1 - x0) * .06);
+  pctx.globalAlpha = 1; pctx.globalCompositeOperation = 'destination-out'; pctx.fillStyle = '#000';
+  pctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+  const edge = (gx0, gy0, gx1, gy1, rx, ry, rw, rh) => { const g = pctx.createLinearGradient(gx0, gy0, gx1, gy1); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)'); pctx.fillStyle = g; pctx.fillRect(rx, ry, rw, rh); };
+  edge(x0, 0, x0 - e, 0, x0 - e, y0 - e, e, y1 - y0 + 2 * e); edge(x1, 0, x1 + e, 0, x1, y0 - e, e, y1 - y0 + 2 * e);
+  edge(0, y0, 0, y0 - e, x0, y0 - e, x1 - x0, e); edge(0, y1, 0, y1 + e, x0, y1, x1 - x0, e);
+  pctx.restore();
 }
 function drawPsy(now, zp) {
   pctx.clearRect(0, 0, psyW, psyH);
