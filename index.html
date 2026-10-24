@@ -131,6 +131,13 @@ html.lift body{min-height:calc(100vh + 160px)}
   padding:7px 14px;border-radius:999px;background:rgba(10,10,9,.6);color:var(--title);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
   opacity:0;transition:opacity .5s}
 .draghint.on{opacity:1}
+.draghint b{display:block;font-weight:inherit;margin-top:3px;opacity:.75}
+/* an invitation on the glass to step in, until the visitor has done it once */
+.invite{position:fixed;left:0;top:0;z-index:5;pointer-events:none;white-space:nowrap;padding:6px 13px;border-radius:999px;
+  background:rgba(10,10,9,.62);color:var(--title);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;opacity:0;transition:opacity .6s}
+.invite.on{opacity:1;animation:invite 2.4s ease-in-out infinite}
+@keyframes invite{50%{box-shadow:0 0 0 6px rgba(255,255,255,.08)}}
+@media (prefers-reduced-motion: reduce){ .invite.on{animation:none} }
 body.filmfull .psy{opacity:0}
 .tapsound{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:21;
   padding:7px 14px;border-radius:999px;background:rgba(10,10,9,.55);color:var(--title);font-size:.7rem;letter-spacing:.14em;
@@ -205,7 +212,8 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
     <button class="dk" id="tvfFull" aria-label="Full screen" hidden>Full</button>
   </div>
 </div>
-<div class="draghint" id="draghint" aria-hidden="true">Drag the film to reframe</div>
+<div class="draghint" id="draghint" aria-hidden="true"></div>
+<div class="invite" id="invite" aria-hidden="true"></div>
 <div class="draghint" id="taphint" style="z-index:31">Tap for sound</div>
 <div class="scrub" id="scrub" hidden><button id="scPlay" aria-label="Pause">❚❚</button><span id="scA">0:00</span><div class="sctrack" id="scTrack" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100"><i id="scFill"></i><b id="scKnob"></b></div><span id="scB">0:00</span></div>
 <div class="tvf-tip" id="tvfTip" aria-hidden="true">Swipe up to hide the browser bar</div>
@@ -873,7 +881,7 @@ function zoomProgress(now) {
   return zoomFrom + (zoomTo - zoomFrom) * e;
 }
 function setZoom(on) {
-  const now = performance.now();
+  const now = performance.now(); if (on) steppedIn = true;
   zoomFrom = zoomProgress(now); zoomTo = on ? 1 : 0; zoomAt = now;
   document.body.classList.toggle('zoomed', on);
   $('deck').setAttribute('aria-hidden', !on);
@@ -1234,7 +1242,15 @@ const landscapePhone = matchMedia('(orientation: landscape) and (pointer: coarse
 let fullP = 0;
 // how far the cropped film overflows its window, and where you've dragged it to (-1..1 each way)
 const vOver = { x: 0, y: 0 }, pan = { x: 0, y: 0 };
-let dragHinted = false, vAt = 0;
+let dragHinted = false, vAt = 0, steppedIn = false;
+const invite = $('invite'); invite.textContent = matchMedia('(pointer: coarse)').matches ? 'Tap the screen to watch' : 'Click the screen to watch';
+function placeInvite(now) {
+  const on = !steppedIn && powered && now - born > 3500 && zoomTo === 0 && zoomProgress(now) === 0 && !document.body.classList.contains('filmfull');
+  invite.classList.toggle('on', on); if (!on) return;
+  let x0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for (const c of gCorners) { const v = c.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+  invite.style.transform = `translate(${(x0 + x1) / 2 - invite.offsetWidth / 2}px, ${y1 - invite.offsetHeight - 12}px)`;
+}
 // the sideways set: a screen as large as the phone allows at the film's own shape, beside a slim control panel
 const insets = (() => { const d = document.createElement('div');
   d.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)';
@@ -1523,14 +1539,21 @@ function syncVimeo(now) {
   // `aspect` is the video frame; `picture` is the image inside it when the film has black bars baked in.
   // On the set we crop past the bars; stepping in (or full screen) shows the whole frame.
   const ar = w.aspect || 16 / 9, pa = w.picture || ar, open = Math.max(zp, fullP);
-  const fwRoom = Math.max(bw, bh * pa), fwFull = Math.max(bw, bh * ar);
+  // stepped in on a computer the whole frame shows, bars and all (a 4:3 film keeps its sides); an upright phone fills and lets you drag
+  const fwRoom = Math.max(bw, bh * pa), fwFull = PHONE ? Math.max(bw, bh * ar) : Math.min(bw, bh * ar);
   const fw = fwRoom + (fwFull - fwRoom) * open, fh = fw / ar;
   // where the film overflows its window (upright phones, mostly), a drag slides it to choose the frame
   const live = zp * (1 - fullP);
   vOver.x = (fw - bw) * live; vOver.y = (fh - bh) * live;
   // the first time a cropped film is up on a touch screen, say that it can be moved
-  if (!dragHinted && zp === 1 && fullP === 0 && vOver.x + vOver.y > 40 && now - vAt > 1800 && matchMedia('(pointer: coarse)').matches) {
-    dragHinted = true; $('draghint').classList.add('on'); setTimeout(() => $('draghint').classList.remove('on'), 2800);
+  // (and, held upright, that turning the phone fills the screen with it)
+  if (!dragHinted && zp === 1 && fullP === 0 && now - vAt > 1800 && matchMedia('(pointer: coarse)').matches) {
+    const crop = vOver.x + vOver.y > 40, upright = innerHeight > innerWidth;
+    if (crop || upright) {
+      dragHinted = true;
+      $('draghint').innerHTML = crop && upright ? 'Drag the film to reframe<b>Turn your phone for full screen</b>' : crop ? 'Drag the film to reframe' : 'Turn your phone for full screen';
+      $('draghint').classList.add('on'); setTimeout(() => $('draghint').classList.remove('on'), 4200);
+    }
   }
   placeFilm(bx, by, bw, bh, fw, fh, (bw - fw) / 2 + pan.x * vOver.x / 2, (bh - fh) / 2 + pan.y * vOver.y / 2, radius, crt);
   placeScrub(now, bx, by, bw, bh, Math.max(zp, fullP) > .98);
@@ -1659,7 +1682,7 @@ function loop(now) {
     const zpN = zoomProgress(now);
     const still = !glDirty && now - born > 5000 && (zpN === 0 || zpN === 1) && Math.abs(dialAngle - dialShown) < .002
       && Math.abs(volAngle - volShown) < .002 && now - pressAt > 300 && now - powerAt > 1600;
-    if (still) { placeGlass(ps); syncVimeo(now); drawPsy(now, zpN); return; }
+    if (still) { placeGlass(ps); placeInvite(now); syncVimeo(now); drawPsy(now, zpN); return; }
     glDirty = false;
   }
   if (shadowFrames > 0) { shadowFrames--; renderer.shadowMap.needsUpdate = true; }
@@ -1683,7 +1706,7 @@ function loop(now) {
   const zx = SX + ptr.x * .006, zy = CY - zoomShift - ptr.y * .004, zz = fz + zoomDist;
   camera.position.set(rx + (zx - rx) * zp, ry + (zy - ry) * zp, rz + (zz - rz) * zp);
   camera.lookAt(SX * zp, lookY + (CY - zoomShift - lookY) * zp, fz * zp);
-  camera.updateMatrixWorld(); if (PHONE) placeGlass(ps); syncVimeo(now); drawPsy(now, zp);
+  camera.updateMatrixWorld(); if (PHONE) placeGlass(ps); placeInvite(now); syncVimeo(now); drawPsy(now, zp);
   renderer.render(scene, camera);
 }
 caption();
