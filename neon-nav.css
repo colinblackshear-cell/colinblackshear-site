@@ -1,0 +1,16 @@
+/* The section links are little neon signs on the wall: each its own colour, the one you're on burning brightest. */
+@import url("https://fonts.googleapis.com/css2?family=Monoton&display=swap");
+body nav.sections{gap:clamp(14px, 2.6vw, 30px);align-items:center}
+body nav.sections a{font-family:Monoton, "IBM Plex Mono", monospace;font-size:clamp(.82rem, 3.4vw, 1.1rem);letter-spacing:.06em;font-weight:400;
+  text-transform:uppercase;text-decoration:none;border:0;padding:4px 2px;--n:#ff4fa3;--deep:#ff1f86;color:#ffe3f1;
+  text-shadow:0 0 2px #fff, 0 0 6px var(--n), 0 0 12px var(--n), 0 0 24px var(--deep), 0 0 40px var(--deep), 0 8px 12px rgba(0,0,0,.5);
+  opacity:.8;transition:opacity .3s;animation:sign-on 1.6s steps(1) both}
+body nav.sections a:nth-child(2){--n:#3ee6ff;--deep:#0fa9ff;color:#e2fbff;animation-delay:.25s}
+body nav.sections a:nth-child(3){--n:#b6ff3c;--deep:#6fe000;color:#f3ffe0;animation-delay:.5s}
+body nav.sections a:hover,body nav.sections a[aria-current="true"],body nav.sections a[aria-current="page"]{opacity:1;border:0;color:#fff;
+  text-shadow:0 0 2px #fff, 0 0 7px var(--n), 0 0 16px var(--n), 0 0 32px var(--deep), 0 0 60px var(--deep), 0 0 90px var(--deep), 0 8px 12px rgba(0,0,0,.5)}
+body nav.sections a:hover{animation:buzz 1.8s linear infinite}
+body nav.sections a:focus-visible{outline:2px solid var(--n);outline-offset:4px}
+@keyframes sign-on{0%{opacity:.08}12%{opacity:.7}18%{opacity:.08}30%{opacity:.8}36%{opacity:.15}100%{}}
+@keyframes buzz{0%,40%,44%,100%{opacity:1}42%{opacity:.55}}
+@media (prefers-reduced-motion: reduce){ body nav.sections a{animation:none!important} }
