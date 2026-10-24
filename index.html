@@ -1871,8 +1871,8 @@ const boot = () => setTimeout(() => { caption(); setPower(true); }, reduce ? 300
 
 <script>
 /* The browsers built into Instagram, Facebook, TikTok and the like get a small share of the phone, and the set struggles there.
-   So the site hands itself to the phone's own browser once (Safari on an iPhone, Chrome on Android), and keeps a tape up top
-   that does the same if the hand-off is refused. */
+   A tape up top offers to open the site in the phone's own browser (Safari on an iPhone, Chrome on Android). It only goes
+   when tapped: jumping on its own left Instagram's browser on a dead page. */
 (() => {
   const ua = navigator.userAgent;
   if (!/Instagram|FBAN|FBAV|FB_IAB|Line\/|TikTok|musical_ly|Snapchat|Twitter/i.test(ua)) return;
@@ -1883,7 +1883,6 @@ const boot = () => setTimeout(() => { caption(); setPower(true); }, reduce ? 300
   const a = document.getElementById('escape');
   a.href = go; a.hidden = false;
   a.innerHTML = `<span class="tape">Best in ${android ? 'Chrome' : 'Safari'} · tap to open ↗</span>`;
-  try { if (!sessionStorage.getItem('escaped')) { sessionStorage.setItem('escaped', '1'); location.href = go; } } catch (e) {}
 })();
 </script>
 <script src="wordmark.js"></script>
