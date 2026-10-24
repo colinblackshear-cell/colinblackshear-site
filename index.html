@@ -11,7 +11,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:wght@500;700&family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:wght@500;700&family=VT323&family=Monoton&display=swap">
 <style>[hidden]{display:none!important}body{margin:0}
 
 /* Layout: a full-bleed lit 3D set (one seamless wall color, a walnut 1970s TV under a key light); type floats over it like film titles */
@@ -58,11 +58,18 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
 .label h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(1.7rem, 4vw, 2.5rem);line-height:1.05;text-wrap:balance}
 .label .meta{font-size:.76rem;color:var(--title-soft)}
 .controls{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
-.pill{border:1px solid rgba(239,232,216,.45);background:rgba(10,10,9,.25);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  border-radius:999px;padding:7px 14px;cursor:pointer;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase}
-.pill:hover{border-color:var(--title)}
-.pill.sound[aria-pressed="false"]{animation:nudge 2.4s ease-in-out infinite}
-@keyframes nudge{0%,100%{box-shadow:0 0 0 0 rgba(239,232,216,0)}50%{box-shadow:0 0 0 5px rgba(239,232,216,.12)}}
+.pill{border:0;border-radius:7px;padding:9px 16px 8px;cursor:pointer;font-size:.7rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:#2a1f15;text-shadow:0 1px 0 rgba(255,255,255,.55);display:inline-flex;align-items:center;gap:8px;
+  /* chunky ivory bakelite keys, like the push buttons on a 70s set: a raised cap on a dark plinth */
+  background:linear-gradient(180deg,#f6efdf 0%,#e6dcc6 50%,#d2c6aa 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), inset 0 -3px 4px rgba(90,70,40,.18), 0 4px 0 #9a8b6c, 0 6px 0 #2b2219, 0 9px 14px rgba(0,0,0,.4);
+  transform:translateY(-3px);transition:transform .07s, box-shadow .07s, filter .2s}
+.pill:hover{filter:brightness(1.04)}
+.pill:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 3px rgba(90,70,40,.18), 0 1px 0 #9a8b6c, 0 2px 0 #2b2219, 0 3px 5px rgba(0,0,0,.35)}
+.pill.sound::before{content:'';width:7px;height:7px;border-radius:50%;background:#5a2418;box-shadow:inset 0 1px 1px rgba(0,0,0,.5)}
+body.sound-on .pill.sound::before{background:#ff5a2e;box-shadow:0 0 7px #ff5a2e, inset 0 -1px 1px rgba(0,0,0,.2)}
+.pill.sound[aria-pressed="false"]::before{animation:nudge 2.4s ease-in-out infinite}
+@keyframes nudge{50%{background:#d8431f;box-shadow:0 0 6px rgba(255,90,46,.8)}}
 .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;width:100%;font-size:.66rem;color:var(--title-soft);letter-spacing:.08em}
 .swatches{display:flex;gap:8px;align-items:center}
 .sw{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.35);cursor:pointer;padding:0}
@@ -76,7 +83,7 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   /* phones: no live blending or blurring over the moving 3D set, which makes the browser recomposite the whole screen every frame */
   .grain{mix-blend-mode:normal;opacity:.05;animation:none}
   .psy{mix-blend-mode:normal}
-  .pill,body .scrub{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(10,10,9,.72)}
+  body .scrub{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(10,10,9,.72)}
 }
 .vbox::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:var(--crt,1);
   background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, rgba(0,0,0,0) 1px 3px),
@@ -135,6 +142,13 @@ html.lift body{min-height:calc(100vh + 160px)}
 /* an invitation on the glass to step in, until the visitor has done it once */
 .invite{position:fixed;left:0;top:0;z-index:5;pointer-events:none;white-space:nowrap;padding:6px 13px;border-radius:999px;
   background:rgba(10,10,9,.62);color:var(--title);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;opacity:0;transition:opacity .6s}
+.neon{position:fixed;left:0;top:0;z-index:7;border:0;background:none;cursor:pointer;padding:6px 10px;white-space:nowrap;opacity:0;pointer-events:none;
+  font-family:Monoton, "IBM Plex Mono", monospace;font-size:clamp(1.05rem, 4.6vw, 1.6rem);letter-spacing:.06em;color:#ffd6ec;transition:opacity .6s;
+  text-shadow:0 0 2px #fff, 0 0 6px #ff4fa3, 0 0 14px #ff4fa3, 0 0 28px #ff2d8a, 0 0 46px #ff2d8a}
+.neon.on{opacity:1;pointer-events:auto;animation:neon 4.2s linear infinite}
+.neon span{display:inline-block;transform:rotate(-4deg)}
+@keyframes neon{0%,18%,22%,25%,53%,57%,100%{filter:none;opacity:1}20%,24%,55%{filter:brightness(.35) saturate(.5);opacity:.55}}
+@media (prefers-reduced-motion: reduce){ .neon.on{animation:none} }
 .invite.on{opacity:1;animation:invite 2.4s ease-in-out infinite}
 @keyframes invite{50%{box-shadow:0 0 0 6px rgba(255,255,255,.08)}}
 @media (prefers-reduced-motion: reduce){ .invite.on{animation:none} }
@@ -195,7 +209,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
   .readout small{font-size:.8rem}
 }
 @media (max-width:640px){ .readout{flex-basis:100%;max-width:none;order:-2} }
-@media (prefers-reduced-motion: reduce){ .grain{animation:none} .pill.sound{animation:none!important} }
+@media (prefers-reduced-motion: reduce){ .grain{animation:none} .pill.sound::before{animation:none!important} }
 </style>
 </head><body>
 
@@ -214,6 +228,7 @@ body.zoomed .deck{visibility:visible;opacity:1;transform:none;transition:opacity
 </div>
 <div class="draghint" id="draghint" aria-hidden="true"></div>
 <div class="invite" id="invite" aria-hidden="true"></div>
+<button class="neon" id="neon" aria-label="Turn sound on"><span>Turn sound on</span></button>
 <div class="draghint" id="taphint" style="z-index:31">Tap for sound</div>
 <div class="scrub" id="scrub" hidden><button id="scPlay" aria-label="Pause">❚❚</button><span id="scA">0:00</span><div class="sctrack" id="scTrack" role="slider" tabindex="0" aria-label="Film position" aria-valuemin="0" aria-valuemax="100"><i id="scFill"></i><b id="scKnob"></b></div><span id="scB">0:00</span></div>
 <div class="tvf-tip" id="tvfTip" aria-hidden="true">Swipe up to hide the browser bar</div>
@@ -1244,12 +1259,23 @@ let fullP = 0;
 const vOver = { x: 0, y: 0 }, pan = { x: 0, y: 0 };
 let dragHinted = false, vAt = 0, steppedIn = false;
 const invite = $('invite'); invite.textContent = matchMedia('(pointer: coarse)').matches ? 'Tap the screen to watch' : 'Click the screen to watch';
+const floorSpot = new THREE.Vector3(0, 0, 0);
+const neon = $('neon'), tvTop = new THREE.Vector3(0, LEG + CH + .03, 0);
+neon.addEventListener('click', () => { if (!soundOn) setSound(true); });
+function placeNeon(now) {
+  // a flickering neon sign on the wall above the set, until the sound is up
+  const on = !soundOn && powered && now - born > 2200 && zoomTo === 0 && !document.body.classList.contains('filmfull');
+  neon.classList.toggle('on', on); if (!on) return;
+  const v = tvTop.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
+  neon.style.transform = `translate(${x - neon.offsetWidth / 2}px, ${Math.max(8, y - neon.offsetHeight - 26)}px)`;
+}
 function placeInvite(now) {
+  placeNeon(now);
   const on = !steppedIn && powered && now - born > 3500 && zoomTo === 0 && zoomProgress(now) === 0 && !document.body.classList.contains('filmfull');
   invite.classList.toggle('on', on); if (!on) return;
-  let x0 = 1e9, x1 = -1e9, y1 = -1e9;
-  for (const c of gCorners) { const v = c.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
-  invite.style.transform = `translate(${(x0 + x1) / 2 - invite.offsetWidth / 2}px, ${y1 - invite.offsetHeight - 12}px)`;
+  // it sits on the floor, just in front of the set's feet
+  const v = floorSpot.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
+  invite.style.transform = `translate(${x - invite.offsetWidth / 2}px, ${y - invite.offsetHeight / 2}px)`;
 }
 // the sideways set: a screen as large as the phone allows at the film's own shape, beside a slim control panel
 const insets = (() => { const d = document.createElement('div');
