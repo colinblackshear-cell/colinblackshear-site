@@ -85,7 +85,7 @@ header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
   box-shadow:inset 0 0 24px rgba(0,0,0,.8)}
 .vbox[hidden]{display:none}
 /* a cut between sections in the room: the picture blinks out and back, like a hard edit */
-.vbox iframe{transition:opacity .35s}
+.vbox iframe{transition:none}
 .vbox.cut iframe{opacity:0!important;transition:none}
 /* the film's scrub bar, along the bottom of the picture when you're inside */
 .scrub{position:fixed;left:0;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:6px 12px 6px 6px;border-radius:12px;box-sizing:border-box;
@@ -1256,15 +1256,19 @@ function waitFor(t, cut) { vWait = true; vWaitAt = performance.now(); vWaitT = t
 const cueUp = p => { if (p.dur) { p.cue = p.dur * (.06 + Math.random() * .82); poolPost(p, { method: 'setCurrentTime', value: p.cue }); } };
 function tapHint(on) { needTap = on; $('taphint').classList.toggle('on', on); }
 const poolPost = (p, m) => p.el.contentWindow && p.el.contentWindow.postMessage(JSON.stringify(m), 'https://player.vimeo.com');
+function poolPlayer(key, id, title) {
+  const el = document.createElement('iframe');
+  el.src = `https://player.vimeo.com/video/${id}?autoplay=0&muted=1&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0&playsinline=1`;
+  el.allow = 'autoplay; fullscreen; picture-in-picture'; el.title = title; el.tabIndex = -1; el.style.opacity = 0;
+  vbox.appendChild(el); POOL[key] = { el, ready: false, dur: 0 }; laid = null;
+}
 function buildPool() {
   if (vimeoBlocked) return;
-  WORKS.filter(w => w.vimeo && !POOL[w.vimeo]).forEach(w => {
-    const el = document.createElement('iframe');
-    el.src = `https://player.vimeo.com/video/${w.vimeo}?autoplay=0&muted=1&controls=0&title=0&byline=0&portrait=0&badge=0&loop=1&dnt=1&autopause=0&playsinline=1`;
-    el.allow = 'autoplay; fullscreen; picture-in-picture'; el.title = w.title; el.tabIndex = -1; el.style.opacity = 0;
-    vbox.appendChild(el); POOL[w.vimeo] = { el, ready: false, dur: 0 };
-  });
+  WORKS.filter(w => w.vimeo && !POOL[w.vimeo]).forEach(w => poolPlayer(w.vimeo, w.vimeo, w.title));
 }
+// the film on screen gets a twin, parked at the next moment, so a cut in the room is an instant swap: a true jump cut
+const twinOf = id => id + '~';
+function ensureTwin(id) { const w = WORKS.find(w => w.vimeo === id); if (w && !POOL[twinOf(id)] && !vimeoBlocked) poolPlayer(twinOf(id), id, w.title + ' (next cut)'); }
 setTimeout(buildPool, 1200);
 function dropVimeo() { killVimeo(); Object.keys(POOL).forEach(k => { POOL[k].el.remove(); delete POOL[k]; }); }
 function filmState() { vWait = false; tapHint(false); laid = null; vDur = 0; snipping = false; vTime = 0; vPaused = userPaused = scrubbing = false; scrub.hidden = true; $('scPlay').textContent = '❚❚'; }
@@ -1277,6 +1281,7 @@ function makeVimeo(id) {
   if (vFrame && vFrame !== p.el) { vSend({ method: 'pause' }); vSend({ method: 'setMuted', value: true }); vFrame.style.opacity = 0; const old = Object.values(POOL).find(o => o.el === vFrame); if (old) cueUp(old); }
   vbox.hidden = false; vId = id; vAt = performance.now(); vFrame = p.el; vFrame.style.opacity = 1; vDur = p.dur; laid = null;
   waitFor(null); if (p.ready) filmStarted();
+  setTimeout(() => { if (vId === id) ensureTwin(id); }, 1500);
 }
 function filmStarted() {
   // tuning in lands you somewhere in the middle, like a broadcast already running; stepping inside starts it from the top
@@ -1325,8 +1330,20 @@ function snippets(now) {
   if (!inRoom) { if (snipping) { snipping = false; waitFor(0); vSend({ method: 'setCurrentTime', value: 0 }); vSend({ method: 'play' }); } return; }
   if (!snipping || now - snipAt > 9000) {
     snipping = true; snipAt = now;
-    const t = vDur * (.06 + Math.random() * .82);
-    waitFor(t, true); vSend({ method: 'setCurrentTime', value: t }); vSend({ method: 'play' });
+    const now2 = POOL[vId], tw = POOL[twinOf(vId)];
+    if (tw && tw.ready && tw.cue != null && now2) {
+      // swap to the twin, already sitting on the next moment, and park the old one somewhere new for the cut after
+      const w = WORKS.find(w => w.vimeo === vId), v = w && w.vol || 1;
+      poolPost(tw, { method: 'setMuted', value: !soundOn }); poolPost(tw, { method: 'setVolume', value: soundOn ? v : 0 }); poolPost(tw, { method: 'play' });
+      tw.el.style.opacity = 1; now2.el.style.opacity = 0;
+      poolPost(now2, { method: 'pause' }); poolPost(now2, { method: 'setMuted', value: true });
+      POOL[vId] = tw; POOL[twinOf(vId)] = now2; vFrame = tw.el; vTime = tw.cue; tw.cue = null;
+      setTimeout(() => cueUp(now2), 400);
+      const f = vId; setTimeout(() => { if (vId === f) vSend({ method: 'getPaused' }); }, 1200);
+    } else {
+      const t = vDur * (.06 + Math.random() * .82);
+      waitFor(t, true); vSend({ method: 'setCurrentTime', value: t }); vSend({ method: 'play' });
+    }
   }
 }
 function vKick() { vimeoSound(); if (!userPaused) vSend({ method: 'play' }); }
