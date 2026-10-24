@@ -4,3 +4,9 @@ body nav.sections a{display:block;border:0;padding:2px 0;line-height:0;opacity:.
 body nav.sections a svg{display:block;height:clamp(17px, 4.2vw, 22px);width:auto;overflow:visible}
 body nav.sections a:hover,body nav.sections a[aria-current="true"],body nav.sections a[aria-current="page"]{opacity:1;border:0}
 body nav.sections a:focus-visible{outline:2px solid #fff3dc;outline-offset:4px}
+
+/* the trip wall (trip.js) sits behind everything on the page */
+.tripwall{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+/* headings take on the name's look: warm, with faint spectrum echoes instead of flat white */
+body main h1, body .intro h1, body .title h1, body .cap h2{color:#fff3dc;text-shadow:-2px 1px 0 rgba(255,70,170,.35), 2px -1px 0 rgba(40,220,255,.32), 0 0 18px rgba(255,214,150,.18)}
+body .howto, body .lede, body .cap p, body .eyebrow, body .cap .no, body .intro .eyebrow{color:rgba(255,236,205,.6);text-shadow:-1px 0 0 rgba(255,70,170,.22), 1px 0 0 rgba(40,220,255,.2)}
