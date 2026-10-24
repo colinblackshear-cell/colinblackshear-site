@@ -140,8 +140,14 @@ html.lift body{min-height:calc(100vh + 160px)}
 .draghint.on{opacity:1}
 .draghint b{display:block;font-weight:inherit;margin-top:3px;opacity:.75}
 /* an invitation on the glass to step in, until the visitor has done it once */
-.invite{position:fixed;left:0;top:0;z-index:5;pointer-events:none;white-space:nowrap;padding:6px 13px;border-radius:999px;
-  background:rgba(10,10,9,.62);color:var(--title);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;opacity:0;transition:opacity .6s}
+.invite{position:fixed;left:0;top:0;z-index:5;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .8s;perspective:420px;text-align:center}
+/* a strip of red embossed label tape stuck to the floor, with a little arrow hopping toward the screen */
+.invite .tape{display:inline-block;padding:7px 16px 6px;font:600 .7rem/1 "IBM Plex Mono", monospace;letter-spacing:.2em;text-transform:uppercase;color:#fff4ee;
+  background:linear-gradient(180deg,#d2352b 0%,#b8231b 45%,#9a1a14 100%);
+  clip-path:polygon(0 0,100% 0,97% 50%,100% 100%,0 100%,3% 50%);
+  text-shadow:0 1px 0 rgba(60,0,0,.65), 0 -1px 0 rgba(255,255,255,.35);
+  transform:rotateX(38deg) rotateZ(-2.5deg);transform-origin:50% 100%;filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
+.invite .hop{display:block;color:#fff4ee;font-size:.8rem;line-height:1;margin-bottom:4px;text-shadow:0 2px 3px rgba(0,0,0,.5)}
 .neon{position:fixed;left:0;top:0;z-index:7;border:0;background:none;cursor:pointer;padding:6px 10px;white-space:nowrap;opacity:0;pointer-events:none;
   font-family:Monoton, "IBM Plex Mono", monospace;font-size:clamp(1.05rem, 4.6vw, 1.6rem);letter-spacing:.06em;color:#ffd6ec;transition:opacity .6s;
   text-shadow:0 0 2px #fff, 0 0 6px #ff4fa3, 0 0 14px #ff4fa3, 0 0 28px #ff2d8a, 0 0 46px #ff2d8a}
@@ -149,9 +155,10 @@ html.lift body{min-height:calc(100vh + 160px)}
 .neon span{display:inline-block;transform:rotate(-4deg)}
 @keyframes neon{0%,18%,22%,25%,53%,57%,100%{filter:none;opacity:1}20%,24%,55%{filter:brightness(.35) saturate(.5);opacity:.55}}
 @media (prefers-reduced-motion: reduce){ .neon.on{animation:none} }
-.invite.on{opacity:1;animation:invite 2.4s ease-in-out infinite}
-@keyframes invite{50%{box-shadow:0 0 0 6px rgba(255,255,255,.08)}}
-@media (prefers-reduced-motion: reduce){ .invite.on{animation:none} }
+.invite.on{opacity:1}
+.invite.on .hop{animation:hop 1.1s ease-in-out infinite}
+@keyframes hop{50%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion: reduce){ .invite.on .hop{animation:none} }
 body.filmfull .psy{opacity:0}
 .tapsound{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:21;
   padding:7px 14px;border-radius:999px;background:rgba(10,10,9,.55);color:var(--title);font-size:.7rem;letter-spacing:.14em;
@@ -1258,7 +1265,8 @@ let fullP = 0;
 // how far the cropped film overflows its window, and where you've dragged it to (-1..1 each way)
 const vOver = { x: 0, y: 0 }, pan = { x: 0, y: 0 };
 let dragHinted = false, vAt = 0, steppedIn = false;
-const invite = $('invite'); invite.textContent = matchMedia('(pointer: coarse)').matches ? 'Tap the screen to watch' : 'Click the screen to watch';
+const invite = $('invite');
+invite.innerHTML = `<span class="hop">▲</span><span class="tape">${matchMedia('(pointer: coarse)').matches ? 'Tap the screen to watch' : 'Click the screen to watch'}</span>`;
 const floorSpot = new THREE.Vector3(0, 0, 0);
 const neon = $('neon'), tvTop = new THREE.Vector3(0, LEG + CH + .03, 0);
 neon.addEventListener('click', () => { if (!soundOn) setSound(true); });
@@ -1271,7 +1279,7 @@ function placeNeon(now) {
 }
 function placeInvite(now) {
   placeNeon(now);
-  const on = !steppedIn && powered && now - born > 3500 && zoomTo === 0 && zoomProgress(now) === 0 && !document.body.classList.contains('filmfull');
+  const on = !steppedIn && powered && now - born > 3500 && now - born < 18000 && zoomTo === 0 && zoomProgress(now) === 0 && !document.body.classList.contains('filmfull');
   invite.classList.toggle('on', on); if (!on) return;
   // it sits on the floor, just in front of the set's feet
   const v = floorSpot.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
