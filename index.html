@@ -390,20 +390,20 @@ const out = document.createElement('canvas'); out.width = W; out.height = H;
 const octx = out.getContext('2d');
 
 const WORKS = [
-  { ch: 3, title: '000',           kind: 'Film',         year: '',     role: '',                  scene: waves,   root: 57, vimeo: '628896953', vol: .76, picture: 2.4,
-    hls: 'https://player.vimeo.com/external/628896953.m3u8?s=173ce5c72eb76a65ef1013067f648b42a72434c1&logging=false' },
-  { ch: 4, title: 'Second Nature', kind: 'Sector 9 · Film', year: '',  role: '',                  scene: road,    root: 50, vimeo: '20973698', vol: .67,
-    hls: 'https://player.vimeo.com/external/20973698.m3u8?s=050e3294ee65d5c6c678d4cc387c8274e2768bfd&logging=false' },
-  { ch: 5, title: 'Free Ride',     kind: 'Film',         year: '',     role: '',                  scene: fog,     root: 53, vimeo: '19586969',
-    hls: 'https://player.vimeo.com/external/19586969.m3u8?s=c00e950a2fc3d3adac200de56c891b22811b54fd&logging=false', aspect: 4 / 3 },
-  { ch: 6, title: 'Remio',         kind: 'Film',         year: '',     role: '',                  scene: sunset,  root: 55, vimeo: '54697211',
-    hls: 'https://player.vimeo.com/external/54697211.m3u8?s=03e66d48081f2e040eb00d9730590b9c3d6959a3&logging=false' },
-  { ch: 7, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968', vol: .34,
-    hls: 'https://player.vimeo.com/external/1238949968.m3u8?s=a0793d41b6549e58290517cc049fdd0c0e1fd69c&logging=false', picture: 2.39 },
-  { ch: 8, title: 'The Bread Bejkr', kind: 'Film',       year: '',     role: '',                  scene: leaks,   root: 52, vimeo: '71693536',
-    hls: 'https://player.vimeo.com/external/71693536.m3u8?s=0d3900e341812c9d2d04d7cc87cc28a13a56ac2f&logging=false' },
-  { ch: 9, title: 'Punto Del Norte',   kind: 'The Creamery Studio - Quinn McCarthy',         year: '',     role: '',                  scene: waves,   root: 54, vimeo: '508997259',
+  { ch: 3, title: 'Punto Del Norte',   kind: 'The Creamery Studio - Quinn McCarthy',         year: '',     role: '',                  scene: waves,   root: 54, vimeo: '508997259',
     hls: 'https://player.vimeo.com/external/508997259.m3u8?s=130181c2a2ab7e9a7555d8e62be5de36b5aad0d6&logging=false' },
+  { ch: 4, title: '000',           kind: 'Film',         year: '',     role: '',                  scene: waves,   root: 57, vimeo: '628896953', vol: .76, picture: 2.4,
+    hls: 'https://player.vimeo.com/external/628896953.m3u8?s=173ce5c72eb76a65ef1013067f648b42a72434c1&logging=false' },
+  { ch: 5, title: 'Second Nature', kind: 'Sector 9 · Film', year: '',  role: '',                  scene: road,    root: 50, vimeo: '20973698', vol: .67,
+    hls: 'https://player.vimeo.com/external/20973698.m3u8?s=050e3294ee65d5c6c678d4cc387c8274e2768bfd&logging=false' },
+  { ch: 6, title: 'Free Ride',     kind: 'Film',         year: '',     role: '',                  scene: fog,     root: 53, vimeo: '19586969',
+    hls: 'https://player.vimeo.com/external/19586969.m3u8?s=c00e950a2fc3d3adac200de56c891b22811b54fd&logging=false', aspect: 4 / 3 },
+  { ch: 7, title: 'Remio',         kind: 'Film',         year: '',     role: '',                  scene: sunset,  root: 55, vimeo: '54697211',
+    hls: 'https://player.vimeo.com/external/54697211.m3u8?s=03e66d48081f2e040eb00d9730590b9c3d6959a3&logging=false' },
+  { ch: 8, title: 'BlackLightMoon', kind: 'Film',        year: '',     role: '',                  scene: windows, root: 48, vimeo: '1238949968', vol: .34,
+    hls: 'https://player.vimeo.com/external/1238949968.m3u8?s=a0793d41b6549e58290517cc049fdd0c0e1fd69c&logging=false', picture: 2.39 },
+  { ch: 9, title: 'The Bread Bejkr', kind: 'Film',       year: '',     role: '',                  scene: leaks,   root: 52, vimeo: '71693536',
+    hls: 'https://player.vimeo.com/external/71693536.m3u8?s=0d3900e341812c9d2d04d7cc87cc28a13a56ac2f&logging=false' },
 ];
 // the music channel always sits right after the last film, so a new film pushes it along
 const MUSIC_CH = Math.max(...WORKS.map(w => w.ch)) + 1;
