@@ -42,7 +42,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--title);outline-offs
 .glass{position:fixed;z-index:3;overflow:hidden;border-radius:7% / 9.5%;background:#050605;cursor:pointer;transform-origin:50% 50%;
   box-shadow:0 0 0 1px rgba(0,0,0,.6)}
 .glass > *{position:absolute;inset:0;width:100%;height:100%}
-.glass video{object-fit:cover;background:#000;opacity:0;transition:opacity .25s}
+/* the film is sized by hand (fitFilm) so its picture, without any black bars baked into the file, fills the glass */
+.glass video{object-fit:fill;background:#000;opacity:0;transition:opacity .25s}
 .glass video.on{opacity:1}
 .glass canvas{image-rendering:auto;opacity:0;transition:opacity .2s}
 .glass canvas.on{opacity:1}
@@ -96,7 +97,7 @@ body.sound-on .pill.sound::before{background:#ff5a2e;box-shadow:0 0 7px #ff5a2e}
   text-shadow:0 1px 0 rgba(60,0,0,.65), 0 -1px 0 rgba(255,255,255,.35);transform:rotateX(38deg) rotateZ(-2.5deg);filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
 /* watching: the film fills the window */
 body.watch .glass{left:0 !important;top:0 !important;width:100vw !important;height:100vh !important;height:100dvh !important;border-radius:0;z-index:20;cursor:default}
-body.watch .glass video{object-fit:contain}
+body.watch .glass video{object-fit:contain;left:0 !important;top:0 !important;width:100% !important;height:100% !important}
 body.watch .glass .tube{opacity:.35}
 .back{position:fixed;z-index:21;top:max(14px, env(safe-area-inset-top, 0px));left:max(14px, env(safe-area-inset-left, 0px));display:none}
 body.watch .back{display:inline-flex}
@@ -165,7 +166,16 @@ function layout() {
   r.setProperty('--mx', X((x0 + x1) / 2 + (s === SETS.wide ? 45 : 35)) + 'px'); r.setProperty('--my', Y((y0 + y1) / 2) + 'px');
   r.setProperty('--mw', (x1 - x0) * k * 1.4 + 'px'); r.setProperty('--mh', (y1 - y0) * k * 1.9 + 'px');
 }
-addEventListener('resize', layout); layout();
+// fill the glass with the film's picture: a widescreen film whose file carries black bars (its `picture` is wider than the
+// file) is enlarged until the bars fall outside the glass, as on the 3D set
+let filmNow = null;
+function fitFilm() {
+  const gw = glass.clientWidth, gh = glass.clientHeight, va = vid.videoWidth && vid.videoHeight ? vid.videoWidth / vid.videoHeight : 16 / 9;
+  const pa = filmNow && filmNow.picture > va ? filmNow.picture : va;   // the shape of the actual picture
+  const w = pa > gw / gh ? gh * pa : gw, h = w / va;                    // its width covers the glass; the file is that wide
+  Object.assign(vid.style, { width: w + 'px', height: h + 'px', left: (gw - w) / 2 + 'px', top: (gh - h) / 2 + 'px' });
+}
+addEventListener('resize', () => { layout(); fitFilm(); }); layout();
 
 /* the channels, read from the 3D page so both always carry the same films */
 let CH = [{ kind: 'reel', ch: 2 }], cur = 0, soundOn = false, hls = null, hlsLib = null, plasmaT = null;
@@ -196,7 +206,7 @@ function showFx(mode) { const was = fxMode; fxMode = mode; fxc.classList.toggle(
 
 function stopVideo() { vid.classList.remove('on'); vid.pause(); if (hls) { hls.destroy(); hls = null; } vid.removeAttribute('src'); vid.load(); }
 function playFilm(f) {
-  stopVideo(); showFx('snow');
+  stopVideo(); showFx('snow'); filmNow = f; fitFilm();
   const token = {}; playFilm.token = token;
   const ready = () => {
     if (playFilm.token !== token) return;
@@ -204,7 +214,7 @@ function playFilm(f) {
     if (!document.body.classList.contains('watch') && vid.duration) vid.currentTime = vid.duration * (.06 + Math.random() * .8);
     vid.volume = f.vol || 1; vid.muted = !soundOn; vid.play().catch(() => { vid.muted = true; vid.play().catch(() => {}); });
   };
-  vid.addEventListener('loadedmetadata', ready, { once: true });
+  vid.addEventListener('loadedmetadata', ready, { once: true }); vid.onresize = fitFilm;
   vid.onplaying = () => { if (playFilm.token === token) { vid.classList.add('on'); showFx(null); } };
   vid.onerror = () => { if (playFilm.token === token) $('lMeta').innerHTML = `This film won't play here · <a href="../films/">film list</a>`; };
   if (nativeHls || !window.MediaSource) { vid.src = f.hls; return; }
@@ -251,8 +261,9 @@ addEventListener('keydown', e => {
 addEventListener('pointerdown', () => { if (!soundOn) setSound(true); }, { once: true, capture: true });
 
 fetch('../index.html', { cache: 'no-cache' }).then(r => r.text()).then(src => {
-  const films = [...src.matchAll(/\{ ch: (\d+), title: '([^']+)',\s*kind: '([^']*)'([^\n]*)\n\s*hls: '([^']+)'/g)].map(m => ({
-    kind: 'film', ch: +m[1], title: m[2], meta: m[3], hls: m[5], vol: +((m[4].match(/vol: ([\d.]+)/) || [])[1] || 1) }));
+  const films = [...src.matchAll(/\{ ch: (\d+), title: '([^']+)',\s*kind: '([^']*)'([^\n]*)\n\s*hls: '([^']+)'([^\n]*)/g)].map(m => ({
+    kind: 'film', ch: +m[1], title: m[2], meta: m[3], hls: m[5], vol: +((m[4].match(/vol: ([\d.]+)/) || [])[1] || 1),
+    picture: +((m[4] + m[6]).match(/picture: ([\d.]+)/) || [])[1] || 0 }));
   films.sort((a, b) => a.ch - b.ch);
   CH = [CH[0], ...films, { kind: 'snow', ch: (films.length ? films[films.length - 1].ch : 2) + 1 }];
 }).catch(() => {});
