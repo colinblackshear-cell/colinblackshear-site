@@ -1,5 +1,10 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>
+// inside Instagram, Facebook, TikTok and the like the 3D room is too much for the app's browser, so they get the pre-rendered set
+// (?3d keeps the 3D room for anyone who asks for it)
+if (/Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|Snapchat|Line\//i.test(navigator.userAgent) && !/[?&]3d\b/.test(location.search)) location.replace('lite/' + location.hash);
+</script>
 <title>Blackshear TV</title>
 <link rel="manifest" href="site.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
