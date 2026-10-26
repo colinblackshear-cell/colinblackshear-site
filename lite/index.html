@@ -97,8 +97,13 @@ body.sound-on .pill.sound::before{background:#ff5a2e;box-shadow:0 0 7px #ff5a2e}
   text-shadow:0 1px 0 rgba(60,0,0,.65), 0 -1px 0 rgba(255,255,255,.35);transform:rotateX(38deg) rotateZ(-2.5deg);filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
 /* watching: the film fills the window */
 body.watch .glass{left:0 !important;top:0 !important;width:100vw !important;height:100vh !important;height:100dvh !important;border-radius:0;z-index:20;cursor:default}
-body.watch .glass video{object-fit:contain;left:0 !important;top:0 !important;width:100% !important;height:100% !important}
+
 body.watch .glass .tube{opacity:.35}
+.draghint{position:fixed;z-index:22;left:50%;bottom:max(24px, env(safe-area-inset-bottom, 0px));transform:translateX(-50%);pointer-events:none;text-align:center;
+  padding:7px 14px;border-radius:14px;background:rgba(10,10,9,.6);color:var(--title);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;opacity:0;transition:opacity .5s}
+.draghint.on{opacity:1}
+.draghint b{display:block;font-weight:inherit;margin-top:3px;opacity:.75}
+body.watch .glass{touch-action:none}
 .back{position:fixed;z-index:21;top:max(14px, env(safe-area-inset-top, 0px));left:max(14px, env(safe-area-inset-left, 0px));display:none}
 body.watch .back{display:inline-flex}
 body.watch .ui,body.watch .invite{visibility:hidden}
@@ -117,6 +122,7 @@ body.watch .ui,body.watch .invite{visibility:hidden}
 <button class="knob" id="dial" aria-label="Next channel"></button>
 <button class="knob" id="vol" aria-label="Sound on or off"></button>
 <div class="invite" id="invite" aria-hidden="true"><span>Tap the screen to watch</span></div>
+<div class="draghint" id="draghint">Drag the film to reframe<b>Turn your phone for full screen</b></div>
 <button class="pill back" id="back">‹ Back to the set</button>
 <div class="ui">
   <header>
@@ -168,12 +174,17 @@ function layout() {
 }
 // fill the glass with the film's picture: a widescreen film whose file carries black bars (its `picture` is wider than the
 // file) is enlarged until the bars fall outside the glass, as on the 3D set
-let filmNow = null;
+let filmNow = null, pan = 0;
+const PHONE = matchMedia('(pointer: coarse)').matches;
 function fitFilm() {
   const gw = glass.clientWidth, gh = glass.clientHeight, va = vid.videoWidth && vid.videoHeight ? vid.videoWidth / vid.videoHeight : 16 / 9;
   const pa = filmNow && filmNow.picture > va ? filmNow.picture : va;   // the shape of the actual picture
-  const w = pa > gw / gh ? gh * pa : gw, h = w / va;                    // its width covers the glass; the file is that wide
-  Object.assign(vid.style, { width: w + 'px', height: h + 'px', left: (gw - w) / 2 + 'px', top: (gh - h) / 2 + 'px' });
+  // on the set, and watching on a phone, the picture covers the whole glass or screen; watching on a computer shows all of it
+  const cover = !document.body.classList.contains('watch') || PHONE;
+  const w = (pa > gw / gh) === cover ? gh * pa : gw, h = w / va;         // the picture's width; the file is that wide
+  const watching = document.body.classList.contains('watch'), slack = Math.max(0, w - gw);
+  if (!watching) pan = 0; pan = Math.max(-slack / 2, Math.min(slack / 2, pan));   // a phone held upright can slide the picture sideways
+  Object.assign(vid.style, { width: w + 'px', height: h + 'px', left: (gw - w) / 2 + pan + 'px', top: (gh - h) / 2 + 'px' });
 }
 addEventListener('resize', () => { layout(); fitFilm(); }); layout();
 
@@ -244,12 +255,23 @@ function watch(on) {
   const c = CH[cur]; if (on && c.kind !== 'film') { tune(cur + 1); return; }
   stepped = stepped || on; $('invite').classList.remove('on');
   document.body.classList.toggle('watch', on);
-  if (on) { setSound(true); vid.controls = true; } else vid.controls = false;
+  if (on) setSound(true);
+  fitFilm();
+  const hint = $('draghint'); hint.classList.toggle('on', on && PHONE && innerHeight > innerWidth);
+  clearTimeout(watch.t); if (on) watch.t = setTimeout(() => hint.classList.remove('on'), 4000);
 }
 $('prev').onclick = () => tune(cur - 1);
 $('next').onclick = $('dial').onclick = () => tune(cur + 1);
 $('sound').onclick = $('vol').onclick = () => setSound(!soundOn);
-glass.onclick = () => { if (!document.body.classList.contains('watch')) watch(true); };
+// on the set a tap steps in; while watching, a tap pauses and plays, and a drag slides the picture
+let drag = null;
+glass.addEventListener('pointerdown', e => { if (document.body.classList.contains('watch')) drag = { x: e.clientX, p: pan, moved: false }; });
+addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 6) drag.moved = true; pan = drag.p + dx; fitFilm(); });
+addEventListener('pointerup', () => { setTimeout(() => drag = null); });
+glass.onclick = () => {
+  if (!document.body.classList.contains('watch')) watch(true);
+  else if (!(drag && drag.moved) && (vid.src || hls)) vid.paused ? vid.play().catch(() => {}) : vid.pause();
+};
 glass.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); glass.click(); } };
 $('back').onclick = () => watch(false);
 addEventListener('keydown', e => {
