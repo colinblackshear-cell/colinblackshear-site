@@ -686,6 +686,12 @@ async function record(i, btn) {
   audio();
   let stream;
   setSession('play-and-record');
+  // browsers only open the mic on a secure (https) address, so say so instead of calling it blocked
+  if (!window.isSecureContext || !navigator.mediaDevices) {
+    setSession('playback');
+    const https = 'https://' + location.host + location.pathname;
+    note(`The mic only works on the secure address. Open ${https} and record there.`, true); return;
+  }
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); }
   catch (e) { setSession('playback'); note('The mic is blocked. Allow microphone access for this page in your browser, then try again.', true); return; }
   const src = ac.createMediaStreamSource(stream);

@@ -103,8 +103,8 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
   display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;padding:0 0 9px;
   background:linear-gradient(180deg,#fbf8f0,#e2ddd0 70%,#bdb7a8);box-shadow:0 5px 0 #8a8476, 0 6px 6px rgba(0,0,0,.5), inset 0 1px 0 #fff;transition:transform .07s, box-shadow .07s}
 .pk i{font-style:normal;font-size:.9rem;letter-spacing:0}
-.pk{transform:translateZ(1px)}   /* keep the keys in front of their tray when the radio tilts */
-.pk:active,.pk[aria-pressed="true"]{transform:translate3d(0,4px,1px);box-shadow:0 1px 0 #8a8476, 0 2px 3px rgba(0,0,0,.5), inset 0 2px 4px rgba(0,0,0,.15)}
+.pk{transform:translateZ(6px)}   /* keep the keys well in front of their tray when the radio tilts: at 1px Safari flickered between the two */
+.pk:active,.pk[aria-pressed="true"]{transform:translate3d(0,4px,3px);box-shadow:0 1px 0 #8a8476, 0 2px 3px rgba(0,0,0,.5), inset 0 2px 4px rgba(0,0,0,.15)}
 .pk:focus-visible{outline:2px solid #e2361f;outline-offset:2px}
 .pk.on{background:linear-gradient(180deg,#f2694b,#d9401f 70%,#a42a12);color:#fff;box-shadow:0 5px 0 #6d1a0c, 0 6px 6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.4)}
 .pk.on:active,.pk.on[aria-pressed="true"]{box-shadow:0 1px 0 #6d1a0c, 0 2px 3px rgba(0,0,0,.5)}

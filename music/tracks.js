@@ -12,4 +12,5 @@ window.TRACKS = [
   { title: 'Playgrnd', note: '2:15', src: 'tracks/playgrnd.mp3' },
   { title: 'Rooer', note: '0:57', src: 'tracks/rooer.mp3' },
   { title: 'Samurais', note: '1:51', src: 'tracks/samurais.mp3' },
+  { title: 'Riverboats', note: '1:14', src: 'tracks/riverboats.mp3' },
 ];
