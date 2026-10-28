@@ -686,6 +686,10 @@ async function record(i, btn) {
   audio();
   let stream;
   setSession('play-and-record');
+  // the browsers inside Instagram, Facebook and TikTok don't hand web pages the mic
+  if (/Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|Snapchat|Line\//i.test(navigator.userAgent)) {
+    note('The mic doesn\'t work inside this app\'s browser. Tap ··· and choose Open in browser (Safari or Chrome) to record a sample.', true); return;
+  }
   // browsers only open the mic on a secure (https) address, so say so instead of calling it blocked
   if (!window.isSecureContext || !navigator.mediaDevices) {
     setSession('playback');
