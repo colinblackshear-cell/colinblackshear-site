@@ -103,7 +103,7 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
   display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;padding:0 0 9px;
   background:linear-gradient(180deg,#fbf8f0,#e2ddd0 70%,#bdb7a8);box-shadow:0 5px 0 #8a8476, 0 6px 6px rgba(0,0,0,.5), inset 0 1px 0 #fff;transition:transform .07s, box-shadow .07s}
 .pk i{font-style:normal;font-size:.9rem;letter-spacing:0}
-.pk{transform:translateZ(6px)}   /* keep the keys well in front of their tray when the radio tilts: at 1px Safari flickered between the two */
+.pk{transform:translateZ(6px);-webkit-backface-visibility:hidden;backface-visibility:hidden}   /* keep the keys well in front of their tray when the radio tilts: at 1px Safari flickered between the two */
 .pk:active,.pk[aria-pressed="true"]{transform:translate3d(0,4px,3px);box-shadow:0 1px 0 #8a8476, 0 2px 3px rgba(0,0,0,.5), inset 0 2px 4px rgba(0,0,0,.15)}
 .pk:focus-visible{outline:2px solid #e2361f;outline-offset:2px}
 .pk.on{background:linear-gradient(180deg,#f2694b,#d9401f 70%,#a42a12);color:#fff;box-shadow:0 5px 0 #6d1a0c, 0 6px 6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.4)}
@@ -134,8 +134,9 @@ h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clam
 .side.left{top:14px;bottom:14px;left:0;width:var(--d);transform-origin:0 50%;transform:rotateY(-90deg)}
 .side.right{top:14px;bottom:14px;right:0;width:var(--d);transform-origin:100% 50%;transform:rotateY(90deg)}
 .side.bottom{left:14px;right:14px;bottom:0;height:var(--d);transform-origin:50% 100%;transform:rotateX(-90deg);background:#160d06}
-.sheen{position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:soft-light;
-  background:radial-gradient(60% 70% at var(--lx,40%) var(--ly,20%), rgba(255,240,215,.45), rgba(255,240,215,0) 60%)}
+/* a plain see-through glow, not a blend: Safari redrew blended layers inside the tilting radio unevenly and the keys flickered */
+.sheen{position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(60% 70% at var(--lx,40%) var(--ly,20%), rgba(255,240,215,.16), rgba(255,240,215,0) 60%)}
 .shadow{position:absolute;left:50%;bottom:-6px;width:min(900px,96%);height:60px;transform:translateX(calc(-50% + var(--sx,0px)));z-index:-1;pointer-events:none;
   background:radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.75), rgba(0,0,0,0) 70%);filter:blur(6px)}
 .grille .cone{position:absolute;inset:14%;border-radius:50%;pointer-events:none;transform:scale(var(--pump,1));

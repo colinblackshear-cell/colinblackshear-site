@@ -31,8 +31,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--title);outline-offs
 .set{position:fixed;inset:0;background:#3a3826 center/cover no-repeat}
 /* the wall pattern (trip.js) lies over the rendered wall, faded out around the set */
 .tripwall{z-index:1 !important;mix-blend-mode:screen;opacity:.8;
-  -webkit-mask-image:radial-gradient(ellipse var(--mw) var(--mh) at var(--mx) var(--my), transparent 62%, #000 100%);
-          mask-image:radial-gradient(ellipse var(--mw) var(--mh) at var(--mx) var(--my), transparent 62%, #000 100%)}
+  -webkit-mask-image:radial-gradient(ellipse var(--mw) var(--mh) at var(--mx) var(--my), transparent 52%, #000 74%);
+          mask-image:radial-gradient(ellipse var(--mw) var(--mh) at var(--mx) var(--my), transparent 52%, #000 74%)}
 .fx{position:fixed;inset:0;pointer-events:none}
 .vignette{z-index:2;background:radial-gradient(120% 95% at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,.6) 100%)}
 .curtain{z-index:40;background:#000;transition:opacity 1.6s ease}
@@ -295,6 +295,7 @@ setTimeout(() => { glass.classList.remove('off'); glass.classList.add('warm'); t
 })();
 </script>
 <script src="../wordmark.js"></script>
-<script>if (!/Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly/i.test(navigator.userAgent)) { const s = document.createElement('script'); s.src = '../trip.js'; document.body.appendChild(s); }</script>
+<script>window.TRIP_MS = /Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly/i.test(navigator.userAgent) ? 66 : 32;   // inside the apps the wall moves at 15 frames a second</script>
+<script src="../trip.js"></script>
 </body>
 </html>

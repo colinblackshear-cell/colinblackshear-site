@@ -50,7 +50,7 @@ function remake(now) {
 }
 function frame(now) {
   // a page with an instrument on it needs its strength: the wall moves at about 30 frames a second, which is plenty this slow
-  if (now - last > 32) {
+  if (now - last > (window.TRIP_MS || 32)) {
     last = now;
     if (now - fieldAt > 220) { fieldAt = now; remake(now); }
     const t = now / 1000, cx = W / 2, cy = H * .45;
