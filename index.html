@@ -1306,8 +1306,18 @@ function placeNeon(now) {
   const on = !soundOn && powered && now - born > 2200 && zoomTo === 0 && !document.body.classList.contains('filmfull');
   neon.classList.toggle('on', on); if (!on) return;
   const v = tvTop.clone().project(camera), x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
-  neon.style.transform = `translate(${x - neon.offsetWidth / 2}px, ${Math.max(8, y - neon.offsetHeight - 26)}px)`;
+  const w = neon.offsetWidth, h = neon.offsetHeight, head = document.querySelector('.ui header').getBoundingClientRect();
+  // above the set if the wall has room under the name; on a short screen (a phone on its side) beside the set's top right
+  // corner instead; and if there's no room there either, the sound key below does the asking
+  let nx = x - w / 2, ny = y - h - 26;
+  if (ny < head.bottom + 4) {
+    const c = tvCorner.clone().project(camera);
+    nx = (c.x + 1) / 2 * innerWidth + 14; ny = Math.max(head.bottom + 4, (1 - c.y) / 2 * innerHeight - h / 2);
+    if (nx + w > innerWidth - 8) { neon.classList.remove('on'); return; }
+  }
+  neon.style.transform = `translate(${nx}px, ${ny}px)`;
 }
+const tvCorner = new THREE.Vector3(CW / 2, LEG + CH * .8, 0);
 // two strips of tape take turns on the floor: first how to watch, then how to change the channel (with arrows hopping over the buttons)
 const chInvite = $('chinvite'), hops = [[$('hopL'), $('prev')], [$('hopR'), $('next')]];
 let chChanged = false;
