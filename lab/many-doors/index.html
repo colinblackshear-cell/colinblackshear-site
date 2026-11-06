@@ -701,6 +701,46 @@ function wheel(x,y,s=1){ const crit=['M-6 0 Q0 -10 6 0 Q0 4 -6 0Z','M-6 4 L0 -8 
 function shCover(){ return sk(`${floor(330,'#C9B48A')}${harmandir(300,330,.9)}${jot(300,110,1)}${nishan(520,330,.8)}`); }
 
 return shCover;})();
+COVERS.theravada=(()=>{
+/* The Last Thought: flat colour on cream with a band of lotus petals top and bottom, after temple murals in Thailand and Sri Lanka.
+   Saffron robes, temple red and gold, leaf green and night teal. */
+const K='#22201A', SAFF='#E0861A', GOLD='#D4A017', TRED='#A8322A', LEAF='#3E7A4A', TEAL='#1E4A52', WHITE='#F8F3E6', CREAM='#F2E6CC', SKIN='#B9804F', PINK='#E59AAE', NIGHT='#122A30';
+const TW_DEFS=`<defs><pattern id="petal" width="30" height="20" patternUnits="userSpaceOnUse"><rect width="30" height="20" fill="${TRED}"/><path d="M15 18 Q4 10 15 2 Q26 10 15 18Z" fill="${GOLD}" stroke="${K}" stroke-width="1"/><path d="M15 15 Q10 10 15 6 Q20 10 15 15Z" fill="${TRED}"/></pattern>
+<radialGradient id="glowT"><stop offset="0" stop-color="#FFF6D0"/><stop offset=".5" stop-color="${GOLD}" stop-opacity=".5"/><stop offset="1" stop-color="${GOLD}" stop-opacity="0"/></radialGradient>
+<linearGradient id="nightT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E2228"/><stop offset="1" stop-color="#1E4A52"/></linearGradient><clipPath id="twclip"><rect width="600" height="400"/></clipPath></defs>`;
+function tw(inner,{bg='cream',border=true}={}){ const f=bg==='night'?'url(#nightT)':bg==='cream'?CREAM:bg;
+  return `${TW_DEFS}<g clip-path="url(#twclip)"><rect width="600" height="400" fill="${f}"/>${bg==='night'?stars(60,17,300,'#F8F3E6'):''}${inner}${border?`<rect width="600" height="20" fill="url(#petal)"/><rect y="380" width="600" height="20" fill="url(#petal)"/>`:''}</g>`; }
+function ground(y=330,col='#C9B080'){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y} H600" stroke="${K}" stroke-width="3"/>`; }
+/* a monk: shaved head, saffron robe over the left shoulder */
+function monk(x,y,s=1,{arms='down',bowl=false}={}){ const ar=arms==='fold'?`<path d="M-18 -76 Q-20 -52 0 -58 Q20 -52 18 -76" stroke="${SAFF}" stroke-width="11" fill="none" stroke-linecap="round"/><circle cx="0" cy="-58" r="6" fill="${SKIN}" stroke="${K}" stroke-width="1.5"/>`:arms==='bowl'?`<path d="M-18 -76 Q-22 -50 -4 -48 M18 -76 Q22 -50 4 -48" stroke="${SAFF}" stroke-width="11" fill="none" stroke-linecap="round"/><path d="M-16 -50 Q0 -30 16 -50Z" fill="#2A2A2A" stroke="${K}" stroke-width="1.5"/>`:'';
+  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-24 0 L-22 -84 Q0 -94 22 -84 L24 0Z" fill="${SAFF}" stroke="${K}" stroke-width="2.4"/><path d="M-22 -84 L22 -10" stroke="#B8650E" stroke-width="5"/><path d="M14 -86 L22 -84 L24 -40" fill="none" stroke="${K}" stroke-width="1.5"/><path d="M14 -86 Q20 -60 24 -40 L24 -84Z" fill="${SKIN}"/>${ar}<circle cx="0" cy="-106" r="15" fill="${SKIN}" stroke="${K}" stroke-width="2.2"/><path d="M-6 -104 h4 M2 -104 h4" stroke="${K}" stroke-width="1.5"/></g>`; }
+/* a lay person in mourning white or everyday colour, black hair */
+function lay(x,y,s=1,{col=WHITE,arms='down',hair='short',skin=SKIN}={}){ const ar={down:`<path d="M-20 -76 L-24 -36 M20 -76 L24 -36" stroke="${col}" stroke-width="10" stroke-linecap="round"/>`,
+    fold:`<path d="M-20 -76 Q-22 -52 0 -60 Q22 -52 20 -76" stroke="${col}" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M0 -76 V-58" stroke="${skin}" stroke-width="5" stroke-linecap="round"/>`,
+    pour:`<path d="M-20 -76 Q-10 -56 10 -64 M20 -76 Q26 -60 14 -64" stroke="${col}" stroke-width="10" fill="none" stroke-linecap="round"/>`,
+    up:`<path d="M-20 -76 L-32 -110 M20 -76 L32 -110" stroke="${col}" stroke-width="10" stroke-linecap="round"/>`}[arms]||'';
+  const h=hair==='long'?`<path d="M-17 -108 Q-18 -126 0 -126 Q18 -126 17 -108 L18 -84 L12 -96 Q0 -104 -12 -96 L-18 -84Z" fill="#1A1614"/>`:hair==='grey'?`<path d="M-16 -110 Q0 -128 16 -110 Q0 -118 -16 -110Z" fill="#CFCAC0"/>`:`<path d="M-16 -110 Q0 -128 16 -110 Q0 -118 -16 -110Z" fill="#1A1614"/>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-12 0 V-30 M12 0 V-30" stroke="${col===WHITE?'#D8D0C0':col}" stroke-width="10"/><path d="M-22 -28 L-20 -82 Q0 -90 20 -82 L22 -28Z" fill="${col}" stroke="${K}" stroke-width="2.2"/>${ar}<circle cx="0" cy="-106" r="15" fill="${skin}" stroke="${K}" stroke-width="2.2"/>${h}</g>`; }
+/* the Buddha, seated in meditation, gold */
+function buddha(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cy="-70" rx="70" ry="80" fill="url(#glowT)"/><path d="M-60 0 Q-64 -20 -40 -26 H40 Q64 -20 60 0Z" fill="${GOLD}" stroke="${K}" stroke-width="2.4"/><path d="M-34 -24 Q-40 -80 0 -88 Q40 -80 34 -24Z" fill="${GOLD}" stroke="${K}" stroke-width="2.4"/><path d="M-30 -30 Q0 -22 30 -30" stroke="${K}" stroke-width="1.8" fill="none"/><circle cy="-108" r="20" fill="${GOLD}" stroke="${K}" stroke-width="2.4"/><path d="M-8 -138 Q0 -156 8 -138Z" fill="${GOLD}" stroke="${K}" stroke-width="1.6"/><path d="M-10 -108 q4 3 8 0 M2 -108 q4 3 8 0" stroke="${K}" stroke-width="1.6" fill="none"/><path d="M-22 -102 V-86 M22 -102 V-86" stroke="${GOLD}" stroke-width="5" stroke-linecap="round"/></g>`; }
+/* a temple hall with tiered red roofs and curling chofa finials */
+function wat(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-120" y="-100" width="240" height="100" fill="${WHITE}" stroke="${K}" stroke-width="2.4"/>${[-80,-40,0,40,80].map(d=>`<rect x="${d-8}" y="-90" width="16" height="90" fill="${GOLD}" stroke="${K}" stroke-width="1.4"/>`).join('')}<path d="M-150 -100 L0 -190 L150 -100Z" fill="${TRED}" stroke="${K}" stroke-width="2.4"/><path d="M-110 -128 L0 -210 L110 -128" fill="${LEAF}" stroke="${K}" stroke-width="2.4"/><path d="M-150 -100 L-166 -118 M150 -100 L166 -118 M0 -210 L-8 -232 Q0 -244 6 -234" stroke="${GOLD}" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M-40 -140 L0 -164 L40 -140Z" fill="${GOLD}" stroke="${K}" stroke-width="1.6"/></g>`; }
+function mat(x,y){ return `<g transform="translate(${x} ${y})"><rect x="-120" y="-10" width="240" height="20" fill="#D9B870" stroke="${K}" stroke-width="2.2"/>${Array.from({length:11},(_,i)=>`<path d="M${-110+i*22} -10 V10" stroke="#A8884A" stroke-width="2"/>`).join('')}<rect x="-118" y="-22" width="28" height="12" rx="4" fill="${WHITE}" stroke="${K}" stroke-width="1.6"/><ellipse cx="14" cy="-20" rx="92" ry="14" fill="#7AA0B8" stroke="${K}" stroke-width="2.2"/><circle cx="-98" cy="-28" r="14" fill="${SKIN}" stroke="${K}" stroke-width="2"/><path d="M-110 -32 Q-98 -46 -86 -32 Q-98 -38 -110 -32Z" fill="#CFCAC0"/></g>`; }
+function coffin(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-110" y="-60" width="220" height="60" fill="${WHITE}" stroke="${K}" stroke-width="2.4"/><path d="M-110 -60 L-96 -80 H96 L110 -60" fill="${GOLD}" stroke="${K}" stroke-width="2.2"/>${[-70,-30,10,50].map(d=>`<path d="M${d} -40 q10 -14 20 0 q-10 14 -20 0Z" fill="${GOLD}" stroke="${K}" stroke-width="1.2"/>`).join('')}</g>`; }
+function oilLamp(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle cy="-24" r="22" fill="url(#glowT)" class="flick"/><path d="M-20 0 Q0 12 20 0 Q18 -8 0 -8 Q-18 -8 -20 0Z" fill="#B86A3A" stroke="${K}" stroke-width="2"/><path d="M0 -8 Q8 -22 0 -34 Q-8 -22 0 -8Z" fill="#FFD27A" stroke="${SAFF}" stroke-width="1.5" class="flick"/></g>`; }
+function lotus(x,y,s=1,col=PINK){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 Q-10 -20 0 -36 Q10 -20 0 0Z M0 0 Q-26 -6 -28 -26 Q-8 -20 0 0Z M0 0 Q26 -6 28 -26 Q8 -20 0 0Z" fill="${col}" stroke="${K}" stroke-width="1.8"/></g>`; }
+/* a water vessel (kendi) tipped over a bowl */
+function kendi(x,y,s=1,{tip=0}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-30 0 Q-34 -8 0 -8 Q34 -8 30 0 Q24 16 0 16 Q-24 16 -30 0Z" fill="#8A8A98" stroke="${K}" stroke-width="2"/><g transform="translate(-10 -50) rotate(${tip})"><path d="M-18 0 Q-24 -30 0 -32 Q24 -30 18 0 Q10 10 0 10 Q-10 10 -18 0Z" fill="${GOLD}" stroke="${K}" stroke-width="2"/><path d="M18 -10 L36 -20 L36 -16 L20 -4" fill="${GOLD}" stroke="${K}" stroke-width="1.6"/><path d="M-4 -32 V-42 H4 V-32" fill="${GOLD}" stroke="${K}" stroke-width="1.6"/></g></g>`; }
+/* Yama, king of the dead: crowned, dark green, with a staff */
+function yama(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-40 0 L-34 -100 Q0 -112 34 -100 L40 0Z" fill="${LEAF}" stroke="${K}" stroke-width="2.6"/><path d="M-34 -60 H34 M-36 -30 H36" stroke="${GOLD}" stroke-width="4"/><path d="M50 0 V-170" stroke="${GOLD}" stroke-width="5"/><circle cx="50" cy="-176" r="9" fill="${GOLD}" stroke="${K}" stroke-width="1.6"/><path d="M34 -96 L50 -110" stroke="#2E5A3A" stroke-width="12" stroke-linecap="round"/><circle cy="-128" r="20" fill="#2E5A3A" stroke="${K}" stroke-width="2.4"/><path d="M-20 -142 L-14 -176 L-6 -150 L0 -186 L6 -150 L14 -176 L20 -142Z" fill="${GOLD}" stroke="${K}" stroke-width="2"/><path d="M-9 -130 h6 M3 -130 h6 M-6 -118 Q0 -114 6 -118" stroke="${K}" stroke-width="2" fill="none"/></g>`; }
+/* a funeral pyre in a tall, tiered paper pavilion (meru) */
+function meru(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-80" y="-40" width="160" height="40" fill="${WHITE}" stroke="${K}" stroke-width="2.2"/><path d="M-70 -40 V-140 M70 -40 V-140" stroke="${GOLD}" stroke-width="6"/>${[0,1,2,3].map(k=>`<path d="M${-90+k*16} ${-140-k*26} L0 ${-170-k*26} L${90-k*16} ${-140-k*26}Z" fill="${[TRED,GOLD,TRED,GOLD][k]}" stroke="${K}" stroke-width="2"/>`).join('')}<path d="M0 -250 V-276" stroke="${GOLD}" stroke-width="4"/>${coffin(0,-40,.5)}</g>`; }
+function flames(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})" class="flick">${[-50,-25,0,25].map((d,i)=>`<path d="M${d} 0 Q${d-10} -40 ${d+12} -${70+(i%2)*30} Q${d+36} -40 ${d+26} 0Z" fill="${[SAFF,TRED,GOLD][i%3]}" stroke="${K}" stroke-width="2"/>`).join('')}</g>`; }
+/* the realms: a wheel of six worlds */
+function realms(x,y,s=1){ const C=['#EAD27A','#C9A8D8','#E8C8A8','#8AB878','#A8A8B8','#B85A3A']; return `<g transform="translate(${x} ${y}) scale(${s})"><g class="spin">${C.map((c,i)=>{ const a0=i/6*Math.PI*2, a1=(i+1)/6*Math.PI*2; return `<path d="M0 0 L${Math.cos(a0)*120} ${Math.sin(a0)*120} A120 120 0 0 1 ${Math.cos(a1)*120} ${Math.sin(a1)*120}Z" fill="${c}" stroke="${K}" stroke-width="2.4"/>`; }).join('')}</g><circle r="30" fill="${CREAM}" stroke="${K}" stroke-width="2.4"/></g>`; }
+function thCover(){ return tw(`${ground(330)}${wat(300,330,.95)}${buddha(300,330,.5)}${monk(110,330,.8,{arms:'bowl'})}${oilLamp(500,330,1.2)}`); }
+
+return thCover;})();
 COVERS.secular=(()=>{
 /* Kit for The Last Light: a clear night sky, one small person, a tree, and the long view. */
 const K='#151B2B', INDIGO='#1B2550', NIGHT='#0A0F1F', STAR='#F8F5EE', EMBER='#F0C25A', WARM='#C8773A', LEAF='#5E9C6A', SOIL='#3A2E26', SKY2='#3D5A99', ROSE='#D98C7A';
@@ -870,6 +910,12 @@ const D=[
   facts:[['Trip length','13 days of rites'],['Who decides','Yama, and your karma'],['Last stop','Rebirth, or release']],
   ask:{who:'Yama, and karma',long:'13 days',cross:'The Vaitarani river',back:'Reborn'},
   book:['The Thirteen Days','hindu/book/'],walk:['The Thirteen-Day Walk','hindu/walk/'],href:'hindu/'},
+ {k:'theravada',name:'Theravada Buddhism',col:'#C27A1A',emb:'bowl',pop:.15,popTxt:'About 150 million followers',title:'The Last Thought',
+  head:'No soul goes anywhere, yet a flame lights the next lamp.',
+  route:[['eye','The messengers','Old age, sickness and death visit everyone. Notice them.'],['bed','The last thought','A calm mind, full of good memories, shapes the next birth.'],['water','Merit','The family feeds the monks and pours water to share the merit.'],['wheel','Rebirth','A new life, lit from the old like a lamp from a lamp.'],['flame','Nibbana','With craving gone, the flame goes out. Peace.']],
+  facts:[['Trip length','At once'],['Who decides','Your own deeds'],['Last stop','Rebirth, or nibbana']],
+  ask:{who:'Your own deeds',long:'At once',cross:'No crossing',back:'Reborn, until the flame goes out'},
+  book:null,walk:null,href:'theravada/',play:'Open the book',review:'Still waiting for review by Theravada monks and lay Buddhists.'},
  {k:'tibetan',name:'Tibetan Buddhism',col:'#1F5E63',emb:'wheel',pop:null,popTxt:'Part of 320 million Buddhists',title:'The Bardo Manual',
   head:'Forty-nine days in between, with a chance to wake up at every turn.',
   route:[['bed','Dissolving','Earth, water, fire and air melt away, one into the next.'],['sun','Clear Light','The mind\'s own nature dawns. Recognise it and you\'re free.'],['eye','Visions','Peaceful, then wrathful, deities. All of them are your own mind.'],['mirror','The mirror','Yama holds up the mirror of your karma.'],['wheel','Rebirth','The wind of karma blows you to a womb, unless you choose well.']],
@@ -951,7 +997,7 @@ function cover(){
       <path d="M180 54 V22 Q187 24 194 30 V54Z" fill="#F2B640"/>
       <circle cx="152" cy="46" r="4" fill="#FBF3DF"/><path d="M152 50 V60" stroke="#FBF3DF" stroke-width="3"/>
     </svg>
-    <p class="small">About 5 minutes to see the idea. Then fourteen doors. Sound is optional.</p></div>`);
+    <p class="small">About 5 minutes to see the idea. Then fifteen doors. Sound is optional.</p></div>`);
   $('#open').onclick=()=>{ ai(); blip(); slide(0); };
   $('#skip').onclick=()=>{ ai(); hall(); };
 }
