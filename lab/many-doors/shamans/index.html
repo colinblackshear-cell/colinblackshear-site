@@ -823,10 +823,24 @@ function whale(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"
 function cloth(x1,x2,y,{torn=0}={}){ const m=(x1+x2)/2; return torn?`<path d="M${x1} ${y} H${m-torn}" stroke="${SNOW}" stroke-width="16"/><path d="M${m+torn} ${y} H${x2}" stroke="${SNOW}" stroke-width="16"/><path d="M${x1} ${y-8} H${m-torn} M${m+torn} ${y-8} H${x2}" stroke="${K}" stroke-width="1.2"/>`:`<path d="M${x1} ${y} H${x2}" stroke="${SNOW}" stroke-width="16"/><path d="M${x1} ${y-8} H${x2} M${x1} ${y+8} H${x2}" stroke="${K}" stroke-width="1.2"/>`; }
 function sea(y=250){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${SEA}"/>`; for(let k=0;k<3;k++){ let d=`M${k%2*20} ${y+20+k*30}`; for(let x=0;x<620;x+=40) d+=` q10 -8 20 0 q10 8 20 0`; o+=`<path d="${d}" stroke="${BIRCH}" stroke-width="2" fill="none" opacity=".45"/>`; } return o; }
 function smCover(){ return shm(`${aurora()}${ground(320,'#2A3440')}${larch(90,320,.9)}${larch(520,320,1)}${drumF(300,200,1.4,{glow:true})}${beater(370,280,1.1,-24)}`,{bg:'night'}); }
+/* the Americas: rainforest, a shabono, a highland temple, maize */
+function jtree(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-6 0 Q-4 -100 -8 -200 H8 Q4 -100 6 0Z" fill="#5A4430" stroke="${K}" stroke-width="1.8"/><path d="M-8 0 L-24 10 M8 0 L24 10" stroke="#5A4430" stroke-width="5"/>${[[-50,-200,60],[40,-210,56],[0,-240,64],[-30,-160,40],[36,-160,40]].map(([a,b,r])=>`<ellipse cx="${a}" cy="${b}" rx="${r}" ry="${r*.6}" fill="#2E5A34" stroke="${K}" stroke-width="1.4"/>`).join('')}</g>`; }
+function vines(){ return [80,210,390,520].map((x,i)=>`<path d="M${x} 16 q${i%2?12:-12} 60 0 120 q${i%2?-10:10} 40 0 70" stroke="#3A6A3A" stroke-width="3" fill="none"/>`).join(''); }
+/* a shabono: a great ring-shaped communal house open to the sky in the middle */
+function shabono(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-220 0 L-200 -70 Q0 -110 200 -70 L220 0Z" fill="#B8A060" stroke="${K}" stroke-width="2.4"/><path d="M-160 0 L-150 -40 Q0 -64 150 -40 L160 0Z" fill="#4A3A24" stroke="${K}" stroke-width="2"/>${[-180,-120,-60,0,60,120,180].map(d=>`<path d="M${d} -${d*d<20000?84:70} L${d*.82} -${d*d<20000?44:36}" stroke="#8A7040" stroke-width="2"/>`).join('')}</g>`; }
+function xapiri(n=0){ let o=''; for(let i=0;i<n;i++){ const x=120+((i*97)%360), y=60+((i*53)%120); o+=`<g transform="translate(${x} ${y})"><circle r="16" fill="url(#glowS)"/><circle r="3.5" fill="#FFF8E0"/><path d="M0 4 V12 M-5 8 H5" stroke="#FFF8E0" stroke-width="1.6"/></g>`; } return o; }
+function gourd(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cy="-16" rx="18" ry="16" fill="#A8803A" stroke="${K}" stroke-width="1.8"/><path d="M-6 -30 Q0 -40 6 -30" fill="#8A6A2A" stroke="${K}" stroke-width="1.5"/></g>`; }
+function canoe(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-90 -10 Q0 16 90 -10 Q0 4 -90 -10Z" fill="#6A4A2A" stroke="${K}" stroke-width="2"/></g>`; }
+/* a stepped highland temple, plain */
+function temple(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})">${[0,1,2,3].map(i=>`<rect x="${-110+i*20}" y="${-30-i*30}" width="${220-i*40}" height="30" fill="#B8A88A" stroke="${K}" stroke-width="2"/>`).join('')}<rect x="-14" y="-120" width="28" height="120" fill="#A89878" stroke="${K}" stroke-width="1.6"/><rect x="-40" y="-160" width="80" height="40" fill="#C8B898" stroke="${K}" stroke-width="2"/><rect x="-10" y="-150" width="20" height="30" fill="#2A2420"/></g>`; }
+function maize(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 V-90" stroke="#5A7A3A" stroke-width="4"/><path d="M0 -30 Q-24 -40 -30 -60 M0 -50 Q24 -60 30 -80 M0 -70 Q-18 -84 -20 -100" stroke="#6A8A3A" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="6" cy="-56" rx="6" ry="14" fill="${OCHRE}" stroke="${K}" stroke-width="1.4"/></g>`; }
+function crossroads(){ return [['#A4432A',-1],['#1A1614',-.35],['#F2ECDD',.35],['#D8B040',1]].map(([c,d])=>`<path d="M300 380 L${300+d*260} 210" stroke="${c}" stroke-width="22" stroke-linecap="round"/><path d="M300 380 L${300+d*260} 210" stroke="${K}" stroke-width="1.5" fill="none" opacity=".4"/>`).join(''); }
+function lord(x,y,s=1,{wood=false}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-24" y="-20" width="48" height="20" fill="#5A4A3A" stroke="${K}" stroke-width="1.6"/><path d="M-20 -20 L-16 -80 Q0 -88 16 -80 L20 -20Z" fill="${wood?'#8A6A44':'#3A2A3A'}" stroke="${K}" stroke-width="2"/><circle cy="-96" r="15" fill="${wood?'#9A7A50':'#D8D0C0'}" stroke="${K}" stroke-width="2"/>${wood?`<path d="M-6 -98 h4 M2 -98 h4 M-4 -88 h8" stroke="${K}" stroke-width="2"/>`:`<circle cx="-5" cy="-98" r="3" fill="${K}"/><circle cx="5" cy="-98" r="3" fill="${K}"/><path d="M-6 -88 h12" stroke="${K}" stroke-width="2"/>`}<path d="M-14 -110 L-10 -124 L0 -114 L10 -124 L14 -110" fill="none" stroke="${OCHRE}" stroke-width="3"/></g>`; }
+function mosquito(x,y){ return `<g transform="translate(${x} ${y})"><path d="M-6 0 H6" stroke="${K}" stroke-width="3"/><path d="M0 0 L-8 -8 M0 0 L8 -8" stroke="${K}" stroke-width="1.4"/><path d="M6 0 L12 2" stroke="${K}" stroke-width="1.2"/></g>`; }
 
-/* The Drum and the Road, the full book. Six peoples whose healers and guides outsiders have called "shamans", and what each says
+/* The Drum and the Road, the full book. Nine peoples whose healers and guides outsiders have called "shamans", and what each says
    about the road of the dead: the Evenki and Nanai of Siberia, the mudang of Korea, Mongolian and Tuvan shamans, the Sámi noaidi,
-   the Inuit angakkuq, and the Mapuche machi. Each volume is its own door, told from published ethnography and the communities'
+   the Inuit angakkuq, the Mapuche machi, the Yanomami, the Shipibo-Konibo, and the K'iche' Maya. Each volume is its own door, told from published ethnography and the communities'
    own accounts. These are living traditions, and nothing here is a guide to practising them.
    A first draft: each volume should be read by people of that tradition. */
 const BOOK={home:'sib_river', toast:'Learned: ', pathLabel:'Path', pathTitle:'What you have learned', detourTitle:'Wrong turns you walked',
@@ -846,13 +860,13 @@ Object.assign(MOODS,{ drone:()=>drone(),
 function drumHit(k=1){ if(!ctx) return; thump(.5); burst({type:'lowpass',freq:180+k*6,peak:.22,a:.003,d:.25}); }
 function tapCount(n,lab,onTap){ let k=0; choices.innerHTML=`<button class="btn" type="button" id="tc">${lab} · 0 of ${n}</button>`; const b=$('#tc'); b.focus({preventScroll:true});
   b.onclick=e=>{ e.stopPropagation(); initAudio(); k++; onTap&&onTap(k); b.textContent=`${lab} · ${k} of ${n}`; if(k>=n){ b.disabled=true; setTimeout(()=>{ choices.innerHTML=''; next(); },700); } }; }
-const DOORS=[['Siberia','v_sib'],['Korea','v_kor'],['Mongolia and Tuva','v_mon'],['Sámi','v_sam'],['Inuit','v_inu'],['Mapuche','v_map']];
+const DOORS=[['Siberia','v_sib'],['Korea','v_kor'],['Mongolia and Tuva','v_mon'],['Sámi','v_sam'],['Inuit','v_inu'],['Mapuche','v_map'],['Yanomami','v_yan'],['Shipibo-Konibo','v_shi'],["K'iche' Maya",'v_may']];
 
 /* ---------- the book ---------- */
 const S=[
 { key:'title', label:'', bg:NIGHTBG,
   view:()=>`<div class="title-card" role="dialog" aria-label="Start"><span class="eyebrow">Many Doors · Shamans · the full book</span><h1>The Drum and the Road</h1>
-    <p>In many cultures, someone walks between this world and the world of spirits: to heal, to bring back a lost soul, and to guide the dead on their road. Outsiders call them all "shamans". Each people has its own name, its own ways, and its own map of where the dead go. This book has six doors, one for each.</p>
+    <p>In many cultures, someone walks between this world and the world of spirits: to heal, to bring back a lost soul, and to guide the dead on their road. Outsiders call them all "shamans". Each people has its own name, its own ways, and its own map of where the dead go. This book has nine doors, one for each.</p>
     <p class="draft">These are living traditions. The book tells what each people has shared about death, from published accounts. It isn't a guide to practising them.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">${DOORS.map(([n,k])=>`<button class="btn alt" type="button" data-door="${k}">${n}</button>`).join('')}</div>
     <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="begin" type="button">Begin at the start</button><button class="btn alt" id="pickch" type="button">Choose a chapter</button></div></div>`,
@@ -868,7 +882,7 @@ const S=[
   beats:[
     {text:"The word shaman comes from one people, the Evenki of Siberia. Outsiders stretched it to cover healers and spirit-guides all over the world."},
     {text:"The traditions in this book are very different from one another. What many of them share is a job: going where ordinary people can't, and sometimes walking the dead to where they belong."},
-    {text:"Six doors. You can walk them in order, or pick one from the chapters. Each was put together from published accounts, and each should be read by people of that tradition."} ]},
+    {text:"Nine doors. You can walk them in order, or pick one from the chapters. Each was put together from published accounts, and each should be read by people of that tradition."} ]},
 
 /* ===== Siberia ===== */
 { key:'v_sib', label:'Siberia', bg:'var(--teal)',
@@ -1070,17 +1084,98 @@ const S=[
     {text:"Many Mapuche say the soul travels west, across the sea, to the land of the dead. In the far south, the story goes that old women who have become whales carry the souls over. Hold, and cross.", lock:true, show(){ holdOn({label:'Cross the sea',ms:6000,wait:800,onProgress:p=>{ const w=$('#wh'); if(w) w.style.translate=`${p*280}px 0`; },onDone:()=>chime()}); }},
     {text:"She's across. Some say the dead go on to live among the volcanoes as ancestors, still watching over their people."} ]},
 
+/* ===== Yanomami ===== */
+{ key:'v_yan', label:'Yanomami', bg:'var(--teal)',
+  view:()=>card('Door 7 · Yanomami','The Falling Sky',"The Yanomami live in the rainforest on the border of Brazil and Venezuela. One of their shamans, Davi Kopenawa, wrote down their knowledge himself, so that outsiders would understand."),
+  enter(){ mood('warm','water'); drumHit(); }, beats:[{text:null}] },
+
+{ key:'yan_xapiri', label:'The xapiri', bg:'#1E3424', learn:'xapiri',
+  view:()=>PG(`${vines()}${jtree(60,330,1)}${jtree(560,330,1.1)}${ground(330,'#6A5A3A')}${shabono(300,330,1)}<g id="xp"></g>${pp(300,330,.75,{col:'#7A4A2A',trim:RUST,hat:'none',arms:'up'})}`,'A great round communal house in the rainforest. In its open centre, a shaman raises his arms.',{bg:'#2E5A3A'}),
+  enter(){ mood('warm','water'); },
+  guide:{title:'Davi Kopenawa',text:"Davi Kopenawa is a Yanomami shaman and spokesman who has spent his life defending the forest and his people's land. With the anthropologist Bruce Albert he wrote The Falling Sky: Words of a Yanomami Shaman (2010; English 2013), in his own words, so that white people would understand what they are destroying. This door follows that book."},
+  beats:[
+    {text:"Yanomami shamans breathe in yãkoana, a powder made from tree resin, and call the xapiri: tiny, shining spirits that dance down to them on paths of light. Watch them come.", lock:true, afterType(){ tapCount(5,'Watch',k=>{ const g=$('#xp'); if(g) g.innerHTML=xapiri(k*3); bell(523+k*40,.04,3); }); }},
+    {text:"The xapiri heal the sick, fight off sickness spirits, and, Kopenawa says, help hold up the sky."} ]},
+
+{ key:'yan_death', label:'The ashes', bg:'#1E3424',
+  view:()=>PG(`${vines()}${jtree(60,330,1)}${jtree(560,330,1.1)}${ground(330,'#6A5A3A')}${shabono(300,330,1)}${gourd(300,326,1.1)}${pp(200,330,.75,{col:'#7A4A2A',trim:OCHRE,hat:'long',arms:'fold'})}${pp(400,330,.75,{col:'#6A3A2A',trim:OCHRE,hat:'none',arms:'fold'})}`,'Mourners sit by a small gourd in the communal house.',{bg:'#2E5A3A'}),
+  enter(){ mood('night'); },
+  beats:[
+    {text:"When someone dies, their body is cremated and the bones are ground and kept in gourds. Their ghost has to leave for the back of the sky, where the ghosts of the Yanomami live in plenty. The family wonders what to do with their things.", lock:true, afterType(){ pick([{label:'Keep some of their things, to remember',go:'x_yan'},{label:'Let everything of theirs be destroyed'}]); }} ]},
+
+{ key:'yan_reahu', label:'The ashes', bg:'#1E3424', learn:'ashes',
+  view:()=>PG(`${vines()}${jtree(60,330,1)}${jtree(560,330,1.1)}${ground(330,'#6A5A3A')}${shabono(300,330,1)}<g id="gd">${gourd(300,326,1.1)}</g>${pp(180,330,.75,{col:'#7A4A2A',trim:OCHRE,hat:'long',arms:'offer'})}${pp(420,330,.75,{col:'#6A3A2A',trim:OCHRE,hat:'none',arms:'offer'})}`,'Mourners hold out bowls around the gourd.',{bg:'#2E5A3A'}),
+  enter(){ mood('warm'); },
+  beats:[
+    {text:"Their belongings are burned, their name isn't spoken again, and at a great feast, the reahu, the ashes are mixed into plantain soup and shared by the relatives. Hold, and let the last trace go.", lock:true, show(){ holdOn({label:'Let them go',ms:5000,wait:600,onProgress:p=>{ const g=$('#gd'); if(g) g.style.opacity=String(1-p*.85); },onDone:()=>chime()}); }},
+    {text:"Nothing of the dead is left behind to pull them back. The mourning is over, and the ghost goes on to the back of the sky."},
+    {text:"Kopenawa's warning: if the forest is destroyed and the shamans die out, the xapiri will leave, and the sky will fall on everyone, white people too."} ]},
+
+/* ===== Shipibo-Konibo ===== */
+{ key:'v_shi', label:'Shipibo-Konibo', bg:'var(--teal)',
+  view:()=>card('Door 8 · Shipibo-Konibo','The Songs',"The Shipibo-Konibo live along the Ucayali river in the Peruvian Amazon. Their healers, onanya, those who know, heal with songs."),
+  enter(){ mood('water'); drumHit(); }, beats:[{text:null}] },
+
+{ key:'shi_icaro', label:'The songs', bg:'#2A3A2E', learn:'icaro',
+  view:()=>PG(`${river(290,'#5A6A4A')}${jtree(80,290,.9)}${jtree(520,290,1)}${canoe(420,300,.8)}<rect x="160" y="180" width="200" height="110" fill="#D8C8A0" stroke="${K}" stroke-width="2"/><path d="M150 180 L260 120 L370 180Z" fill="#B8A060" stroke="${K}" stroke-width="2"/>${pp(220,290,.7,{col:'#3A3A5A',trim:OCHRE,hat:'none'})}${pp(300,290,.65,{col:'#7A2A3A',trim:OCHRE,hat:'long',arms:'fold'})}<g id="sg"></g>`,'A stilt house by a river. A healer sits with a patient. A canoe passes.',{bg:'#6A8A6A'}),
+  enter(){ mood('water','night'); },
+  guide:{title:'Onanya and kené',text:"In Shipibo-Konibo healing, an onanya (one who knows) learns icaros, songs, from the spirits of plants, and sings them over the sick to restore order to the body. Shipibo understanding links the songs to kené, the intricate geometric designs that Shipibo women paint and embroider; Peru declared kené part of the national cultural heritage in 2008. Among the dangers an onanya guards against are yoshin, spirits, including the wandering ghosts of the dead."},
+  beats:[
+    {text:"A healer sings icaros, songs learned from the spirits of plants, over a sick woman. Shipibo say the songs carry patterns that put the body back in order. Listen.", lock:true, afterType(){ tapCount(4,'Listen',k=>{ bell(294+k*36,.05,4); const g=$('#sg'); if(g) g.innerHTML+=`<path d="M${200+k*14} ${170-k*10} q8 -10 16 0 t16 0" stroke="${OCHRE}" stroke-width="2.4" fill="none"/>`; }); }},
+    {text:"The songs also guard against yoshin, wandering spirits, among them the ghosts of the dead who haven't left. Healing the living and keeping the restless dead away are part of the same work."} ]},
+
+{ key:'shi_tour', label:'Not a product', bg:HIDEBG,
+  view:()=>PG(`<rect x="150" y="70" width="300" height="210" rx="10" fill="#F8F6F0" stroke="${K}" stroke-width="2.4"/><rect x="150" y="70" width="300" height="26" rx="10" fill="#C8CCD8" stroke="${K}" stroke-width="2"/><text x="300" y="140" text-anchor="middle" font-family="Jost,sans-serif" font-size="19" font-weight="700" fill="${K}">JUNGLE RETREAT</text><text x="300" y="166" text-anchor="middle" font-family="Jost,sans-serif" font-size="15" fill="${K}">3 nights with a real shaman</text><rect x="235" y="200" width="130" height="34" rx="17" fill="${RUST}"/><text x="300" y="223" text-anchor="middle" font-family="Jost,sans-serif" font-size="15" font-weight="700" fill="#FFF">Book now</text>`,'An advert for a jungle retreat with a real shaman.'),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"Back home, you see an advert for a retreat in the Amazon: three nights of ayahuasca with a real shaman.", lock:true, afterType(){ pick([{label:'Book it',go:'x_shi'},{label:'Learn from Shipibo people themselves'}]); }} ]},
+
+{ key:'shi_learn', label:'Not a product', bg:'#2A3A2E', learn:'heritage',
+  view:()=>PG(`${river(290,'#5A6A4A')}${jtree(80,290,.9)}${jtree(520,290,1)}<rect x="200" y="200" width="200" height="80" fill="#F2ECDD" stroke="${K}" stroke-width="2"/><path d="M210 214 H390 M210 240 H390 M210 266 H390 M240 200 V280 M300 200 V280 M360 200 V280" stroke="#3A2A3A" stroke-width="3"/>${pp(440,290,.7,{col:'#7A2A3A',trim:OCHRE,hat:'long',arms:'offer'})}`,'A Shipibo woman holds out an embroidered cloth.',{bg:'#6A8A6A'}),
+  enter(){ mood('warm'); },
+  beats:[
+    {text:"Shipibo-Konibo artists and healers speak for themselves, and sell their own work. Peru declared their kené designs part of the nation's cultural heritage in 2008."},
+    {text:"The songs, the plants and the designs belong to the people who carry them. Listening to them is how you learn."} ]},
+
+/* ===== K'iche' Maya ===== */
+{ key:'v_may', label:"K'iche' Maya", bg:'var(--teal)',
+  view:()=>card("Door 9 · K'iche' Maya",'The Road to Xibalba',"The K'iche' Maya of highland Guatemala keep the Popol Vuh, their great book, and the 260-day calendar, which is kept by daykeepers, ajq'ij."),
+  enter(){ mood('warm'); drumHit(); }, beats:[{text:null}] },
+
+{ key:'may_cross', label:'The crossroads', bg:'#2A2430',
+  view:()=>PG(`${crossroads()}<path d="M0 210 H600" stroke="${K}" stroke-width="2" opacity=".3"/>${pp(262,372,.6,{col:'#3A5A3A',trim:OCHRE,hat:'band'})}${pp(338,372,.6,{col:'#5A3A2A',trim:OCHRE,hat:'band'})}`,'Two young men stand where four roads meet: red, black, white and yellow.',{bg:'#2A2430'}),
+  enter(){ mood('night'); },
+  guide:{title:'The Popol Vuh',text:"The Popol Vuh, the Council Book of the K'iche' Maya, was written down in the K'iche' language in the 1550s by K'iche' nobles, and survives in a copy made by the friar Francisco Ximénez around 1701. Its central story follows the Hero Twins, Hunahpu and Xbalanque, down to Xibalba, the place of fear, to face the lords of death who had killed their father and uncle."},
+  beats:[
+    {text:"In the Popol Vuh, the lords of Xibalba, the underworld, summoned two brothers to play ball, and killed them. Now the brothers' sons, the Hero Twins Hunahpu and Xbalanque, are called down the same road."},
+    {text:"They come to a crossroads of four roads: red, black, white and yellow. The black road speaks, and leads to Xibalba. At its end, the lords sit waiting in a row. Some of them are only wooden figures, put there to trick visitors.", lock:true, afterType(){ pick([{label:'Greet the seated lords politely',go:'x_may'},{label:'Send a mosquito ahead to find out who is real'}]); }} ]},
+
+{ key:'may_names', label:'The lords of death', bg:'#2A2430', learn:'names',
+  view:()=>PG(`<rect x="40" y="60" width="520" height="270" fill="#3A2E3A"/>${ground(330,'#4A3A3A')}${[120,190,260,330,400,470].map((x,i)=>lord(x,330,.8,{wood:i===0||i===3})).join('')}<g id="mq">${mosquito(100,120)}</g>`,'A row of seated lords. Two of them are wooden figures. A mosquito flies along the row.',{bg:'#2A2430'}),
+  enter(){ mood('night'); },
+  beats:[
+    {text:"The twins send a mosquito down the row. The wooden figures don't flinch. Each real lord yelps, and the lord beside him calls out his name. Tap to send the mosquito.", lock:true, afterType(){ tapCount(4,'Bite',k=>{ const m=$('#mq'); if(m) m.innerHTML=mosquito(100+k*90,180); bell(660+k*30,.03,2); }); }},
+    {text:"One Death! Seven Death! Now the twins know every lord by name. In the Popol Vuh, knowing the names of death's lords is the start of beating them."} ]},
+
+{ key:'may_rise', label:'Sun and moon', bg:'#3A3A5A', learn:'rise',
+  view:()=>PG(`<g id="sm" style="transition:translate 1s">${['#F0C040','#E8E8F0'].map((c,i)=>`<circle cx="${220+i*160}" cy="300" r="40" fill="${c}" stroke="${K}" stroke-width="2"/><circle cx="${220+i*160}" cy="300" r="70" fill="url(#glowS)"/>`).join('')}</g>${ground(330,'#2A2430')}${temple(300,330,.6)}${maize(80,330,1)}${maize(520,330,1)}`,'Above a temple and fields of maize, the sun and the moon begin to rise.',{bg:'night'}),
+  enter(){ mood('light'); },
+  beats:[
+    {text:"The twins survive every house of trials in Xibalba. At last they let themselves be burned and their bones ground and thrown in a river, and five days later they come back. They trick the lords of death into asking to be sacrificed too, and defeat them. Hold, and rise.", lock:true, show(){ holdOn({label:'Rise',ms:5000,wait:600,onProgress:p=>{ const s=$('#sm'); if(s) s.style.translate=`0 ${-p*200}px`; },onDone:()=>chime()}); }},
+    {text:"The twins rise into the sky as the sun and the moon. Death can be outwitted, and life rises again, like the maize."},
+    {text:"Today, K'iche' daykeepers still keep the 260-day calendar and pray at fire altars. And in Kaqchikel Maya towns, on the Day of the Dead, families fly giant kites over the cemeteries to reach the people they've lost."} ]},
+
 { key:'lastpage', label:'The last page', bg:NIGHTBG,
   view:()=>frame(sv(smCover(),'A glowing drum under the northern lights, between two larch trees.')),
   enter(){ mood('light'); },
   beats:[
-    {text:"Six peoples, six roads: a river and a sledge, a white cloth torn open, the ancestors' voices, a song that keeps the way open, a woman's combed hair under the sea, and whales crossing to the west."},
+    {text:"Nine peoples, nine roads: a river and a sledge, a white cloth torn open, the ancestors' voices, a song that keeps the way open, a woman's combed hair under the sea, whales crossing to the west, ashes shared at a feast, a healer's songs, and twins who outwit the lords of death."},
     {text:"Different maps, but the same work: someone goes where the rest of us can't, so that the dead arrive, and the living can carry on."} ]},
 
 { key:'end', label:'The end', bg:'var(--teal)',
   view:()=>`<div class="title-card" style="cursor:default"><span class="eyebrow">The end of the book</span><h1>The Drum and the Road</h1>
-    <p>That was all six doors: the Evenki and Nanai of Siberia, the mudang of Korea, the shamans of Mongolia and Tuva, the Sámi noaidi, the Inuit angakkuq, and the Mapuche machi.</p><p id="endsum" style="font-weight:700"></p>
-    <p class="draft">A first draft. Each door should be read by people of that tradition: Evenki, Nanai, Korean, Mongolian, Tuvan, Sámi, Inuit and Mapuche readers. Sources include: S. M. Shirokogoroff, Psychomental Complex of the Tungus (1935); A. F. Anisimov on Evenki cosmology; L. Sternberg and A. V. Smolyak on the Nanai; Laurel Kendall, Shamans, Housewives, and Other Restless Spirits (1985); Manduhai Buyandelger, Tragic Spirits (2013); Håkan Rydving, The End of Drum-Time (1993); Knud Rasmussen, Intellectual Culture of the Iglulik Eskimos (1929); Ana Mariella Bacigalupo, Shamans of the Foye Tree (2007).</p>
+    <p>That was all nine doors: the Evenki and Nanai of Siberia, the mudang of Korea, the shamans of Mongolia and Tuva, the Sámi noaidi, the Inuit angakkuq, the Mapuche machi, the Yanomami xapiri, the Shipibo-Konibo onanya, and the K'iche' Maya Popol Vuh.</p><p id="endsum" style="font-weight:700"></p>
+    <p class="draft">A first draft. Each door should be read by people of that tradition: Evenki, Nanai, Korean, Mongolian, Tuvan, Sámi, Inuit, Mapuche, Yanomami, Shipibo-Konibo and K'iche' Maya readers. Sources include: S. M. Shirokogoroff, Psychomental Complex of the Tungus (1935); A. F. Anisimov on Evenki cosmology; L. Sternberg and A. V. Smolyak on the Nanai; Laurel Kendall, Shamans, Housewives, and Other Restless Spirits (1985); Manduhai Buyandelger, Tragic Spirits (2013); Håkan Rydving, The End of Drum-Time (1993); Knud Rasmussen, Intellectual Culture of the Iglulik Eskimos (1929); Ana Mariella Bacigalupo, Shamans of the Foye Tree (2007); Davi Kopenawa and Bruce Albert, The Falling Sky (2013); Peter Gow and others on Shipibo-Konibo healing; Dennis Tedlock, Popol Vuh (1985, rev. 1996); Barbara Tedlock, Time and the Highland Maya (1982).</p>
     <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="again" type="button">Read it again</button><button class="btn alt" id="pathend" type="button">See your path</button><button class="btn alt" id="chend" type="button">Choose a chapter</button></div>
     <div class="endlinks"><a href="../index.html#doors">Back to Many Doors</a></div></div>`,
   enter(){ mood('warm'); $('#again').onclick=e=>{ e.stopPropagation(); go(0); }; $('#chend').onclick=e=>{ e.stopPropagation(); openChapters(true); }; $('#pathend').onclick=e=>{ e.stopPropagation(); openPath(); };
@@ -1128,7 +1223,27 @@ const S=[
   enter(){ mood('drone'); },
   beats:[
     {text:"She's buried by the end of the day. Nobody tells her story, and the relatives who travelled arrive too late. For the Mapuche, a person belongs to a lineage and a land, and the eluwün is how the community says so, and sends her off honoured."},
-    {text:"Rewind, and gather everyone.", lock:true, afterType(){ rewindButton(); }} ]}
+    {text:"Rewind, and gather everyone.", lock:true, afterType(){ rewindButton(); }} ]},
+{ key:'x_yan', label:'A wrong turn', bg:'#1E3424',
+  view:()=>PG(`${vines()}${jtree(60,330,1)}${ground(330,'#4A4030')}<g opacity=".45">${pp(400,330,.8,{col:'#3A3430',skin:'#3A3430',trim:'#3A3430'})}</g>${pp(220,330,.75,{col:'#7A4A2A',trim:OCHRE,hat:'long',arms:'fold'})}<rect x="270" y="300" width="40" height="30" fill="#8A6A44" stroke="${K}" stroke-width="1.6"/>`,'A mourner sits by a basket of belongings. A faint figure lingers nearby.',{bg:'#2E4A34'}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"They keep a few things. In Kopenawa's account, anything the dead leave behind keeps their ghost longing for the living, and keeps the living grieving. The ghost lingers, and can't leave for the back of the sky."},
+    {text:"For the Yanomami, every trace is erased so both can be free. Rewind, and let everything go.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_shi', label:'A wrong turn', bg:'#4A4440',
+  view:()=>PG(`${ground(330,'#6A6458')}<rect x="150" y="200" width="300" height="130" fill="#5A5048" stroke="${K}" stroke-width="2"/>${[200,260,320,380].map(x=>pp(x,330,.6,{col:'#8A8A8A',hat:'none'})).join('')}${pp(500,330,.75,{col:'#3A3A3A',hat:'none'})}`,'A crowded retreat hall full of tourists.'),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"The retreat is run by an outsider in a costume. Ayahuasca tourism has drawn many fake healers to the Amazon. Some retreats have been dangerous, and some guests have died. Meanwhile real Shipibo healers and their knowledge are turned into a product."},
+    {text:"It's a powerful, risky medicine that belongs to a living people. Rewind, and learn from them.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_may', label:'A wrong turn', bg:'#2A2430',
+  view:()=>PG(`<rect x="40" y="60" width="520" height="270" fill="#3A2E3A"/>${ground(330,'#4A3A3A')}${lord(160,330,.8,{wood:true})}${lord(250,330,.8,{wood:true})}${lord(400,330,.8)}${lord(480,330,.8)}${pp(320,330,.7,{col:'#3A5A3A',trim:OCHRE,hat:'band',arms:'fold'})}`,'Bowing to two wooden figures while the real lords of death laugh.',{bg:'#2A2430'}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"You bow to the first lord. It's a wooden figure. The real lords of Xibalba howl with laughter. This is exactly how the twins' father and uncle were fooled, before the lords sat them on a burning bench and killed them."},
+    {text:"In Xibalba, you have to see through the tricks of death. Rewind, and send the mosquito.", lock:true, afterType(){ rewindButton(); }} ]}
 ];
 
 const CHAPTERS=[
@@ -1138,7 +1253,10 @@ const CHAPTERS=[
   ['Door 3 · Mongolia and Tuva',[['Sky and earth','mon_sky'],['The ancestors','mon_ongod']]],
   ['Door 4 · Sámi',[['The drum','sam_drum'],['The journey','sam_trance'],['Saivo','sam_saivo']]],
   ['Door 5 · Inuit',[['The northern lights','inu_sky'],['The woman under the sea','inu_sea']]],
-  ['Door 6 · Mapuche',[['The rewe','map_rewe'],['The funeral','map_eluwun'],['Across the sea','map_west']]] ];
+  ['Door 6 · Mapuche',[['The rewe','map_rewe'],['The funeral','map_eluwun'],['Across the sea','map_west']]],
+  ['Door 7 · Yanomami',[['The xapiri','yan_xapiri'],['The ashes','yan_death']]],
+  ['Door 8 · Shipibo-Konibo',[['The songs','shi_icaro'],['Not a product','shi_tour']]],
+  ["Door 9 · K'iche' Maya",[['The crossroads','may_cross'],['The lords of death','may_names'],['Sun and moon','may_rise']]] ];
 const LESSONS=[
   ['word','One word, many peoples','Shaman is an Evenki word. Each people has its own.','The word'],
   ['river','The river of worlds','For many Evenki, the world is a river, and the dead live at its mouth.','The great river'],
@@ -1152,7 +1270,13 @@ const LESSONS=[
   ['aurora','The northern lights','The dead play in the sky.','The northern lights'],
   ['sedna','The sea woman','Keep faith with the dead, and the animals come.','The woman under the sea'],
   ['rewe','The ladder between worlds','The machi climbs the rewe to the spirits.','The rewe'],
-  ['west','Across the sea','The soul goes west across the sea.','Across the sea'] ];
+  ['west','Across the sea','The soul goes west across the sea.','Across the sea'],
+  ['xapiri','The xapiri','Shining spirits dance down to the shaman and hold up the sky.','The xapiri'],
+  ['ashes','Leave no trace','Every trace of the dead is let go, so their ghost can leave.','The ashes'],
+  ['icaro','The songs','Onanya heal with songs learned from plant spirits.','The songs'],
+  ['heritage','Not a product','The songs and designs belong to the people who carry them.','Not a product'],
+  ['names','Know death\'s names','The Hero Twins learn the names of the lords of death.','The lords of death'],
+  ['rise','Sun and moon','The twins outwit death and rise as the sun and moon.','Sun and moon'] ];
 const IC=(d)=>`<path d="${d}" fill="none" stroke="#FBF4E6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
 const DETOURS=[
   ['x_sib','The soul put away',IC('M10 14 H30 V32 H10Z M10 14 L20 8 L30 14')],
@@ -1160,7 +1284,10 @@ const DETOURS=[
   ['x_mon','A show for guests',IC('M8 30 L14 12 L20 22 L26 12 L32 30')],
   ['x_sam','Waking the noaidi',IC('M6 26 H34 M12 20 L8 14 M28 20 L32 14')],
   ['x_inu','Hunting in mourning',IC('M6 20 Q20 8 34 20 Q20 32 6 20Z M28 8 L34 4')],
-  ['x_map','A quick burial',IC('M8 30 H32 M14 30 V22 H26 V30')] ];
+  ['x_map','A quick burial',IC('M8 30 H32 M14 30 V22 H26 V30')],
+  ['x_yan','Keeping their things',IC('M10 16 H30 L28 32 H12Z M16 16 Q20 8 24 16')],
+  ['x_shi','A retreat for tourists',IC('M8 12 H32 V30 H8Z M14 20 H26 M14 25 H22')],
+  ['x_may','Bowing to wooden lords',IC('M14 30 V14 H26 V30 M17 19 h2 M21 19 h2 M17 24 H23')] ];
 updatePathBadge();
 go(0);
 

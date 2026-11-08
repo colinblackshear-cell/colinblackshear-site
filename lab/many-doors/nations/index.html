@@ -812,8 +812,15 @@ function plate(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"
 function blanket(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-40" y="-26" width="80" height="26" fill="#2E3A5A" stroke="${K}" stroke-width="1.8"/><path d="M-40 -13 H40" stroke="${CORN}" stroke-width="3"/></g>`; }
 function phone(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-8" y="-14" width="16" height="28" rx="3" fill="#222" stroke="${K}"/><rect x="-6" y="-11" width="12" height="20" fill="#8AC0E8"/></g>`; }
 function ncCover(){ return na(`${milkyway()}${hills(320,'#2A2A3A')}${land(340,'#1E1E2A')}${pn(300,340,.9,{col:'#4A4A6A',hair:'braid'})}`,{bg:'night'}); }
+function redbird(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-16 0 Q-4 -14 12 -8 L22 -14 L18 -4 Q10 8 -8 6 L-22 12 Z" fill="#C83A2A" stroke="${K}" stroke-width="1.6"/><path d="M8 -10 L12 -22 L16 -10" fill="#C83A2A" stroke="${K}" stroke-width="1.4"/><circle cx="12" cy="-8" r="1.6" fill="${K}"/><path d="M20 -10 L28 -8 L20 -6Z" fill="${CORN}"/></g>`; }
+function box(x,y,s=1,{open=false}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-40" y="-36" width="80" height="36" fill="#8A6A44" stroke="${K}" stroke-width="2"/><path d="M-40 -24 H40" stroke="#6A4A30" stroke-width="2"/>${open?`<path d="M-42 -36 L-36 -56 H44 L42 -36" fill="#9A7A50" stroke="${K}" stroke-width="2"/>`:`<rect x="-44" y="-42" width="88" height="8" fill="#9A7A50" stroke="${K}" stroke-width="2"/>`}</g>`; }
+function dunes(y=300){ return `<path d="M0 ${y} Q100 ${y-40} 200 ${y} T400 ${y} T600 ${y-10} V400 H0Z" fill="#C8B488" stroke="${K}" stroke-width="2"/><path d="M0 ${y+40} Q150 ${y+10} 300 ${y+40} T600 ${y+30} V400 H0Z" fill="#B8A478" stroke="${K}" stroke-width="1.6"/>`; }
+function buffalo(x,y,s=1,{shadow=false}={}){ const c=shadow?'#7A7488':'#4A3628'; return `<g transform="translate(${x} ${y}) scale(${s})" ${shadow?'opacity=".55"':''}><path d="M-50 -20 Q-46 -62 -8 -66 Q26 -70 40 -46 L46 -20 Q0 -10 -50 -20Z" fill="${c}" stroke="${K}" stroke-width="1.8"/><path d="M40 -46 Q62 -50 62 -30 Q58 -16 44 -20Z" fill="${c}" stroke="${K}" stroke-width="1.6"/><path d="M-40 -18 V0 M-24 -16 V0 M24 -16 V0 M38 -18 V0" stroke="${c}" stroke-width="7"/><path d="M52 -48 q6 -8 2 -14" stroke="${K}" stroke-width="2" fill="none"/></g>`; }
+function vitrine(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-70" y="-30" width="140" height="30" fill="#5A5A60" stroke="${K}" stroke-width="2"/><rect x="-60" y="-130" width="120" height="100" fill="#D8E8F0" opacity=".55" stroke="${K}" stroke-width="2"/><path d="M-44 -120 L-30 -100" stroke="#FFF" stroke-width="3" opacity=".8"/><path d="M-30 -30 Q-34 -60 -10 -64 H14 Q34 -60 30 -30Z" fill="#8A6A44" stroke="${K}" stroke-width="1.8"/><path d="M-26 -46 H26" stroke="#5A3A24" stroke-width="2.4"/></g>`; }
+function rockies(y=260){ return `<path d="M0 ${y} L80 ${y-90} L150 ${y-30} L240 ${y-130} L330 ${y-40} L420 ${y-110} L520 ${y-20} L600 ${y-70} V${y+40} H0Z" fill="#7A8AA0" stroke="${K}" stroke-width="2"/><path d="M240 ${y-130} L222 ${y-100} L256 ${y-104}Z M420 ${y-110} L404 ${y-84} L436 ${y-88}Z" fill="#F4F2EC"/>`; }
+function mesaTown(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-160 0 L-130 -60 H130 L160 0Z" fill="#C89A6A" stroke="${K}" stroke-width="2"/>${[-100,-60,-20,20,60].map((d,i)=>`<rect x="${d}" y="${-90-(i%2)*14}" width="34" height="${30+(i%2)*14}" fill="#D8B088" stroke="${K}" stroke-width="1.6"/>`).join('')}</g>`; }
 
-/* Many Nations, Many Roads, the full book. Five Native nations of North America, and what each has chosen to share publicly about
+/* Many Nations, Many Roads, the full book. Seven Native nations of North America, and what each has chosen to share publicly about
    death: the Lakota, the Diné, the Haudenosaunee, the Anishinaabe and the Lingít. You come as a guest. Nothing here reenacts a
    ceremony, and some things are left untold on purpose, because those nations keep them for themselves.
    A first draft: each door should be read by people of that nation. */
@@ -833,13 +840,13 @@ Object.assign(MOODS,{ drone:()=>drone(),
   water:()=>startLoop('water',g=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=800; s.connect(f).connect(g); s.start(); return [s]; },.045) });
 function tapCount(n,lab,onTap){ let k=0; choices.innerHTML=`<button class="btn" type="button" id="tc">${lab} · 0 of ${n}</button>`; const b=$('#tc'); b.focus({preventScroll:true});
   b.onclick=e=>{ e.stopPropagation(); initAudio(); k++; onTap&&onTap(k); b.textContent=`${lab} · ${k} of ${n}`; if(k>=n){ b.disabled=true; setTimeout(()=>{ choices.innerHTML=''; next(); },700); } }; }
-const DOORS=[['Lakota','v_lak'],['Diné','v_din'],['Haudenosaunee','v_hau'],['Anishinaabe','v_oji'],['Lingít','v_tli']];
+const DOORS=[['Lakota','v_lak'],['Diné','v_din'],['Haudenosaunee','v_hau'],['Anishinaabe','v_oji'],['Lingít','v_tli'],['Cherokee','v_che'],['Niitsitapi','v_bla']];
 
 /* ---------- the book ---------- */
 const S=[
 { key:'title', label:'', bg:NIGHTBG,
   view:()=>`<div class="title-card" role="dialog" aria-label="Start"><span class="eyebrow">Many Doors · Native Nations · the full book</span><h1>Many Nations, Many Roads</h1>
-    <p>There is no single Native American religion. There are more than five hundred and seventy tribal nations in the United States and more than six hundred First Nations in Canada, each with its own language, land and ways. This book visits five of them, and tells only what each has shared publicly about death.</p>
+    <p>There is no single Native American religion. There are more than five hundred and seventy tribal nations in the United States and more than six hundred First Nations in Canada, each with its own language, land and ways. This book visits seven of them, and tells only what each has shared publicly about death.</p>
     <p class="draft">You come as a guest. Nothing here reenacts a ceremony, and some things are left out on purpose.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">${DOORS.map(([n,k])=>`<button class="btn alt" type="button" data-door="${k}">${n}</button>`).join('')}</div>
     <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="begin" type="button">Begin at the start</button><button class="btn alt" id="pickch" type="button">Choose a chapter</button></div></div>`,
@@ -996,17 +1003,77 @@ const S=[
     {text:"A crest isn't a pattern. It's at.óow, owned by a clan: its history and its title, sometimes paid for by ancestors with their lives. Only that clan has the right to show it."},
     {text:"Some Lingít also say that the dead can be born again into their own clan, coming home as a grandchild. The clan goes on, and so do its people."} ]},
 
+/* ===== Cherokee ===== */
+{ key:'v_che', label:'Cherokee', bg:'var(--teal)',
+  view:()=>card('Door 6 · Cherokee','The Darkening Land',"The Cherokee, Tsalagi, come from the southern Appalachians. Today there are three federally recognized Cherokee tribes: the Cherokee Nation, the Eastern Band of Cherokee Indians, and the United Keetoowah Band."),
+  enter(){ mood('warm','wind'); }, beats:[{text:null}] },
+
+{ key:'che_west', label:'The Daughter of the Sun', bg:'#3A3A5A', learn:'redbird',
+  view:()=>PG(`${hills(300,'#3A4A3A')}${land(330,'#4A5A3A')}${pine(70,330,1)}${pine(540,330,1.1)}<g id="bx">${box(300,330,1)}</g>${[200,240,360,400].map((x,i)=>pn(x,330,.65,{col:['#4A5A7A','#6A4A3A','#5A6A4A','#7A5A4A'][i],hair:i%2?'long':'short'})).join('')}<g id="rb"></g>`,'At dusk in the mountains, people carry a wooden box between them.',{bg:'dusk'}),
+  enter(){ mood('night','wind'); },
+  guide:{title:'Myths of the Cherokee',text:"The ethnologist James Mooney recorded this story, and many others, from Cherokee storytellers such as Swimmer (Ayunini) in North Carolina in the 1880s and 1890s, published as Myths of the Cherokee (1900). In it, the spirits of the dead go west to Tsusginaiʼi, the Ghost Country, in the Darkening Land, Usunhiyi. Cherokee people tell their own stories today, in their own words and language."},
+  beats:[
+    {text:"In a Cherokee story recorded in the 1890s, the Sun's daughter died. Seven men went west to the Darkening Land, where the dead live, to bring her back. They caught her spirit, shut it in a box, and set off home. They were told: don't open the box, whatever happens."},
+    {text:"On the road, she begged to be let out. She was hungry, she was smothering. Just before they reached home, they opened the lid a crack.", lock:true, show(){ holdOn({label:'Open it a crack',ms:3000,wait:600,onDone:()=>{ const b=$('#bx'); if(b) b.innerHTML=box(300,330,1,{open:true}); const r=$('#rb'); if(r) r.innerHTML=`<g class="drift">${redbird(330,200,1.6)}</g>`; bell(880,.05,3); }}); }},
+    {text:"Something flew past them into the bushes: a redbird. When they reached home, the box was empty. Because they opened it, the story says, we can never bring back the dead."} ]},
+
+{ key:'che_claim', label:'A Cherokee grandmother', bg:PAPERBG,
+  view:()=>PG(`${land(330,'#9A8A6A')}<rect x="60" y="80" width="480" height="250" fill="#E0D4BC" stroke="${K}" stroke-width="2"/>${pn(220,330,.9,{col:'#7A6A5A',hair:'short',arms:'out'})}${pn(380,330,.9,{col:'#3A4A6A',hair:'long',arms:'fold'})}`,'At a party, someone talks eagerly to a Cherokee woman.'),
+  enter(){ mood('warm'); },
+  beats:[
+    {text:"At a party you meet a Cherokee Nation citizen. You've heard all your life that your great-grandmother was a Cherokee princess.", lock:true, afterType(){ pick([{label:'Tell her you are Cherokee too',go:'x_che'},{label:'Ask her about her nation instead'}]); }} ]},
+
+{ key:'che_nation', label:'A Cherokee grandmother', bg:PAPERBG, learn:'citizen',
+  view:()=>PG(`${land(330,'#9A8A6A')}<rect x="60" y="80" width="480" height="250" fill="#E0D4BC" stroke="${K}" stroke-width="2"/>${pn(220,330,.9,{col:'#7A6A5A',hair:'short',arms:'fold'})}${pn(380,330,.9,{col:'#3A4A6A',hair:'long',arms:'out'})}`,'The Cherokee woman talks while you listen.'),
+  enter(){ mood('warm','light'); },
+  beats:[
+    {text:"She tells you about her family's land in Oklahoma, where they were forced to move on the Trail of Tears in 1838 and 1839, and about learning to read the Cherokee syllabary."},
+    {text:"Being Cherokee isn't a family legend. It's belonging to a nation, with its own government, citizens and laws, and its own ways of mourning and remembering."} ]},
+
+/* ===== Niitsitapi ===== */
+{ key:'v_bla', label:'Niitsitapi', bg:'var(--teal)',
+  view:()=>card('Door 7 · Niitsitapi','The Sand Hills',"The Niitsitapi, the Blackfoot Confederacy, are the Siksika, Kainai and Piikani nations of Alberta and the Blackfeet Nation of Montana."),
+  enter(){ mood('wind'); }, beats:[{text:null}] },
+
+{ key:'bla_sand', label:'The Sand Hills', bg:'#8A9AB0', learn:'sandhills',
+  view:()=>PG(`${rockies(250)}${dunes(300)}${buffalo(170,330,1,{shadow:true})}${buffalo(420,330,.9,{shadow:true})}<g opacity=".5">${pn(300,320,.75,{col:'#7A7488',legs:'#7A7488',hair:'braid'})}</g>`,'Pale sand hills under the mountains. Faint, shadowy buffalo and a shadowy figure.',{bg:'#AAB8C8'}),
+  enter(){ mood('wind','light'); },
+  guide:{title:'Blackfoot Lodge Tales',text:"George Bird Grinnell recorded Blackfoot accounts of the Sand Hills in Blackfoot Lodge Tales (1892): the shadows of the dead live there, in a grey country, and hunt the shadows of buffalo. Many Niitsitapi elders and writers have since spoken for themselves, and the nations run their own cultural programmes. Sacred bundles, held by keepers and opened only in ceremony, were taken into museums in the 1900s, and many have since been returned."},
+  beats:[
+    {text:"In old Blackfoot accounts, the dead go to the Sand Hills, a pale country on the plains. There they live as shadows: they camp, they visit, and they hunt the shadows of buffalo."},
+    {text:"It isn't a reward or a punishment. It's the people's life, carried on in a quieter, greyer place."} ]},
+
+{ key:'bla_museum', label:'The bundle', bg:'#5A5A60',
+  view:()=>PG(`<rect width="600" height="400" fill="#D8D4CC"/>${land(330,'#8A8680')}${vitrine(300,330,1.2)}${pn(470,330,.85,{col:'#3A5A7A',hair:'short'})}`,'A museum display case with a wrapped bundle inside. A visitor looks at it.',{bg:'#D8D4CC'}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"In a museum you find a sacred bundle in a glass case, labelled Blackfoot. You're curious what's inside.", lock:true, afterType(){ pick([{label:'Ask the museum to open it for you',go:'x_bla'},{label:'Leave it closed, and read its story'}]); }} ]},
+
+{ key:'bla_home', label:'The bundle', bg:'#8A9AB0', learn:'bundle',
+  view:()=>PG(`${rockies(250)}${land(300,'#9AA06A')}${pn(240,320,.85,{col:'#5A3A3A',hair:'grey',arms:'offer'})}<path d="M222 278 Q218 262 236 260 H250 Q266 262 262 278Z" fill="#8A6A44" stroke="${K}" stroke-width="1.8"/>${pn(360,320,.8,{col:'#3A5A6A',hair:'braid'})}`,'Under the mountains, an elder holds a wrapped bundle. A younger person stands beside them.',{bg:'#AAB8C8'}),
+  enter(){ mood('light'); },
+  beats:[
+    {text:"A sacred bundle isn't an exhibit. It's living, and it's cared for by a keeper. It's opened only in ceremony, by the right people. Over the last few decades, many Blackfoot bundles have come home from museums to be used again."} ]},
+
+{ key:'private', label:'Not shared', bg:'#C89A6A', learn:'private',
+  view:()=>PG(`${mesaTown(300,330,1.1)}${land(330,'#B8885A')}`,'A village of stone and adobe houses on top of a mesa.',{bg:'dusk'}),
+  enter(){ mood('wind'); },
+  guide:{title:'Why some nations are not here',text:"The Hopi and many of the Pueblo nations of New Mexico ask that their ceremonies not be photographed, recorded or sketched, and many prefer that outsiders not write about their religion at all. Much that was published about them in the past was taken without consent. This book respects that by leaving them out."},
+  beats:[
+    {text:"Some nations aren't in this book on purpose. The Hopi and many Pueblo nations ask outsiders not to photograph, record or write about their ceremonies. Much that was published about them in the past was taken without permission."},
+    {text:"The most respectful page about them is the one that isn't written."} ]},
+
 { key:'lastpage', label:'The last page', bg:NIGHTBG,
   view:()=>frame(sv(ncCover(),'The Milky Way over dark hills, and one person looking up.')),
   enter(){ mood('light'); },
   beats:[
-    {text:"Five nations: a spirit road across the sky, four quiet days, words that wipe away tears, a fire and a plate for the dead, and a clan that pays its debts of care. And hundreds more nations, each with its own way."},
+    {text:"Seven nations: a spirit road across the sky, four quiet days, words that wipe away tears, a fire and a plate for the dead, a clan that pays its debts of care, a redbird that flew from the box, and shadows hunting on the Sand Hills. And hundreds more nations, each with its own way."},
     {text:"What they share, they share as hosts. A good guest listens, doesn't take what isn't offered, and leaves the rest to them."} ]},
 
 { key:'end', label:'The end', bg:'var(--teal)',
   view:()=>`<div class="title-card" style="cursor:default"><span class="eyebrow">The end of the book</span><h1>Many Nations, Many Roads</h1>
-    <p>That was all five doors: the Lakota spirit road, Diné quiet, the Haudenosaunee words that wipe tears, the Anishinaabe path of souls and ghost supper, and the Lingít memorial.</p><p id="endsum" style="font-weight:700"></p>
-    <p class="draft">A first draft. Each door should be read by people of that nation: Lakota, Diné, Haudenosaunee, Anishinaabe and Lingít readers. Sources include: James R. Walker, Lakota Belief and Ritual (1980); Black Elk and Joseph Epes Brown, The Sacred Pipe (1953); the 1993 Declaration of War Against Exploiters of Lakota Spirituality; Gladys Reichard, Navaho Religion (1950); Haudenosaunee Confederacy accounts of the Great Law of Peace; Basil Johnston, Ojibway Heritage (1976); Nora Marks Dauenhauer and Richard Dauenhauer, Haa Tuwunáagu Yís, for Healing Our Spirit (1990).</p>
+    <p>That was all seven doors: the Lakota spirit road, Diné quiet, the Haudenosaunee words that wipe tears, the Anishinaabe path of souls and ghost supper, the Lingít memorial, the Cherokee Darkening Land, and the Niitsitapi Sand Hills.</p><p id="endsum" style="font-weight:700"></p>
+    <p class="draft">A first draft. Each door should be read by people of that nation: Lakota, Diné, Haudenosaunee, Anishinaabe, Lingít, Cherokee and Niitsitapi readers. Sources include: James R. Walker, Lakota Belief and Ritual (1980); Black Elk and Joseph Epes Brown, The Sacred Pipe (1953); the 1993 Declaration of War Against Exploiters of Lakota Spirituality; Gladys Reichard, Navaho Religion (1950); Haudenosaunee Confederacy accounts of the Great Law of Peace; Basil Johnston, Ojibway Heritage (1976); Nora Marks Dauenhauer and Richard Dauenhauer, Haa Tuwunáagu Yís, for Healing Our Spirit (1990); James Mooney, Myths of the Cherokee (1900); George Bird Grinnell, Blackfoot Lodge Tales (1892).</p>
     <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="again" type="button">Read it again</button><button class="btn alt" id="pathend" type="button">See your path</button><button class="btn alt" id="chend" type="button">Choose a chapter</button></div>
     <div class="endlinks"><a href="../index.html#doors">Back to Many Doors</a></div></div>`,
   enter(){ mood('warm'); $('#again').onclick=e=>{ e.stopPropagation(); go(0); }; $('#chend').onclick=e=>{ e.stopPropagation(); openChapters(true); }; $('#pathend').onclick=e=>{ e.stopPropagation(); openPath(); };
@@ -1047,7 +1114,20 @@ const S=[
   enter(){ mood('drone'); },
   beats:[
     {text:"You get the tattoo. To the clan whose crest it is, you're now wearing their history and title, which you have no right to, copied by someone who had no right to sell it."},
-    {text:"At.óow belong to a clan. Rewind, and ask about its story instead.", lock:true, afterType(){ rewindButton(); }} ]}
+    {text:"At.óow belong to a clan. Rewind, and ask about its story instead.", lock:true, afterType(){ rewindButton(); }} ]},
+{ key:'x_che', label:'A wrong turn', bg:'#4A4440',
+  view:()=>PG(`${land(330,'#7A6A5A')}<rect x="60" y="80" width="480" height="250" fill="#8A7E6E" stroke="${K}" stroke-width="2"/>${pn(220,330,.9,{col:'#7A6A5A',hair:'short',arms:'out'})}${pn(400,330,.9,{col:'#3A4A6A',hair:'long',arms:'fold'})}`,'The Cherokee woman has stepped back, arms folded.'),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"She's heard it hundreds of times. The Cherokee never had princesses, and family stories like this are so common that Cherokee people call it the Cherokee grandmother myth. Claiming a nation you don't belong to takes something from the people who do."},
+    {text:"Rewind, and ask about her nation instead.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_bla', label:'A wrong turn', bg:'#5A5A60',
+  view:()=>PG(`<rect width="600" height="400" fill="#8A8680"/>${land(330,'#6A6660')}${vitrine(300,330,1.2)}${pn(470,330,.85,{col:'#3A5A7A',hair:'short',arms:'out'})}`,'The visitor points at the case. A curator shakes their head.',{bg:'#8A8680'}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"A good curator says no. A bundle is opened only in ceremony, by those with the right to open it. Opening it for a visitor's curiosity would be like reading someone's private prayers aloud."},
+    {text:"Rewind, and leave it closed.", lock:true, afterType(){ rewindButton(); }} ]}
 ];
 
 const CHAPTERS=[
@@ -1056,7 +1136,10 @@ const CHAPTERS=[
   ['Door 2 · Diné',[['Four days','din_four'],['Silence','din_ask']]],
   ['Door 3 · Haudenosaunee',[['Words that wipe tears','hau_grief'],['Ten days','hau_friend']]],
   ['Door 4 · Anishinaabe',[['The path of souls','oji_west'],['The ghost supper','oji_supper']]],
-  ['Door 5 · Lingít',[['The memorial','tli_koo'],['At.óow','tli_crest']]] ];
+  ['Door 5 · Lingít',[['The memorial','tli_koo'],['At.óow','tli_crest']]],
+  ['Door 6 · Cherokee',[['The Daughter of the Sun','che_west'],['A Cherokee grandmother','che_claim']]],
+  ['Door 7 · Niitsitapi',[['The Sand Hills','bla_sand'],['The bundle','bla_museum']]],
+  ['After the doors',[['Not shared','private']]] ];
 const LESSONS=[
   ['many','Many nations','There is no single Native religion. Each nation has its own ways.','As a guest'],
   ['road','The spirit road','Many Lakota call the Milky Way the spirit road.','The spirit road'],
@@ -1068,14 +1151,21 @@ const LESSONS=[
   ['west','The path of souls','A four-day journey west, lit by the family\'s fire.','The path of souls'],
   ['supper','The ghost supper','Feed the dead, and feed everyone who comes.','The ghost supper'],
   ['koo','The memorial','The clan honours its dead and repays those who cared for them.','The memorial'],
-  ['crest','At.óow','A crest belongs to a clan. Only it may show it.','At.óow'] ];
+  ['crest','At.óow','A crest belongs to a clan. Only it may show it.','At.óow'],
+  ['redbird','The redbird','Because the box was opened, the dead cannot be brought back.','The Daughter of the Sun'],
+  ['citizen','A nation, not a legend','Being Cherokee means belonging to a nation.','A Cherokee grandmother'],
+  ['sandhills','The Sand Hills','The dead live on as shadows, hunting shadow buffalo.','The Sand Hills'],
+  ['bundle','A living bundle','Sacred bundles are opened only in ceremony, by their keepers.','The bundle'],
+  ['private','Not shared','Some nations ask not to be written about. Respect that.','Not shared'] ];
 const IC=(d)=>`<path d="${d}" fill="none" stroke="#FBF4E6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
 const DETOURS=[
   ['x_lak','A ceremony for sale',IC('M10 8 H30 V32 H10Z M16 20 H24 M20 14 V26')],
   ['x_din','Too many questions',IC('M14 14 Q14 6 20 6 Q28 6 26 14 Q24 18 20 20 V24 M20 30 V31')],
   ['x_hau','Telling grief to move on',IC('M8 20 H30 M24 14 L30 20 L24 26')],
   ['x_oji','Photos without asking',IC('M8 14 H32 V30 H8Z M16 14 L18 10 H24 L26 14 M20 22 m-5 0 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0')],
-  ['x_tli','Borrowing a crest',IC('M20 6 a14 14 0 1 0 0.1 0Z M12 20 Q20 12 28 20 Q20 28 12 20Z')] ];
+  ['x_tli','Borrowing a crest',IC('M20 6 a14 14 0 1 0 0.1 0Z M12 20 Q20 12 28 20 Q20 28 12 20Z')],
+  ['x_che','A princess grandmother',IC('M8 26 L12 12 L20 20 L28 12 L32 26Z')],
+  ['x_bla','Opening the bundle',IC('M8 28 Q6 14 20 12 Q34 14 32 28Z M14 20 H26')] ];
 updatePathBadge();
 go(0);
 
