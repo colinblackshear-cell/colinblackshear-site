@@ -741,6 +741,38 @@ function realms(x,y,s=1){ const C=['#EAD27A','#C9A8D8','#E8C8A8','#8AB878','#A8A
 function thCover(){ return tw(`${ground(330)}${wat(300,330,.95)}${buddha(300,330,.5)}${monk(110,330,.8,{arms:'bowl'})}${oilLamp(500,330,1.2)}`); }
 
 return thCover;})();
+COVERS.shinto=(()=>{
+/* The Hidden World: flat colour on washi paper with a band of seigaiha waves top and bottom, after Japanese woodblock prints.
+   Vermilion, sumi black, pine green, indigo and a little gold. */
+const K='#1E1C1A', VERM='#D2452E', PINE='#3F6B4A', INDIGO='#2C3E6B', GOLD='#C9A23A', WHITE='#FBF8F0', WASHI='#F1E9D6', SKIN='#E2B48A', NIGHTJ='#141A26', SAKAKI='#2F5A3A';
+const SH_DEFS=`<defs><pattern id="seigaiha" width="40" height="20" patternUnits="userSpaceOnUse"><rect width="40" height="20" fill="${INDIGO}"/>${[0,40,20].map((x,i)=>`<g transform="translate(${x} ${i<2?20:10})">${[16,11,6].map(r=>`<circle r="${r}" fill="${INDIGO}" stroke="${WHITE}" stroke-width="1.6"/>`).join('')}</g>`).join('')}</pattern>
+<radialGradient id="glowJ"><stop offset="0" stop-color="#FFF4D0"/><stop offset=".5" stop-color="${GOLD}" stop-opacity=".5"/><stop offset="1" stop-color="${GOLD}" stop-opacity="0"/></radialGradient>
+<linearGradient id="nightJ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E121C"/><stop offset="1" stop-color="#26324A"/></linearGradient><clipPath id="shclip"><rect width="600" height="400"/></clipPath></defs>`;
+function jp(inner,{bg='washi',border=true}={}){ const f=bg==='night'?'url(#nightJ)':bg==='washi'?WASHI:bg;
+  return `${SH_DEFS}<g clip-path="url(#shclip)"><rect width="600" height="400" fill="${f}"/>${bg==='night'?stars(50,23,300,'#FBF8F0'):''}${inner}${border?`<rect width="600" height="20" fill="url(#seigaiha)"/><rect y="380" width="600" height="20" fill="url(#seigaiha)"/>`:''}</g>`; }
+function floorJ(y=330,col='#C9B48C'){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y} H600" stroke="${K}" stroke-width="3"/>`; }
+/* a person in kimono: black for mourning, or a colour; long hair tied for women */
+function kim(x,y,s=1,{col=K,obi=WHITE,arms='down',hair='short',skin=SKIN}={}){
+  const ar={down:'',fold:`<path d="M-16 -64 Q0 -54 16 -64" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>`,
+    offer:`<path d="M-20 -70 Q-18 -50 0 -54 Q18 -50 20 -70" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>`,
+    up:`<path d="M-20 -76 L-34 -108 M20 -76 L34 -108" stroke="${col}" stroke-width="11" stroke-linecap="round"/>`}[arms]||'';
+  const h=hair==='long'?`<path d="M-16 -110 Q-18 -128 0 -128 Q18 -128 16 -110 Q0 -118 -16 -110Z M-6 -128 Q0 -140 6 -128Z" fill="#1A1614"/>`:hair==='grey'?`<path d="M-16 -110 Q0 -128 16 -110 Q0 -118 -16 -110Z" fill="#CFCAC0"/>`:hair==='eboshi'?`<path d="M-14 -116 Q-12 -146 4 -150 Q12 -140 14 -116Z" fill="${K}" stroke="${K}" stroke-width="1.5"/>`:`<path d="M-16 -110 Q0 -128 16 -110 Q0 -118 -16 -110Z" fill="#1A1614"/>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-26 0 L-20 -84 Q0 -94 20 -84 L26 0Z" fill="${col}" stroke="${K}" stroke-width="2.2"/><path d="M-14 -88 L0 -60 L14 -88" stroke="${WHITE}" stroke-width="3" fill="none"/><rect x="-21" y="-56" width="42" height="12" fill="${obi}" stroke="${K}" stroke-width="1.4"/>${ar}<circle cx="0" cy="-104" r="15" fill="${skin}" stroke="${K}" stroke-width="2.2"/>${h}</g>`; }
+function torii(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 0 L-62 -150 M70 0 L62 -150" stroke="${VERM}" stroke-width="14"/><path d="M-100 -158 Q0 -170 100 -158 L104 -172 Q0 -186 -104 -172Z" fill="${K}"/><path d="M-90 -150 H90" stroke="${VERM}" stroke-width="14"/><path d="M-80 -120 H80" stroke="${VERM}" stroke-width="10"/><rect x="-10" y="-150" width="20" height="30" fill="${VERM}"/></g>`; }
+function shide(x,y,s=1){ return `<path transform="translate(${x} ${y}) scale(${s})" d="M0 0 h8 v8 h-6 v8 h6 v8 h-6 v8" fill="none" stroke="${WHITE}" stroke-width="4" stroke-linejoin="miter"/>`; }
+function shimenawa(x1,x2,y){ let o=`<path d="M${x1} ${y} Q${(x1+x2)/2} ${y+24} ${x2} ${y}" stroke="#C9A86A" stroke-width="12" fill="none"/><path d="M${x1} ${y} Q${(x1+x2)/2} ${y+24} ${x2} ${y}" stroke="${K}" stroke-width="1.4" fill="none" stroke-dasharray="6 6"/>`; for(let i=1;i<4;i++){ const t=i/4, xx=x1+(x2-x1)*t, yy=y+24*2*t*(1-t); o+=shide(xx-4,yy+6,.9); } return o; }
+function sakaki(x,y,s=1,r=0){ return `<g transform="translate(${x} ${y}) rotate(${r}) scale(${s})"><path d="M0 0 V-60" stroke="#6A4A2A" stroke-width="3"/>${[-50,-38,-26,-14].map((v,i)=>`<path d="M0 ${v} q${i%2?14:-14} -6 ${i%2?20:-20} 4 q${i%2?-10:10} 4 ${i%2?-20:20} -4Z" fill="${SAKAKI}" stroke="${K}" stroke-width="1"/>`).join('')}${shide(2,-44,.6)}</g>`; }
+/* the kamidana: a household shrine on a high shelf */
+function kamidana(x,y,s=1,{covered=false}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-90" y="0" width="180" height="10" fill="#B8925A" stroke="${K}" stroke-width="1.8"/><rect x="-40" y="-56" width="80" height="56" fill="#E8D8B0" stroke="${K}" stroke-width="2"/><path d="M-54 -56 L0 -84 L54 -56Z" fill="#B8925A" stroke="${K}" stroke-width="2"/><rect x="-14" y="-40" width="28" height="40" fill="#D8C090" stroke="${K}" stroke-width="1.5"/>${sakaki(-66,0,.7,-8)}${sakaki(66,0,.7,8)}${covered?`<rect x="-58" y="-88" width="116" height="90" fill="${WHITE}" stroke="${K}" stroke-width="1.6"/><path d="M-58 -60 H58" stroke="#D8D0C0" stroke-width="1.5"/>`:shimenawa(-46,46,-54)}</g>`; }
+function tablet(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle cy="-50" r="50" fill="url(#glowJ)"/><rect x="-14" y="-90" width="28" height="84" rx="4" fill="#E8D4A8" stroke="${K}" stroke-width="2"/><rect x="-22" y="-8" width="44" height="8" fill="#8A6A3A" stroke="${K}" stroke-width="1.5"/><path d="M-6 -76 V-20 M6 -70 V-30" stroke="${K}" stroke-width="2" opacity=".5"/></g>`; }
+function lantern(x,y,s=1,{lit=true}={}){ return `<g transform="translate(${x} ${y}) scale(${s})">${lit?`<circle cy="-26" r="26" fill="url(#glowJ)"/>`:''}<path d="M-14 0 L-16 -40 H16 L14 0Z" fill="${lit?'#FFE6A8':'#D8D0C0'}" stroke="${K}" stroke-width="1.8"/><path d="M-20 -40 H20 L14 -48 H-14Z" fill="${K}"/><path d="M-20 0 H20" stroke="${K}" stroke-width="3"/></g>`; }
+function riverJ(y=280,col='#3A6A8A'){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/>`; for(let k=0;k<3;k++){ let d=`M${k%2*20} ${y+20+k*28}`; for(let x=0;x<620;x+=40) d+=` q10 -8 20 0 q10 8 20 0`; o+=`<path d="${d}" stroke="${WHITE}" stroke-width="2" fill="none" opacity=".55"/>`; } return o; }
+function boulder(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-80 0 Q-96 -60 -50 -96 Q0 -120 50 -96 Q96 -60 80 0Z" fill="#6A6460" stroke="${K}" stroke-width="3"/><path d="M-40 -70 Q-10 -84 20 -70 M-50 -30 Q0 -44 40 -24" stroke="#4A4440" stroke-width="3" fill="none"/></g>`; }
+function shrine(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-90" y="-80" width="180" height="80" fill="${WHITE}" stroke="${K}" stroke-width="2.4"/>${[-60,-20,20,60].map(d=>`<rect x="${d-6}" y="-80" width="12" height="80" fill="${VERM}" stroke="${K}" stroke-width="1.4"/>`).join('')}<path d="M-130 -80 Q0 -100 130 -80 L100 -150 Q0 -164 -100 -150Z" fill="#5A4A3A" stroke="${K}" stroke-width="2.4"/><path d="M-60 -150 L-70 -180 M60 -150 L70 -180 M-40 -158 H40" stroke="${K}" stroke-width="5"/>${shimenawa(-80,80,-74)}</g>`; }
+function fire(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})" class="flick"><path d="M-30 0 H30" stroke="#6A4A2A" stroke-width="6"/><path d="M-20 0 Q-26 -24 -8 -40 Q-6 -24 0 -22 Q-2 -40 10 -50 Q14 -30 22 -20 Q26 -6 20 0Z" fill="${VERM}" stroke="${K}" stroke-width="1.6"/></g>`; }
+function sjCover(){ return jp(`${floorJ(330,'#C9B48C')}${torii(300,330,1.1)}${lantern(110,330,1.4)}${lantern(490,330,1.4)}${sakaki(200,330,1.1)}`); }
+
+return sjCover;})();
 COVERS.secular=(()=>{
 /* Kit for The Last Light: a clear night sky, one small person, a tree, and the long view. */
 const K='#151B2B', INDIGO='#1B2550', NIGHT='#0A0F1F', STAR='#F8F5EE', EMBER='#F0C25A', WARM='#C8773A', LEAF='#5E9C6A', SOIL='#3A2E26', SKY2='#3D5A99', ROSE='#D98C7A';
@@ -878,6 +910,7 @@ const IC={
  skull:`<path d="M-13 2 Q-15 -16 0 -16 Q15 -16 13 2 L9 6 V13 H-9 V6Z" fill="${P}" stroke="${K}" stroke-width="2.2"/><circle cx="-5" cy="-3" r="3.4" fill="${K}"/><circle cx="5" cy="-3" r="3.4" fill="${K}"/><path d="M-4 13 V9 M0 13 V9 M4 13 V9" stroke="${K}" stroke-width="1.6"/>`,
  fire:`<path d="M-12 12 Q-16 -2 -6 -10 Q-6 -2 -1 0 Q-4 -12 4 -20 Q6 -8 12 -4 Q16 4 12 12Z" fill="#E86A17" stroke="${K}" stroke-width="2"/><path d="M-16 13 H16" stroke="${K}" stroke-width="2.6"/>`,
  coin:`<circle r="13" fill="${G}" stroke="${K}" stroke-width="2.4"/><circle r="8" fill="none" stroke="${K}" stroke-width="1.4"/>`,
+ torii:`<path d="M-11 14 L-9 -8 M11 14 L9 -8" stroke="${K}" stroke-width="3.4"/><path d="M-18 -10 Q0 -14 18 -10 L19 -15 Q0 -19 -19 -15Z" fill="${K}"/><path d="M-14 -3 H14" stroke="${K}" stroke-width="2.6"/>`,
  khanda:`<circle cy="2" r="10" fill="none" stroke="${K}" stroke-width="3"/><path d="M0 -20 L3 -12 L2 12 H-2 L-3 -12Z" fill="${K}"/><path d="M-3 14 Q-18 10 -16 -8 Q-13 4 -1 10 M3 14 Q18 10 16 -8 Q13 4 1 10" fill="${K}"/>`,
  crescent:`<circle r="15" fill="${G}" stroke="${K}" stroke-width="2"/><circle cx="7" cy="-4" r="13" fill="${P}" stroke="${K}" stroke-width="2"/>`,
 };
@@ -928,6 +961,12 @@ const D=[
   facts:[['Trip length','At once'],['Who decides','Amida\'s vow'],['Last stop','The Pure Land']],
   ask:{who:'Amida\'s promise',long:'At once',cross:'No crossing',back:'No: Pure Land, then awakening'},
   book:['The Welcome','pureland/book/'],walk:['The Sixteen Contemplations','pureland/walk/'],href:'pureland/'},
+ {k:'shinto',name:'Shinto',col:'#D2452E',emb:'torii',pop:null,popTxt:'Most people in Japan visit shrines',title:'The Hidden World',
+  head:'The dead stay close, as ancestors on the family shelf.',
+  route:[['stone','The boulder','Izanagi seals the pass to Yomi. A thousand die each day, and fifteen hundred are born.'],['water','Purification','Death brings pollution, not sin, and water washes it off.'],['candle','The spirit tablet','In darkness, the spirit is moved into a wooden tablet.'],['bowl','Fifty days','Fifty days of mourning, then daily rice, water and salt for the ancestor.'],['fire','Obon','Every summer the ancestors come home, and lanterns send them back.']],
+  facts:[['Trip length','50 days, then 33 years or more'],['Who decides','The family\'s care'],['Last stop','The family\'s ancestral kami']],
+  ask:{who:'The family\'s care',long:'50 days',cross:'The pass to Yomi',back:'Home every Obon'},
+  book:null,walk:null,href:'shinto/',play:'Open the book',review:'Still waiting for review by Shinto priests and practitioners.'},
  {k:'chinese',name:'Chinese folk religion',col:'#B22A1E',emb:'mirror',pop:null,popTxt:'Hundreds of millions of families',title:'The Ten Courts',
   head:'Ten courts, ten kings, and a bowl of soup that makes you forget.',
   route:[['paper','Paper money','The family burns paper gifts for the road.'],['mirror','The mirror','A mirror shows every deed you did.'],['scales','Ten courts','Ten kings each judge a different kind of wrong.'],['bowl','The soup','Granny Meng\'s soup wipes your memory clean.'],['wheel','Rebirth','By day 49, you\'re on your way to a new life.']],
@@ -997,7 +1036,7 @@ function cover(){
       <path d="M180 54 V22 Q187 24 194 30 V54Z" fill="#F2B640"/>
       <circle cx="152" cy="46" r="4" fill="#FBF3DF"/><path d="M152 50 V60" stroke="#FBF3DF" stroke-width="3"/>
     </svg>
-    <p class="small">About 5 minutes to see the idea. Then fifteen doors. Sound is optional.</p></div>`);
+    <p class="small">About 5 minutes to see the idea. Then sixteen doors. Sound is optional.</p></div>`);
   $('#open').onclick=()=>{ ai(); blip(); slide(0); };
   $('#skip').onclick=()=>{ ai(); hall(); };
 }
