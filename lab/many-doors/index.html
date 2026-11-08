@@ -773,6 +773,59 @@ function fire(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})" 
 function sjCover(){ return jp(`${floorJ(330,'#C9B48C')}${torii(300,330,1.1)}${lantern(110,330,1.4)}${lantern(490,330,1.4)}${sakaki(200,330,1.1)}`); }
 
 return sjCover;})();
+COVERS.shamans=(()=>{
+/* The Drum and the Road: flat earth colours on hide, a border of small ochre triangles, after painted drum skins.
+   Charcoal, ochre, rust, birch white, night blue, sea green. Kept plain and generic, not copied from any one people's designs. */
+const K='#1F1A16', OCHRE='#C8862E', RUST='#A4432A', BIRCH='#F2ECDD', HIDE='#E6D8BC', NIGHTS='#10161E', SNOW='#F4F2EC', LEATHER='#8A5A36', SEA='#1E4A5A', MOSS='#4A6A44', SKINS='#C9946A';
+const SM_DEFS=`<defs><pattern id="tri" width="24" height="16" patternUnits="userSpaceOnUse"><rect width="24" height="16" fill="${K}"/><path d="M2 14 L12 3 L22 14Z" fill="${OCHRE}"/></pattern>
+<radialGradient id="glowS"><stop offset="0" stop-color="#FFF0C8"/><stop offset=".5" stop-color="${OCHRE}" stop-opacity=".45"/><stop offset="1" stop-color="${OCHRE}" stop-opacity="0"/></radialGradient>
+<linearGradient id="nightS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0A0E16"/><stop offset="1" stop-color="#1E2C3A"/></linearGradient>
+<linearGradient id="seaS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A6070"/><stop offset="1" stop-color="#0E2630"/></linearGradient><clipPath id="smclip"><rect width="600" height="400"/></clipPath></defs>`;
+function shm(inner,{bg='hide',border=true}={}){ const f=bg==='night'?'url(#nightS)':bg==='hide'?HIDE:bg==='sea'?'url(#seaS)':bg==='snow'?SNOW:bg;
+  return `${SM_DEFS}<g clip-path="url(#smclip)"><rect width="600" height="400" fill="${f}"/>${bg==='night'?stars(60,23,280,'#F4F2EC'):''}${inner}${border?`<rect width="600" height="16" fill="url(#tri)"/><rect y="384" width="600" height="16" fill="url(#tri)" transform="rotate(180 300 392)"/>`:''}</g>`; }
+function ground(y=330,col='#B89A6A'){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y} H600" stroke="${K}" stroke-width="3"/>`; }
+/* a person in a long coat; hat picks a broad, generic look: none, plume (ribbons), cap, hood (fur ruff), band (headband, long hair), long (long hair) */
+function pp(x,y,s=1,{col=LEATHER,trim=OCHRE,hat='none',arms='down',skin=SKINS,fringe=false}={}){
+  const ar={down:'',fold:`<path d="M-16 -62 Q0 -52 16 -62" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>`,
+    offer:`<path d="M-20 -70 Q-18 -48 0 -52 Q18 -48 20 -70" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>`,
+    up:`<path d="M-20 -76 L-34 -108 M20 -76 L34 -108" stroke="${col}" stroke-width="11" stroke-linecap="round"/>`,
+    drum:`<path d="M-20 -74 Q-30 -56 -14 -50 M20 -74 Q34 -70 36 -90" stroke="${col}" stroke-width="11" fill="none" stroke-linecap="round"/>`}[arms]||'';
+  const hair='#1A1614';
+  const h={none:`<path d="M-15 -110 Q0 -128 15 -110 Q0 -117 -15 -110Z" fill="${hair}"/>`,
+    long:`<path d="M-16 -106 Q-20 -128 0 -128 Q20 -128 16 -106 L18 -80 L12 -80 L12 -106 Q0 -116 -12 -106 L-12 -80 L-18 -80Z" fill="${hair}"/>`,
+    band:`<path d="M-16 -106 Q-20 -128 0 -128 Q20 -128 16 -106 L18 -80 L12 -80 L12 -106 Q0 -116 -12 -106 L-12 -80 L-18 -80Z" fill="${hair}"/><path d="M-16 -114 Q0 -120 16 -114" stroke="#D8D4CC" stroke-width="4" fill="none"/>`,
+    plume:`<path d="M-17 -112 Q0 -124 17 -112" stroke="${trim}" stroke-width="7" fill="none"/>${[-15,-9,9,15].map(d=>`<path d="M${d} -112 L${d*1.2} -84" stroke="${[RUST,OCHRE,MOSS,'#3A5A8A'][(d+15)%4]}" stroke-width="3"/>`).join('')}<path d="M-6 -122 L-10 -140 M0 -124 V-144 M6 -122 L10 -140" stroke="${K}" stroke-width="3"/>`,
+    cap:`<path d="M-17 -108 Q-18 -132 0 -132 Q18 -132 17 -108Z" fill="#2E4A7A" stroke="${K}" stroke-width="1.8"/><path d="M-17 -110 H17" stroke="${RUST}" stroke-width="4"/>`,
+    hood:`<circle cx="0" cy="-104" r="24" fill="#EDE4D0" stroke="${K}" stroke-width="2"/><circle cx="0" cy="-104" r="18" fill="${col}"/>`}[hat]||'';
+  const fr=fringe?[-22,-14,-6,2,10,18].map(d=>`<path d="M${d} 0 v10" stroke="${trim}" stroke-width="3"/>`).join(''):'';
+  return `<g transform="translate(${x} ${y}) scale(${s})">${fr}<path d="M-26 0 L-20 -84 Q0 -94 20 -84 L26 0Z" fill="${col}" stroke="${K}" stroke-width="2.2"/><path d="M0 -88 V0" stroke="${trim}" stroke-width="3"/><path d="M-24 -14 H24" stroke="${trim}" stroke-width="4"/>${ar}${hat==='hood'?h:''}<circle cx="0" cy="-104" r="15" fill="${skin}" stroke="${K}" stroke-width="2.2"/>${hat==='hood'?'':h}</g>`; }
+/* a frame drum, seen from the front, with simple painted signs */
+function drumF(x,y,s=1,{painted=true,glow=false}={}){ return `<g transform="translate(${x} ${y}) scale(${s})">${glow?`<circle r="70" fill="url(#glowS)"/>`:''}<ellipse rx="46" ry="54" fill="#E8D2A4" stroke="${LEATHER}" stroke-width="7"/><ellipse rx="46" ry="54" fill="none" stroke="${K}" stroke-width="2"/>${painted?`<circle cy="-8" r="10" fill="none" stroke="${RUST}" stroke-width="3"/><path d="M-30 -8 H30 M-36 20 H36" stroke="${RUST}" stroke-width="2.2"/><path d="M-20 34 l4 -10 l4 10 M-16 24 v-8 M10 34 l4 -10 l4 10 M14 24 v-8 M-22 -32 l6 -6 l6 6 M14 -36 q6 -6 12 0" stroke="${RUST}" stroke-width="2.2" fill="none"/>`:''}</g>`; }
+function beater(x,y,s=1,r=-30){ return `<g transform="translate(${x} ${y}) rotate(${r}) scale(${s})"><path d="M0 0 V-60" stroke="${LEATHER}" stroke-width="5" stroke-linecap="round"/><ellipse cy="-62" rx="7" ry="10" fill="#D8C8A0" stroke="${K}" stroke-width="1.6"/></g>`; }
+/* the kultrun: a bowl drum with its skin painted in four quarters */
+function kultrun(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse rx="40" ry="40" fill="#E8D2A4" stroke="${K}" stroke-width="2.4"/><path d="M-40 0 H40 M0 -40 V40" stroke="#2E3A6A" stroke-width="3"/>${[[-20,-20],[20,-20],[-20,20],[20,20]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="5" fill="#2E3A6A"/>`).join('')}</g>`; }
+function larch(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 V-130" stroke="#5A3E26" stroke-width="5"/>${[0,1,2,3,4].map(i=>`<path d="M${-34+i*6} ${-20-i*24} L0 ${-44-i*24} L${34-i*6} ${-20-i*24}Z" fill="${MOSS}" stroke="${K}" stroke-width="1.4"/>`).join('')}</g>`; }
+function birch(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-5" y="-150" width="10" height="150" fill="${BIRCH}" stroke="${K}" stroke-width="1.6"/>${[-130,-100,-70,-40].map(v=>`<path d="M-5 ${v} h6" stroke="${K}" stroke-width="2.4"/>`).join('')}<ellipse cy="-150" rx="34" ry="26" fill="#9AAE5A" stroke="${K}" stroke-width="1.6"/></g>`; }
+/* a conical tent of poles and hides */
+function tent(x,y,s=1,{col='#A88A60'}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 0 L0 -130 L70 0Z" fill="${col}" stroke="${K}" stroke-width="2.4"/><path d="M-10 -150 L0 -130 L10 -150 M-4 -146 L0 -130" stroke="${K}" stroke-width="3"/><path d="M-14 0 L0 -40 L14 0Z" fill="#3A2A1C" stroke="${K}" stroke-width="2"/></g>`; }
+function ger(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-80" y="-60" width="160" height="60" fill="${SNOW}" stroke="${K}" stroke-width="2.4"/><path d="M-86 -60 Q0 -110 86 -60Z" fill="${SNOW}" stroke="${K}" stroke-width="2.4"/><path d="M-80 -40 H80" stroke="#3A5A8A" stroke-width="4"/><rect x="-14" y="-44" width="28" height="44" fill="${RUST}" stroke="${K}" stroke-width="2"/></g>`; }
+function snowhouse(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-80 0 Q-80 -90 0 -90 Q80 -90 80 0Z" fill="${SNOW}" stroke="${K}" stroke-width="2.4"/><path d="M-70 -30 H70 M-56 -60 H56" stroke="#C8D0D8" stroke-width="2"/><path d="M-20 0 Q-20 -30 0 -30 Q20 -30 20 0Z" fill="#2A3440" stroke="${K}" stroke-width="2"/></g>`; }
+function river(y=280,col='#3A6A80'){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/>`; for(let k=0;k<3;k++) o+=`<path d="M${k*30} ${y+18+k*30} h60 m40 0 h80 m50 0 h70 m40 0 h90" stroke="${BIRCH}" stroke-width="2" opacity=".5"/>`; return o; }
+function aurora(){ return `<g class="drift" opacity=".8">${[['#6ADBA0',90],['#4AB0A0',120],['#9A7ADB',70]].map(([c,y],i)=>`<path d="M-40 ${y} Q120 ${y-50+i*20} 300 ${y} T640 ${y-10}" stroke="${c}" stroke-width="${26-i*6}" fill="none" opacity=".55"/>`).join('')}</g>`; }
+function sledge(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 0 H60 Q80 0 82 -14" stroke="${K}" stroke-width="4" fill="none"/><rect x="-60" y="-26" width="110" height="16" fill="${LEATHER}" stroke="${K}" stroke-width="2"/><path d="M-50 -10 V0 M-10 -10 V0 M30 -10 V0" stroke="${K}" stroke-width="3"/></g>`; }
+function reindeer(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-40 -40 Q0 -54 34 -42 L36 -20 Q0 -14 -38 -22Z" fill="#8A7458" stroke="${K}" stroke-width="2"/><path d="M-30 -22 V0 M-18 -20 V0 M20 -20 V0 M30 -22 V0" stroke="${K}" stroke-width="4"/><path d="M34 -42 L48 -60 L58 -56 L46 -36Z" fill="#8A7458" stroke="${K}" stroke-width="2"/><path d="M48 -60 L42 -80 M42 -72 L34 -78 M52 -60 L60 -80 M58 -72 L66 -76" stroke="${K}" stroke-width="2.4"/></g>`; }
+/* a small spirit figure, cared for by the family */
+function doll(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle cy="-40" r="34" fill="url(#glowS)"/><path d="M-12 0 L-9 -34 H9 L12 0Z" fill="#B88A50" stroke="${K}" stroke-width="1.8"/><circle cy="-42" r="9" fill="#D8B888" stroke="${K}" stroke-width="1.8"/><path d="M-9 -20 H9" stroke="${RUST}" stroke-width="2.4"/></g>`; }
+function fire(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})" class="flick"><path d="M-30 0 H30" stroke="#5A3E26" stroke-width="6"/><path d="M-20 0 Q-26 -24 -8 -40 Q-6 -24 0 -22 Q-2 -40 10 -50 Q14 -30 22 -20 Q26 -6 20 0Z" fill="${RUST}" stroke="${K}" stroke-width="1.6"/><path d="M-8 0 Q-10 -14 0 -24 Q8 -12 8 0Z" fill="${OCHRE}"/></g>`; }
+function mirror(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><circle r="14" fill="#C8A85A" stroke="${K}" stroke-width="2"/><circle r="9" fill="#E8D8A0"/><path d="M-4 -4 L2 -8" stroke="#FFF8E0" stroke-width="2"/></g>`; }
+/* a carved step-pole with branches tied to it */
+function rewe(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-14" y="-200" width="28" height="200" fill="#9A7448" stroke="${K}" stroke-width="2.2"/>${[-170,-140,-110,-80,-50,-20].map(v=>`<path d="M-14 ${v} L14 ${v-10} V${v} " fill="#7A5634" stroke="${K}" stroke-width="1.6"/>`).join('')}<circle cy="-206" r="10" fill="#9A7448" stroke="${K}" stroke-width="2"/>${[-30,30].map(d=>`<path d="M${d*.6} 0 L${d} -150" stroke="#3A5A2A" stroke-width="4"/><ellipse cx="${d}" cy="-150" rx="16" ry="30" fill="${MOSS}" stroke="${K}" stroke-width="1.4"/>`).join('')}</g>`; }
+function whale(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-90 0 Q-60 -40 20 -34 Q70 -30 90 -6 Q60 14 -60 10 Z" fill="#3A4A5A" stroke="${K}" stroke-width="2.2"/><path d="M-90 0 L-120 -24 L-110 2 L-122 22Z" fill="#3A4A5A" stroke="${K}" stroke-width="2"/><circle cx="60" cy="-14" r="3" fill="${K}"/><path d="M-40 6 Q20 14 80 0" stroke="#8A9AAA" stroke-width="2" fill="none"/></g>`; }
+function cloth(x1,x2,y,{torn=0}={}){ const m=(x1+x2)/2; return torn?`<path d="M${x1} ${y} H${m-torn}" stroke="${SNOW}" stroke-width="16"/><path d="M${m+torn} ${y} H${x2}" stroke="${SNOW}" stroke-width="16"/><path d="M${x1} ${y-8} H${m-torn} M${m+torn} ${y-8} H${x2}" stroke="${K}" stroke-width="1.2"/>`:`<path d="M${x1} ${y} H${x2}" stroke="${SNOW}" stroke-width="16"/><path d="M${x1} ${y-8} H${x2} M${x1} ${y+8} H${x2}" stroke="${K}" stroke-width="1.2"/>`; }
+function sea(y=250){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${SEA}"/>`; for(let k=0;k<3;k++){ let d=`M${k%2*20} ${y+20+k*30}`; for(let x=0;x<620;x+=40) d+=` q10 -8 20 0 q10 8 20 0`; o+=`<path d="${d}" stroke="${BIRCH}" stroke-width="2" fill="none" opacity=".45"/>`; } return o; }
+function smCover(){ return shm(`${aurora()}${ground(320,'#2A3440')}${larch(90,320,.9)}${larch(520,320,1)}${drumF(300,200,1.4,{glow:true})}${beater(370,280,1.1,-24)}`,{bg:'night'}); }
+
+return smCover;})();
 COVERS.secular=(()=>{
 /* Kit for The Last Light: a clear night sky, one small person, a tree, and the long view. */
 const K='#151B2B', INDIGO='#1B2550', NIGHT='#0A0F1F', STAR='#F8F5EE', EMBER='#F0C25A', WARM='#C8773A', LEAF='#5E9C6A', SOIL='#3A2E26', SKY2='#3D5A99', ROSE='#D98C7A';
@@ -911,6 +964,7 @@ const IC={
  fire:`<path d="M-12 12 Q-16 -2 -6 -10 Q-6 -2 -1 0 Q-4 -12 4 -20 Q6 -8 12 -4 Q16 4 12 12Z" fill="#E86A17" stroke="${K}" stroke-width="2"/><path d="M-16 13 H16" stroke="${K}" stroke-width="2.6"/>`,
  coin:`<circle r="13" fill="${G}" stroke="${K}" stroke-width="2.4"/><circle r="8" fill="none" stroke="${K}" stroke-width="1.4"/>`,
  torii:`<path d="M-11 14 L-9 -8 M11 14 L9 -8" stroke="${K}" stroke-width="3.4"/><path d="M-18 -10 Q0 -14 18 -10 L19 -15 Q0 -19 -19 -15Z" fill="${K}"/><path d="M-14 -3 H14" stroke="${K}" stroke-width="2.6"/>`,
+ drum:`<ellipse rx="14" ry="16" fill="${P}" stroke="${K}" stroke-width="3"/><circle cy="-3" r="4" fill="none" stroke="${K}" stroke-width="2"/><path d="M-8 8 H8" stroke="${K}" stroke-width="2"/><path d="M14 10 L22 20" stroke="${K}" stroke-width="3" stroke-linecap="round"/>`,
  khanda:`<circle cy="2" r="10" fill="none" stroke="${K}" stroke-width="3"/><path d="M0 -20 L3 -12 L2 12 H-2 L-3 -12Z" fill="${K}"/><path d="M-3 14 Q-18 10 -16 -8 Q-13 4 -1 10 M3 14 Q18 10 16 -8 Q13 4 1 10" fill="${K}"/>`,
  crescent:`<circle r="15" fill="${G}" stroke="${K}" stroke-width="2"/><circle cx="7" cy="-4" r="13" fill="${P}" stroke="${K}" stroke-width="2"/>`,
 };
@@ -1009,6 +1063,12 @@ const D=[
   facts:[['Trip length','4 years'],['Who decides','How you died'],['Last stop','Mictlan, the ninth level']],
   ask:{who:'How you died',long:'4 years',cross:'A river, on a dog',back:'No'},
   book:['The Nine Levels of Mictlan','aztec/book/'],walk:['The Road Down','aztec/walk/'],href:'aztec/',review:'Still waiting for review by Nahua scholars and communities.'},
+ {k:'shamans',name:'Shamans',col:'#A4432A',emb:'drum',pop:null,popTxt:'Six peoples, from Siberia to Chile',title:'The Drum and the Road',
+  head:'In many cultures, someone walks the dead to the other world.',
+  route:[['wheel','Siberia','The Nanai saman drives the souls by sledge to buni, the land of the dead.'],['paper','Korea','The mudang washes the soul and tears a white cloth to open its road.'],['sun','Mongolia and Tuva','Ancestor spirits, the ongod, speak through the shaman.'],['star','Sámi and Inuit','The noaidi journeys in trance; the dead play in the northern lights.'],['water','Mapuche','The soul crosses the sea to the west.']],
+  facts:[['Trip length','Months, or a year'],['Who decides','The guide and the family'],['Last stop','Each people\'s land of the dead']],
+  ask:{who:'The guide, and the family',long:'Months, or a year',cross:'A river, a cloth road, the sea',back:'As ancestors'},
+  book:null,walk:null,href:'shamans/',play:'Open the book',review:'Still waiting for review by Evenki, Nanai, Korean, Mongolian, Tuvan, Sámi, Inuit and Mapuche readers.'},
  {k:'more',name:'Everything else',col:'#4A5754',emb:'q',pop:null,popTxt:'26 traditions, side by side',title:'The Atlas',
   head:'Norse halls, Yoruba ancestors, Jain maps, near-death reports, and more.',
   route:[['book','The atlas','Twenty-six traditions, side by side.'],['scales','Compare','Who judges, how long, where it ends.'],['star','Six shared motifs','Crossings, weighings, dogs, guides, forgetting, your own face.']],
@@ -1036,7 +1096,7 @@ function cover(){
       <path d="M180 54 V22 Q187 24 194 30 V54Z" fill="#F2B640"/>
       <circle cx="152" cy="46" r="4" fill="#FBF3DF"/><path d="M152 50 V60" stroke="#FBF3DF" stroke-width="3"/>
     </svg>
-    <p class="small">About 5 minutes to see the idea. Then sixteen doors. Sound is optional.</p></div>`);
+    <p class="small">About 5 minutes to see the idea. Then seventeen doors. Sound is optional.</p></div>`);
   $('#open').onclick=()=>{ ai(); blip(); slide(0); };
   $('#skip').onclick=()=>{ ai(); hall(); };
 }
