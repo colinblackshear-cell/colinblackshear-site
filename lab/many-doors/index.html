@@ -784,7 +784,7 @@ const SM_DEFS=`<defs><pattern id="tri" width="24" height="16" patternUnits="user
 function shm(inner,{bg='hide',border=true}={}){ const f=bg==='night'?'url(#nightS)':bg==='hide'?HIDE:bg==='sea'?'url(#seaS)':bg==='snow'?SNOW:bg;
   return `${SM_DEFS}<g clip-path="url(#smclip)"><rect width="600" height="400" fill="${f}"/>${bg==='night'?stars(60,23,280,'#F4F2EC'):''}${inner}${border?`<rect width="600" height="16" fill="url(#tri)"/><rect y="384" width="600" height="16" fill="url(#tri)" transform="rotate(180 300 392)"/>`:''}</g>`; }
 function ground(y=330,col='#B89A6A'){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y} H600" stroke="${K}" stroke-width="3"/>`; }
-/* a person in a long coat; hat picks a broad, generic look: none, plume (ribbons), cap, hood (fur ruff), band (headband, long hair), long (long hair) */
+/* a person in a long coat; hat picks a broad, generic look: none, plume (cap with ribbons and small iron antlers), cap, hood (fur ruff), band (headband, long hair), long (long hair) */
 function pp(x,y,s=1,{col=LEATHER,trim=OCHRE,hat='none',arms='down',skin=SKINS,fringe=false}={}){
   const ar={down:'',fold:`<path d="M-16 -62 Q0 -52 16 -62" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>`,
     offer:`<path d="M-20 -70 Q-18 -48 0 -52 Q18 -48 20 -70" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>`,
@@ -794,7 +794,7 @@ function pp(x,y,s=1,{col=LEATHER,trim=OCHRE,hat='none',arms='down',skin=SKINS,fr
   const h={none:`<path d="M-15 -110 Q0 -128 15 -110 Q0 -117 -15 -110Z" fill="${hair}"/>`,
     long:`<path d="M-16 -106 Q-20 -128 0 -128 Q20 -128 16 -106 L18 -80 L12 -80 L12 -106 Q0 -116 -12 -106 L-12 -80 L-18 -80Z" fill="${hair}"/>`,
     band:`<path d="M-16 -106 Q-20 -128 0 -128 Q20 -128 16 -106 L18 -80 L12 -80 L12 -106 Q0 -116 -12 -106 L-12 -80 L-18 -80Z" fill="${hair}"/><path d="M-16 -114 Q0 -120 16 -114" stroke="#D8D4CC" stroke-width="4" fill="none"/>`,
-    plume:`<path d="M-17 -112 Q0 -124 17 -112" stroke="${trim}" stroke-width="7" fill="none"/>${[-15,-9,9,15].map(d=>`<path d="M${d} -112 L${d*1.2} -84" stroke="${[RUST,OCHRE,MOSS,'#3A5A8A'][(d+15)%4]}" stroke-width="3"/>`).join('')}<path d="M-6 -122 L-10 -140 M0 -124 V-144 M6 -122 L10 -140" stroke="${K}" stroke-width="3"/>`,
+    plume:`<path d="M-17 -112 Q0 -124 17 -112" stroke="${trim}" stroke-width="7" fill="none"/>${[-15,-9,9,15].map(d=>`<path d="M${d} -112 L${d*1.2} -84" stroke="${[RUST,OCHRE,MOSS,'#3A5A8A'][(d+15)%4]}" stroke-width="3"/>`).join('')}<path d="M-8 -119 L-14 -142 M-11 -131 L-19 -135 M8 -119 L14 -142 M11 -131 L19 -135" stroke="#6E6A66" stroke-width="3" stroke-linecap="round"/>`,
     cap:`<path d="M-17 -108 Q-18 -132 0 -132 Q18 -132 17 -108Z" fill="#2E4A7A" stroke="${K}" stroke-width="1.8"/><path d="M-17 -110 H17" stroke="${RUST}" stroke-width="4"/>`,
     hood:`<circle cx="0" cy="-104" r="24" fill="#EDE4D0" stroke="${K}" stroke-width="2"/><circle cx="0" cy="-104" r="18" fill="${col}"/>`}[hat]||'';
   const fr=fringe?[-22,-14,-6,2,10,18].map(d=>`<path d="M${d} 0 v10" stroke="${trim}" stroke-width="3"/>`).join(''):'';
@@ -826,6 +826,48 @@ function sea(y=250){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" f
 function smCover(){ return shm(`${aurora()}${ground(320,'#2A3440')}${larch(90,320,.9)}${larch(520,320,1)}${drumF(300,200,1.4,{glow:true})}${beater(370,280,1.1,-24)}`,{bg:'night'}); }
 
 return smCover;})();
+COVERS.nations=(()=>{
+/* Many Nations, Many Roads: quiet landscapes at dusk, with people drawn as they are today, in everyday clothes.
+   No headdresses, no borrowed designs, no one-size "Native" look: each nation gets its own land and house. */
+const K='#1E1C1E', CLAY='#B8664A', SAGE='#7A8A6A', CORN='#D8A848', DUSK='#3A3A5A', PAPER='#EFE6D6', PINEN='#2F4A3A', LAKE='#3A6A84', SKINN='#B07A56';
+const NA_DEFS=`<defs><radialGradient id="glowN"><stop offset="0" stop-color="#FFF2CC"/><stop offset=".5" stop-color="${CORN}" stop-opacity=".45"/><stop offset="1" stop-color="${CORN}" stop-opacity="0"/></radialGradient>
+<linearGradient id="nightN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0C0E1C"/><stop offset="1" stop-color="#2C2C4A"/></linearGradient>
+<linearGradient id="duskN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A5A8A"/><stop offset=".7" stop-color="#D89A7A"/><stop offset="1" stop-color="#F0C890"/></linearGradient><clipPath id="naclip"><rect width="600" height="400"/></clipPath></defs>`;
+function na(inner,{bg='paper'}={}){ const f=bg==='night'?'url(#nightN)':bg==='dusk'?'url(#duskN)':bg==='paper'?PAPER:bg;
+  return `${NA_DEFS}<g clip-path="url(#naclip)"><rect width="600" height="400" fill="${f}"/>${bg==='night'?stars(70,23,300,'#F4F2EC'):''}${inner}<rect x="6" y="6" width="588" height="388" fill="none" stroke="${K}" stroke-width="2" opacity=".35"/></g>`; }
+function land(y=330,col='#9A8A5A'){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y} H600" stroke="${K}" stroke-width="2.4"/>`; }
+/* a person today: jacket, trousers; hair short, long, braid, or grey */
+function pn(x,y,s=1,{col='#3A5A7A',legs='#2A2A34',hair='short',arms='down',skin=SKINN}={}){
+  const ar={down:'',fold:`<path d="M-15 -66 Q0 -58 15 -66" stroke="${col}" stroke-width="10" fill="none" stroke-linecap="round"/>`,
+    out:`<path d="M16 -78 Q34 -70 40 -58" stroke="${col}" stroke-width="10" fill="none" stroke-linecap="round"/>`,
+    up:`<path d="M-16 -80 L-26 -108 M16 -80 L26 -108" stroke="${col}" stroke-width="10" stroke-linecap="round"/>`}[arms]||'';
+  const hc=hair==='grey'?'#CFCAC2':'#1A1614';
+  const h={short:`<path d="M-14 -112 Q0 -128 14 -112 Q0 -118 -14 -112Z" fill="${hc}"/>`,grey:`<path d="M-14 -112 Q0 -128 14 -112 Q0 -118 -14 -112Z M-14 -110 L-15 -96 M14 -110 L15 -96" fill="${hc}" stroke="${hc}" stroke-width="5"/>`,
+    long:`<path d="M-15 -108 Q-18 -128 0 -128 Q18 -128 15 -108 L16 -76 L10 -76 L10 -108 Q0 -116 -10 -108 L-10 -76 L-16 -76Z" fill="${hc}"/>`,
+    braid:`<path d="M-15 -108 Q-18 -128 0 -128 Q18 -128 15 -108 Q0 -116 -15 -108Z" fill="${hc}"/><path d="M-14 -104 Q-20 -86 -16 -66 M14 -104 Q20 -86 16 -66" stroke="${hc}" stroke-width="6" stroke-linecap="round" fill="none"/>`}[hair]||'';
+  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-12 0 V-40 M12 0 V-40" stroke="${legs}" stroke-width="12"/><path d="M-20 -38 L-18 -86 Q0 -94 18 -86 L20 -38Z" fill="${col}" stroke="${K}" stroke-width="2"/>${ar}<circle cx="0" cy="-106" r="14" fill="${skin}" stroke="${K}" stroke-width="2"/>${h}</g>`; }
+function milkyway(){ let o=`<path d="M-20 340 Q200 120 640 40" stroke="#C8C8E8" stroke-width="70" fill="none" opacity=".18"/><path d="M-20 340 Q200 120 640 40" stroke="#E8E8FF" stroke-width="24" fill="none" opacity=".2"/>`;
+  for(let i=0;i<70;i++){ const t=i/70, x=-20+660*t, y=340-300*t+Math.sin(i*7.3)*26-60*Math.sin(Math.PI*t)*.8; o+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(i%3)*.6+.8}" fill="#FFF"/>`; } return o; }
+function hills(y=300,col='#6A6A4A'){ return `<path d="M0 ${y} Q120 ${y-50} 240 ${y-10} T480 ${y-20} T640 ${y}V400H0Z" fill="${col}"/>`; }
+function mesa(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-150 0 L-110 -100 H90 L140 0Z" fill="${CLAY}" stroke="${K}" stroke-width="2"/><path d="M-120 -76 H110 M-130 -50 H120" stroke="#8A4A34" stroke-width="3"/></g>`; }
+/* a hogan: a round house of logs and earth, door facing east */
+function hogan(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 0 V-40 L-50 -70 H50 L70 -40 V0Z" fill="#A87A52" stroke="${K}" stroke-width="2.2"/><path d="M-50 -70 Q0 -96 50 -70" fill="#8A6A4A" stroke="${K}" stroke-width="2"/><rect x="-12" y="-36" width="24" height="36" fill="#4A3424" stroke="${K}" stroke-width="1.8"/></g>`; }
+/* a longhouse: a long bark-covered house with a curved roof */
+function longhouse(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-170 0 V-60 Q0 -130 170 -60 V0Z" fill="#8A7A5A" stroke="${K}" stroke-width="2.4"/>${[-120,-60,0,60,120].map(d=>`<path d="M${d} 0 V${-60-Math.round(40*(1-(d/170)**2))}" stroke="#6A5A40" stroke-width="2"/>`).join('')}<rect x="-170" y="-50" width="26" height="50" fill="#3A2E22" stroke="${K}" stroke-width="1.6"/></g>`; }
+/* a plank house of the northwest coast, plain-fronted */
+function plankhouse(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-130 0 V-90 L0 -130 L130 -90 V0Z" fill="#8A5E3E" stroke="${K}" stroke-width="2.4"/>${[-100,-70,-40,-10,20,50,80,110].map(d=>`<path d="M${d} 0 V${-90-Math.round(30*(1-Math.abs(d)/130))}" stroke="#6A4630" stroke-width="2"/>`).join('')}<path d="M-14 0 V-40 Q0 -54 14 -40 V0Z" fill="#2E2218" stroke="${K}" stroke-width="1.8"/></g>`; }
+function pine(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 V-20" stroke="#4A3424" stroke-width="5"/>${[0,1,2].map(i=>`<path d="M${-36+i*8} ${-16-i*30} L0 ${-60-i*30} L${36-i*8} ${-16-i*30}Z" fill="${PINEN}" stroke="${K}" stroke-width="1.4"/>`).join('')}</g>`; }
+function birchN(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-5" y="-140" width="10" height="140" fill="#F2ECDD" stroke="${K}" stroke-width="1.6"/>${[-120,-90,-60,-30].map(v=>`<path d="M-5 ${v} h6" stroke="${K}" stroke-width="2.4"/>`).join('')}<ellipse cy="-140" rx="30" ry="24" fill="#A8B860" stroke="${K}" stroke-width="1.6"/></g>`; }
+function lake(y=290){ let o=`<rect x="0" y="${y}" width="600" height="${400-y}" fill="${LAKE}"/>`; for(let k=0;k<3;k++) o+=`<path d="M${20+k*40} ${y+18+k*26} h80 m60 0 h110 m50 0 h90" stroke="#E8F0F4" stroke-width="2" opacity=".45"/>`; return o; }
+function sea(y=290){ return lake(y).replace(LAKE,'#2E5A6A'); }
+function fireN(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})" class="flick"><circle cy="-24" r="44" fill="url(#glowN)"/><path d="M-26 0 H26" stroke="#4A3424" stroke-width="6"/><path d="M-18 0 Q-24 -22 -8 -36 Q-6 -22 0 -20 Q-2 -36 10 -46 Q14 -28 20 -18 Q24 -6 18 0Z" fill="${CLAY}" stroke="${K}" stroke-width="1.5"/><path d="M-7 0 Q-9 -12 0 -22 Q7 -11 7 0Z" fill="${CORN}"/></g>`; }
+function table(x,y,w=200){ return `<g transform="translate(${x} ${y})"><rect x="${-w/2}" y="-40" width="${w}" height="10" fill="#8A6A4A" stroke="${K}" stroke-width="1.8"/><path d="M${-w/2+10} -30 V0 M${w/2-10} -30 V0" stroke="#6A4A34" stroke-width="5"/></g>`; }
+function plate(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse rx="22" ry="7" fill="#F4F0E8" stroke="${K}" stroke-width="1.6"/><ellipse cx="-6" cy="-4" rx="7" ry="4" fill="${CORN}"/><ellipse cx="6" cy="-4" rx="6" ry="4" fill="${CLAY}"/></g>`; }
+function blanket(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-40" y="-26" width="80" height="26" fill="#2E3A5A" stroke="${K}" stroke-width="1.8"/><path d="M-40 -13 H40" stroke="${CORN}" stroke-width="3"/></g>`; }
+function phone(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-8" y="-14" width="16" height="28" rx="3" fill="#222" stroke="${K}"/><rect x="-6" y="-11" width="12" height="20" fill="#8AC0E8"/></g>`; }
+function ncCover(){ return na(`${milkyway()}${hills(320,'#2A2A3A')}${land(340,'#1E1E2A')}${pn(300,340,.9,{col:'#4A4A6A',hair:'braid'})}`,{bg:'night'}); }
+
+return ncCover;})();
 COVERS.secular=(()=>{
 /* Kit for The Last Light: a clear night sky, one small person, a tree, and the long view. */
 const K='#151B2B', INDIGO='#1B2550', NIGHT='#0A0F1F', STAR='#F8F5EE', EMBER='#F0C25A', WARM='#C8773A', LEAF='#5E9C6A', SOIL='#3A2E26', SKY2='#3D5A99', ROSE='#D98C7A';
@@ -1069,6 +1111,12 @@ const D=[
   facts:[['Trip length','Months, or a year'],['Who decides','The guide and the family'],['Last stop','Each people\'s land of the dead']],
   ask:{who:'The guide, and the family',long:'Months, or a year',cross:'A river, a cloth road, the sea',back:'As ancestors'},
   book:null,walk:null,href:'shamans/',play:'Open the book',review:'Still waiting for review by Evenki, Nanai, Korean, Mongolian, Tuvan, Sámi, Inuit and Mapuche readers.'},
+ {k:'nations',name:'Native Nations',col:'#B8664A',emb:'star',pop:null,popTxt:'Five of more than a thousand nations',title:'Many Nations, Many Roads',
+  head:'Five nations, each with its own way, told as their people have chosen to share it.',
+  route:[['star','Lakota','Many Lakota call the Milky Way the spirit road.'],['sun','Diné','Four quiet days, then life turns back to the living.'],['eye','Haudenosaunee','Words of comfort wipe the eyes, clear the ears, open the throat.'],['fire','Anishinaabe','A fire lights the four-day path of souls going west.'],['heart','Lingít','A clan memorial honours the dead and repays those who cared.']],
+  facts:[['Trip length','Four days, ten days, or a year'],['Who decides','Each nation'],['Last stop','Each nation\'s own answer']],
+  ask:{who:'Each nation, its own way',long:'Four days to a year',cross:'The spirit road, the path of souls',back:'Some say, within the clan'},
+  book:null,walk:null,href:'nations/',play:'Open the book',review:'Still waiting for review by Lakota, Diné, Haudenosaunee, Anishinaabe and Lingít readers.'},
  {k:'more',name:'Everything else',col:'#4A5754',emb:'q',pop:null,popTxt:'26 traditions, side by side',title:'The Atlas',
   head:'Norse halls, Yoruba ancestors, Jain maps, near-death reports, and more.',
   route:[['book','The atlas','Twenty-six traditions, side by side.'],['scales','Compare','Who judges, how long, where it ends.'],['star','Six shared motifs','Crossings, weighings, dogs, guides, forgetting, your own face.']],
@@ -1096,7 +1144,7 @@ function cover(){
       <path d="M180 54 V22 Q187 24 194 30 V54Z" fill="#F2B640"/>
       <circle cx="152" cy="46" r="4" fill="#FBF3DF"/><path d="M152 50 V60" stroke="#FBF3DF" stroke-width="3"/>
     </svg>
-    <p class="small">About 5 minutes to see the idea. Then seventeen doors. Sound is optional.</p></div>`);
+    <p class="small">About 5 minutes to see the idea. Then eighteen doors. Sound is optional.</p></div>`);
   $('#open').onclick=()=>{ ai(); blip(); slide(0); };
   $('#skip').onclick=()=>{ ai(); hall(); };
 }
