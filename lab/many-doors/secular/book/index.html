@@ -1,0 +1,1108 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<script>window.MD_HOME='../../index.html#doors'</script>
+<title>The Last Light</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: one full-screen "flight" — a thin instrument bar on top, the scene card in the middle, the narrator's caption card below it. Single deliberate look: the safety-card palette. */
+:root{
+  color-scheme: light;
+  --cream:#F6EBD2; --parchment:#FBF3DF; --ink:#1E2A2B; --ink-soft:#44524F;
+  --teal:#1F5E63; --teal-deep:#123D40; --brown:#8A4B22; --lamp:#F2B640;
+  --red:#B8352A; --ok:#2F6B2B;
+  --scene-bg: var(--cream);
+  --display:'Jost', 'Futura', 'Century Gothic', sans-serif;
+  --body:'Atkinson Hyperlegible', 'Verdana', sans-serif;
+}
+html,body{height:100%}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--body);overflow:hidden;-webkit-tap-highlight-color:transparent}
+#app{height:100%;display:flex;flex-direction:column;background:var(--scene-bg);transition:background-color 2.2s ease}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:2px solid var(--ink);background:var(--parchment);transition:opacity 1.5s,filter 1.5s}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;font-size:.8rem;text-transform:uppercase}
+#stageLabel{font-family:var(--display);font-weight:500;font-size:.85rem;color:var(--ink-soft);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#stageLabel b{color:var(--brown);font-weight:700;margin-right:8px;font-variant-numeric:tabular-nums}
+.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:var(--cream);color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;min-height:36px}
+.tog[aria-pressed="false"]{background:transparent;color:var(--ink-soft);border-style:dashed}
+.pick{font-family:var(--body);font-size:.8rem;border:2px solid var(--ink);background:var(--cream);color:var(--ink);border-radius:8px;padding:6px 8px;min-height:36px;max-width:190px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pick:focus-visible,.tog:focus-visible,.btn:focus-visible,.spot:focus-visible{outline:3px solid var(--lamp);outline-offset:3px}
+#stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:18px;padding-block:18px;padding-inline:16px;cursor:pointer;user-select:none}
+#visual{width:100%;display:flex;justify-content:center;flex:none}
+.frame{position:relative;width:min(100%, calc((100dvh - 380px) * 1.5), 980px);min-width:min(100%,300px);aspect-ratio:3/2;max-width:100%;border-radius:18px;overflow:hidden;transition:filter 3s ease, transform 3s ease}
+.frame>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:filter 3s ease}
+.frame canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.caption{flex:none;max-width:720px;width:100%;box-sizing:border-box;background:var(--parchment);border:2px solid var(--ink);border-radius:6px;padding:16px 20px;min-height:4.6em;transition:opacity .8s, filter 1.5s, transform 1.5s, border-color 1.5s}
+.caption p{margin:0;font-size:clamp(1.02rem, 2.3vw, 1.3rem);line-height:1.45;text-wrap:pretty}
+.caption.quiet{background:transparent;border-color:transparent;text-align:center}
+.caption.dark{background:#141413;color:var(--parchment);border-color:#141413}
+.caption[hidden]{display:none!important}
+#hint{margin:0;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);opacity:0;transition:opacity .6s;min-height:1em}
+#hint.on{opacity:.8;animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.35}}
+#choices{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.04em;border:2px solid var(--ink);background:var(--teal);color:var(--parchment);border-radius:999px;padding:12px 22px;cursor:pointer;min-height:48px}
+.btn.alt{background:var(--parchment);color:var(--ink)}
+
+/* dissolution: the manual's chrome comes apart; the narration always stays sharp */
+body.d1 .bar{opacity:.85}
+body.d2 .bar{filter:blur(.6px);opacity:.6}
+body.d2 .frame{border-radius:28px}
+body.d3 .bar{filter:blur(1.5px);opacity:.3}
+body.d3 .frame{border-radius:40px}
+body.void .bar,body.void #hint{opacity:0!important}
+
+/* title */
+.title-card{width:min(100%,640px);background:var(--teal);color:var(--parchment);border:2px solid var(--ink);border-radius:18px;padding:36px 28px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;align-items:flex-start;cursor:default}
+.title-card .eyebrow{font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:.75rem;color:var(--lamp);text-transform:uppercase}
+.title-card h1{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,7vw,3.6rem);line-height:1;text-wrap:balance;text-transform:uppercase;letter-spacing:.02em}
+.title-card p{margin:0;font-size:1.05rem;line-height:1.5;max-width:46ch}
+.title-card ol{margin:4px 0 8px;padding-left:1.3em;display:flex;flex-direction:column;gap:4px;font-size:.98rem}
+.title-card .btn{background:var(--lamp);color:var(--ink)}
+
+/* hotspots */
+.spot{position:absolute;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;border:3px solid #FFF3D6;background:rgba(242,182,64,.35);cursor:pointer;padding:0}
+.spot::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid #FFF3D6;animation:ping 1.8s ease-out infinite}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.7);opacity:.9}to{transform:scale(1.4);opacity:0}}
+.heartglow{position:absolute;width:12%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(var(--s,0.4));background:radial-gradient(circle,#FFFBEA 0%,rgba(255,221,120,.85) 35%,rgba(255,200,80,0) 70%);transition:transform 1.2s ease;pointer-events:none}
+
+/* breath ring */
+.breath{position:absolute;left:50%;top:50%;width:26%;aspect-ratio:1;transform:translate(-50%,-50%) scale(.6);border-radius:50%;border:4px solid var(--parchment);box-shadow:0 0 0 12px rgba(251,243,223,.15);transition:transform 1s ease-in-out, opacity 1s}
+
+/* svg scenes */
+.svgscene{position:absolute;inset:0;width:100%;height:100%}
+.flicker{transform-origin:300px 262px;animation:flick 1.3s ease-in-out infinite}
+@keyframes flick{0%,100%{transform:scaleY(1) skewX(0)}30%{transform:scaleY(.9) skewX(3deg)}60%{transform:scaleY(1.06) skewX(-2deg)}}
+.orb-down{animation:down 7s ease-in-out forwards}
+.orb-up{animation:up 7s ease-in-out forwards}
+@keyframes down{to{transform:translateY(91px)}}
+@keyframes up{to{transform:translateY(-55px)}}
+.dots{stroke-dasharray:2 7;stroke-linecap:round}
+
+/* guide entry */
+.guide{position:absolute;inset:0;background:var(--parchment);display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:4%;padding:5%;box-sizing:border-box}
+.guide .tag,.doorsteps .tag{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:clamp(.55rem,1.4vw,.75rem);background:var(--teal);color:var(--parchment);padding:5px 10px;border-radius:4px;text-transform:uppercase}
+.guide h2{margin:10px 0 8px;font-family:var(--display);font-weight:800;font-size:clamp(1.1rem,3.4vw,2.2rem);line-height:1.05;text-transform:uppercase;color:var(--brown);text-wrap:balance}
+.guide p{margin:0;font-size:clamp(.85rem,1.8vw,1.15rem);line-height:1.45}
+.guide .fig{height:100%;display:flex;align-items:center;justify-content:center;background:var(--teal);border-radius:12px;min-height:0}
+.frame.guideframe{aspect-ratio:auto;width:min(100%,860px)}
+.frame.guideframe .guide{position:relative;inset:auto;padding:24px;gap:24px}
+.guide .fig{align-self:stretch;min-height:200px;padding:12px}
+.guide .fig svg{height:220px;width:auto}
+.guide .gtext{box-sizing:border-box}
+.guide .gtext:focus-visible{outline:3px solid var(--lamp)}
+@media (max-width:760px){
+  .frame.guideframe .guide{grid-template-columns:1fr;gap:16px;padding:18px}
+  .guide .fig{min-height:0}
+  .guide .fig svg{height:150px}
+  .guide h2{font-size:1.5rem}
+  .guide p{font-size:1.02rem}
+}
+
+/* clear light */
+.crack{stroke-dasharray:900;stroke-dashoffset:900;animation:crack 1.2s ease-out forwards}
+@keyframes crack{to{stroke-dashoffset:0}}
+.bubble{opacity:0;transform:scale(.6);transform-origin:80% 80%;transition:opacity .8s, transform .8s}
+.bubble.on{opacity:1;transform:scale(1)}
+.ring{position:absolute;left:49.8%;top:43%;width:8%;aspect-ratio:1;border-radius:50%;border:3px solid rgba(242,182,64,.55);transform:translate(-50%,-50%);animation:ring 4.5s ease-out infinite;pointer-events:none}
+@keyframes ring{from{transform:translate(-50%,-50%) scale(.3);opacity:1}to{transform:translate(-50%,-50%) scale(9);opacity:0}}
+
+
+/* chapters 4-5 */
+.rise{animation:rise 4.5s ease-out forwards}
+@keyframes rise{from{transform:translateY(80px);opacity:0}to{transform:none;opacity:1}}
+.walk{animation:walk 9s ease-in forwards}
+@keyframes walk{to{transform:translateY(-22px);opacity:.25}}
+.steam path{animation:steam 2.4s ease-in-out infinite}
+.steam path+path{animation-delay:1.2s}
+@keyframes steam{0%{opacity:0;transform:translateY(6px)}50%{opacity:.9}100%{opacity:0;transform:translateY(-10px)}}
+.balloon{opacity:0}
+.balloon.on{animation:shout 4s ease-out forwards}
+@keyframes shout{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+.mug{opacity:0}
+.mug.on{opacity:1;animation:shake .35s linear 2}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.drawer{transition:transform 1s ease}
+.drawer.open{transform:translateX(60px)}
+.page{transform-box:fill-box;transform-origin:center;animation:fly 1.6s ease-in forwards}
+.page.f2{animation-delay:.35s}.page.f3{animation-delay:.7s}
+@keyframes fly{to{transform:translate(160px,-190px) rotate(30deg);opacity:0}}
+.glass.flash{animation:flash .9s ease}
+@keyframes flash{40%{fill:#FFFFFF}}
+.popped{transform-box:fill-box;transform-origin:center;animation:pop 1.2s ease 1s forwards}
+@keyframes pop{to{transform:scale(1.5);opacity:0}}
+.drops{opacity:0;animation:drops 1s ease 2s forwards}
+@keyframes drops{to{opacity:1}}
+.drawerbtn{position:absolute;background:transparent;border:2px dashed rgba(251,243,223,.75);border-radius:6px;cursor:pointer;padding:0}
+.drawerbtn:hover{background:rgba(242,182,64,.2)}
+.drawerbtn:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.run{background:var(--red);font-size:1.2rem;letter-spacing:.24em;text-transform:uppercase;padding:14px 34px;animation:pulse .9s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.checks{position:absolute;inset:0;background:var(--parchment);padding:5%;box-sizing:border-box;display:flex;flex-direction:column;gap:4%}
+.ck-head span{display:block;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(.95rem,3.4vw,2rem);color:var(--brown);letter-spacing:.03em}
+.ck-head small{display:block;font-size:clamp(.7rem,1.6vw,1rem);color:var(--ink-soft);margin-top:4px}
+.ck-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4%;flex:1}
+.ck{display:flex;align-items:center;gap:6%;padding:4%;border:2px solid var(--ink);border-radius:12px;background:var(--cream);color:var(--ink);font-family:var(--body);font-size:clamp(.7rem,1.9vw,1.15rem);line-height:1.25;text-align:left;cursor:pointer;min-width:0}
+.ck:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.box{flex:none;width:clamp(18px,3vw,32px);aspect-ratio:1;border:3px solid var(--ink);border-radius:6px;position:relative;background:#FFFFFF}
+.ck[aria-pressed="true"] .box{background:var(--ok)}
+.ck[aria-pressed="true"] .box::after{content:"";position:absolute;left:30%;top:6%;width:28%;height:58%;border:solid #FFFFFF;border-width:0 4px 4px 0;transform:rotate(45deg)}
+
+
+/* epilogue */
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:none;overflow:hidden;transition:filter .4s}
+.half svg{width:100%;height:100%;display:block}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-family:var(--display);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:clamp(.68rem,1.6vw,.95rem);background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;white-space:nowrap}
+.duo:hover .half:not(:hover){filter:brightness(.55)}
+.half:focus-visible{outline:4px solid var(--lamp);outline-offset:-4px}
+.rules{position:relative;background:var(--parchment);padding:24px;display:flex;flex-direction:column;gap:18px}
+.rule-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.rule{display:flex;flex-direction:column;gap:8px;border:2px solid var(--ink);border-radius:12px;padding:12px;background:var(--cream);min-width:0}
+.rule svg{width:100%;height:auto;border-radius:8px;background:#E9DDBF}
+.rule b{font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--teal)}
+.rule p{margin:0;font-size:clamp(.9rem,1.6vw,1.05rem);line-height:1.35}
+.spin{transform-origin:300px 170px;animation:spinr 40s linear infinite}
+@keyframes spinr{to{transform:rotate(360deg)}}
+.bluerise{animation:brise 3s ease-out forwards}
+@keyframes brise{to{opacity:.85;transform:translateY(-40px)}}
+
+/* volume 2 */
+.approach{transform-origin:300px 205px;animation:approach 9s ease-in forwards}
+@keyframes approach{from{transform:scale(.8)}to{transform:scale(1.14)}}
+.pulse{transform-origin:300px 205px;animation:pulseg 1.24s ease-in-out infinite}
+@keyframes pulseg{50%{opacity:.12;transform:scale(.92)}}
+.morph .pulse{animation:none;opacity:0;transition:opacity 1s}
+.wrath{transform-origin:300px 205px;transition:transform 1.6s ease, opacity 1.4s ease}
+.fl{transform-origin:300px 205px;animation:flick2 .45s ease-in-out infinite alternate}
+@keyframes flick2{to{transform:scale(1.04) rotate(1.5deg)}}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 3.6s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.peace{opacity:0;transform-origin:300px 205px;transform:scale(.3);transition:opacity 1.6s ease .5s, transform 1.6s ease .5s}
+.morph .wrath{transform:scale(.12) rotate(90deg);opacity:0}
+.morph .peace{opacity:1;transform:scale(1)}
+.frame.facing{transition:none;animation:shake2 .12s linear infinite}
+@keyframes shake2{25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+.holdbtn{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px 8px 8px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:clamp(.72rem,1.7vw,.95rem);white-space:nowrap}
+.holdpill svg{width:30px;height:30px}
+.holdbtn:focus-visible .holdpill{outline:3px solid var(--lamp);outline-offset:3px}
+.zone{position:absolute;background:transparent;border:2px dashed rgba(255,255,255,.55);border-radius:50%;cursor:pointer;padding:0}
+.zone:focus-visible{outline:3px solid var(--lamp)}
+.closing{transform-origin:300px 205px;animation:closing 10s ease-in forwards}
+@keyframes closing{from{transform:scale(1.35)}to{transform:scale(.82)}}
+.orbit{transform-origin:300px 210px;animation:spinr 18s linear infinite}
+
+
+/* chapters menu */
+#app{position:relative}
+.chap{position:absolute;right:16px;top:calc(100% + 0px);z-index:20;width:min(340px,calc(100% - 32px));max-height:min(70vh,560px);overflow-y:auto;background:var(--parchment);border:2px solid var(--ink);border-radius:14px;box-shadow:0 12px 30px rgba(20,20,19,.25);padding:14px;box-sizing:border-box}
+.chapwrap{position:relative;z-index:20}
+.chap h3{margin:10px 6px 6px;font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brown)}
+.chap h3:first-child{margin-top:2px}
+.chap ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.chap button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:10px 8px;font-family:var(--body);font-size:1rem;color:var(--ink);cursor:pointer;min-height:44px}
+.chap button:hover,.chap button:focus-visible{background:var(--cream);outline:none}
+.chap button[aria-current="true"]{background:var(--cream);font-weight:700}
+.chap button small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.4em;font-variant-numeric:tabular-nums}
+
+
+/* volume 3 */
+.streaks{animation:streak 1.1s linear infinite}
+@keyframes streak{from{transform:translateX(-140px)}to{transform:translateX(140px)}}
+.blown{animation:blown 2.6s ease-in-out infinite}
+@keyframes blown{50%{transform:translate(40px,-8px)}}
+.elgrid{position:absolute;inset:0;background:#1B2224;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4%;padding:6%;box-sizing:border-box}
+.el{background:#2A3335;border-radius:14px;display:flex;align-items:center;justify-content:center;opacity:.22;transition:opacity .4s, transform .4s;min-height:0}
+.el svg{width:62%;height:auto;max-height:90%}
+.el.on{opacity:1;transform:scale(1.04)}
+.peb{opacity:0}
+.pebs.on .peb{animation:drop .5s ease-in forwards}
+@keyframes drop{from{opacity:0;transform:translateY(-70px)}to{opacity:1;transform:none}}
+.mref{opacity:0;transition:opacity 1.2s}
+.mref.on{opacity:1}
+.approach2{transform-origin:230px 200px;animation:approach 9s ease-in forwards}
+.leaf{transform-origin:20px 115px;transform:scaleX(.12);transition:transform .15s}
+.doorwrap{position:relative;background:var(--parchment);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:24px;padding:24px;align-items:center}
+.doorsteps ol{margin:12px 0 0;padding-left:1.4em;display:flex;flex-direction:column;gap:8px;font-size:clamp(.95rem,1.8vw,1.1rem);line-height:1.35}
+.doorpic svg{width:100%;height:auto;max-height:260px;display:block}
+.doorgrid{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px;background:#10181B}
+.doorcard{display:flex;flex-direction:column;gap:8px;background:var(--parchment);border:2px solid var(--ink);border-radius:12px;padding:8px;cursor:pointer;font-family:var(--body);font-size:clamp(.82rem,1.6vw,1rem);line-height:1.25;color:var(--ink);text-align:left;min-width:0}
+.doorcard svg{width:100%;height:auto;border-radius:8px;display:block}
+.doorcard:hover{transform:translateY(-2px)}
+.doorcard.nope{opacity:.4;filter:grayscale(1)}
+.doorcard:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+/* pilot: shared production layer */
+#visual{position:relative}
+.leaving{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;pointer-events:none;z-index:4;animation:leave .7s ease forwards}
+@keyframes leave{to{opacity:0;transform:scale(.985)}}
+.entering{animation:enter .8s cubic-bezier(.2,.7,.2,1)}
+@keyframes enter{from{clip-path:inset(0 0 0 100% round 18px)}to{clip-path:inset(0 0 0 0 round 18px)}}
+.amb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.kb{animation:kb 24s ease-out forwards;transform-origin:62% 48%}
+@keyframes kb{to{transform:scale(1.09)}}
+.glowspot{position:absolute;width:22%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,214,120,.55) 0%,rgba(255,190,90,.18) 40%,rgba(255,190,90,0) 70%);mix-blend-mode:screen;pointer-events:none;animation:candle 2.3s steps(9,end) infinite;transition:opacity 1.2s ease}
+@keyframes candle{0%{opacity:.85;transform:translate(-50%,-50%) scale(1)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}35%{opacity:.75}55%{opacity:.95;transform:translate(-50%,-50%) scale(.97)}75%{opacity:.8}100%{opacity:.9;transform:translate(-50%,-50%) scale(1.02)}}
+.callout{position:absolute;z-index:3;transform:translate(-50%,-50%) scale(0);background:var(--parchment);border:2px solid var(--ink);border-radius:8px;padding:5px 10px;display:flex;flex-direction:column;align-items:center;gap:1px;animation:pop .45s cubic-bezier(.3,1.6,.5,1) forwards;box-shadow:0 3px 0 var(--ink);pointer-events:none;white-space:nowrap}
+.callout b{font-family:var(--display);font-weight:800;font-size:clamp(.52rem,1.2vw,.66rem);letter-spacing:.14em;text-transform:uppercase;color:var(--brown)}
+.callout span{font-family:var(--display);font-weight:700;font-size:clamp(.72rem,1.7vw,1rem);color:var(--ink)}
+@keyframes pop{to{transform:translate(-50%,-50%) scale(1)}}
+.guidechip{position:absolute;top:10px;right:10px;z-index:5;display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;background:var(--parchment);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:36px}
+.guidechip svg{width:16px;height:16px}
+.guidechip:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.gpop{position:absolute;inset:6%;z-index:6;background:var(--parchment);border:2px solid var(--ink);border-radius:14px;padding:clamp(14px,3vw,26px);overflow:auto;display:flex;flex-direction:column;gap:10px;align-items:flex-start;animation:pop2 .35s ease;cursor:default;box-shadow:0 6px 0 var(--ink)}
+.gpop .tag{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.2em;font-size:.7rem;background:var(--teal);color:var(--parchment);padding:5px 10px;border-radius:4px;text-transform:uppercase}
+.gpop h2{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(1.2rem,3vw,1.9rem);text-transform:uppercase;color:var(--brown);line-height:1.05}
+.gpop p{margin:0;font-size:clamp(.95rem,1.9vw,1.15rem);line-height:1.45;max-width:60ch}
+@keyframes pop2{from{opacity:0;transform:scale(.96)}}
+.brief{position:relative;background:var(--parchment);padding:24px;display:flex;flex-direction:column;gap:18px}
+.brief-row{display:flex;align-items:center;gap:8px}
+.stage{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;opacity:0;animation:stagein .5s ease forwards}
+.stage svg{width:78%;max-width:110px;height:auto}
+.stage b{font-family:var(--display);font-weight:800;font-size:clamp(.85rem,1.8vw,1.1rem)}
+.stage small{font-size:clamp(.75rem,1.5vw,.95rem);color:var(--ink-soft)}
+@keyframes stagein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.melt{transform-box:fill-box;transform-origin:50% 100%;animation:melt 2.4s ease-in-out infinite}
+@keyframes melt{50%{transform:scaleY(.86) scaleX(1.08)}}
+.arrowr{font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--teal);flex:none}
+.dnarr{animation:dn 1.3s ease-in-out infinite}
+@keyframes dn{50%{transform:translateY(8px)}}
+.drop{position:absolute;z-index:3;width:30px;height:30px;margin:-15px 0 0 -15px;border:2.5px solid var(--ink);background:#7FC4E0;border-radius:50% 50% 50% 0;transform:rotate(-45deg);cursor:pointer;padding:0;animation:bob 1.8s ease-in-out infinite}
+.drop::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(30,42,43,.35)}
+.drop.gone{animation:evap 1s ease-out forwards;pointer-events:none}
+.drop:focus-visible{outline:3px solid var(--lamp);outline-offset:4px}
+@keyframes bob{50%{margin-top:-21px}}
+@keyframes evap{to{transform:rotate(-45deg) translate(24px,-24px) scale(.2);opacity:0}}
+.smoke{transition:opacity 2.5s ease}
+.puff{animation:puff 7s ease-in-out infinite alternate}
+@keyframes puff{to{transform:translate(40px,-14px)}}
+.flicker2{transform-box:fill-box;transform-origin:50% 100%;animation:flick3 .7s ease-in-out infinite alternate}
+@keyframes flick3{to{transform:scaleY(1.12) scaleX(.9) skewX(-4deg)}}
+.glowpulse{transform-box:fill-box;transform-origin:center;animation:gp 2.6s ease-in-out infinite}
+@keyframes gp{50%{transform:scale(1.08);opacity:.25}}
+.band{animation:band 9s ease-in-out infinite alternate}
+@keyframes band{to{transform:translateY(16px)}}
+.curl{stroke-dasharray:120;stroke-dashoffset:120}
+.curl.on{animation:curl 3s ease-out forwards}
+@keyframes curl{0%{opacity:0}15%{opacity:.9}100%{stroke-dashoffset:0;opacity:0;transform:translateY(-24px)}}
+@media (max-width:700px){.gpop{position:fixed;top:72px;left:12px;right:12px;bottom:12px;inset:72px 12px 12px 12px;z-index:50}}
+
+/* adventure */
+.toast{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--parchment);font-family:var(--display);font-weight:700;font-size:.85rem;letter-spacing:.02em;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+.toast.out{opacity:0;transition:opacity .5s}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.rewind{position:absolute;inset:0;z-index:55;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 5px);display:flex;align-items:center;justify-content:center;animation:rw 1.5s ease forwards}
+.rewind span{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,6vw,3rem);letter-spacing:.2em;text-transform:uppercase;color:#FBF3DF;background:rgba(20,20,19,.75);padding:10px 22px;border-radius:10px;animation:rwj .18s steps(2) infinite}
+@keyframes rw{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes rwj{50%{transform:translateX(3px)}}
+.frame.spinback{transition:transform 1.1s ease-in, filter 1.1s ease-in;transform:rotate(-8deg) scale(.9);filter:blur(3px) saturate(.3)}
+.pathp{outline:none}
+.pathp ol,.pathp ul{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:4px}
+.lesson{display:flex;gap:10px;align-items:flex-start;padding:8px;border-radius:8px;background:transparent}
+.lesson b{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:.8rem;border:2px dashed var(--ink-soft);color:var(--ink-soft)}
+.lesson.got b{border:2px solid var(--ink);background:var(--ok);color:#FFFFFF}
+.lesson span{display:flex;flex-direction:column;gap:2px;font-size:.95rem;line-height:1.3}
+.lesson strong{font-family:var(--display);font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--brown)}
+.lesson:not(.got) strong{color:var(--ink-soft)}
+.lesson small{color:var(--ink-soft)}
+.realms{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px!important}
+.realm{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px;border:2px dashed rgba(68,82,79,.4);opacity:.55;font-size:.85rem;line-height:1.2}
+.realm svg{width:34px;height:34px;flex:none}
+.realm small{display:block;font-size:.72rem;color:var(--ink-soft)}
+.realm.seen{opacity:1;border:2px solid var(--ink);background:var(--cream)}
+.pathnote{margin:6px 4px 0;font-size:.85rem;color:var(--ink-soft);line-height:1.35}
+.drift{animation:driftc 14s ease-in-out infinite alternate}
+@keyframes driftc{to{transform:translateX(26px)}}
+.wilt .flower{transition:fill 2.5s ease, transform 2.5s ease;fill:#7A6A4A;transform:translateY(8px)}
+.clash{animation:clash .9s steps(2) infinite}
+@keyframes clash{50%{transform:translateX(4px)}}
+.life{opacity:0;animation:stagein .6s ease forwards}
+.alarmring{transform-box:fill-box;transform-origin:center;animation:shake .12s linear infinite}
+.graze{transform-box:fill-box;transform-origin:0% 0%;animation:graze 2.2s ease-in-out infinite}
+@keyframes graze{50%{transform:rotate(18deg)}}
+.fly{animation:fly 1.6s ease-in-out infinite alternate}
+@keyframes fly{25%{transform:translate(30px,-16px)}50%{transform:translate(-10px,-30px)}75%{transform:translate(20px,10px)}to{transform:translate(-20px,-6px)}}
+.fizz{animation:fizz .8s ease-out infinite}
+@keyframes fizz{to{transform:translateY(-16px);opacity:0}}
+.trudge{animation:clash 1.4s steps(2) infinite}
+
+/* meditation layer */
+.mcv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.medbg{position:absolute;inset:0}
+.dissolving{animation:diss 6s ease-in-out infinite alternate}
+@keyframes diss{from{opacity:.25}to{opacity:.6}}
+.enso.draw{stroke-dasharray:100;stroke-dashoffset:100;animation:ensod 2.2s cubic-bezier(.4,.1,.3,1) forwards}
+@keyframes ensod{to{stroke-dashoffset:0}}
+.mspin{animation:spinr 60s linear infinite}
+
+
+/* title sequence */
+.frame.titleframe{aspect-ratio:16/9;width:min(100%, calc((100dvh - 150px) * 1.777), 1100px)}
+.tdot{animation:tdot 1.6s ease-out forwards}
+@keyframes tdot{0%{opacity:0;r:1}40%{opacity:1;r:6}100%{opacity:0;r:40}}
+.titleframe .enso.draw{animation-delay:.5s}
+.tveil{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(11,18,36,.72) 0%,rgba(11,18,36,.45) 45%,rgba(11,18,36,0) 75%);pointer-events:none;opacity:0;animation:fadein 1.2s ease 2s forwards}
+.ttext{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.4vw,14px);text-align:center;padding:16px;cursor:default}
+.teye{font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.4vw,.8rem);letter-spacing:.3em;text-transform:uppercase;color:#D4A546;opacity:0;animation:fadein 1s ease 4.4s forwards}
+.tname{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,6.6vw,4.4rem);line-height:1;letter-spacing:.06em;text-transform:uppercase;color:#F3E9D2;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+.tname span{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(8px);animation:letter .9s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(2.3s + var(--i) * 70ms)}
+.tname .tw{display:inline-block;white-space:nowrap}
+@keyframes letter{to{opacity:1;filter:blur(0);transform:none}}
+.tsub{margin:0;font-size:clamp(.85rem,2vw,1.2rem);color:#F3E9D2;opacity:0;animation:fadein 1s ease 3.7s forwards;text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.tbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:clamp(4px,1.2vw,12px);opacity:0;animation:fadein .8s ease 5s forwards}
+.tgo{background:#D4A546;color:var(--ink)}
+.tnote{font-size:clamp(.65rem,1.4vw,.8rem);color:rgba(243,233,210,.75);opacity:0;animation:fadein .8s ease 5.4s forwards}
+@keyframes fadein{to{opacity:1}}
+.soundcheck{background:transparent;border:1.5px solid rgba(243,233,210,.6);color:#F3E9D2;border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;min-height:34px;opacity:0;animation:fadein .8s ease 5.2s forwards}
+.soundcheck:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+
+.skipi{font-size:.85rem;padding:9px 16px;min-height:40px}
+.map49{display:grid;grid-template-columns:repeat(auto-fill,minmax(22px,1fr));gap:6px;max-width:560px}
+.map49 i{aspect-ratio:1;border-radius:50%;background:var(--c);border:2px solid var(--ink);opacity:0;animation:stagein .4s ease forwards}
+.map49k{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.9rem;color:var(--ink-soft)}
+.map49k b{display:inline-block;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink);margin-right:6px;vertical-align:-1px}
+.howgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.how{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:12px 8px;border:2px solid var(--ink);border-radius:12px;background:var(--cream);opacity:0;animation:stagein .5s ease forwards;min-width:0}
+.how svg{width:56px;height:56px}
+.how b{font-family:var(--display);font-weight:800;font-size:clamp(.8rem,1.6vw,1rem)}
+.how small{font-size:clamp(.75rem,1.4vw,.9rem);color:var(--ink-soft);line-height:1.3}
+.bookopen{transform-origin:300px 290px;animation:bookopen 1.4s ease-out}
+@keyframes bookopen{from{transform:scaleY(.2);opacity:0}}
+
+.vpanel ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.vrow{width:100%;display:flex;gap:10px;align-items:center;text-align:left;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-family:var(--body);font-size:.98rem;color:var(--ink);cursor:pointer;min-height:44px}
+.vrow small{display:block;font-size:.76rem;color:var(--ink-soft)}
+.vrow:hover,.vrow:focus-visible{background:var(--cream);outline:none}
+.vdot{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--ink)}
+.vrow[aria-pressed="true"] .vdot{background:var(--teal);box-shadow:inset 0 0 0 3px var(--parchment)}
+.vrow[aria-pressed="true"]{font-weight:700}
+.vspeeds{display:flex;gap:6px;padding:2px 6px 4px}
+.chap .vchip{flex:1;width:auto;justify-content:center;text-align:center;font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.06em;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:8px 6px;cursor:pointer;min-height:40px}
+.chap .vchip[aria-pressed="true"]{background:var(--teal);color:var(--parchment)}
+.chap .vchip:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+@media (max-width:560px){.howgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.frame.titleframe{aspect-ratio:3/4;width:100%}.tname{font-size:clamp(1.7rem,9vw,2.4rem)}.tnote{max-width:26ch}}
+
+@media (max-width:560px){.pick{display:none!important}}
+
+@media (max-width:560px){.brief-row{flex-wrap:wrap;justify-content:center}.stage{flex:0 0 42%}.arrowr{display:none}.guidechip{padding:5px 9px}}
+
+@media (max-width:560px){.doorwrap{grid-template-columns:1fr}.doorpic svg{max-height:170px}.doorgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media (max-width:560px){.rule-row{grid-template-columns:1fr}.rule{flex-direction:row;align-items:center}.rule svg{width:38%;flex:none}}
+
+@media (max-width:560px){
+  .pick{max-width:80px}
+  #stageLabel{display:none}
+  .brand{display:none}
+  .tog{padding:6px 9px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* animations the woodcut kits use */
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{translate:0 -8px}}
+.fade{transition:opacity 1.6s ease, transform 1.6s ease}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+/* on a phone the bar keeps just the arrow home */
+.brand{font-size:1rem;padding:6px 4px}
+@media (max-width:560px){ .brand{display:inline-block!important;font-size:1.3rem;line-height:1} .brand .bname{display:none} }
+.tog{white-space:nowrap}
+@media (max-width:560px){ .bar{gap:6px;padding:8px 10px} .tog{padding:5px 8px;font-size:.64rem;letter-spacing:.04em} }
+/* Back and Continue sit in the caption box, Back on the left, Continue on the right */
+.capnav{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;max-width:720px;box-sizing:border-box}
+.caption .capnav{margin-top:12px}
+.cnav{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;background:transparent;border:1.5px solid currentColor;color:var(--ink-soft);border-radius:999px;padding:7px 14px;min-height:36px;cursor:pointer}
+.caption.dark .cnav{color:var(--parchment)}
+#backBtn:disabled{visibility:hidden}
+#hint{margin:0 0 0 auto}
+#hint:not(.on){pointer-events:none}
+body.void .capnav{opacity:0;pointer-events:none}
+
+/* The Last Light, full book: the Bardo Manual layout in night indigo, starlight and a warm ember. */
+:root{
+  --cream:#ECE8DF; --parchment:#F8F5EE; --ink:#151B2B; --ink-soft:#4B5468;
+  --teal:#1B2550; --teal-deep:#0A0F1F; --brown:#C8773A; --lamp:#F0C25A; --red:#B5523A; --ok:#5E9C6A;
+  --display:'Jost','Futura',system-ui,sans-serif;
+}
+.brand,.title-card h1,.gpop h2,.guide h2,.rewind span,.callout b,.callout span,.chap h3,.lesson strong{font-family:var(--display);font-weight:800;text-transform:none;letter-spacing:.01em}
+.title-card h1{line-height:1.08}
+.title-card .eyebrow{font-family:'Jost',sans-serif;font-weight:700;text-transform:uppercase}
+.tog,#hint,.btn,.cnav,.gpop .tag,.guide .tag,.guidechip{font-family:'Jost','Futura',sans-serif}
+.caption p{font-family:'Atkinson Hyperlegible',Verdana,sans-serif}
+.frame{border-radius:10px}
+#holdring{stroke:var(--brown)}
+.spot{border-color:#FFF6D8;background:rgba(200,119,58,.6);box-shadow:0 0 0 2px #151B2B}
+.mdhome{display:none!important}
+.endlinks{display:flex;gap:16px;flex-wrap:wrap;font-family:'Jost',sans-serif;font-size:.9rem}
+.endlinks a{color:var(--lamp)}
+.draft{font-size:.85rem!important;opacity:.85}
+.svgscene .fadein{animation:scf 1.2s ease-out both}@keyframes scf{from{opacity:0}}
+.svgscene .drift{animation:scd 5s ease-in-out infinite alternate}@keyframes scd{to{translate:0 -14px}}
+.svgscene .flick{animation:scfl 1.6s ease-in-out infinite alternate}@keyframes scfl{to{opacity:.6}}
+.svgscene .fade{transition:opacity 1.2s,transform 1.2s}
+@media (prefers-reduced-motion:reduce){.svgscene .fadein,.svgscene .drift,.svgscene .flick{animation:none}}
+
+</style>
+
+<div id="app">
+  <header class="bar">
+    <a class="brand" href="../../index.html#doors" style="color:inherit;text-decoration:none" title="Back to Many Doors" aria-label="Back to Many Doors">←<span class="bname"> Many Doors</span></a>
+    <span id="stageLabel" aria-live="polite"></span>
+    <button class="tog" id="chapBtn" aria-expanded="false" aria-controls="chapters" type="button">Chapters</button>
+    <button class="tog" id="pathBtn" aria-expanded="false" aria-controls="pathpanel" type="button">Path 0/8</button>
+    <button class="tog" id="soundBtn" aria-pressed="true" type="button">Sound</button>
+    <button class="tog" id="voiceBtn" aria-expanded="false" aria-controls="voicepanel" type="button">Voice</button>
+  </header>
+  <div class="chapwrap"><nav class="chap" id="chapters" aria-label="Chapters" hidden></nav><section class="chap pathp" id="pathpanel" aria-label="Your path" tabindex="-1" hidden></section><section class="chap vpanel" id="voicepanel" aria-label="Narrator voice" tabindex="-1" hidden></section></div>
+  <main id="stage" aria-label="Story. Tap, or press Space, to continue.">
+    <div id="visual"></div>
+    <div id="caption" class="caption" hidden><p id="captionText" aria-live="polite"></p></div>
+    <div id="choices"></div>
+    <div class="capnav" id="capnav"><button class="cnav" id="backBtn" type="button" aria-label="Back one page" disabled>◀ Back</button><button class="cnav" id="hint" type="button">Continue →</button></div>
+  </main>
+</div>
+
+<script>
+/* The deep-book engine, forked from the Bardo Manual: scenes of beats with a typed, narrated caption; branching choices that play out and rewind; Guide entries; lessons gathered on a path; chapters, voice and sound. A book supplies BOOK, S (scenes), CHAPTERS and LESSONS. */
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const app = $('#app'), visual = $('#visual'), cap = $('#caption'), capText = $('#captionText'), hint = $('#hint'), choices = $('#choices'), label = $('#stageLabel');
+const IMG={};
+/* ---------------- sound ---------------- */
+let ctx=null, master=null, noiseBuf=null, brownBuf=null, soundOn=true;
+const loops={}; let hbOn=false, hbBpm=62, hbTimer=null, clockTimer=null;
+let unlockEl=null;
+function unlockMedia(){ try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}
+  try{ if(!unlockEl){ unlockEl=new Audio('data:audio/wav;base64,UklGRmQfAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='); unlockEl.loop=true; unlockEl.setAttribute('playsinline',''); unlockEl.volume=0.01; } const p=unlockEl.play(); p&&p.catch(()=>{}); }catch(e){} }
+/* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
+function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
+  const sw=c.createOscillator(), sg=c.createGain(); sw.frequency.value=.045; sg.gain.value=260; sw.connect(sg).connect(lp.frequency); sw.start(t);
+  const nodes=[sw]; [[55,'sine',.55,0],[110,'sawtooth',.16,-4],[110.3,'sawtooth',.12,3],[164.8,'sine',.12,0],[220,'sine',.1,2],[329.6,'sine',.035,-3]].forEach(([f,type,v,dt],i)=>{ const o=c.createOscillator(),og=c.createGain(); o.type=type; o.frequency.value=f; o.detune.value=dt; og.gain.value=v;
+    const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
+  return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
+    stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+let DRONE=null;
+function initAudio(){
+  unlockMedia();
+  if(ctx) return;
+  try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  master=ctx.createGain(); master.gain.value=soundOn?0.9:0; master.connect(ctx.destination); DRONE=makeDrone(ctx,master,.035);
+  const n=ctx.sampleRate*2; noiseBuf=ctx.createBuffer(1,n,ctx.sampleRate); brownBuf=ctx.createBuffer(1,n,ctx.sampleRate);
+  const w=noiseBuf.getChannelData(0), b=brownBuf.getChannelData(0); let last=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; last=(last+0.02*r)/1.02; b[i]=last*3.5; }
+}
+const now=()=>ctx.currentTime;
+function env(g,t,peak,a,d){ g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+a); g.gain.exponentialRampToValueAtTime(0.0001,t+a+d); }
+function burst({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7}={}){
+  if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf;
+  const f=ctx.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=ctx.createGain(); env(g,t,peak,a,d);
+  s.connect(f).connect(g).connect(master); s.start(t, Math.random()*1.5); s.stop(t+a+d+.05);
+}
+function startLoop(name, build, vol, fade=2){
+  if(!ctx||loops[name]) return; const g=ctx.createGain(); g.gain.value=0.0001; g.connect(master);
+  const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol, now()+fade); loops[name]={g,nodes};
+}
+function stopLoop(name, fade=1.5){
+  const L=loops[name]; if(!L) return; delete loops[name]; const t=now();
+  L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,0.0001),t); L.g.gain.exponentialRampToValueAtTime(0.0001,t+fade);
+  setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000);
+}
+function roomTone(){ startLoop('room', g=>{ const s=ctx.createBufferSource(); s.buffer=brownBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=420; s.connect(f).connect(g); s.start(); return [s]; }, .16); }
+function clockOn(){ if(!ctx||clockTimer) return; clockTimer=setInterval(()=>burst({freq:3200,peak:.05,d:.02}),1000); }
+function clockOff(){ clearInterval(clockTimer); clockTimer=null; }
+function thump(vol){ const t=now(); const o=ctx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(62,t); o.frequency.exponentialRampToValueAtTime(38,t+.14);
+  const g=ctx.createGain(); env(g,t,vol,.006,.2); o.connect(g).connect(master); o.start(t); o.stop(t+.3); }
+function heartbeat(bpm){ hbBpm=bpm; if(!ctx) return; if(hbOn) return; hbOn=true; const beat=()=>{ if(!hbOn) return; thump(.55); setTimeout(()=>hbOn&&thump(.35),280); hbTimer=setTimeout(beat,60000/hbBpm); }; beat(); }
+function heartStop(){ hbOn=false; clearTimeout(hbTimer); }
+function breath(inDur,outDur){
+  if(!ctx) return; wakeAudio(); const t=now(); const T=inDur+outDur;
+  const layer=(type,freq,q,pin,pout,f2)=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true;
+    const f=ctx.createBiquadFilter(); f.type=type; f.Q.value=q; f.frequency.setValueAtTime(freq,t); f.frequency.linearRampToValueAtTime(f2,t+T);
+    const g=ctx.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(pin,t+inDur*.75); g.gain.exponentialRampToValueAtTime(pin*.12,t+inDur);
+    g.gain.exponentialRampToValueAtTime(pout,t+inDur+outDur*.2); g.gain.exponentialRampToValueAtTime(pout*.35,t+inDur+outDur*.7); g.gain.exponentialRampToValueAtTime(0.0001,t+T);
+    s.connect(f).connect(g).connect(master); s.start(t,Math.random()); s.stop(t+T+.1); };
+  layer('bandpass',1500,.7,.42,.5,800);   /* the airy part */
+  layer('lowpass',420,.5,.28,.34,300);     /* the body of the breath */
+  const L=loops.room; if(L){ const g=L.g.gain; g.cancelScheduledValues(t); g.setValueAtTime(Math.max(g.value,.0001),t); g.linearRampToValueAtTime(.05,t+.3); g.linearRampToValueAtTime(.16,t+T+.4); }
+}
+function wakeAudio(){ if(ctx&&ctx.state!=='running'){ try{ ctx.resume(); }catch(e){} } if(ctx&&unlockEl&&unlockEl.paused){ const p=unlockEl.play(); p&&p.catch(()=>{}); } }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,wakeAudio,{capture:true,passive:true}));
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) wakeAudio(); });
+function crackle(ms=1400){ if(!ctx) return; const end=performance.now()+ms; const tick=()=>{ if(performance.now()>end) return; burst({freq:2000+Math.random()*3000,peak:.03+Math.random()*.04,d:.012}); setTimeout(tick,30+Math.random()*90); }; tick(); }
+function pad(name,freqs,vol){ startLoop(name, g=>{ const out=[]; freqs.forEach((fr,i)=>{ const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=fr; o.detune.value=(i%2?4:-4);
+  const tg=ctx.createGain(); tg.gain.value=.5; const l=ctx.createOscillator(); l.frequency.value=.12+i*.07; const lg=ctx.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain);
+  o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; }, vol, 4); }
+function drone(){ startLoop('drone', g=>{ const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=82.4; const o2=ctx.createOscillator(); o2.type='sine'; o2.frequency.value=41.2;
+  const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=300; o.connect(f).connect(g); o2.connect(g); o.start(); o2.start(); return [o,o2]; }, .12, 4); }
+function crackSound(){ if(!ctx) return; const t=now(); const o=ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(2600,t); o.frequency.exponentialRampToValueAtTime(500,t+.5);
+  const g=ctx.createGain(); env(g,t,.12,.005,.55); o.connect(g).connect(master); o.start(t); o.stop(t+.7); burst({freq:1500,peak:.18,d:.25}); }
+function puff(){ burst({type:'lowpass',freq:700,peak:.25,a:.02,d:.5}); }
+function chime(){ if(!ctx) return; [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>{ const t=now()+i*.14; const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=fr;
+  const g=ctx.createGain(); env(g,t,.12,.01,3.2); o.connect(g).connect(master); o.start(t); o.stop(t+3.4); }); }
+function silenceAll(f=1.5){ Object.keys(loops).forEach(k=>stopLoop(k,f)); clockOff(); heartStop(); clearInterval(roarTimer); roarTimer=null; }
+
+/* ---------------- voice ---------------- */
+let voiceOn=('speechSynthesis' in window), voice=null, voiceList=[], speakToken=0;
+function score(v){ let n=0; const nm=v.name.toLowerCase();
+  if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20;
+  if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60;
+  return n; }
+let voiceRate=.84; const store={ get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+{ const r=parseFloat(store.get('bm-rate')); if(r) voiceRate=r; if(store.get('bm-voiceon')==='0') voiceOn=false; }
+const ACC={'en-GB':'British','en-US':'American','en-AU':'Australian','en-IE':'Irish','en-IN':'Indian','en-ZA':'South African','en-NZ':'New Zealand','en-CA':'Canadian','en-SG':'Singaporean'};
+function vName(v){ return v.name.replace(/Microsoft |Google |\(.*?\)| - .*$|Online|Natural|Enhanced|Premium/g,'').replace(/\s+/g,' ').trim()||v.name; }
+function loadVoices(){ const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>score(b)-score(a)); if(!vs.length) return;
+  voiceList=vs; const saved=store.get('bm-voice'); const keep=(voice&&voice.name)||saved;
+  const k=keep?vs.findIndex(v=>v.name===keep):0; voice=vs[Math.max(k,0)]; if(!$('#voicepanel').hidden) buildVoicePanel(); }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; } else { $('#voiceBtn').hidden=true; }
+function buildVoicePanel(){ const p=$('#voicepanel'); const list=voiceList.slice(0,16);
+  const speeds=[['Slow',.74],['Normal',.84],['Brisk',.96]];
+  p.innerHTML=`<h3>Narrator</h3><button type="button" class="vrow vtoggle" aria-pressed="${voiceOn}"><span class="vdot"></span><span>${voiceOn?'Narrator on':'Narrator off'}<small>${voiceOn?'Tap to turn off and read silently':'Tap to turn on'}</small></span></button>
+    <h3>Speed</h3><div class="vspeeds">${speeds.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(voiceRate-r)<.01}">${l}</button>`).join('')}</div>
+    <h3>Voice${list.length?' · '+list.length+' on this device':''}</h3>${list.length?'':'<p class="pathnote">No voices have loaded yet. Tap Begin, then open this menu again.</p>'}<ol>${list.map((v,i)=>`<li><button type="button" class="vrow vpick" data-i="${i}" aria-pressed="${voice&&v.name===voice.name}"><span class="vdot"></span><span>${vName(v)}<small>${ACC[v.lang.replace('_','-')]||v.lang}${/natural|neural|premium|enhanced|siri/i.test(v.name)?' · high quality':''}</small></span></button></li>`).join('')}</ol>
+    <p class="pathnote">Tap a voice to hear it. The choices depend on your device; Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('.vtoggle').onclick=e=>{ e.stopPropagation(); voiceOn=!voiceOn; store.set('bm-voiceon',voiceOn?'1':'0'); if(!voiceOn) hush(); buildVoicePanel(); };
+  p.querySelectorAll('.vchip').forEach(b=>b.onclick=e=>{ e.stopPropagation(); voiceRate=+b.dataset.r; store.set('bm-rate',voiceRate); buildVoicePanel(); if(voiceOn) speak(BOOK.voiceSample); });
+  p.querySelectorAll('.vpick').forEach(b=>b.onclick=e=>{ e.stopPropagation(); voice=voiceList[+b.dataset.i]; store.set('bm-voice',voice.name); if(!voiceOn){ voiceOn=true; store.set('bm-voiceon','1'); } buildVoicePanel(); speak(BOOK.voiceSample); const nb=$('#voicepanel .vpick[data-i="'+b.dataset.i+'"]'); nb&&nb.focus({preventScroll:true}); }); }
+function openVoice(){ closeChapters(); closePath(); buildVoicePanel(); $('#voicepanel').hidden=false; $('#voiceBtn').setAttribute('aria-expanded','true'); $('#voicepanel').focus({preventScroll:true}); }
+function closeVoice(){ const p=$('#voicepanel'); if(!p||p.hidden) return; p.hidden=true; $('#voiceBtn').setAttribute('aria-expanded','false'); }
+const VOICE={};
+const vnorm=t=>t.replace(/[*_]/g,'').replace(/\s+/g,' ').trim();
+let voiceEl=null, voiceBlessed=false;
+const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+function blessVoice(){ if(voiceBlessed) return; try{ if(!voiceEl){ voiceEl=document.createElement('audio'); voiceEl.setAttribute('playsinline',''); voiceEl.preload='auto'; document.body.appendChild(voiceEl); }
+    voiceEl.src=SILENT; const p=voiceEl.play(); if(p&&p.then){ p.then(()=>{ voiceBlessed=true; }).catch(()=>{}); } else voiceBlessed=true; }catch(e){} }
+['pointerdown','touchend','keydown','click'].forEach(ev=>addEventListener(ev,blessVoice,{capture:true,passive:true}));
+function duck(on){ if(master&&ctx) master.gain.setTargetAtTime(soundOn?(on?.5:.9):0, now(), .25); }
+function ttsSpeak(clean,my){ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel();
+  const parts=clean.match(/[^.!?:]+[.!?:]*/g)||[clean];
+  let i=0; const nextPart=()=>{ if(my!==speakToken||i>=parts.length) return; const u=new SpeechSynthesisUtterance(parts[i++].trim().replace(/:$/,'…'));
+    if(voice) u.voice=voice; u.rate=voiceRate; u.pitch=.88; u.volume=.85; u.onend=()=>setTimeout(nextPart, 520); speechSynthesis.speak(u); };
+  setTimeout(nextPart, 350); }
+function playClip(src,clean,my){
+  if(!voiceEl){ blessVoice(); }
+  if(!voiceEl) return ttsSpeak(clean,my);
+  let fell=false; const fallback=()=>{ if(fell||my!==speakToken) return; fell=true; try{ voiceEl.pause(); }catch(e){} duck(false); ttsSpeak(clean,my); };
+  try{ voiceEl.pause(); voiceEl.onended=()=>{ if(my===speakToken) duck(false); }; voiceEl.onerror=fallback; voiceEl.src=src; voiceEl.currentTime=0; duck(true);
+    const p=voiceEl.play(); if(p&&p.catch) p.catch(fallback);
+  }catch(e){ fallback(); } }
+function speak(text){
+  if(!voiceOn) return; const my=++speakToken; const clean=vnorm(text);
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  if(VOICE[clean]){ setTimeout(()=>{ if(my===speakToken) playClip(VOICE[clean],clean,my); },200); return; }
+  ttsSpeak(clean,my);
+}
+function hush(){ speakToken++; if('speechSynthesis' in window) speechSynthesis.cancel(); if(voiceEl){ try{ voiceEl.pause(); }catch(e){} } duck(false); }
+
+$('#soundBtn').onclick=e=>{ e.stopPropagation(); soundOn=!soundOn; e.currentTarget.setAttribute('aria-pressed',soundOn); if(master) master.gain.setTargetAtTime(soundOn?.9:0,now(),.1); };
+$('#voiceBtn').onclick=e=>{ e.stopPropagation(); $('#voicepanel').hidden?openVoice():closeVoice(); };
+
+let roarTimer=null;
+const frame = (inner,cls='') => `<div class="frame ${cls}" id="frame">${inner}</div>`;
+let stillState=null;
+const idx=k=>S.findIndex(s=>s.key===k);
+const sv=(inner,lab)=>`<svg class="svgscene" viewBox="0 0 600 400" role="img" aria-label="${lab}">${inner}</svg>`;
+function whoosh(v=.15){ if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2;
+  f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2600,t+.55); const g=ctx.createGain(); env(g,t,v,.2,.45); s.connect(f).connect(g).connect(master); s.start(t,Math.random()); s.stop(t+.8); }
+function tickSnd(){ burst({freq:3800,peak:.1,d:.035}); setTimeout(()=>burst({freq:2600,peak:.06,d:.03}),60); }
+function spotAt(x,y,label,fn){ const b=document.createElement('button'); b.className='spot'; b.type='button'; b.setAttribute('aria-label',label); b.style.left=x+'%'; b.style.top=y+'%';
+  b.onclick=e=>{ e.stopPropagation(); fn(b); }; $('#frame').appendChild(b); return b; }
+function holdHum(c,dest,ms,p0=0){ if(!c||!dest) return {stop(){}}; const t=c.currentTime,s=Math.max(.05,ms*(1-p0)/1000),g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(dest);
+  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k*Math.pow(2,p0),t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
+  return {stop(full){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7));
+    if(full) [784,1568*1.003,2352*1.01].forEach((fr,i)=>{ const o=c.createOscillator(),bg=c.createGain(); o.frequency.value=fr; bg.gain.setValueAtTime(.0001,n); bg.gain.exponentialRampToValueAtTime(.08/(i+1),n+.005); bg.gain.exponentialRampToValueAtTime(.0001,n+3); o.connect(bg).connect(dest); o.start(n); o.stop(n+3.1); }); }}; }
+function holdGeneric(o){
+  const fr=$('#frame'); fr.insertAdjacentHTML('beforeend',`<button type="button" class="holdbtn" id="hold" aria-label="${o.label}"><span class="holdpill"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(30,42,43,.25)" stroke-width="4"/><circle id="holdring" cx="18" cy="18" r="15" fill="none" stroke="#1F5E63" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2" transform="rotate(-90 18 18)"/></svg>${o.label}</span></button>`);
+  const b=$('#hold'), ring=$('#holdring'); let t0=0, raf=0, done=false, holding=false, hm=null;
+  const tick=()=>{ const p=Math.min((performance.now()-t0)/o.ms,1); ring.setAttribute('stroke-dashoffset',(94.2*(1-p)).toFixed(1)); o.onProgress&&o.onProgress(p);
+    if(p>=1){ done=true; if(hm){ hm.stop(true); hm=null; } b.remove(); o.onDone(); return; } raf=requestAnimationFrame(tick); };
+  const start=()=>{ if(done||holding) return; holding=true; t0=performance.now(); initAudio(); hm=holdHum(ctx,master,o.ms); tick(); };
+  const stop=()=>{ if(done||!holding) return; holding=false; cancelAnimationFrame(raf); if(hm){ hm.stop(false); hm=null; } ring.setAttribute('stroke-dashoffset','94.2'); o.onProgress&&o.onProgress(0); };
+  b.addEventListener('pointerdown',e=>{ e.stopPropagation(); e.preventDefault(); b.setPointerCapture&&b.setPointerCapture(e.pointerId); start(); });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,stop));
+  b.addEventListener('click',e=>e.stopPropagation());
+  b.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); if(!e.repeat) start(); } });
+  b.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); stop(); } });
+  b.addEventListener('blur',stop); b.focus({preventScroll:true});
+}
+
+function callouts(list){ const fr=$('#frame'); if(!fr) return; list.forEach(([x,y,k,v],i)=>{ const d=document.createElement('div'); d.className='callout'; d.style.left=x+'%'; d.style.top=y+'%'; d.style.animationDelay=(i*.45)+'s';
+  d.innerHTML=`<b>${k}</b><span>${v}</span>`; fr.appendChild(d); }); }
+/* optional guide entries */
+function addGuideChip(gd){ const fr=$('#frame'); if(!fr) return;
+  fr.insertAdjacentHTML('beforeend',`<button type="button" class="guidechip" aria-haspopup="dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h5a2 2 0 0 1 2 2v10a2 2 0 0 0-2-2H3zM17 4h-5a2 2 0 0 0-2 2v10a2 2 0 0 1 2-2h5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Guide</button>`);
+  const chip=fr.querySelector('.guidechip');
+  chip.onclick=e=>{ e.stopPropagation(); if(fr.querySelector('.gpop')) return; tickSnd();
+    fr.insertAdjacentHTML('beforeend',`<div class="gpop" role="dialog" aria-label="${gd.title}"><span class="tag">Guide entry</span><h2>${gd.title}</h2><p>${gd.text}</p><button type="button" class="btn gclose">${BOOK.guideBack}</button></div>`);
+    const pop=fr.querySelector('.gpop'); pop.addEventListener('click',ev=>ev.stopPropagation()); speak(gd.title+'. '+gd.text);
+    const close=()=>{ pop.remove(); hush(); chip.focus({preventScroll:true}); }; pop.querySelector('.gclose').onclick=ev=>{ ev.stopPropagation(); close(); }; pop.querySelector('.gclose').focus({preventScroll:true});
+    pop.addEventListener('keydown',ev=>{ if(ev.key==='Escape'){ ev.stopPropagation(); close(); } }); }; }
+function tss(){ burst({freq:4200,peak:.07,a:.02,d:.35}); }
+let pathState=null;
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; app.appendChild(t); setTimeout(()=>t.classList.add('out'),2600); setTimeout(()=>t.remove(),3200); }
+function rewindSnd(){ if(!ctx) return; const t=now(); const s=ctx.createBufferSource(); s.buffer=noiseBuf; const f=ctx.createBiquadFilter(); f.type='bandpass'; f.Q.value=2;
+  f.frequency.setValueAtTime(3200,t); f.frequency.exponentialRampToValueAtTime(260,t+1.1); const g=ctx.createGain(); env(g,t,.25,.05,1.1); s.connect(f).connect(g).connect(master); s.start(t); s.stop(t+1.3);
+  const o=ctx.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(900,t); o.frequency.exponentialRampToValueAtTime(120,t+1.1); const og=ctx.createGain(); env(og,t,.06,.05,1.05); o.connect(og).connect(master); o.start(t); o.stop(t+1.2); }
+function rewind(){ if(!pathState) return go(idx(BOOK.home)); const p=pathState; pathState=null; hush(); rewindSnd();
+  const ov=document.createElement('div'); ov.className='rewind'; ov.setAttribute('aria-hidden','true'); ov.innerHTML='<span>◀◀ Rewind</span>'; app.appendChild(ov);
+  const f=$('#frame'); f&&f.classList.add('spinback');
+  setTimeout(()=>{ go(idx(p.back), p.beat); }, 1100); setTimeout(()=>ov.remove(), 1500); }
+function rewindButton(){ choices.innerHTML='<button class="btn" type="button" id="rw">◀◀ Rewind to the choice</button>'; $('#rw').onclick=e=>{ e.stopPropagation(); rewind(); }; $('#rw').focus({preventScroll:true}); }
+
+/* lessons and detours: what the reader has learned, and which wrong turns they have walked down */
+const journey={ visited:new Set(), learned:new Set() };
+function learn(k){ if(journey.learned.has(k)) return; journey.learned.add(k); const l=LESSONS.find(x=>x[0]===k); if(l){ toast(BOOK.toast+l[2]); if(ctx) chime(); } updatePathBadge(); }
+function updatePathBadge(){ const b=$('#pathBtn'); if(b) b.textContent=`${BOOK.pathLabel} ${journey.learned.size}/${LESSONS.length}`; }
+/* take a wrong turn on purpose: it plays out, then rewinds to the choice */
+function detour(key, backKey, backBeat){ journey.visited.add(key); pathState={back:backKey, beat:backBeat}; go(idx(key)); }
+function buildPath(){
+  const l=LESSONS.map(([k,t,rule,where],i)=>{ const got=journey.learned.has(k); return `<li class="lesson ${got?'got':''}"><b>${i+1}</b><span>${got?`<strong>${t}</strong>${rule}`:`<strong>Not learned yet</strong><small>Found in: ${where}</small>`}</span></li>`; }).join('');
+  const r=DETOURS.map(([k,name,icon])=>{ const seen=journey.visited.has(k); return `<li class="realm ${seen?'seen':''}"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="8" fill="var(--teal)"/>${icon}</svg><span>${name}<small>${seen?'Walked':'Not yet'}</small></span></li>`; }).join('');
+  $('#pathpanel').innerHTML=`<h3>${BOOK.pathTitle} · ${journey.learned.size} of ${LESSONS.length}</h3><ol class="lessons">${l}</ol><h3>${BOOK.detourTitle} · ${journey.visited.size} of ${DETOURS.length}</h3><ul class="realms">${r}</ul><p class="pathnote">${BOOK.pathNote}</p>`; }
+function openPath(){ closeChapters(); closeVoice(); buildPath(); $('#pathpanel').hidden=false; $('#pathBtn').setAttribute('aria-expanded','true'); $('#pathpanel').focus({preventScroll:true}); }
+function closePath(){ const p=$('#pathpanel'); if(!p||p.hidden) return; p.hidden=true; $('#pathBtn').setAttribute('aria-expanded','false'); }
+function stillTest({ms,pass,fail,glow,events=[],grace=900,onTick=null}){
+  const t0=performance.now(); let raf=0; const recent=[]; const g=glow?$(glow):null; const fired=new Set();
+  const disturb=e=>{ if(performance.now()-t0<grace) return; if(e.target&&e.target.closest&&e.target.closest('.bar,#chapters,#pathpanel,#voicepanel')) return; if(!$('#chapters').hidden||!$('#pathpanel').hidden||!$('#voicepanel').hidden) return; if(e.type==='pointermove'){ const tn=performance.now(); recent.push([tn,Math.abs(e.movementX||0)+Math.abs(e.movementY||0)]); while(recent.length&&tn-recent[0][0]>500) recent.shift(); if(recent.reduce((x,r)=>x+r[1],0)<40) return; } stopStillness(); go(idx(fail)); };
+  const evs=['pointermove','pointerdown','keydown','touchstart'];
+  evs.forEach(ev=>addEventListener(ev,disturb,{capture:true,passive:true}));
+  const tick=()=>{ const el=performance.now()-t0; events.forEach((ev,i)=>{ if(!fired.has(i)&&el>=ev.at){ fired.add(i); ev.fn(); } });
+    if(g) g.style.setProperty('--s', .5+el/ms*2.2); onTick&&onTick(Math.min(el/ms,1)); if(el>=ms){ stopStillness(); go(idx(pass)); return; } raf=requestAnimationFrame(tick); };
+  tick(); stillState={ stop(){ evs.forEach(ev=>removeEventListener(ev,disturb,{capture:true})); cancelAnimationFrame(raf); } };
+}
+function stopStillness(){ if(stillState){ stillState.stop(); stillState=null; } }
+let si=0, bi=0, typing=null, canAdvance=false, autoTimer=null, cleanups=[];
+function go(i, sb=0){
+  { const prev=S[si]; if(go.ran&&prev&&prev.learn&&i!==si) learn(prev.learn); } /* tapping through fast still counts */
+  wakeAudio(); closeChapters(); closePath(); closeVoice(); hush(); clearTimeout(autoTimer); stopStillness(); choices.innerHTML=''; cleanups.forEach(f=>f()); cleanups=[];
+  si=i; bi=0; const sc=S[i]; if(!go.ran){ go.ran=true; app.style.transition='none'; requestAnimationFrame(()=>requestAnimationFrame(()=>{ app.style.transition=''; })); }
+  app.style.setProperty('--scene-bg', sc.bg); document.body.classList.remove('d1','d2','d3','void');
+  if(sc.dissolve) document.body.classList.add('d'+sc.dissolve); if(sc.void) document.body.classList.add('void');
+  label.textContent = sc.label||'';
+  const oldNode=visual.firstElementChild; visual.innerHTML = sc.view();
+  if(oldNode&&!reduce&&oldNode.classList.contains('frame')){ oldNode.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id')); oldNode.removeAttribute('id'); oldNode.querySelectorAll('button').forEach(b=>b.remove());
+    const lv=document.createElement('div'); lv.className='leaving'; lv.setAttribute('aria-hidden','true'); lv.appendChild(oldNode); visual.appendChild(lv); setTimeout(()=>lv.remove(),750);
+    const nf=visual.firstElementChild; if(nf&&nf.classList.contains('frame')){ nf.classList.add('entering'); setTimeout(()=>nf.classList.remove('entering'),850); } }
+  if(DRONE) DRONE.level(sc.void?0:1,sc.void?1:5); /* the black screen of death is the one silence on purpose */
+  sc.enter&&sc.enter(); if(sc.guide) addGuideChip(sc.guide); showBeat(sb);
+  if(sc.learn) setTimeout(()=>{ if(S[si]===sc) learn(sc.learn); },1600);
+  if(sc.detour) journey.visited.add(sc.detour);
+}
+/* every page shown goes on a trail, so Back can step to the one before (skipping the black screen) */
+const trail=[];
+function showBeat(j){
+  const sc=S[si], b=sc.beats[j]; bi=j;
+  { const t=trail[trail.length-1]; if(!sc.void&&!(t&&t[0]===si&&t[1]===j)) trail.push([si,j]); updateBack(); } canAdvance=false; hint.classList.remove('on'); clearTimeout(autoTimer);
+  cap.className='caption'+(b.cls?' '+b.cls:'');
+  if(b.text===null){ cap.hidden=true; } else { cap.hidden = b.text==='' ; }
+  { const nav=$('#capnav'); if(cap.hidden) choices.after(nav); else cap.appendChild(nav); }
+  b.show&&b.show(); if(b.say) speak(b.say);
+  const finish=()=>{ typing=null; b.afterType&&b.afterType(); if(b.choice) renderChoice(b); if(!b.lock) armAdvance(); if(b.auto) autoTimer=setTimeout(next,b.auto); };
+  if(b.text){ const d=b.delay||0; setTimeout(()=>{ if(S[si]!==sc||bi!==j) return; typeOut(b.text, finish); speak(b.text); }, d); }
+  else { capText.textContent=''; if(b.delay){ autoTimer=setTimeout(()=>{ if(!b.lock) armAdvance(); },b.delay); } else finish(); }
+}
+function renderChoice(b){ choices.innerHTML=b.choice.map((c,i)=>`<button class="btn${i?' alt':''}" type="button" data-i="${i}">${c.label}</button>`).join('');
+  choices.querySelectorAll('button').forEach(btn=>btn.onclick=e=>{ e.stopPropagation(); const c=b.choice[+btn.dataset.i]; choices.innerHTML=''; tickSnd(); typeOut(c.reply, armAdvance); speak(c.reply); }); }
+function typeOut(text, done){
+  if(reduce){ capText.textContent=text; done(); return; }
+  let k=0; capText.textContent=''; clearInterval(typing&&typing.id);
+  const id=setInterval(()=>{ k+=2; capText.textContent=text.slice(0,k); if(k>=text.length){ clearInterval(id); done(); } },34);
+  typing={id, text, done};
+}
+function armAdvance(){ canAdvance=true; setTimeout(()=>{ if(canAdvance) hint.classList.add('on'); },900); }
+function updateBack(){ const b=$('#backBtn'); if(b) b.disabled=trail.length<2; }
+function back(){ if(trail.length<2) return; trail.pop(); const [ts,tb]=trail.pop(); if(ctx) tickSnd(); if(typing){ clearInterval(typing.id); typing=null; } go(ts,tb); }
+$('#backBtn')&&($('#backBtn').onclick=e=>{ e.stopPropagation(); back(); });
+$('#hint').onclick=e=>{ e.stopPropagation(); advance(); };
+function next(){ const sc=S[si]; if(bi<sc.beats.length-1) showBeat(bi+1); else if(si<S.length-1) go(nextScene()); }
+function nextScene(){ const n=S[si].next; return n?idx(n):si+1; }
+function advance(){
+  if(typing){ clearInterval(typing.id); capText.textContent=typing.text; const d=typing.done; typing=null; d(); return; }
+  if(canAdvance) next();
+}
+$('#stage').addEventListener('click', e=>{ if(e.target.closest('button,.gpop')) return; advance(); });
+addEventListener('keydown', e=>{ if(e.key==='Escape'&&!$('#chapters').hidden){ closeChapters(); $('#chapBtn').focus(); return; } if(e.key==='Escape'&&!$('#pathpanel').hidden){ closePath(); $('#pathBtn').focus(); return; } if(e.key==='Escape'&&!$('#voicepanel').hidden){ closeVoice(); $('#voiceBtn').focus(); return; } if(!$('#chapters').hidden||!$('#pathpanel').hidden||!$('#voicepanel').hidden) return; if(stillState) return; if(e.key==='ArrowLeft'){ e.preventDefault(); back(); return; } if([' ','Enter','ArrowRight'].includes(e.key)){ if(document.activeElement&&document.activeElement.tagName==='BUTTON'&&e.key!=='ArrowRight') return; e.preventDefault(); advance(); } });
+
+/* warmth interaction */
+function buildChapters(){ const cur=S[si]&&S[si].key; let n=0;
+  $('#chapters').innerHTML=CHAPTERS.map(([vol,items])=>`<h3>${vol}</h3><ol>${items.map(([t,k])=>{ n++; return `<li><button type="button" data-k="${k}" ${k===cur?'aria-current="true"':''}><small>${String(n).padStart(2,'0')}</small><span>${t}</span></button></li>`; }).join('')}</ol>`).join('');
+  $('#chapters').querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); initAudio(); if(ctx&&ctx.state==='suspended') ctx.resume(); if('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance('')); go(idx(b.dataset.k)); }); }
+function openChapters(focus){ closeVoice(); closePath(); buildChapters(); $('#chapters').hidden=false; $('#chapBtn').setAttribute('aria-expanded','true'); if(focus!==false){ const c=$('#chapters [aria-current]')||$('#chapters button'); c&&c.focus({preventScroll:false}); } }
+function closeChapters(){ const c=$('#chapters'); if(!c||c.hidden) return; c.hidden=true; $('#chapBtn').setAttribute('aria-expanded','false'); }
+$('#chapBtn').onclick=e=>{ e.stopPropagation(); closePath(); $('#chapters').hidden?openChapters():closeChapters(); };
+$('#pathBtn').onclick=e=>{ e.stopPropagation(); $('#pathpanel').hidden?openPath():closePath(); };
+document.addEventListener('click',e=>{ if(!$('#chapters').hidden&&!e.target.closest('#chapters,#chapBtn')) closeChapters(); if(!$('#pathpanel').hidden&&!e.target.closest('#pathpanel,#pathBtn')) closePath(); if(!$('#voicepanel').hidden&&!e.target.closest('#voicepanel,#voiceBtn')) closeVoice(); },true);
+
+/* the small helpers the woodcut kits share with the short books */
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+/* moods: named sound beds a book defines in MOODS; mood('a','b') keeps those playing and fades the rest */
+const MOODS={};
+function bell(f=392,v=.1,d=4){ if(!ctx) return; const t=now(); [1,2.01,2.76,4.1,5.4].forEach((k,i)=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.frequency.value=f*k; env(g,t,v/(1+i*.9),.004,d/(1+i*.4)); o.connect(g).connect(master); o.start(t); o.stop(t+d+.1); }); }
+function knell(n=3,f=146.8){ for(let i=0;i<n;i++) setTimeout(()=>bell(f,.14,6),i*2600); }
+function mood(...on){ if(!ctx) return; Object.keys(loops).forEach(k=>{ if(!on.includes(k)) stopLoop(k,2.5); }); on.forEach(k=>{ if(!loops[k]&&MOODS[k]) MOODS[k](); }); }
+
+/* ---------- things to do on a page ---------- */
+const sayCap=(t,done=()=>{})=>{ typeOut(t,done); speak(t); };
+/* tap every glowing spot; each one answers in the caption, and the last one lets you go on */
+function tapAll(items,done){ let n=0; items.forEach(([x,y,lab,line,fn],i)=>spotAt(x,y,lab,b=>{ b.classList.add('done'); initAudio(); bell([392,440,493.9,587.3,659.3,784][i%6],.06,2.6); fn&&fn(); const last=++n===items.length; sayCap(line,last?(done||armAdvance):undefined); })); }
+/* a choice that matters: a wrong answer walks you down it, then rewinds to here */
+function pick(opts){ choices.innerHTML=opts.map((o,i)=>`<button class="btn" type="button" data-i="${i}"${o.go?` data-go="${o.go}"`:''}>${o.label}</button>`).join('');
+  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const o=opts[+b.dataset.i]; choices.innerHTML=''; tickSnd(); if(o.go) detour(o.go,S[si].key,bi); else next(); }); }
+/* open your hands: tap each thing to give it up, and it fades from the picture */
+function letGo(items){ choices.innerHTML=items.map(([w],i)=>`<button class="btn alt" type="button" data-i="${i}">${w}</button>`).join(''); let n=0;
+  choices.querySelectorAll('button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const [,id,line]=items[+b.dataset.i]; b.disabled=true; b.style.opacity='.3'; whoosh(.12); bell(523.25-n*40,.05,3);
+    const el=document.getElementById(id); if(el){ el.classList.add('fade'); el.style.opacity='0'; el.style.transform='translateY(-20px)'; }
+    const last=++n===items.length; sayCap(line,last?()=>{ choices.innerHTML=''; armAdvance(); }:undefined); }); }
+/* the bedside questions: each gets a yes */
+function askAll(qs,label='Yes'){ let k=0; const ask=()=>{ sayCap(qs[k],()=>{ choices.innerHTML=`<button class="btn" type="button" id="yes">${label}</button>`; const y=$('#yes'); y.focus({preventScroll:true});
+    y.onclick=e=>{ e.stopPropagation(); choices.innerHTML=''; bell(293.7+k*36,.07,3); k++; k<qs.length?ask():next(); }; }); }; ask(); }
+function holdOn(o){ holdGeneric({...o, onDone:()=>{ o.onDone&&o.onDone(); setTimeout(next,o.wait||300); }}); }
+function tryAgain(label,key,beat){ choices.innerHTML=`<button class="btn" type="button" id="again">${label}</button>`; $('#again').onclick=e=>{ e.stopPropagation(); go(idx(key),beat); }; $('#again').focus({preventScroll:true}); }
+const card=(eye,h,p,btns='')=>`<div class="title-card"><span class="eyebrow">${eye}</span><h1>${h}</h1><p>${p}</p>${btns}</div>`;
+
+/* Kit for The Last Light: a clear night sky, one small person, a tree, and the long view. */
+const K='#151B2B', INDIGO='#1B2550', NIGHT='#0A0F1F', STAR='#F8F5EE', EMBER='#F0C25A', WARM='#C8773A', LEAF='#5E9C6A', SOIL='#3A2E26', SKY2='#3D5A99', ROSE='#D98C7A';
+const SC_DEFS=`<defs><linearGradient id="scsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${NIGHT}"/><stop offset="1" stop-color="${INDIGO}"/></linearGradient>
+<linearGradient id="scdawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${INDIGO}"/><stop offset=".65" stop-color="${ROSE}"/><stop offset="1" stop-color="${EMBER}"/></linearGradient>
+<radialGradient id="scglow"><stop offset="0" stop-color="#FFF4D0"/><stop offset=".4" stop-color="${EMBER}" stop-opacity=".55"/><stop offset="1" stop-color="${EMBER}" stop-opacity="0"/></radialGradient><clipPath id="scclip"><rect width="600" height="400"/></clipPath></defs>`;
+function sc(inner,{sky='night',ground=true}={}){ return `${SC_DEFS}<g clip-path="url(#scclip)"><rect width="600" height="400" fill="${sky==='night'?'url(#scsky)':sky==='dawn'?'url(#scdawn)':sky}"/>${sky!=='dawn'?stars(120,7,330):stars(30,7,160)}${ground?`<path d="M0 330 Q150 312 300 322 T600 316 V400 H0Z" fill="#141A2E"/><path d="M0 352 Q200 340 360 348 T600 344 V400 H0Z" fill="#0E1324"/>`:''}${inner}</g>`; }
+/* a person: plain and universal, no robe or symbol */
+function person(x,y,s=1,{col=STAR,glow=false,sit=false,op=1}={}){ return `<g transform="translate(${x} ${y}) scale(${s})" opacity="${op}">${glow?`<circle cx="0" cy="-60" r="70" fill="url(#scglow)"/>`:''}<circle cx="0" cy="${sit?-62:-92}" r="13" fill="${col}" stroke="${K}" stroke-width="2"/>${sit?`<path d="M-20 0 Q-22 -30 -12 -48 H12 Q22 -30 20 0Z" fill="${col}" stroke="${K}" stroke-width="2"/><path d="M-30 0 H30" stroke="${col}" stroke-width="8" stroke-linecap="round"/>`:`<path d="M-15 -76 Q-18 -40 -12 0 H12 Q18 -40 15 -76Z" fill="${col}" stroke="${K}" stroke-width="2"/>`}</g>`; }
+function tree(x,y,s=1,{leaves=1}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-6 0 Q-4 -40 -2 -70 M2 -70 Q4 -40 6 0Z" fill="${SOIL}" stroke="${K}" stroke-width="2"/><path d="M-4 -60 Q-26 -74 -34 -96 M4 -64 Q24 -80 30 -104 M0 -70 V-112" stroke="${SOIL}" stroke-width="5" fill="none" stroke-linecap="round"/>${leaves>0?[[-34,-104,26],[30,-112,28],[0,-126,32],[-14,-90,22],[18,-92,22]].map(([cx,cy,r],i)=>`<circle cx="${cx}" cy="${cy}" r="${r*leaves}" fill="${i%2?LEAF:'#4C8A5B'}" stroke="${K}" stroke-width="1.5" opacity=".95"/>`).join(''):''}</g>`; }
+function ripple(x,y,n=4,col=EMBER){ return Array.from({length:n},(_,i)=>`<ellipse class="fadein" style="animation-delay:${i*.35}s" cx="${x}" cy="${y}" rx="${40+i*55}" ry="${10+i*14}" fill="none" stroke="${col}" stroke-width="${3-i*.5}" opacity="${.9-i*.18}"/>`).join(''); }
+function wave(x,y,w,amp,flat=0){ let d=`M${x} ${y}`; for(let i=0;i<=60;i++){ const px=x+i*w/60; const a=amp*(1-flat)*(i%6===3?2.2:1); d+=` L${px.toFixed(1)} ${(y+Math.sin(i*1.9)*a*(i%2?1:-.6)).toFixed(1)}`; } return `<path d="${d}" fill="none" stroke="${LEAF}" stroke-width="3" stroke-linejoin="round"/>`; }
+function monitor(x,y,flat=0){ return `<g transform="translate(${x} ${y})"><rect x="-150" y="-70" width="300" height="140" rx="14" fill="#0E1324" stroke="${STAR}" stroke-width="3"/>${wave(-130,0,260,26,flat)}<text x="-130" y="-46" font-family="Jost,sans-serif" font-weight="700" font-size="14" fill="${STAR}" opacity=".7">BRAIN ACTIVITY</text></g>`; }
+function atoms(n,seed=5,{cx=300,cy=200,r=170,cols=[EMBER,LEAF,SKY2,ROSE,STAR]}={}){ const R=rnd(seed); let o=''; for(let i=0;i<n;i++){ const a=R()*Math.PI*2, d=Math.sqrt(R())*r; o+=`<circle class="drift" style="animation-duration:${3+R()*4}s;animation-delay:-${(R()*3).toFixed(1)}s" cx="${(cx+Math.cos(a)*d).toFixed(1)}" cy="${(cy+Math.sin(a)*d*.7).toFixed(1)}" r="${(2+R()*4).toFixed(1)}" fill="${cols[i%cols.length]}"/>`; } return o; }
+function bed(x=300,y=300){ return `<g transform="translate(${x} ${y})"><rect x="-150" y="-24" width="300" height="30" rx="6" fill="#2A3352" stroke="${K}" stroke-width="2"/><rect x="-150" y="-50" width="40" height="56" rx="6" fill="#2A3352" stroke="${K}" stroke-width="2"/><path d="M-104 -34 Q0 -50 140 -30 V-22 H-104Z" fill="${STAR}" stroke="${K}" stroke-width="2"/><circle cx="-118" cy="-40" r="12" fill="${STAR}" stroke="${K}" stroke-width="2"/><path d="M-150 6 V30 M150 6 V30" stroke="#2A3352" stroke-width="6"/></g>`; }
+function scCover(){ return sc(`<circle cx="300" cy="250" r="160" fill="url(#scglow)" opacity=".55"/>${tree(470,330,1.1)}${person(300,330,1.1,{glow:true})}<path d="M40 70 Q300 20 560 70" stroke="${STAR}" stroke-width="1" fill="none" opacity=".25" stroke-dasharray="3 6"/>`); }
+/* ---- more pieces for the full book and the walk ---- */
+function candle(x,y,s=1,{lit=true}={}){ return `<g transform="translate(${x} ${y}) scale(${s})">${lit?`<circle cy="-62" r="34" fill="url(#scglow)"/><path d="M0 -70 Q8 -58 0 -48 Q-8 -58 0 -70Z" fill="${EMBER}" class="flick"/>`:''}<rect x="-9" y="-46" width="18" height="46" rx="3" fill="${STAR}" stroke="${K}" stroke-width="2"/></g>`; }
+function cup(x,y,s=1,col=ROSE){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-16 -26 H16 L12 0 H-12Z" fill="${col}" stroke="${K}" stroke-width="2"/><path d="M16 -20 Q28 -18 22 -8 Q18 -4 13 -6" fill="none" stroke="${K}" stroke-width="2.5"/><path d="M-6 -34 q4 -6 0 -12 M4 -34 q4 -6 0 -12" stroke="${STAR}" stroke-width="2" fill="none" opacity=".6"/></g>`; }
+function table(x,y,w=260){ return `<rect x="${x-w/2}" y="${y}" width="${w}" height="12" rx="4" fill="${SOIL}" stroke="${K}" stroke-width="2"/><path d="M${x-w/2+20} ${y+12} V${y+70} M${x+w/2-20} ${y+12} V${y+70}" stroke="${SOIL}" stroke-width="8"/>`; }
+function column(x,y,h=150){ return `<g transform="translate(${x} ${y})"><rect x="-16" y="${-h}" width="32" height="${h}" fill="#E8E2D6" stroke="${K}" stroke-width="2"/><path d="M-6 ${-h+10} V-10 M6 ${-h+10} V-10" stroke="#BFB6A6" stroke-width="2"/><rect x="-24" y="${-h-12}" width="48" height="12" fill="#E8E2D6" stroke="${K}" stroke-width="2"/><rect x="-24" y="-8" width="48" height="8" fill="#E8E2D6" stroke="${K}" stroke-width="2"/></g>`; }
+function garden(){ return `${column(110,330)}${column(490,330)}<path d="M110 166 Q300 120 490 166" stroke="#E8E2D6" stroke-width="10" fill="none"/>${tree(220,330,.7)}${tree(400,330,.8)}${[160,270,340,450].map((x,i)=>`<circle cx="${x}" cy="${322-(i%2)*4}" r="7" fill="${[ROSE,EMBER,ROSE,STAR][i]}" stroke="${K}" stroke-width="1.5"/>`).join('')}`; }
+function mirrorF(x,y,r=90,inner=''){ return `<g transform="translate(${x} ${y})"><ellipse rx="${r}" ry="${r*1.2}" fill="#0E1324" stroke="${EMBER}" stroke-width="6"/><g clip-path="url(#scclip)">${inner}</g></g>`; }
+function riverSea(p=1){ const x=80+p*420; return `<path d="M0 360 Q120 300 200 320 T380 310 Q480 300 600 250 V400 H0Z" fill="${SKY2}" opacity=".5"/><path d="M0 372 Q140 330 240 344 T440 330 Q520 320 600 290" stroke="${STAR}" stroke-width="${4+p*12}" fill="none" opacity=".55" stroke-linecap="round"/><rect x="${Math.max(380,x)}" y="250" width="${600-Math.max(380,x)}" height="150" fill="${SKY2}" opacity=".35"/>`; }
+function hands(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 0 Q-40 -20 -6 -10 Q4 -6 -4 2 Q-30 8 -70 14Z" fill="${STAR}" stroke="${K}" stroke-width="2"/><path d="M70 6 Q40 -16 6 -4 Q-4 0 4 8 Q30 14 70 20Z" fill="#E8C7A8" stroke="${K}" stroke-width="2"/></g>`; }
+function lights(n,lit){ return Array.from({length:n},(_,i)=>{ const x=90+i*(420/(n-1)); return `<circle cx="${x}" cy="120" r="${i<lit?20:12}" fill="${i<lit?EMBER:'#2A3352'}" stroke="${STAR}" stroke-width="2"${i<lit?' class="fadein"':''}/>${i<lit?`<circle cx="${x}" cy="120" r="34" fill="url(#scglow)"/>`:''}`; }).join(''); }
+function mound(x,y,col=SOIL){ return `<path d="M${x-80} ${y} Q${x} ${y-40} ${x+80} ${y}Z" fill="${col}" stroke="${K}" stroke-width="2"/>`; }
+function urn(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-18 0 Q-28 -30 -14 -50 H14 Q28 -30 18 0Z" fill="${SKY2}" stroke="${K}" stroke-width="2"/><rect x="-16" y="-58" width="32" height="8" rx="2" fill="${SKY2}" stroke="${K}" stroke-width="2"/></g>`; }
+function bookF(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 -10 Q-40 -26 -80 -14 V40 Q-40 28 0 44Z M0 -10 Q40 -26 80 -14 V40 Q40 28 0 44Z" fill="${STAR}" stroke="${K}" stroke-width="2"/><path d="M-66 0 Q-40 -8 -14 2 M-66 14 Q-40 6 -14 16 M14 2 Q40 -8 66 0 M14 16 Q40 6 66 14" stroke="#9AA3B8" stroke-width="2" fill="none"/></g>`; }
+
+/* The Last Light, the full book. The door of non-belief: the view that death is simply the end of a person, and what
+   people who hold it have found to comfort them, from Epicurus, Lucretius and the Cārvākas to hospice care, organ donation,
+   humanist funerals and death cafés. It is written as a door with its own comfort, not as the absence of one.
+   A first draft: it should be read by humanist celebrants, palliative care staff and non-religious readers. */
+const BOOK={home:'view', toast:'Learned: ', pathLabel:'Path', pathTitle:'What you have learned', detourTitle:'Wrong turns you walked',
+  pathNote:'Every wrong turn rewinds. There is no judge on this road, only better and worse ways to care for each other.',
+  guideBack:'Back to the book', voiceSample:'Where death is, I am not.'};
+
+/* ---------- pictures ---------- */
+const PG=(inner,lab,o)=>frame(sv(sc(inner,o),lab));
+const NIGHTBG='#0A0F1F', DUSKBG='#1B2550', PAPERBG='#ECE8DF';
+
+/* ---------- sound ---------- */
+Object.assign(MOODS,{ drone:()=>drone(),
+  night:()=>pad('night',[98,146.83,196],.03), warm:()=>pad('warm',[110,164.81,220],.035), light:()=>pad('light',[130.81,196,261.63],.035),
+  rain:()=>startLoop('rain',g=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=1400; s.connect(f).connect(g); s.start(); return [s]; },.03),
+  water:()=>startLoop('water',g=>{ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true; const f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=700; s.connect(f).connect(g); s.start(); return [s]; },.05) });
+function tapCount(n,lab,onTap){ let k=0; choices.innerHTML=`<button class="btn" type="button" id="tc">${lab} · 0 of ${n}</button>`; const b=$('#tc'); b.focus({preventScroll:true});
+  b.onclick=e=>{ e.stopPropagation(); initAudio(); k++; bell(392+k*24,.06,2.4); onTap&&onTap(k); b.textContent=`${lab} · ${k} of ${n}`; if(k>=n){ b.disabled=true; setTimeout(()=>{ choices.innerHTML=''; next(); },700); } }; }
+const MON=f=>`<g id="mon">${monitor(300,130,f)}</g>`;
+const ATOMS=[['Carbon','a1','The carbon goes to the soil, and into the roots of a tree.'],['Iron','a2','The iron, made in a star that blew up long ago, goes back into the earth.'],['Water','a3','The water rises as cloud and falls as rain on someone else\'s garden.'],['Calcium','a4','The calcium becomes shell, and stone, and someday bone again.']];
+
+/* ---------- the book ---------- */
+const S=[
+{ key:'title', label:'', bg:NIGHTBG,
+  view:()=>`<div class="title-card" role="dialog" aria-label="Start"><span class="eyebrow">Many Doors · Non-belief · the full book</span><h1>The Last Light</h1>
+    <p>Many people believe nothing of them goes on after death. No heaven, no rebirth, no judge: the brain stops, and the person stops with it. That isn't an empty door. People who hold this view have spent two and a half thousand years finding ways to face death calmly, care for the dying, and keep the dead with them.</p>
+    <p class="draft">A first draft, put together from philosophy, medicine and the practice of humanist and secular celebrants. Not everyone without a religion holds this view; many believe in something after death.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="begin" type="button">Begin</button><button class="btn alt" id="pickch" type="button">Choose a chapter</button></div></div>`,
+  enter(){ $('#pickch').onclick=e=>{ e.stopPropagation(); openChapters(true); }; $('#begin').onclick=e=>{ e.stopPropagation(); initAudio(); if(ctx&&ctx.state==='suspended') ctx.resume(); if('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance('')); go(1); }; },
+  beats:[{text:null,lock:true}] },
+
+/* ===== Chapter 1 · The open door ===== */
+{ key:'view', label:'The open door', bg:DUSKBG,
+  view:()=>PG(`${person(300,330,1.2)}${tree(470,330,.9)}`,'A person standing alone on a hill under a clear night sky.'),
+  enter(){ mood('night'); },
+  guide:{title:'Who holds this view',text:"About 1.9 billion people today say they have no religion (Pew Research Center, 2025). They are a mixed group: atheists, agnostics, humanists, and many who simply don't belong anywhere. Plenty of them still believe in a soul, a god, or something after death. This book is for one view among them, held by many: that a person is a living body and brain, and when those stop, so does the person."},
+  beats:[
+    {text:"This door has no river to cross and no one waiting on the other side. On this map, a life is the whole of the journey."},
+    {text:"People who see death this way still have to face it. They still sit with the dying, bury their dead, and grieve. This book is about how they do it."},
+    {text:"Seven short chapters: an old idea, a calm philosopher, the last hours, the body's return, what lives on, the goodbye, and one life. There are wrong turns along the way. Each one rewinds."} ]},
+
+{ key:'old', label:'An old idea', bg:PAPERBG, learn:'old',
+  view:()=>PG(`${bookF(150,220,1)}${bookF(300,190,1.1)}${bookF(450,220,1)}`,'Three open books under the night sky.',{ground:false}),
+  enter(){ mood('warm'); },
+  guide:{title:'Three ancient doubters',text:"In India, the Cārvāka or Lokāyata school taught that only this world exists. A medieval summary of their views, translated by E. B. Cowell and A. E. Gough in 1882, quotes them: \"While life is yours, live joyously; none can escape Death's searching eye.\" In Greece, Epicurus (341 to 270 BCE) taught that the soul is made of atoms that scatter at death. In Han China, Wang Chong (about 27 to 97 CE) argued in his Lunheng that the dead do not become ghosts, since nothing remains to make one."},
+  beats:[
+    {text:"The idea that death is simply the end is old. It turns up in ancient India, Greece and China, each time in thinkers who looked hard at the world and found no sign of a beyond."},
+    {text:"Tap the three books.", lock:true, afterType(){ tapAll([
+      [25,48,'India','India: the Cārvākas taught that only this world is real. "While life is yours, live joyously."'],
+      [50,40,'Greece','Greece: Epicurus said the soul is made of atoms, and at death they simply scatter.'],
+      [75,48,'China','China: Wang Chong argued the dead can\'t become ghosts, because nothing is left to make one.'] ]); }} ]},
+
+/* ===== Chapter 2 · The garden ===== */
+{ key:'garden', label:"Epicurus' garden", bg:DUSKBG, learn:'tetra',
+  view:()=>PG(`${garden()}${person(300,330,.9)}${person(370,330,.8,{sit:true})}`,'A garden between two white columns, with friends sitting among the trees.'),
+  enter(){ mood('warm'); },
+  guide:{title:'The fourfold cure',text:"Epicurus taught in a garden outside Athens, and anyone could come: women, slaves and the poor among them. His follower Philodemus boiled the teaching down to four lines, later called the tetrapharmakos, the fourfold cure: Don't fear the gods. Don't worry about death. What is good is easy to get. What is terrible is easy to endure."},
+  beats:[
+    {text:"In a garden outside Athens, about 300 years before Christ, Epicurus taught his friends how to be happy. The biggest thing in the way, he said, is the fear of death."},
+    {text:"His followers kept a four-line cure. Tap each line.", lock:true, afterType(){ tapAll([
+      [22,30,'The gods','Don\'t fear the gods. If they exist at all, they aren\'t waiting to punish you.'],
+      [78,30,'Death','Don\'t worry about death. "Where death is, I am not; where I am, death is not."'],
+      [35,62,'The good','What is good is easy to get: bread, water, friends, a quiet mind.'],
+      [65,62,'The terrible','What is terrible is easy to endure. Great pain is short, and long pain is mild.'] ]); }} ]},
+
+{ key:'fear', label:"Epicurus' garden", bg:DUSKBG,
+  view:()=>PG(`${person(250,330,1,{sit:true})}${person(360,330,1)}`,'One friend sits, worried. Another stands beside them.'),
+  enter(){ mood('night'); },
+  beats:[
+    {text:"A friend in the garden can't sleep. Every night, he lies awake thinking about dying."},
+    {text:"What would Epicurus tell him?", lock:true, afterType(){ pick([{label:'Don\'t think about it, ever',go:'x_avoid'},{label:'Think it through, calmly, until it loses its grip'}]); }} ]},
+
+{ key:'fear2', label:"Epicurus' garden", bg:DUSKBG,
+  view:()=>PG(`${person(250,330,1,{sit:true,glow:true})}${person(360,330,1)}`,'The worried friend, calmer now.'),
+  enter(){ mood('warm'); },
+  beats:[
+    {text:"\"Get used to believing that death is nothing to us,\" Epicurus wrote, in a letter to a friend. Good and bad are things we feel, and death is the end of feeling."},
+    {text:"While you're alive, death isn't here. When it comes, you aren't. Either way, you never meet."} ]},
+
+{ key:'mirror', label:"Lucretius' mirror", bg:NIGHTBG, learn:'mirror',
+  view:()=>PG(`<g id="mir">${mirrorF(300,190,90,atoms(30,4,{cx:0,cy:0,r:70}))}</g>`,'An oval mirror in the dark, with faint specks of light inside it.',{ground:false}),
+  enter(){ mood('night'); },
+  guide:{title:'On the Nature of Things',text:"Lucretius, a Roman poet of the first century BCE, put Epicurus' teaching into a long poem, De Rerum Natura. In Book Three he asks the reader to look back at the endless time before they were born. It didn't trouble us then, he says. \"Nature holds this up to us as a mirror of the time to come after our death.\" Philosophers call this the symmetry argument, and they still argue about whether it works."},
+  beats:[
+    {text:"Two hundred years later, the Roman poet Lucretius gave the idea a picture. Think of all the time before you were born."},
+    {text:"Billions of years went by without you. Press and hold, and look back across them.", lock:true, afterType(){ holdOn({label:'Look back',ms:5000,
+      onProgress:p=>{ const m=$('#mir'); if(m) m.innerHTML=mirrorF(300,190,90,atoms(Math.round(10+p*60),4,{cx:0,cy:0,r:70})+(p>.95?person(0,60,.5,{glow:true}):'')); }}); }},
+    {text:"You didn't mind a single one of those years. Lucretius said the time after your death is the same, like a mirror held up to the time before."} ]},
+
+/* ===== Chapter 3 · The last hours ===== */
+{ key:'hospice', label:'The last hours', bg:PAPERBG, learn:'matter',
+  view:()=>PG(`${bed(300,300)}${person(470,330,.9,{sit:true})}${candle(140,320,.8)}`,'A bed in a quiet room. Someone sits beside it.',{ground:false,sky:'#2A3352'}),
+  enter(){ mood('warm'); },
+  guide:{title:'You matter to the end',text:"Dame Cicely Saunders, a nurse and doctor, founded St Christopher's Hospice in London in 1967, and with it the modern hospice movement. She was herself a Christian, but she built care that serves everyone: pain controlled well, families welcomed, and the dying person treated as a whole person. Her best-known words: \"You matter because you are you, and you matter to the end of your life.\" Hospice and palliative care now help people of every faith and none."},
+  beats:[
+    {text:"Most deaths today don't come suddenly. They come slowly, in a bed, with time to talk. How those hours are spent matters a great deal, whatever anyone believes comes after."},
+    {text:"Hospice nurses say the same few things matter most: no pain, no fear of being alone, and being told the truth, gently."},
+    {text:"Your father is dying. One evening he asks you straight out: \"Am I dying?\"", lock:true, afterType(){ pick([{label:'Change the subject and keep his spirits up',go:'x_hide'},{label:'Ask what he wants to know, and stay with him'}]); }} ]},
+
+{ key:'hospice2', label:'The last hours', bg:PAPERBG,
+  view:()=>PG(`${bed(300,300)}${hands(330,250,.7)}${person(470,330,.9,{sit:true,glow:true})}${candle(140,320,.8)}`,'Two hands held together over the edge of the bed.',{ground:false,sky:'#2A3352'}),
+  enter(){ mood('warm'); },
+  beats:[
+    {text:"You ask him what he'd like to know. He says he guessed already. Then he talks about his brother, and a lake they swam in as boys. You hold his hand."},
+    {text:"With no next world to prepare for, these hours are the last chapter, not a waiting room. Many people find that makes them easier to spend well."} ]},
+
+{ key:'brain', label:'The flat line', bg:NIGHTBG, learn:'brain',
+  view:()=>PG(`${bed(300,320)}${MON(0)}`,'A heart and brain monitor above a bed. The line is moving.',{ground:false}),
+  enter(){ mood('drone'); },
+  guide:{title:'What science sees, and what it doesn\'t know',text:"When the heart stops, blood stops reaching the brain, and within seconds to minutes its electrical activity fades. In a few dying patients, researchers have recorded a short burst of organised activity just after the heart stopped (Jimo Borjigin and colleagues, 2023). About one in ten people revived from cardiac arrest report a near-death experience: light, peace, a life review (Sam Parnia's AWARE studies, 2014 and 2023). People who hold this door's view see these as the dying brain's own last events. Others see them as a glimpse of something more. The research goes on."},
+  beats:[
+    {text:"Here is what doctors see. The heart stops. With no blood coming, the brain falls quiet within minutes."},
+    {text:"Press and hold, and stay with him while the line goes still.", lock:true, afterType(){ let last=-1; holdOn({label:'Stay with him',ms:6000,
+      onProgress:p=>{ const f=Math.round(p*20)/20; if(f===last) return; last=f; const m=$('#mon'); if(m) m.innerHTML=monitor(300,130,f); }}); }},
+    {text:"A flat line. Some people who are brought back describe light and peace in those last minutes. On this door's map, those are the brain's own final moments, and then the person is gone."},
+    {text:"That is the whole crossing: no river and no bridge. Just a quiet room, and the people who stayed."} ]},
+
+{ key:'donor', label:'The gift', bg:DUSKBG, learn:'gift',
+  view:()=>PG(`<g id="lit">${lights(8,0)}</g>${person(300,330,1,{op:.5})}`,'Eight small lights, waiting to be lit, above a faint figure.'),
+  enter(){ mood('light'); },
+  guide:{title:'Organ and tissue donation',text:"In the United States, the Health Resources and Services Administration says one organ donor can save up to eight lives, and tissue donation can help more than 75 people. Almost every religion now supports donation too, but for people who expect nothing after death it often carries special weight: the body, no longer needed, keeps someone else alive. Donation laws differ by country; in some, like Spain and Wales, you are a donor unless you opt out."},
+  beats:[
+    {text:"Before he died, your father signed up as an organ donor. On this view, the body he leaves isn't needed by anyone, except the people waiting for a heart, a liver, a kidney."},
+    {text:"One donor can save up to eight lives. Light them.", lock:true, afterType(){ tapCount(8,'Light a life',k=>{ const l=$('#lit'); if(l) l.innerHTML=lights(8,k); }); }},
+    {text:"Eight people wake up tomorrow because of him. He'll never know it, and that doesn't make it any less real."} ]},
+
+/* ===== Chapter 4 · Back to the world ===== */
+{ key:'atoms', label:'Star stuff', bg:NIGHTBG, learn:'return',
+  view:()=>PG(`${person(300,330,1.2)}<g id="a1">${atoms(10,9,{cx:250,cy:240,r:30})}</g><g id="a2">${atoms(10,10,{cx:350,cy:240,r:30})}</g><g id="a3">${atoms(10,11,{cx:270,cy:300,r:30})}</g><g id="a4">${atoms(10,12,{cx:330,cy:300,r:30})}</g>`,'A person made of glittering specks of light.'),
+  enter(){ mood('night'); },
+  guide:{title:'"We are made of star-stuff"',text:"Carl Sagan said it in Cosmos (1980). The hydrogen in your body is almost as old as the universe. The carbon, oxygen, calcium and iron were made inside stars that lived and died before the Sun formed. When a body is buried, cremated or composted, those atoms don't leave the world. They go on into soil, air, water and other living things."},
+  beats:[
+    {text:"You don't vanish, exactly. Every atom in you was made in a star, and every one of them stays in the world."},
+    {text:"Give them back. Tap each one.", lock:true, afterType(){ letGo(ATOMS); }} ]},
+
+{ key:'ground', label:'Back to the earth', bg:PAPERBG,
+  view:()=>PG(`${tree(130,330,.8)}${urn(250,330,1)}${mound(380,332)}${tree(380,300,.4,{leaves:.6})}${bookF(510,300,.6)}`,'Four ways back to the world: a tree, an urn, a green grave, and a medical school book.',{sky:'dawn'}),
+  enter(){ mood('warm'); },
+  guide:{title:'Ways back to the earth',text:"Families without a religion choose from all the usual ways, and some newer ones. Natural or green burial uses no embalming and a simple shroud or coffin, often in a meadow or woodland. Washington State made human composting legal in 2019, and many US states have followed. Some people leave their body to a medical school, where students learn anatomy from it. Cremation is the most common choice in many countries."},
+  beats:[
+    {text:"What happens to the body is up to the living now, and to what the dead asked for. Tap each one.", lock:true, afterType(){ tapAll([
+      [42,72,'Cremation','Cremation: the ashes can be kept, scattered somewhere loved, or buried under a tree.'],
+      [63,72,'Green burial','A green burial: no embalming, a plain shroud, and a meadow that grows over it.'],
+      [22,60,'Composting','Human composting: in a few weeks, the body becomes soil for a garden.'],
+      [85,70,'Science','Leaving the body to a medical school, so students can learn from it.'] ]); }},
+    {text:"Different ways, one idea: nothing of you is wasted, even if nothing of you remembers."} ]},
+
+/* ===== Chapter 5 · What lives on ===== */
+{ key:'ripples', label:'Ripples', bg:DUSKBG, learn:'ripple',
+  view:()=>PG(`${ripple(300,320,5)}${person(300,330,.9,{op:.35})}${person(150,330,.7)}${person(450,330,.7)}${person(520,330,.55)}${person(90,330,.55)}`,'Rings spreading out from a faint figure towards other people.'),
+  enter(){ mood('light','water'); },
+  guide:{title:'Rippling',text:"The psychiatrist Irvin Yalom, in Staring at the Sun (2008), wrote that one of the best comforts against the fear of death is what he called rippling: each of us leaves circles of influence on other people, often without knowing it, and they go on spreading for years or generations. It isn't you that goes on, he said, but something of you does."},
+  beats:[
+    {text:"What carries on is what you started in other people."},
+    {text:"Tap each ripple.", lock:true, afterType(){ tapAll([
+      [24,74,'Memories','Your stories keep being told. Some of your jokes will outlive you by decades.'],
+      [76,74,'Kindness','Someone is gentler with their own children because you were gentle with them.'],
+      [50,48,'Things you made','A garden, a song, a business, a cake recipe. They keep working without you.'],
+      [88,62,'Family','Your face in your grandchildren, and your habits in all of them.'] ]); }},
+    {text:"The psychiatrist Irvin Yalom called it rippling. It isn't you, but it isn't nothing."} ]},
+
+{ key:'bonds', label:'Love goes on', bg:PAPERBG, learn:'bonds',
+  view:()=>PG(`${table(300,280,220)}<rect x="270" y="236" width="44" height="44" fill="${STAR}" stroke="${K}" stroke-width="2"/>${person(296,272,.28)}${person(170,330,.95,{sit:true})}${candle(380,280,.6)}`,'A woman sitting by a small table with a framed photograph and a candle.',{sky:'#2A3352',ground:false}),
+  enter(){ mood('warm'); },
+  guide:{title:'Continuing bonds',text:"For much of the twentieth century, grief experts said that healthy mourning meant letting go of the dead and moving on. In 1996, Dennis Klass, Phyllis Silverman and Steven Nickman's book Continuing Bonds changed that. Studying the bereaved, they found that most people keep a relationship with the dead, in memory, conversation and habit, and that this is normal and often healthy. You don't need to believe the dead can hear you to keep loving them."},
+  beats:[
+    {text:"A year after her husband died, Ruth still tells his photo about her day. She doesn't think he hears her. She just likes to."},
+    {text:"Her friends are worried. What do you tell her?", lock:true, afterType(){ pick([{label:'It\'s time to put the photo away and move on',go:'x_moveon'},{label:'That\'s normal. Love doesn\'t end at a death'}]); }} ]},
+
+{ key:'bonds2', label:'Love goes on', bg:PAPERBG,
+  view:()=>PG(`${table(300,280,220)}<rect x="270" y="236" width="44" height="44" fill="${STAR}" stroke="${K}" stroke-width="2"/>${person(296,272,.28)}${person(170,330,.95,{sit:true,glow:true})}${candle(380,280,.6)}`,'The woman by the photograph, smiling.',{sky:'#2A3352',ground:false}),
+  enter(){ mood('warm'); },
+  beats:[
+    {text:"Grief researchers call it a continuing bond. Most people keep one: a habit, a conversation, a chair nobody else sits in."},
+    {text:"On this door's map, the dead live on only in the living. So the living are exactly where to keep them."} ]},
+
+/* ===== Chapter 6 · The goodbye ===== */
+{ key:'funeral', label:'The goodbye', bg:DUSKBG, learn:'story',
+  view:()=>PG(`${candle(300,300,1.2)}${person(150,330,.8)}${person(220,330,.75)}${person(380,330,.75)}${person(450,330,.8)}`,'People gathered around a single candle.',{sky:'dawn'}),
+  enter(){ mood('warm'); },
+  guide:{title:'Humanist and secular funerals',text:"A humanist or secular funeral is built around one life. A celebrant, often trained by a group like Humanists UK, meets the family, then writes and leads a ceremony with the person's story, music they loved, readings and tributes. There are no prayers, but there is usually a quiet moment in which religious guests are free to pray in their own way. In England and Wales, many thousands of humanist funerals are held each year."},
+  beats:[
+    {text:"Without a religion, people still gather. A humanist funeral has no prayers and no promises of a next life. It has one life, told well."},
+    {text:"You're helping plan your father's funeral. The celebrant asks what it should be.", lock:true, afterType(){ pick([{label:'Something standard. Use the usual script',go:'x_generic'},{label:'His story: the lake, the jokes, the people he loved'}]); }} ]},
+
+{ key:'funeral2', label:'The goodbye', bg:DUSKBG,
+  view:()=>PG(`${candle(300,300,1.2)}${person(150,330,.8,{glow:true})}${person(220,330,.75)}${person(380,330,.75)}${person(450,330,.8)}`,'One person speaks while others listen.',{sky:'dawn'}),
+  enter(){ mood('warm'); },
+  beats:[
+    {text:"His brother tells the story of the lake. Everyone laughs at the part about the borrowed boat. His favourite song plays."},
+    {text:"Then there is a moment of quiet, for each person to think about him in their own way. Press and hold for the silence.", lock:true, afterType(){ holdOn({label:'A moment of silence',ms:7000}); }},
+    {text:"Almost every funeral in the world, religious or not, has a silence somewhere. It may be the one rite everyone shares."} ]},
+
+{ key:'cafe', label:'Tea and death', bg:PAPERBG, learn:'talk',
+  view:()=>PG(`${table(300,280,320)}${cup(200,280)}${cup(300,280,1,EMBER)}${cup(400,280,1,LEAF)}${person(130,330,.85,{sit:true})}${person(470,330,.85,{sit:true})}`,'A café table with three cups of tea and people sitting around it.',{sky:'#3D5A99',ground:false}),
+  enter(){ mood('warm','rain'); },
+  guide:{title:'Death cafés and death doulas',text:"In 2011 Jon Underwood held the first Death Café in his house in London, after the Swiss sociologist Bernard Crettaz's cafés mortels. The idea is simple: strangers meet over tea and cake to talk about death, with no agenda and nothing to sell. Thousands have now been held in more than 80 countries. At the same time, end-of-life doulas have grown in number: trained companions who help the dying and their families plan, talk, and keep vigil, whatever they believe."},
+  beats:[
+    {text:"Many people go their whole lives without saying out loud what they want at the end. In 2011, a man in London invited strangers round for tea, cake and a talk about death."},
+    {text:"It caught on. Pick up each cup and hear what people ask.", lock:true, afterType(){ tapAll([
+      [33,62,'Cup one','"What are you most afraid of?" Usually not being dead. Usually pain, or being a burden, or leaving someone alone.'],
+      [50,62,'Cup two','"Where would you want to die?" Most people say at home. Fewer than half do.'],
+      [67,62,'Cup three','"Who knows what you want?" Often, no one. Saying it once, out loud, is a gift to the people who will have to decide.'] ]); }} ]},
+
+/* ===== Chapter 7 · One life ===== */
+{ key:'forever', label:'One life', bg:NIGHTBG,
+  view:()=>PG(`${person(300,330,1.1,{glow:true})}${stars(40,41,300,EMBER)}`,'A figure under a sky full of stars.'),
+  enter(){ mood('night'); },
+  guide:{title:'The Makropulos case',text:"In 1973 the philosopher Bernard Williams wrote about Elina Makropulos, a character in a play by Karel Čapek who has lived for 342 years and has grown cold and bored with everything. Williams argued that a life without end would sooner or later lose its shape and its point. Other philosophers, like John Martin Fischer, disagree, and think an endless life could stay good. Either way, the question is an old one: does an ending give a life its meaning?"},
+  beats:[
+    {text:"Here is a question philosophers have argued over for fifty years. If you could, would you live forever?", lock:true, afterType(){ pick([{label:'Yes, I would'},{label:'No, I don\'t think so'}]); }},
+    {text:"There's no wrong answer. Bernard Williams thought an endless life would grow tired and lose its shape. Others think it could stay good forever."},
+    {text:"For many people on this map, the ending is what makes the days count. A life is precious partly because there is only one."} ]},
+
+{ key:'river', label:'The river and the sea', bg:DUSKBG, learn:'river',
+  view:()=>PG(`<g id="rv">${riverSea(0)}</g>${tree(110,330,.6)}`,'A small river winding towards a distant sea.',{sky:'dawn',ground:false}),
+  enter(){ mood('light','water'); },
+  guide:{title:'Like a river',text:"In a short 1951 essay, \"How to Grow Old\", the philosopher Bertrand Russell, who did not believe in an afterlife, compared a human life to a river: narrow and rushing at first, then wider and calmer, until it flows into the sea without any visible break, and loses itself there without pain. For him, the best way to face death was to care about things larger than yourself, so your own life seemed less and less to matter alone."},
+  beats:[
+    {text:"The philosopher Bertrand Russell, who expected nothing after death, said a good life is like a river."},
+    {text:"Small at first, and rushing. Then wider, slower, calmer. Press and hold, and follow it down.", lock:true, afterType(){ holdOn({label:'Follow the river',ms:6000,
+      onProgress:p=>{ const r=$('#rv'); if(r) r.innerHTML=riverSea(p); }}); }},
+    {text:"In the end it meets the sea with no break at all, and simply becomes part of something bigger. That was the comfort he found, and passed on."} ]},
+
+{ key:'lastpage', label:'The last page', bg:NIGHTBG,
+  view:()=>frame(sv(scCover(),'A person and a tree under a starry night, a soft light around them.')),
+  enter(){ mood('light'); },
+  beats:[
+    {text:"No beyond, and still so much to do: face the fear calmly, tell the dying the truth, give away what the body no longer needs, hand the atoms back, keep the dead in the living, and tell one life's story well."},
+    {text:"One life, lived once. On this map, that's exactly what makes it precious."} ]},
+
+{ key:'end', label:'The end', bg:'var(--teal)',
+  view:()=>`<div class="title-card" style="cursor:default"><span class="eyebrow">The end of the book</span><h1>The Last Light</h1>
+    <p>That was the door of non-belief: Epicurus' garden and Lucretius' mirror, the last hours and the flat line, the gift of donation, the body's return, rippling and continuing bonds, the humanist goodbye, and Russell's river.</p><p id="endsum" style="font-weight:700"></p>
+    <p class="draft">A first draft, which should be read by humanist celebrants, palliative care staff and non-religious readers. Sources include: Epicurus, Letter to Menoeceus; Lucretius, De Rerum Natura, Book III; the Sarva-Darśana-Saṃgraha, trans. E. B. Cowell and A. E. Gough (1882); Wang Chong, Lunheng; Cicely Saunders, Watch with Me (2003); J. Borjigin and others, PNAS (2023); S. Parnia and others, Resuscitation (2014, 2023); Carl Sagan, Cosmos (1980); Irvin Yalom, Staring at the Sun (2008); D. Klass, P. Silverman and S. Nickman, Continuing Bonds (1996); Bernard Williams, "The Makropulos Case" (1973); Bertrand Russell, "How to Grow Old" (1951); Humanists UK on non-religious funerals; deathcafe.com.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn" id="again" type="button">Read it again</button><button class="btn alt" id="pathend" type="button">See your path</button><button class="btn alt" id="chend" type="button">Choose a chapter</button></div>
+    <div class="endlinks"><a href="../walk/">Walk Seven Ordinary Days</a><a href="../../index.html#doors">Back to Many Doors</a></div></div>`,
+  enter(){ mood('warm'); $('#again').onclick=e=>{ e.stopPropagation(); go(0); }; $('#chend').onclick=e=>{ e.stopPropagation(); openChapters(true); }; $('#pathend').onclick=e=>{ e.stopPropagation(); openPath(); };
+    $('#endsum').textContent=`You learned ${journey.learned.size} of ${LESSONS.length} lessons and walked ${journey.visited.size} of ${DETOURS.length} wrong turns.`+(journey.learned.size===LESSONS.length?' You know the way.':' Read again to learn the rest.'); },
+  beats:[{text:null,lock:true}] },
+
+/* ===== wrong turns ===== */
+{ key:'x_avoid', label:'A wrong turn', bg:'#2A3352',
+  view:()=>PG(`${person(300,330,1,{sit:true,col:'#9AA3B8'})}<circle cx="300" cy="200" r="120" fill="#0A0F1F" opacity=".6"/>`,'The worried friend, a dark cloud growing over him.',{ground:false}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"He tries never to think of it. But the fear comes back at night, bigger each time, because he has never looked at it in daylight."},
+    {text:"Epicurus said the opposite: \"get used to\" the thought, until you see there's nothing in it to fear. Rewind, and think it through.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_hide', label:'A wrong turn', bg:'#2A3352',
+  view:()=>PG(`${bed(300,300)}${person(470,330,.9,{col:'#9AA3B8'})}`,'The bed, and a visitor standing at the door, turned away.',{ground:false,sky:'#1B2550'}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"You talk about the weather and the football. He stops asking. Over the next days he grows quiet, and there are things neither of you ever says."},
+    {text:"Hospice workers hear this regret often. Most dying people already sense the truth, and being kept from it can leave them alone with it. Rewind, and ask him.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_moveon', label:'A wrong turn', bg:'#4A4E5A',
+  view:()=>PG(`${table(300,280,220)}${person(170,330,.95,{sit:true,col:'#9AA3B8'})}`,'The table without the photograph. The woman sits alone.',{sky:'#2A3352',ground:false}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"Ruth puts the photo in a drawer, to make her friends happy. Now she feels she has lost him twice."},
+    {text:"Grief experts used to say mourning meant cutting ties with the dead. Most now say keeping a bond is normal. Rewind, and let her keep him.", lock:true, afterType(){ rewindButton(); }} ]},
+
+{ key:'x_generic', label:'A wrong turn', bg:'#4A4E5A',
+  view:()=>PG(`<rect x="200" y="160" width="200" height="140" fill="#9AA3B8" stroke="${K}" stroke-width="2"/>${[170,240,360,430].map(x=>person(x,330,.7,{col:'#9AA3B8'})).join('')}`,'A plain room with a blank sign. The mourners look at their watches.',{ground:false,sky:'#3A3E4A'}),
+  enter(){ mood('drone'); },
+  beats:[
+    {text:"Twenty minutes, a reading nobody chose, and a name read out twice. People leave saying it could have been for anyone."},
+    {text:"Without a promise of a next life, the story of this life is the whole point of the goodbye. Rewind, and tell his story.", lock:true, afterType(){ rewindButton(); }} ]}
+];
+
+const CHAPTERS=[
+  ['1 · The open door',[['This door','view'],['An old idea','old']]],
+  ['2 · The garden',[["Epicurus' garden",'garden'],["Lucretius' mirror",'mirror']]],
+  ['3 · The last hours',[['The last hours','hospice'],['The flat line','brain'],['The gift','donor']]],
+  ['4 · Back to the world',[['Star stuff','atoms'],['Back to the earth','ground']]],
+  ['5 · What lives on',[['Ripples','ripples'],['Love goes on','bonds']]],
+  ['6 · The goodbye',[['The goodbye','funeral'],['Tea and death','cafe']]],
+  ['7 · One life',[['Forever?','forever'],['The river and the sea','river']]] ];
+const LESSONS=[
+  ['old','An old idea','India, Greece and China all had thinkers who saw no beyond.','An old idea'],
+  ['tetra','The fourfold cure','Don\'t fear the gods or death. The good is easy to get.',"Epicurus' garden"],
+  ['mirror',"Lucretius' mirror",'After your death is like before your birth.',"Lucretius' mirror"],
+  ['matter','You matter to the end','Tell the dying the truth, gently, and stay.','The last hours'],
+  ['brain','The flat line','The brain falls quiet. That is the whole crossing.','The flat line'],
+  ['gift','The gift','One donor can save up to eight lives.','The gift'],
+  ['return','Star stuff','Your atoms go back into the world.','Star stuff'],
+  ['ripple','Rippling','What lives on is what you started in others.','Ripples'],
+  ['bonds','Continuing bonds','Keeping a bond with the dead is normal.','Love goes on'],
+  ['story','One life, told well','A humanist funeral tells one life\'s story.','The goodbye'],
+  ['talk','Say it out loud','Tell someone what you want at the end.','Tea and death'],
+  ['river',"Russell's river",'A good life widens, and meets the sea.','The river and the sea'] ];
+const IC=(d)=>`<path d="${d}" fill="none" stroke="#FBF4E6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+const DETOURS=[
+  ['x_avoid','Never thinking of it',IC('M8 20 Q20 8 32 20 Q20 32 8 20Z M8 32 L32 8')],
+  ['x_hide','Hiding the truth',IC('M10 14 H30 V30 H10Z M14 22 H26')],
+  ['x_moveon','Putting the photo away',IC('M10 12 H30 V28 H10Z M8 32 L32 8')],
+  ['x_generic','A funeral for anyone',IC('M8 30 H32 M12 30 V14 H28 V30 M16 20 H24')] ];
+updatePathBadge();
+go(0);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+<a class="mdhome" href="../../index.html#doors" style="position:fixed;left:12px;bottom:12px;z-index:50;font:500 12px/1 Jost,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1E2A2B;background:#FBF3DFe6;border:1px solid rgba(30,42,43,.25);border-radius:999px;padding:9px 13px;text-decoration:none">&larr; Many Doors</a>
+</body></html>
