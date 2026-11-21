@@ -1,0 +1,505 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<script>window.MD_HOME='../../index.html#doors'</script>
+<title>Eight Days with the Ancestors</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Jost:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Shared chrome for the Many Doors books. Each book overrides the tokens in its own :root block. Single deliberate light look, like the Bardo series. */
+:root{
+  color-scheme:light;
+  --bg:#F6EBD2; --paper:#FBF3DF; --ink:#1E2A2B; --ink-soft:#4A5754; --accent:#1F5E63; --accent2:#8A4B22; --gold:#E8B13A; --night:#0E1416; --nightink:#FFF6DE;
+  --display:'Jost','Futura','Century Gothic',sans-serif; --body:'Atkinson Hyperlegible','Verdana',sans-serif;
+}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:2px solid var(--ink);background:var(--paper)}
+.brand{font-family:var(--display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.85rem}
+.brand small{display:block;font-weight:500;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:.78rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.pill,.tog{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:7px 12px;cursor:pointer;text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tog[aria-pressed="false"]{border-style:dashed;color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:700;font-size:1rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:11px 22px;min-height:48px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2)}
+svg text{font-family:var(--display)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- full-screen player (manual and daily session) ---------- */
+body.insession{overflow:hidden}
+a.sbtn.home{text-decoration:none;display:inline-flex;align-items:center}
+body.insession .mdhome{display:none}
+.player{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--nightink);display:flex;flex-direction:column;align-items:center;gap:10px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(12px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:auto}
+.player::before{content:"";position:fixed;inset:0;background:radial-gradient(60% 50% at 50% 40%,color-mix(in srgb,var(--c,var(--accent)) 24%,transparent),transparent 70%);pointer-events:none;transition:background 1.5s}
+.pbar{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:980px;flex-wrap:wrap}
+.ptitle{font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:.9rem;min-width:0;flex:1}
+.ptitle b{color:var(--gold);margin-right:8px;letter-spacing:.14em;text-transform:uppercase}
+.sbtn{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid rgba(255,246,222,.45);background:transparent;color:var(--nightink);border-radius:999px;padding:6px 11px;min-height:34px;cursor:pointer}
+.sbtn[aria-pressed="false"]{opacity:.55}
+.sbtn.x{font-size:1rem;width:36px;padding:0;justify-content:center}
+.steps{position:relative;list-style:none;margin:0;padding:0;display:flex;gap:6px;width:100%;max-width:980px}
+.steps li{flex:1;min-width:0;font-family:var(--display);font-weight:700;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,246,222,.45);border-top:3px solid rgba(255,246,222,.15);padding-top:5px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.done{border-color:color-mix(in srgb,var(--c,var(--accent)) 70%,#FFF6DE);color:rgba(255,246,222,.7)}
+.steps li.on{border-color:#FFF6DE;color:#FFF6DE}
+.stage{position:relative;width:min(100%,980px,calc(min(58vh,620px)*1.5));aspect-ratio:3/2;max-width:100%;border-radius:16px;overflow:hidden;border:2px solid rgba(255,246,222,.18);background:#10181B;flex:none}
+@media (max-height:700px){.stage{width:min(100%,calc(48vh*1.5))}}
+@media (max-width:600px) and (orientation:portrait){.stage{width:100%;aspect-ratio:1/1;max-height:52vh}.sbtn{font-size:.62rem;padding:5px 8px}.ptitle{font-size:.8rem;flex-basis:100%}}
+.art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .8s}
+.layer{position:absolute;inset:0}
+.layer:empty{pointer-events:none}
+.scap{position:relative;box-sizing:border-box;width:100%;max-width:760px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px 18px 12px;min-height:118px;box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.seye{display:block;font-family:var(--display);font-weight:800;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);min-height:1em}
+.scap p{margin:4px 0 0;font-size:clamp(1.02rem,2.2vw,1.2rem);line-height:1.45;min-height:2.9em;text-wrap:pretty}
+.srow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-top:8px}
+.sgo{font-family:var(--display);font-weight:700;font-size:.92rem;letter-spacing:.03em;border:2px solid var(--ink);background:var(--accent);color:var(--paper);border-radius:999px;padding:9px 18px;min-height:44px;cursor:pointer}
+.sgo.alt{background:transparent;color:var(--ink)}
+.sgo.wrong{animation:nope .4s}
+@keyframes nope{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* interactions on the stage */
+.holdzone{position:absolute;inset:0;background:transparent;border:0;padding:0;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.holdpill{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:8px 16px;font-family:var(--display);font-weight:700;letter-spacing:.05em;font-size:clamp(.74rem,1.8vw,.95rem);white-space:nowrap;transition:transform .3s}
+.holdpill svg{width:28px;height:28px;margin-left:-8px}
+.holdzone.on .holdpill{transform:translateX(-50%) scale(.95)}
+.holdzone:focus-visible .holdpill{outline:3px solid var(--gold);outline-offset:3px}
+.spot{position:absolute;transform:translate(-50%,-50%);width:clamp(46px,9%,70px);aspect-ratio:1;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.spot i{pointer-events:none;position:absolute;inset:18%;border-radius:50%;border:3px solid var(--gold);animation:ping 1.6s ease-out infinite}
+.spot b{cursor:pointer;box-shadow:0 3px 0 var(--ink);position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--display);font-weight:700;font-size:clamp(.6rem,1.5vw,.8rem);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.spot.done{opacity:0;pointer-events:none;transition:opacity .6s}
+@keyframes ping{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+.picks{position:absolute;inset:0;display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:16px}
+.pk{font-family:var(--display);font-weight:700;font-size:clamp(.85rem,2vw,1.05rem);border:2px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:999px;padding:10px 18px;cursor:pointer;min-height:48px;max-width:100%}
+.pk.gone{opacity:.25;pointer-events:none}
+.duo{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr}
+.half{position:relative;border:0;padding:0;margin:0;cursor:pointer;background:#000;overflow:hidden}
+.half svg{width:100%;height:100%;display:block;transition:transform .5s}
+.half:hover svg,.half:focus-visible svg{transform:scale(1.04)}
+.half span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-family:var(--display);font-weight:700;font-size:clamp(.7rem,1.7vw,.9rem);white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis}
+.half+.half{border-left:3px solid var(--night)}
+.counter{position:absolute;top:10px;right:14px;font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sittime{position:absolute;right:14px;top:10px;font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,246,222,.75);font-size:.9rem}
+.ghost{position:absolute;left:14px;top:8px;background:transparent;border:0;color:rgba(255,246,222,.65);font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;min-height:34px}
+.stillbar{position:absolute;left:20%;right:20%;bottom:14px;height:6px;border-radius:3px;background:rgba(255,246,222,.15);overflow:hidden}
+.stillbar i{display:block;height:100%;width:0;background:#FFF6DE}
+.toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);font-family:var(--display);font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:999px;max-width:calc(100% - 32px);text-align:center;animation:toastin .35s ease}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}}
+.menu{position:absolute;top:46px;right:0;z-index:60;width:min(340px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.menu h3{margin:8px 6px 6px;font-family:var(--display);font-weight:800;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
+.menu ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.menu button{width:100%;text-align:left;display:flex;gap:10px;align-items:baseline;background:transparent;border:0;border-radius:8px;padding:9px 8px;font-size:.98rem;cursor:pointer;min-height:44px}
+.menu button:hover,.menu button:focus-visible{background:var(--bg);outline:none}
+.menu button[aria-current="true"]{background:var(--bg);font-weight:700}
+.menu small{font-family:var(--display);font-weight:700;font-size:.7rem;letter-spacing:.1em;color:var(--ink-soft);min-width:2.2em;font-variant-numeric:tabular-nums}
+.menu p{margin:4px 8px;font-size:.85rem;color:var(--ink-soft)}
+.menu .vchips{display:flex;gap:6px;padding:2px 6px 6px}
+.menu .vchip{flex:1;justify-content:center;font-family:var(--display);font-weight:700;font-size:.78rem;border:2px solid var(--ink);border-radius:999px;padding:7px 6px;min-height:40px}
+.menu .vchip[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
+
+/* svg motion helpers */
+.spin{animation:spinr 50s linear infinite}@keyframes spinr{to{transform:rotate(360deg)}}
+.flick{animation:fk 1.4s ease-in-out infinite}@keyframes fk{50%{opacity:.55}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flm .6s ease-in-out infinite alternate}@keyframes flm{to{transform:scaleY(1.12) scaleX(.9) skewX(-3deg)}}
+.bob{animation:bob 3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+.drift{animation:drift 9s ease-in-out infinite alternate}@keyframes drift{to{transform:translateX(30px)}}
+.rise{animation:rise 3s ease-out both}@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.fadein{animation:fi 1.6s ease both}@keyframes fi{from{opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pl 2.4s ease-in-out infinite}@keyframes pl{50%{transform:scale(1.08);opacity:.7}}
+.shine{animation:shn 4s ease-out infinite}@keyframes shn{from{opacity:.9}to{opacity:.2}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- landing pages ---------- */
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:center}
+h1{margin:6px 0 12px;font-family:var(--display);font-weight:800;font-size:clamp(2rem,5vw,3.1rem);line-height:1.02;text-wrap:balance}
+.lede{font-size:1.08rem;margin:0 0 12px;max-width:52ch}
+.note{font-size:.88rem;color:var(--ink-soft)}
+.cover{background:var(--night);border:2px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 6px 0 var(--ink)}
+.cover svg{display:block;width:100%;height:auto}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 8px}
+.sec{margin-top:34px}
+.sec>h2{font-family:var(--display);font-weight:800;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.ck{text-align:left;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-width:0}
+.ck b{font-family:var(--display);font-weight:800;letter-spacing:.04em}
+.ck span{font-size:.86rem;color:var(--ink-soft)}
+.ck i{display:block;height:5px;border-radius:3px;background:var(--c)}
+.ck:hover{background:#FFFFFF}
+.ck.seen b::after{content:" ✓";color:var(--accent)}
+.how{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.how div{border-top:3px solid var(--ink);padding-top:8px}
+.how>h2{grid-column:1/-1}
+.how b{font-family:var(--display);font-weight:800;display:block}
+.how p{margin:2px 0 0;font-size:.93rem}
+details.all{margin-top:34px;border-top:2px dashed rgba(30,42,43,.25);padding-top:10px}
+details.all summary{cursor:pointer;font-family:var(--display);font-weight:700;min-height:40px;display:flex;align-items:center}
+details.all h3{font-family:var(--display);font-weight:800;margin:18px 0 4px;font-size:1.05rem}
+details.all p{margin:0 0 6px;max-width:68ch}
+.sources{font-size:.85rem;color:var(--ink-soft);max-width:75ch}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+
+@media (max-width:560px){ .pbar{gap:5px} .pbar .sbtn{padding:5px 7px;letter-spacing:.04em} .pbar .sbtn.x{width:32px;padding:0} }
+.snav{display:flex;align-items:center;gap:10px}
+.snav .srow{flex:1}
+.snav .pbk{display:none;margin-top:8px;flex:none}
+.player.hasback .snav .pbk{display:inline-flex;align-items:center;gap:4px}
+
+/* The Homegoing: indigo cloth, ochre, terracotta and cowrie white. */
+:root{
+  --bg:#EFE3CC; --paper:#F4EBDA; --ink:#1A1410; --ink-soft:#4E3A2A; --accent:#1E2A5A; --accent2:#B5532D; --gold:#D99A2B; --night:#121833; --nightink:#F4EBDA;
+  --display:'Abril Fatface',Georgia,serif;
+}
+h1,.brand,.ptitle b{font-family:var(--display);font-weight:400}
+.brand{letter-spacing:.04em;font-size:1rem}
+.cover{background:#121833}
+
+</style>
+<header class="bar" id="bar"></header>
+<main class="wrap" id="wrap"></main>
+<script>
+/* Shared engine for the Many Doors books: sound, narration, the full-screen player and its interactions. */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------------- sound ---------------- */
+const SND={ctx:null,m:null,nb:null,bb:null,on:store.get('md-sound')!=='0',loops:{},drone:null};
+/* the drone: a quiet, slowly breathing tone on A under everything, so silence only happens on purpose. level(v,secs) fades it (0 = silent, 1 = normal). */
+function makeDrone(c,dest,vol=.05){ const t=c.currentTime,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+6); g.connect(dest);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.Q.value=.6; lp.connect(g);
+  const sw=c.createOscillator(), sg=c.createGain(); sw.frequency.value=.045; sg.gain.value=260; sw.connect(sg).connect(lp.frequency); sw.start(t);
+  const nodes=[sw]; [[55,'sine',.55,0],[110,'sawtooth',.16,-4],[110.3,'sawtooth',.12,3],[164.8,'sine',.12,0],[220,'sine',.1,2],[329.6,'sine',.035,-3]].forEach(([f,type,v,dt],i)=>{ const o=c.createOscillator(),og=c.createGain(); o.type=type; o.frequency.value=f; o.detune.value=dt; og.gain.value=v;
+    const l=c.createOscillator(),lg=c.createGain(); l.frequency.value=.03+i*.017; lg.gain.value=v*.45; l.connect(lg).connect(og.gain); o.connect(og).connect(lp); o.start(t); l.start(t); nodes.push(o,l); });
+  return {level(v,secs=2){ const n=c.currentTime; g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(Math.max(vol*v,.0001),n+secs); },
+    stop(){ this.level(0,1.5); setTimeout(()=>nodes.forEach(o=>{try{o.stop()}catch(e){}}),1700); }}; }
+
+function aInit(){ if(SND.ctx){ if(SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} return; }
+  try{ SND.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
+  const c=SND.ctx; SND.m=c.createGain(); SND.m.gain.value=SND.on?.9:0; SND.m.connect(c.destination);
+  const n=c.sampleRate*2; SND.nb=c.createBuffer(1,n,c.sampleRate); SND.bb=c.createBuffer(1,n,c.sampleRate);
+  const w=SND.nb.getChannelData(0), b=SND.bb.getChannelData(0); let l=0;
+  for(let i=0;i<n;i++){ const r=Math.random()*2-1; w[i]=r; l=(l+.02*r)/1.02; b[i]=l*3.5; }
+  SND.drone=makeDrone(c,SND.m); }
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{ if(SND.ctx&&SND.ctx.state!=='running') try{SND.ctx.resume()}catch(e){} },{capture:true,passive:true}));
+const T=()=>SND.ctx.currentTime;
+function aEnv(g,t,p,a,d){ g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+a+d); }
+function tone(fr,{type='sine',peak=.12,a=.01,d=2,at=0}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.type=type; o.frequency.value=fr; const g=c.createGain(); aEnv(g,t,peak,a,d); o.connect(g).connect(SND.m); o.start(t); o.stop(t+a+d+.1); }
+function nz({freq=1000,type='highpass',peak=.08,a=.003,d=.03,q=.7,brown=false}={}){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; f.Q.value=q; const g=c.createGain(); aEnv(g,t,peak,a,d); s.connect(f).connect(g).connect(SND.m); s.start(t,Math.random()); s.stop(t+a+d+.1); }
+function loopOn(name,build,vol,fade=2){ if(!SND.ctx||SND.loops[name]) return; const g=SND.ctx.createGain(); g.gain.value=.0001; g.connect(SND.m); const nodes=build(g); g.gain.exponentialRampToValueAtTime(vol,T()+fade); SND.loops[name]={g,nodes}; }
+function loopOff(name,fade=1.5){ const L=SND.loops[name]; if(!L) return; delete SND.loops[name]; const t=T(); L.g.gain.cancelScheduledValues(t); L.g.gain.setValueAtTime(Math.max(L.g.gain.value,.0001),t); L.g.gain.exponentialRampToValueAtTime(.0001,t+fade); setTimeout(()=>L.nodes.forEach(n=>{try{n.stop()}catch(e){}}),(fade+.2)*1000); }
+function allOff(f=1.2){ Object.keys(SND.loops).forEach(k=>loopOff(k,f)); }
+function pad(name,freqs,vol=.04){ loopOn(name,g=>{ const out=[]; freqs.forEach((fr,i)=>{ const c=SND.ctx,o=c.createOscillator(); o.frequency.value=fr; o.detune.value=i%2?4:-4; const tg=c.createGain(); tg.gain.value=.5; const l=c.createOscillator(); l.frequency.value=.1+i*.07; const lg=c.createGain(); lg.gain.value=.35; l.connect(lg).connect(tg.gain); o.connect(tg).connect(g); o.start(); l.start(); out.push(o,l); }); return out; },vol,4); }
+function noiseLoop(name,type,freq,vol,brown=true){ loopOn(name,g=>{ const c=SND.ctx,s=c.createBufferSource(); s.buffer=brown?SND.bb:SND.nb; s.loop=true; const f=c.createBiquadFilter(); f.type=type; f.frequency.value=freq; s.connect(f).connect(g); s.start(); return [s]; },vol); }
+function fireLoop(){ noiseLoop('fire','lowpass',500,.12); if(!SND.ctx) return; const L=SND.loops.fire; if(!L||L.crack) return; L.crack=setInterval(()=>{ if(!SND.loops.fire) return clearInterval(L.crack); if(Math.random()<.5) nz({freq:2500+Math.random()*3000,peak:.03+Math.random()*.05,d:.015}); },90); }
+function waterLoop(){ noiseLoop('water','bandpass',700,.1,false); }
+function windLoop(){ noiseLoop('wind','bandpass',420,.12); }
+function bell(f=392,v=.16){ [1,2.01,3.02,4.2].forEach((k,i)=>tone(f*k,{peak:v/(i+1.3),a:.005,d:5-i})); }
+function bowl(f=196,v=.18){ [1,2.76,5.4].forEach((k,i)=>tone(f*k,{peak:v/(i+1.4),a:.01,d:6-i*1.5})); }
+function chime(){ [523.25,659.25,783.99,1046.5,1318.5].forEach((fr,i)=>tone(fr,{peak:.09,d:3,at:i*.14})); }
+function drum(v=.5,at=0){ if(!SND.ctx) return; const c=SND.ctx,t=T()+at,o=c.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(42,t+.25); const g=c.createGain(); aEnv(g,t,v,.005,.4); o.connect(g).connect(SND.m); o.start(t); o.stop(t+.5); }
+function whoosh(v=.14){ if(!SND.ctx) return; const c=SND.ctx,t=T(),s=c.createBufferSource(); s.buffer=SND.nb; const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(2400,t+.6); f.frequency.exponentialRampToValueAtTime(400,t+1.3); const g=c.createGain(); aEnv(g,t,v,.4,.9); s.connect(f).connect(g).connect(SND.m); s.start(t); s.stop(t+1.5); }
+function plop(){ tone(420,{type:'triangle',peak:.12,d:.25}); nz({freq:900,type:'bandpass',peak:.05,d:.08}); }
+function thud(){ drum(.6); nz({type:'lowpass',freq:300,peak:.2,d:.3,brown:true}); }
+function choir(){ pad('choir',[220,277.2,329.6,440],.05); setTimeout(()=>loopOff('choir',3),5000); }
+function setSound(on){ SND.on=on; store.set('md-sound',on?'1':'0'); if(SND.m) SND.m.gain.setTargetAtTime(on?.9:0,T(),.2); }
+
+/* ---------------- narration ---------------- */
+const VO={on:('speechSynthesis' in window)&&store.get('md-voiceon')!=='0',voice:null,list:[],rate:parseFloat(store.get('md-rate'))||.86};
+function vScore(v){ let n=0; const nm=v.name.toLowerCase(); if(/natural|neural|premium|enhanced|siri/.test(nm)) n+=50; if(/online/.test(nm)) n+=20; if(/en-gb/i.test(v.lang)) n+=15; else if(/^en/i.test(v.lang)) n+=8; else n-=100;
+  if(/daniel|arthur|george|ryan|thomas|oliver|guy|libby|sonia|serena|kate|martha|google uk english male/.test(nm)) n+=10;
+  if(/compact|espeak|zarvox|trinoids|albert|bad news|bells|boing|bubbles|cellos|whisper|jester|organ|superstar|wobble|fred|junior|ralph/.test(nm)) n-=60; return n; }
+function loadVoices(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a)); if(!vs.length) return; VO.list=vs; const saved=store.get('md-voice'); const k=saved?vs.findIndex(v=>v.name===saved):0; VO.voice=vs[Math.max(k,0)]; }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+function narrate(text){ return new Promise(res=>{ if(!VO.on||!('speechSynthesis' in window)) return res(false); try{ speechSynthesis.cancel(); }catch(e){}
+  const u=new SpeechSynthesisUtterance(text.replace(/[“”]/g,'"')); if(VO.voice) u.voice=VO.voice; u.rate=VO.rate; u.pitch=.98;
+  let done=false; const fin=()=>{ if(!done){ done=true; res(true); } }; u.onend=fin; u.onerror=fin; setTimeout(fin,Math.max(4000,text.length*95/VO.rate));
+  try{ speechSynthesis.speak(u); }catch(e){ fin(); } }); }
+function hush(){ try{ speechSynthesis.cancel(); }catch(e){} }
+
+/* ---------------- the player ---------------- */
+class Abort extends Error{}
+let PS=null; /* the live player session */
+function alive(s){ if(!s||PS!==s) throw new Abort(); }
+function openPlayer({title,sub,steps=[],menu=null,color}){
+  aInit(); closePlayer(true);
+  const el=document.createElement('div'); el.className='player'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  if(color) el.style.setProperty('--c',color);
+  el.innerHTML=`<div class="pbar"><span class="ptitle"><b>${esc(sub||'')}</b>${esc(title)}</span>
+    ${window.MD_HOME?`<a class="sbtn home" href="${MD_HOME}">← Doors</a>`:''}
+    ${menu?`<button type="button" class="sbtn" id="pMenu" aria-expanded="false">${esc(menu.label)}</button>`:''}
+    <button type="button" class="sbtn" id="pSound" aria-pressed="${SND.on}">Sound</button>
+    ${'speechSynthesis' in window?`<button type="button" class="sbtn" id="pVoice" aria-expanded="false">Voice</button>`:''}
+    <button type="button" class="sbtn x" id="pClose" aria-label="Close">×</button>
+    <div class="menu" id="pPanel" hidden></div></div>
+    ${steps.length?`<ol class="steps" id="pSteps">${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
+    <div class="stage" id="pStage"><svg class="art" id="pArt" viewBox="0 0 600 400" role="img" preserveAspectRatio="xMidYMid slice"></svg><canvas class="cv" id="pCv"></canvas><div class="layer" id="pLayer"></div></div>
+    <div class="scap"><span class="seye" id="pEye"></span><p id="pText" aria-live="polite"></p><div class="snav"><button type="button" class="sgo alt pbk" id="pBk"><span aria-hidden="true">◀</span> Back</button><div class="srow" id="pRow"></div></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('insession');
+  const s={el,menu}; PS=s;
+  el.querySelector('#pClose').onclick=()=>closePlayer();
+  el.querySelector('#pBk').onclick=()=>{ if(s.back){ hush(); s.back(); } };
+  el.querySelector('#pSound').onclick=e=>{ setSound(!SND.on); e.currentTarget.setAttribute('aria-pressed',SND.on); };
+  const panel=el.querySelector('#pPanel');
+  const toggle=(btn,build)=>{ const open=panel.hidden||panel.dataset.k!==btn.id; panel.hidden=!open; panel.dataset.k=btn.id; el.querySelectorAll('.pbar .sbtn[aria-expanded]').forEach(b=>b.setAttribute('aria-expanded',b===btn&&open)); if(open) build(); };
+  const vb=el.querySelector('#pVoice'); if(vb) vb.onclick=()=>toggle(vb,()=>voicePanel(panel));
+  const mb=el.querySelector('#pMenu'); if(mb) mb.onclick=()=>toggle(mb,()=>{ panel.innerHTML=menu.build(); panel.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ panel.hidden=true; menu.go(b.dataset.go); }); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!panel.hidden) panel.hidden=true; else closePlayer(); } });
+  setTimeout(()=>el.querySelector('#pClose').focus({preventScroll:true}),50);
+  return s;
+}
+function voicePanel(p){ const list=VO.list.slice(0,14); const sp=[['Slow',.76],['Normal',.86],['Brisk',.98]];
+  p.innerHTML=`<h3>Narrator</h3><ol><li><button type="button" id="vOn" aria-current="${VO.on}">${VO.on?'Narrator on · tap to turn off':'Narrator off · tap to turn on'}</button></li></ol>
+  <h3>Speed</h3><div class="vchips">${sp.map(([l,r])=>`<button type="button" class="vchip" data-r="${r}" aria-pressed="${Math.abs(VO.rate-r)<.01}">${l}</button>`).join('')}</div>
+  <h3>Voice</h3>${list.length?`<ol>${list.map((v,i)=>`<li><button type="button" data-v="${i}" aria-current="${VO.voice&&v.name===VO.voice.name}">${esc(v.name.replace(/Microsoft |Google |\(.*?\)/g,''))}</button></li>`).join('')}</ol>`:'<p>No voices have loaded on this device yet.</p>'}
+  <p>Voices depend on your device. Safari on Apple devices and Edge on Windows usually have the most natural ones.</p>`;
+  p.querySelector('#vOn').onclick=()=>{ VO.on=!VO.on; store.set('md-voiceon',VO.on?'1':'0'); if(!VO.on) hush(); voicePanel(p); };
+  p.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{ VO.rate=+b.dataset.r; store.set('md-rate',VO.rate); voicePanel(p); narrate('This is how I will sound.'); });
+  p.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ VO.voice=VO.list[+b.dataset.v]; store.set('md-voice',VO.voice.name); VO.on=true; store.set('md-voiceon','1'); voicePanel(p); narrate('This is how I will sound.'); });
+}
+function closePlayer(silent){ const s=PS; PS=null; hush(); if(SND.ctx) allOff(.8); cvStop(); if(s){ s.el.remove(); document.body.classList.remove('insession'); if(!silent&&s.onclose) s.onclose(); } }
+function stepTo(i){ document.querySelectorAll('#pSteps li').forEach((li,k)=>li.className=k<i?'done':k===i?'on':''); }
+function art(svg,label=''){ const a=$('#pArt'); if(!a) return; a.innerHTML=svg; a.setAttribute('aria-label',label); }
+function layer(){ return $('#pLayer'); }
+function clearLayer(){ const l=layer(); if(l) l.innerHTML=''; }
+function eyebrow(t){ const e=$('#pEye'); if(e) e.textContent=t||''; }
+function toast(t,ms=2400){ const st=$('#pStage'); if(!st) return; const d=document.createElement('div'); d.className='toast'; d.textContent=t; st.appendChild(d); setTimeout(()=>d.remove(),ms); }
+function splitText(t){ const parts=t.match(/[^.!?]+[.!?]+["”’']?\s*|[^.!?]+$/g)||[t]; const out=[]; let cur=''; parts.forEach(x=>{ if((cur+x).length>200&&cur){ out.push(cur.trim()); cur=x; } else cur+=x; }); if(cur.trim()) out.push(cur.trim()); return out; }
+/* show a passage, one or two sentences at a time, each with Continue */
+async function say(s,text,{eye,tap=true}={}){ alive(s); if(eye!==undefined) eyebrow(eye); const chunks=splitText(text);
+  for(let i=0;i<chunks.length;i++){ alive(s); const p=$('#pText'); p.textContent=chunks[i]; $('#pRow').innerHTML=''; const spoke=narrate(chunks[i]); if(tap||i<chunks.length-1) await waitTap(s,spoke); else await spoke; } }
+function waitTap(s,spoke,label='Continue'){ return new Promise((res,rej)=>{ if(s) s.n=(s.n||0)+1; const row=$('#pRow'); row.innerHTML=`<button type="button" class="sgo" id="pGo">${esc(label)} <span aria-hidden="true">→</span></button>`;
+  const b=row.querySelector('#pGo'); let done=false; const go=()=>{ if(done) return; done=true; hush(); document.removeEventListener('keydown',kd); res(); };
+  const kd=e=>{ if(PS!==s){ document.removeEventListener('keydown',kd); return; } if(e.key==='ArrowLeft'&&s&&s.back&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); document.removeEventListener('keydown',kd); s.back(); return; } if((e.key===' '||e.key==='Enter'||e.key==='ArrowRight')&&!e.target.closest('.menu,.pbar')){ e.preventDefault(); go(); } };
+  b.onclick=go; document.addEventListener('keydown',kd); b.focus({preventScroll:true}); }); }
+function ask(text,eye){ if(eye!==undefined) eyebrow(eye); $('#pText').textContent=text; $('#pRow').innerHTML=''; narrate(text); }
+/* multiple choice in the caption row; returns index. right: index of the correct answer or -1 for any */
+function choose(s,text,opts,{right=-1,wrong}={}){ alive(s); ask(text); return new Promise(res=>{ const row=$('#pRow'); row.style.justifyContent='flex-start';
+  row.innerHTML=opts.map((o,i)=>`<button type="button" class="sgo alt" data-i="${i}">${esc(o)}</button>`).join('');
+  row.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; if(right>=0&&i!==right){ b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); if(wrong){ const w=typeof wrong==='function'?wrong(i):wrong; $('#pText').textContent=w; narrate(w); } return; } row.style.justifyContent=''; res(i); });
+  row.querySelector('button').focus({preventScroll:true}); }); }
+/* press and hold the stage */
+function hold(s,{label,ms=3000,ask:q,early,onP}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(30,42,43,.2)" stroke-width="4"/><circle id="hr" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>${esc(label)}</span></button>`;
+  const z=l.querySelector('.holdzone'), r=l.querySelector('#hr'); let t0=0,raf=0,done=false,hm=null;
+  const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/ms); r.setAttribute('stroke-dashoffset',100.5*(1-p)); onP&&onP(p); if(p>=1){ done=true; if(hm){ hm.stop(true); hm=null; } z.classList.remove('on'); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(done) return; e.preventDefault(); t0=performance.now(); z.classList.add('on'); hm=holdHum(ms); raf=requestAnimationFrame(tick); };
+  const up=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; if(hm){ hm.stop(false); hm=null; } z.classList.remove('on'); r.setAttribute('stroke-dashoffset',100.5); onP&&onP(0); if(early){ $('#pText').textContent=early; } };
+  z.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(ev=>z.addEventListener(ev,up));
+  z.addEventListener('keydown',e=>{ if((e.key===' '||e.key==='Enter')&&!e.repeat) down(e); }); z.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter') up(); });
+  z.focus({preventScroll:true}); }); }
+/* the sound of a press and hold: a soft hum that climbs an octave as the ring fills, a bell when it's full */
+function holdHum(ms){ aInit(); if(!SND.ctx) return {stop(){}}; const c=SND.ctx,t=T(),s=ms/1000,g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.08,t+.25); g.connect(SND.m);
+  const os=[[1,-5],[1.5,4],[2,0]].map(([k,dt],i)=>{ const o=c.createOscillator(); o.type=i?'sine':'triangle'; o.detune.value=dt; o.frequency.setValueAtTime(196*k,t); o.frequency.exponentialRampToValueAtTime(392*k,t+s); const og=c.createGain(); og.gain.value=[.6,.25,.15][i]; o.connect(og).connect(g); o.start(t); return o; });
+  return {stop(full){ const n=T(); g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value,.0001),n); g.gain.exponentialRampToValueAtTime(.0001,n+(full?.6:.18)); if(!full) os.forEach(o=>{ o.frequency.cancelScheduledValues(n); o.frequency.setValueAtTime(o.frequency.value,n); o.frequency.exponentialRampToValueAtTime(o.frequency.value*.8,n+.18); }); os.forEach(o=>o.stop(n+.7)); if(full) bell(784,.08); }}; }
+/* tap glowing spots on the picture; spots: [{x,y,label,say}] in % */
+function spots(s,{ask:q,items,onTap}){ alive(s); if(q) ask(q); return new Promise(res=>{ const l=layer(); let left=items.length;
+  l.innerHTML=items.map((it,i)=>`<button type="button" class="spot" data-i="${i}" style="left:${it.x}%;top:${it.y}%" aria-label="${esc(it.label||'Tap')}"><i></i>${it.label?`<b>${esc(it.label)}</b>`:''}</button>`).join('');
+  l.querySelectorAll('.spot').forEach(b=>b.onclick=()=>{ const it=items[+b.dataset.i]; b.classList.add('done'); left--; if(it.say){ $('#pText').textContent=it.say; narrate(it.say); } onTap&&onTap(+b.dataset.i,it); if(!left){ setTimeout(()=>{ l.innerHTML=''; res(); },it.say?1800:600); } });
+  l.querySelector('.spot').focus({preventScroll:true}); }); }
+/* two pictures side by side; pick one */
+function duo(s,{ask:q,a,b,right=-1,wrong}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="duo">${[a,b].map((o,i)=>`<button type="button" class="half" data-i="${i}"><svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice">${o.svg}</svg><span>${esc(o.label)}</span></button>`).join('')}</div>`;
+  l.querySelectorAll('.half').forEach(h=>h.onclick=()=>{ const i=+h.dataset.i; if(right>=0&&i!==right){ if(wrong){ $('#pText').textContent=wrong; narrate(wrong); } return; } l.innerHTML=''; res(i); }); }); }
+/* words to clear: tap each to let it go */
+function release(s,{ask:q,words,done}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); l.innerHTML=`<div class="picks">${words.map((w,i)=>`<button type="button" class="pk" data-i="${i}">${esc(w)}</button>`).join('')}</div>`; let left=words.length;
+  l.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{ b.classList.add('gone'); plop(); if(--left===0){ setTimeout(()=>{ l.innerHTML=''; res(); },500); } }); }); }
+/* hold still (pointer/keys); ms of stillness needed */
+function still(s,{ask:q,ms=8000,moved='You moved. Start again, gently.'}){ alive(s); ask(q); if(SND.drone) SND.drone.level(0,2.5); return new Promise(r0=>{ const res=v=>{ if(SND.drone) SND.drone.level(1,4); r0(v); }; const l=layer(); l.innerHTML=`<div class="stillbar"><i></i></div>`; const bar=l.querySelector('i'); let t0=performance.now(),raf;
+  const reset=()=>{ t0=performance.now(); }; const mv=()=>{ if(performance.now()-t0>600){ $('#pText').textContent=moved; } reset(); };
+  addEventListener('pointermove',mv); addEventListener('keydown',mv);
+  const tick=()=>{ if(PS!==s){ cleanup(); if(SND.drone) SND.drone.level(1,2); return; } const p=Math.min(1,(performance.now()-t0)/ms); bar.style.width=p*100+'%'; if(p>=1){ cleanup(); l.innerHTML=''; res(); return; } raf=requestAnimationFrame(tick); };
+  const cleanup=()=>{ cancelAnimationFrame(raf); removeEventListener('pointermove',mv); removeEventListener('keydown',mv); }; raf=requestAnimationFrame(tick); }); }
+/* count taps (beads, breaths, pebbles) */
+function count(s,{ask:q,n,label='Tap',onTap}){ alive(s); ask(q); return new Promise(res=>{ const l=layer(); let k=0; l.innerHTML=`<button type="button" class="holdzone" aria-label="${esc(label)}"><span class="holdpill">${esc(label)}</span></button><span class="counter">0 / ${n}</span>`;
+  const z=l.querySelector('.holdzone'), c=l.querySelector('.counter'); z.onclick=()=>{ k++; c.textContent=`${k} / ${n}`; onTap&&onTap(k); if(k>=n){ l.innerHTML=''; res(); } }; z.focus({preventScroll:true}); }); }
+
+/* ---------------- sitting: a minute with a breathing ring ---------------- */
+let cvRaf=0;
+function cvStop(){ cancelAnimationFrame(cvRaf); const c=$('#pCv'); if(c){ c.getContext('2d').clearRect(0,0,c.width,c.height); c.style.opacity=0; } }
+function cvBreath(col,ink='#FFF6DE'){ const cv=$('#pCv'); if(!cv) return; cv.style.opacity=1; const g=cv.getContext('2d'); const t0=performance.now();
+  const fr=()=>{ const r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1; if(cv.width!==Math.round(r.width*dpr)){ cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); }
+    const W=cv.width,H=cv.height,t=(performance.now()-t0)/1000; g.clearRect(0,0,W,H); const ph=(Math.sin(t*2*Math.PI/10-Math.PI/2)+1)/2; const R=Math.min(W,H)*(.16+.14*ph);
+    const gr=g.createRadialGradient(W/2,H/2,R*.2,W/2,H/2,R*1.6); gr.addColorStop(0,col); gr.addColorStop(1,'rgba(0,0,0,0)'); g.globalAlpha=.35; g.fillStyle=gr; g.fillRect(0,0,W,H);
+    g.globalAlpha=.9; g.strokeStyle=ink; g.lineWidth=3*dpr; g.beginPath(); g.arc(W/2,H/2,R,0,Math.PI*2); g.stroke();
+    for(let i=0;i<12;i++){ const a=i/12*Math.PI*2+t*.05; g.globalAlpha=.25+.5*ph; g.beginPath(); g.arc(W/2+Math.cos(a)*R*1.35,H/2+Math.sin(a)*R*1.35,2.5*dpr,0,Math.PI*2); g.fillStyle=ink; g.fill(); }
+    cvRaf=requestAnimationFrame(fr); }; fr(); }
+async function sit(s,{text,secs=60,col='#E8B13A',bg}){ alive(s); if(bg) art(bg); ask(text,'Sit'); cvBreath(col); if(SND.ctx) bowl(196,.14);
+  await new Promise(res=>{ const l=layer(); l.innerHTML=`<span class="sittime">1:00</span><button type="button" class="ghost">Finish early</button>`; const tEl=l.querySelector('.sittime'); const t0=performance.now(); let iv;
+    const end=()=>{ clearInterval(iv); l.innerHTML=''; res(); };
+    l.querySelector('.ghost').onclick=end;
+    iv=setInterval(()=>{ if(PS!==s){ clearInterval(iv); return res(); } const left=Math.max(0,secs-Math.floor((performance.now()-t0)/1000)); tEl.textContent=`${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`; if(left<=0){ if(SND.ctx) bowl(196,.12); end(); } },250); });
+  cvStop(); alive(s); }
+
+/* ---------------- svg helpers shared by the books ---------------- */
+function rays(cx,cy,r,n,op=.2,col='#FFF6DE'){ let o=''; for(let i=0;i<n;i++){ const a=i/n*Math.PI*2,a2=a+Math.PI/n*.6; o+=`<path d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}L${cx+Math.cos(a2)*r} ${cy+Math.sin(a2)*r}Z" fill="${col}" opacity="${op}"/>`; } return o; }
+function stars(n,seed=3,h=400,col='#FFF6DE'){ let s=seed,o=''; const r=()=>{ s=(s*9301+49297)%233280; return s/233280; }; for(let i=0;i<n;i++) o+=`<circle cx="${(r()*600).toFixed(1)}" cy="${(r()*h).toFixed(1)}" r="${(r()*1.6+.3).toFixed(2)}" fill="${col}" opacity="${(r()*.7+.2).toFixed(2)}"/>`; return o; }
+function rnd(seed){ let s=seed; return ()=>{ s=(s*9301+49297)%233280; return s/233280; }; }
+function header(B){ const h=$('#bar'); if(!h) return; h.innerHTML=`<span class="brand">${esc(B.brand)}<small>${esc(B.brandSub)}</small></span><span class="sp"></span>${(B.links||[]).filter(l=>l[1]).map(([t,u])=>`<a class="pill" href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}`; }
+
+/* The walk: one short daily practice per stage, with a map of stones. Each day: the book, what it means, a practice, a task for today, a minute of sitting. */
+function stonePos(i,n){ const per=n<=10?n:n<=21?7:n<=42?7:7; const rows=Math.ceil(n/per); const r=Math.floor(i/per), c=i%per, cc=r%2?per-1-c:c;
+  const W=600,H=400, dx=(W-120)/Math.max(per-1,1), dy=rows>1?(H-110)/(rows-1):0; return [60+cc*dx, (rows>1?55:200)+r*dy]; }
+function walkMap(W,n,{label=true}={}){ const N=W.days.length; let d='',st=''; for(let i=0;i<N;i++){ const [x,y]=stonePos(i,N); d+=(i?'L':'M')+x+' '+y; }
+  for(let i=0;i<N;i++){ const [x,y]=stonePos(i,N), P=W.parts[W.days[i].p], done=i<n, cur=i===n; const r=N>20?13:N>9?18:26;
+    st+=`<g><circle cx="${x}" cy="${y}" r="${r}" fill="${done?P.col:'#26343A'}" stroke="${cur?W.gold||'#E8B13A':P.col}" stroke-width="${cur?4:2.5}"/>${label?`<text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="${N>20?11:14}" font-weight="700" fill="${done?'#10181B':'#FFF6DE'}">${i+1}</text>`:''}${cur?`<circle cx="${x}" cy="${y}" r="${r+6}" fill="none" stroke="${W.gold||'#E8B13A'}" stroke-width="2" class="pulse"/>`:''}</g>`; }
+  return `<rect width="600" height="400" fill="#10181B"/>${W.mapBg?W.mapBg():''}<path d="${d}" fill="none" stroke="rgba(255,246,222,.25)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/>${st}`; }
+function walkLanding(W){
+  const n=Math.min(+store.get(W.key+'-next')||0,W.days.length-1);
+  $('#wrap').innerHTML=`<section class="hero"><div><span class="eyebrow">${esc(W.eyebrow)}</span><h1>${esc(W.title)}</h1><p class="lede">${esc(W.lede)}</p><p class="note">${esc(W.note)}</p>
+    <div class="cta"><button type="button" class="btn gold" id="begin">${n?`Continue: ${W.unit} ${n+1}`:`Begin ${W.unit} 1`}</button>${n?`<button type="button" class="btn alt" id="restart">Start over</button>`:''}${W.manualUrl?`<a class="pill" href="${W.manualUrl}" target="_blank" rel="noopener">${esc(W.manualName)}</a>`:''}</div></div>
+    <div class="cover"><svg viewBox="0 0 600 400" role="img" aria-label="Map of the ${W.days.length} ${W.unit.toLowerCase()}s">${walkMap(W,n)}</svg></div></section>
+    <section class="sec"><h2>The ${W.parts.length>1?'stages':'path'}</h2><div class="cgrid">${W.parts.map((p,i)=>{ const first=W.days.findIndex(d=>d.p===i), last=W.days.length-1-[...W.days].reverse().findIndex(d=>d.p===i); return `<button type="button" class="ck" data-n="${first}" style="--c:${p.col}"><i></i><b>${esc(p.name)}</b><span>${W.unit}s ${first+1}${last>first?'–'+(last+1):''} · ${esc(p.sub)}</span></button>`; }).join('')}</div></section>
+    <section class="sec how"><h2>Each ${W.unit.toLowerCase()}</h2>${[['The book',W.howBook||'What the tradition itself says, in plain words.'],['What it means','What it could mean for a living person.'],['A practice','A short interactive moment on the screen.'],['Today','One small thing to do before tomorrow.'],['Sit','A minute of quiet with a breathing ring.']].map(([a,b])=>`<div><b>${a}</b><p>${esc(b)}</p></div>`).join('')}</section>
+    <details class="all"><summary>Read every ${W.unit.toLowerCase()} as text</summary>${W.days.map((d,i)=>`<h3>${W.unit} ${i+1}: ${esc(d.t)}</h3><p>${esc(d.book)}</p><p>${esc(d.mean)}</p><p><b>Today:</b> ${esc(d.try)}</p>`).join('')}</details>
+    <section class="sec"><h2>Sources</h2><p class="sources">${W.sources}</p></section>`;
+  $('#begin').onclick=()=>playWalk(W,n);
+  const r=$('#restart'); if(r) r.onclick=()=>{ store.set(W.key+'-next','0'); playWalk(W,0); };
+  document.querySelectorAll('.ck').forEach(b=>b.onclick=()=>playWalk(W,+b.dataset.n));
+}
+async function playWalk(W,n){
+  const D=W.days[n], P=W.parts[D.p];
+  const menu={label:W.unit+'s',build:()=>`<h3>Jump to a ${W.unit.toLowerCase()}</h3><ol>${W.days.map((d,i)=>`<li><button type="button" data-go="${i}" aria-current="${i===n}"><small>${i+1}</small>${esc(d.t)}</button></li>`).join('')}</ol>`,go:i=>playWalk(W,+i)};
+  const s=openPlayer({title:D.t,sub:`${W.unit} ${n+1} of ${W.days.length}`,steps:['The book','Meaning','Practice','Today','Sit'],menu,color:P.col});
+  s.onclose=()=>walkLanding(W);
+  const bg=W.art(D,n,P);
+  try{
+    if(W.ambient) W.ambient(D,P);
+    stepTo(0); art(bg,D.t); await say(s,D.book,{eye:`${P.name} · the book`});
+    stepTo(1); await say(s,D.mean,{eye:'What it means'});
+    stepTo(2); clearLayer(); eyebrow('Practice'); if(D.act) await D.act(s,D,P); else if(D.a) await runAct(s,D.a,P); else await hold(s,{label:'Press and hold',ms:3500,ask:'Press and hold while you let that sink in.'});
+    alive(s); art(bg,D.t);
+    stepTo(3); await say(s,D.try,{eye:'Today'});
+    stepTo(4); await sit(s,{text:D.sit,col:P.col});
+    alive(s); store.set(W.key+'-next',String(Math.min(n+1,W.days.length-1)));
+    if(n===W.days.length-1){ if(W.finale) await W.finale(s); store.set(W.key+'-next','0'); closePlayer(); return; }
+    art(walkMap(W,n+1),'Your path'); eyebrow(''); $('#pText').textContent=`${W.unit} ${n+1} done. ${W.unit} ${n+2}, “${W.days[n+1].t}”, is waiting.`; $('#pRow').innerHTML=`<button type="button" class="sgo alt" id="wDone">Close for today</button><button type="button" class="sgo" id="wNext">Go on to ${W.unit.toLowerCase()} ${n+2} →</button>`;
+    $('#wDone').onclick=()=>closePlayer(); $('#wNext').onclick=()=>playWalk(W,n+1); $('#wNext').focus({preventScroll:true});
+  }catch(e){ if(!(e instanceof Abort)) console.error(e); }
+}
+
+/* practice specs written as data: {k:'hold'|'still'|'release'|'count'|'choose', ...} */
+async function runAct(s,a,P){
+  const q=a.q;
+  if(a.k==='hold') await hold(s,{label:a.label||'Press and hold',ms:a.ms||4000,ask:q,early:a.early||'Not yet. Hold again, slowly.'});
+  else if(a.k==='still') await still(s,{ask:q,ms:a.ms||8000});
+  else if(a.k==='release') await release(s,{ask:q,words:a.words});
+  else if(a.k==='count') await count(s,{ask:q,n:a.n,label:a.label||'Tap',onTap:k=>{ if(SND.ctx) (a.sound==='bell'?bell(392+k*20,.07):plop()); }});
+  else if(a.k==='choose'){ const i=await choose(s,q,a.opts,{right:a.right??-1,wrong:a.wrong}); if(a.replies&&a.replies[i]) await say(s,a.replies[i]); }
+  if(a.after) await say(s,a.after);
+}
+
+/* The Homegoing: flat earth colours with a border of indigo cloth, after hand-dyed resist cloth. Indigo, ochre, terracotta,
+   cowrie white, palm green and kola red. Kept plain and generic: no sacred signs (vèvè, adinkra, Ifá marks) are copied,
+   and no spirits, orishas or lwa are drawn, only people, places and things. */
+const K='#1A1410', INDIGO='#1E2A5A', DEEP='#121833', OCHRE='#D99A2B', TERRA='#B5532D', COWRIE='#F4EBDA', PALM='#3F7A4A', KOLA='#8E2B2B', CLAY='#C9A27A', PURPLE='#5A2A6A', SKY='#E7C58A';
+const SKINS=['#6B4226','#8A5A3B','#4E2F1E','#7A4A2E'];
+const AF_DEFS=`<defs><pattern id="afb" width="28" height="16" patternUnits="userSpaceOnUse"><rect width="28" height="16" fill="${INDIGO}"/><circle cx="7" cy="8" r="2.6" fill="${COWRIE}" opacity=".85"/><path d="M14 12 L18 4 L22 12" fill="none" stroke="${COWRIE}" stroke-width="1.6" opacity=".7"/></pattern>
+<radialGradient id="glowA"><stop offset="0" stop-color="#FFF2CC"/><stop offset=".5" stop-color="${OCHRE}" stop-opacity=".45"/><stop offset="1" stop-color="${OCHRE}" stop-opacity="0"/></radialGradient>
+<linearGradient id="nightA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B0F22"/><stop offset="1" stop-color="#26315E"/></linearGradient>
+<linearGradient id="duskA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A2A5A"/><stop offset=".6" stop-color="${TERRA}"/><stop offset="1" stop-color="${OCHRE}"/></linearGradient>
+<linearGradient id="seaA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E5A7A"/><stop offset="1" stop-color="#0E2236"/></linearGradient><clipPath id="afclip"><rect width="600" height="400"/></clipPath></defs>`;
+function af(inner,{bg='day',border=true}={}){ const f=bg==='night'?'url(#nightA)':bg==='dusk'?'url(#duskA)':bg==='day'?SKY:bg==='sea'?'url(#seaA)':bg;
+  return `${AF_DEFS}<g clip-path="url(#afclip)"><rect width="600" height="400" fill="${f}"/>${bg==='night'?stars(60,29,260,COWRIE):''}${inner}${border?`<rect width="600" height="16" fill="url(#afb)"/><rect y="384" width="600" height="16" fill="url(#afb)"/>`:''}</g>`; }
+function ground(y=330,col='#B07A4A'){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="${col}"/><path d="M0 ${y} H600" stroke="${K}" stroke-width="3"/>`; }
+/* a person in a long robe or wrapper; hat: none, wrap (head-tie), cap (soft cap), top (top hat), veil (white head cloth) */
+function pp(x,y,s=1,{col=TERRA,trim=OCHRE,hat='none',arms='down',skin=SKINS[0],op=1}={}){
+  const ar={down:'',fold:`<path d="M-16 -62 Q0 -52 16 -62" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>`,
+    offer:`<path d="M-20 -70 Q-18 -48 0 -52 Q18 -48 20 -70" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round"/>`,
+    up:`<path d="M-20 -76 L-34 -108 M20 -76 L34 -108" stroke="${col}" stroke-width="11" stroke-linecap="round"/>`,
+    drum:`<path d="M-20 -74 Q-30 -56 -14 -50 M20 -74 Q34 -70 36 -90" stroke="${col}" stroke-width="11" fill="none" stroke-linecap="round"/>`,
+    horn:`<path d="M-18 -74 Q-10 -60 6 -92 M18 -74 Q22 -88 10 -94" stroke="${col}" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M0 -96 L34 -108 L44 -122 V-90 L34 -100Z" fill="${OCHRE}" stroke="${K}" stroke-width="1.8"/>`,
+    brella:`<path d="M20 -74 L30 -130" stroke="${col}" stroke-width="10" stroke-linecap="round"/><path d="M30 -130 V-150" stroke="${K}" stroke-width="2.5"/><path d="M-6 -150 Q30 -186 66 -150 Z" fill="${OCHRE}" stroke="${K}" stroke-width="2"/><path d="M-6 -150 Q12 -144 30 -150 Q48 -144 66 -150" fill="none" stroke="${TERRA}" stroke-width="3"/>`,
+    branch:`<path d="M20 -74 Q34 -70 40 -96" stroke="${col}" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M40 -96 L56 -150 M48 -122 L66 -132 M52 -136 L40 -150" stroke="#5A4026" stroke-width="3.5" stroke-linecap="round"/>${[[66,-134],[40,-152],[58,-152],[46,-124]].map(([a,b])=>`<ellipse cx="${a}" cy="${b}" rx="6" ry="3.5" fill="${PALM}"/>`).join('')}`}[arms]||'';
+  const h={none:`<path d="M-15 -110 Q0 -126 15 -110 Q0 -116 -15 -110Z" fill="#1A1410"/>`,
+    wrap:`<path d="M-19 -108 Q-24 -136 0 -138 Q26 -138 20 -108 Q0 -116 -19 -108Z" fill="${trim}" stroke="${K}" stroke-width="1.8"/><path d="M14 -134 Q30 -142 26 -124" fill="${trim}" stroke="${K}" stroke-width="1.6"/>`,
+    cap:`<path d="M-16 -108 Q-14 -130 4 -128 Q20 -126 18 -110Z" fill="${trim}" stroke="${K}" stroke-width="1.8"/>`,
+    top:`<rect x="-14" y="-146" width="28" height="30" fill="#141414" stroke="${K}" stroke-width="1.5"/><rect x="-22" y="-118" width="44" height="6" rx="2" fill="#141414"/>`,
+    veil:`<path d="M-20 -104 Q-22 -132 0 -134 Q22 -132 20 -104 L22 -80 L-22 -80Z" fill="${COWRIE}" stroke="${K}" stroke-width="1.6"/>`}[hat]||'';
+  return `<g transform="translate(${x} ${y}) scale(${s})" opacity="${op}"><path d="M-26 0 L-20 -84 Q0 -94 20 -84 L26 0Z" fill="${col}" stroke="${K}" stroke-width="2.2"/><path d="M-24 -16 H24 M-22 -40 H22" stroke="${trim}" stroke-width="3.5"/>${ar}${hat==='veil'?h:''}<circle cx="0" cy="-104" r="15" fill="${skin}" stroke="${K}" stroke-width="2.2"/>${hat==='veil'?'':h}</g>`; }
+/* a crowd of mourners or dancers */
+function crowd(xs,y,s,{cols=[TERRA,INDIGO,PALM,KOLA],hats=['wrap','cap','none','wrap'],arms='down',op=1}={}){ return xs.map((x,i)=>pp(x,y,s,{col:cols[i%cols.length],hat:hats[i%hats.length],arms:Array.isArray(arms)?arms[i%arms.length]:arms,skin:SKINS[i%4],trim:i%2?OCHRE:COWRIE,op})).join(''); }
+/* a big shade tree, like an iroko or a baobab */
+function bigtree(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-22 0 Q-14 -60 -18 -120 H18 Q14 -60 22 0Z" fill="#6A4A2E" stroke="${K}" stroke-width="2.2"/><path d="M-16 -110 Q-50 -130 -70 -150 M16 -110 Q50 -132 72 -150 M0 -118 V-170" stroke="#6A4A2E" stroke-width="9" fill="none" stroke-linecap="round"/>${[[-70,-162,40],[72,-164,42],[0,-186,48],[-34,-180,34],[38,-184,36]].map(([a,b,r],i)=>`<circle cx="${a}" cy="${b}" r="${r}" fill="${i%2?PALM:'#356A3E'}" stroke="${K}" stroke-width="1.8"/>`).join('')}</g>`; }
+function palm(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-5 0 Q-2 -60 6 -120 H12 Q4 -60 5 0Z" fill="#7A5A3A" stroke="${K}" stroke-width="1.8"/>${[-150,-120,-60,-30,-95].map(a=>{ const r=a*Math.PI/180; return `<path d="M9 -120 Q${9+Math.cos(r)*40} ${-140+Math.sin(r)*10} ${9+Math.cos(r)*62} ${-120+Math.sin(r)*-30+30}" stroke="${PALM}" stroke-width="7" fill="none" stroke-linecap="round"/>`; }).join('')}</g>`; }
+/* a compound house with a mud wall and a pitched roof */
+function house(x,y,s=1,{roof='#7A5A3A',wall=CLAY}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-70" y="-80" width="140" height="80" fill="${wall}" stroke="${K}" stroke-width="2.2"/><path d="M-84 -78 L0 -132 L84 -78Z" fill="${roof}" stroke="${K}" stroke-width="2.2"/><rect x="-16" y="-50" width="32" height="50" fill="#3A2A1E" stroke="${K}" stroke-width="2"/><path d="M-70 -24 H70" stroke="${TERRA}" stroke-width="5" opacity=".6"/></g>`; }
+/* a masquerade of layered cloth panels: no face is shown, nobody is inside to see */
+function egun(x,y,s=1,{sway=0}={}){ const P=[KOLA,INDIGO,OCHRE,PALM,TERRA,PURPLE,COWRIE];
+  return `<g transform="translate(${x} ${y}) scale(${s}) rotate(${sway})">${[0,1,2,3,4,5].map(i=>{ const top=-170+i*26, w=30+i*12; return `<path d="M${-w} ${top+40} L${-w*.55} ${top} H${w*.55} L${w} ${top+40}Z" fill="${P[i%P.length]}" stroke="${K}" stroke-width="2"/>${Array.from({length:6},(_,j)=>`<path d="M${-w+8+j*(2*w-16)/5} ${top+40} v8" stroke="${COWRIE}" stroke-width="2"/>`).join('')}`; }).join('')}<path d="M-18 -170 Q0 -206 18 -170Z" fill="${KOLA}" stroke="${K}" stroke-width="2"/><rect x="-14" y="-168" width="28" height="18" fill="#2A2018" stroke="${K}" stroke-width="1.5"/><path d="M-12 -164 H12 M-12 -159 H12 M-12 -154 H12" stroke="#6A5A4A" stroke-width="1"/></g>`; }
+/* an hourglass talking drum */
+function tdrum(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-22 -40 Q-6 0 -22 40 H22 Q6 0 22 -40Z" fill="#A0703E" stroke="${K}" stroke-width="2"/>${[-16,-8,0,8,16].map(d=>`<path d="M${d} -40 L${d*.4} 40" stroke="${COWRIE}" stroke-width="1.2"/>`).join('')}<ellipse cy="-40" rx="22" ry="6" fill="${COWRIE}" stroke="${K}" stroke-width="2"/></g>`; }
+/* a carved stool */
+function stool(x,y,s=1,{black=false}={}){ const c=black?'#241C18':'#B8864E'; return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-44 -56 Q0 -40 44 -56 L40 -46 Q0 -32 -40 -46Z" fill="${c}" stroke="${K}" stroke-width="2"/><path d="M-12 -42 H12 L8 -10 H-8Z" fill="${c}" stroke="${K}" stroke-width="2"/><path d="M-26 -36 L-16 -12 M26 -36 L16 -12" stroke="${c}" stroke-width="6"/><rect x="-40" y="-10" width="80" height="10" rx="2" fill="${c}" stroke="${K}" stroke-width="2"/></g>`; }
+/* the water line between the world of the living and the world of the dead, with the land mirrored below */
+function kalunga(y=200,{sun=null}={}){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="url(#seaA)"/><path d="M0 ${y} H600" stroke="${COWRIE}" stroke-width="4"/><g opacity=".35" transform="translate(0 ${2*y}) scale(1 -1)">${bigtree(140,y,.7)}${house(440,y,.7)}</g>${bigtree(140,y,.7)}${house(440,y,.7)}${sun?`<circle cx="${sun[0]}" cy="${sun[1]}" r="22" fill="${OCHRE}" stroke="${K}" stroke-width="2"/><circle cx="${sun[0]}" cy="${sun[1]}" r="46" fill="url(#glowA)"/>`:''}`; }
+function sea(y=260){ return `<rect x="0" y="${y}" width="600" height="${400-y}" fill="url(#seaA)"/>${[0,1,2].map(i=>`<path d="M0 ${y+20+i*36} q25 -10 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" stroke="${COWRIE}" stroke-width="2" fill="none" opacity="${.5-i*.12}"/>`).join('')}`; }
+function grave(x,y,s=1,{things=true}={}){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-70 0 Q0 -36 70 0Z" fill="#8A6A44" stroke="${K}" stroke-width="2"/>${things?`<ellipse cx="-36" cy="-12" rx="14" ry="5" fill="${COWRIE}" stroke="${K}" stroke-width="1.6"/><path d="M-6 -20 h14 l-2 14 h-10z" fill="${INDIGO}" stroke="${K}" stroke-width="1.6"/><path d="M30 -16 q6 -14 12 0" fill="none" stroke="${COWRIE}" stroke-width="3"/><circle cx="20" cy="-6" r="4" fill="#7ABAC8" stroke="${K}" stroke-width="1.2"/>`:''}</g>`; }
+function cross(x,y,s=1,col='#141414'){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-6 0 V-120 H6 V0Z M-34 -92 H34 V-80 H-34Z" fill="${col}" stroke="${K}" stroke-width="2"/></g>`; }
+function tomb(x,y,s=1,col='#E8E2D6'){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-40" y="-46" width="80" height="46" fill="${col}" stroke="${K}" stroke-width="2"/><path d="M-46 -46 L0 -70 L46 -46Z" fill="${col}" stroke="${K}" stroke-width="2"/></g>`; }
+function candle(x,y,s=1,{lit=true,col=COWRIE}={}){ return `<g transform="translate(${x} ${y}) scale(${s})">${lit?`<circle cy="-50" r="26" fill="url(#glowA)"/><path d="M0 -56 Q6 -46 0 -38 Q-6 -46 0 -56Z" fill="${OCHRE}" class="flick"/>`:''}<rect x="-6" y="-36" width="12" height="36" rx="2" fill="${col}" stroke="${K}" stroke-width="1.8"/></g>`; }
+function glass(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-10 -34 H10 L8 0 H-8Z" fill="#CFE6EE" stroke="${K}" stroke-width="1.6" opacity=".9"/><path d="M-9 -22 H9" stroke="#7ABAC8" stroke-width="2"/></g>`; }
+function whiteTable(x,y,w=300){ return `<path d="M${x-w/2} ${y} H${x+w/2} L${x+w/2-10} ${y+70} H${x-w/2+10}Z" fill="${COWRIE}" stroke="${K}" stroke-width="2"/><path d="M${x-w/2} ${y} H${x+w/2}" stroke="${K}" stroke-width="3"/>`; }
+function photo(x,y,s=1,skin=SKINS[1]){ return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-16" y="-44" width="32" height="40" fill="#E8DCC4" stroke="${K}" stroke-width="2"/><circle cy="-30" r="7" fill="${skin}"/><path d="M-10 -8 Q0 -22 10 -8Z" fill="${INDIGO}"/></g>`; }
+function flowers(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 V-30 M-8 0 L-12 -24 M8 0 L12 -26" stroke="${PALM}" stroke-width="2.5"/>${[[0,-34],[-13,-28],[13,-30]].map(([a,b],i)=>`<circle cx="${a}" cy="${b}" r="7" fill="${[COWRIE,OCHRE,'#E89AB0'][i]}" stroke="${K}" stroke-width="1.4"/>`).join('')}</g>`; }
+function market(){ return [80,230,380,530].map((x,i)=>`<g><path d="M${x-60} 250 L${x} 214 L${x+60} 250Z" fill="${[OCHRE,INDIGO,TERRA,PALM][i]}" stroke="${K}" stroke-width="2"/><path d="M${x-50} 250 V300 M${x+50} 250 V300" stroke="#6A4A2E" stroke-width="5"/><rect x="${x-56}" y="296" width="112" height="14" fill="#8A6A44" stroke="${K}" stroke-width="1.8"/>${[0,1,2].map(j=>`<circle cx="${x-30+j*30}" cy="290" r="9" fill="${[KOLA,OCHRE,PALM][(i+j)%3]}" stroke="${K}" stroke-width="1.4"/>`).join('')}</g>`).join(''); }
+/* a bird looking back over its shoulder: going back for what was left behind */
+function bird(x,y,s=1){ return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-40 0 Q-10 -36 30 -20 Q40 -4 20 6 Q-10 14 -40 0Z" fill="${INDIGO}" stroke="${K}" stroke-width="2"/><path d="M-40 0 L-66 -14 L-62 8Z" fill="${INDIGO}" stroke="${K}" stroke-width="2"/><path d="M-6 -14 Q10 -22 22 -12" stroke="${COWRIE}" stroke-width="2" fill="none"/><path d="M24 -18 Q20 -48 -6 -46" stroke="${INDIGO}" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="-10" cy="-48" r="14" fill="${INDIGO}" stroke="${K}" stroke-width="2"/><circle cx="-14" cy="-50" r="2.6" fill="${COWRIE}"/><path d="M-22 -46 L-34 -42 L-22 -40Z" fill="${OCHRE}" stroke="${K}" stroke-width="1.2"/><circle cx="-30" cy="-30" r="6" fill="${COWRIE}" stroke="${K}" stroke-width="1.4"/><path d="M0 8 V22 M10 6 V22" stroke="${K}" stroke-width="2.5"/></g>`; }
+function cowries(x,y,n=5){ return Array.from({length:n},(_,i)=>`<ellipse cx="${x+i*22}" cy="${y+(i%2)*6}" rx="8" ry="5" fill="${COWRIE}" stroke="${K}" stroke-width="1.4"/><path d="M${x+i*22-5} ${y+(i%2)*6} H${x+i*22+5}" stroke="${K}" stroke-width="1"/>`).join(''); }
+function lineage(n){ return Array.from({length:n},(_,i)=>pp(80+i*(440/Math.max(n-1,1)),300,.55+i*.03,{col:[INDIGO,TERRA,PALM,KOLA,OCHRE][i%5],hat:['wrap','cap','none'][i%3],skin:SKINS[i%4],op:.35+i*.65/n})).join(''); }
+function afCover(){ return af(`<circle cx="300" cy="150" r="120" fill="url(#glowA)"/>${kalunga(250)}${pp(300,250,.9,{col:COWRIE,trim:INDIGO,hat:'veil',skin:SKINS[2]})}<path d="M300 140 Q300 60 300 40" stroke="${COWRIE}" stroke-width="1.5" stroke-dasharray="3 6" opacity=".6"/>`,{bg:'dusk'}); }
+
+/* Eight Days with the Ancestors: one day with each door of The Homegoing. This walk doesn't teach any of these traditions'
+   rites, which belong to their own people and, often, to initiates. Each day takes one thing they have shared publicly about
+   the dead, and one small thing anyone can do with it. */
+const AF_WSC=[
+ n=>af([`${ground(310)}${bigtree(300,310,1)}${lineage(6)}`,`${ground(310)}${market()}${crowd([150,300,450],330,.6)}`,`${ground(320)}${bird(300,290,1.1)}`,`${ground(320,'#9A7A4A')}<path d="M180 320 Q180 200 300 190 Q420 200 420 320Z" fill="${CLAY}" stroke="${K}" stroke-width="2.2"/><path d="M170 220 Q300 120 430 220Z" fill="#B89A5A" stroke="${K}" stroke-width="2.2"/>${crowd([100,520],330,.8)}`][n],{bg:n===2?'dusk':'day'}),
+ n=>af([`${sea(230)}${[0,1,2,3,4].map(i=>candle(120+i*90,250+(i%2)*10,.8)).join('')}`,`${ground(330,'#4A4038')}${cross(300,330,1.1)}${tomb(140,330,1)}${tomb(470,330,1.1)}${candle(260,330,.8)}${candle(340,330,.8)}`,`${whiteTable(300,250,320)}${[200,236,272,308,344,380,416].map(x=>glass(x,250,.9)).join('')}${photo(180,210,1)}${flowers(300,200,1)}${candle(470,250,.8)}`,`${ground(330,'#8A7A6A')}${crowd([90,170,250,330,410,490],330,.7,{arms:['horn','brella','up','horn','brella','up'],hats:['top','wrap','cap','top','wrap','none']})}`][n-4],{bg:n===4?'night':n===5?'dusk':n===6?'#3A3E54':'day'})];
+const WALK={key:'af-eight',brand:'Eight Days with the Ancestors',brandSub:'After The Homegoing',title:'Eight Days with the Ancestors',eyebrow:'A daily walk · 8 days',unit:'Day',gold:OCHRE,
+ lede:'In much of Africa and its diaspora, the dead become ancestors who are remembered, named and honoured. Spend eight days with eight traditions, from Nigeria to New Orleans, and take one lesson from each about keeping your own dead close.',
+ note:'Each day takes about five minutes. This walk doesn\'t teach any tradition\'s rites, which belong to its own people and often to initiates. What you get here is what they have shared publicly, and something small to do in your own life.',
+ manualUrl:'../book/',manualName:'The Homegoing',
+ howBook:'What a tradition has shared about the dead, in plain words.',
+ sources:'John S. Mbiti, African Religions and Philosophy (1969); E. Bolaji Idowu, Olódùmarè: God in Yoruba Belief (1962); Kwame Gyekye, An Essay on African Philosophical Thought (1987); Robert Farris Thompson, Flash of the Spirit (1983); Axel-Ivar Berglund, Zulu Thought-Patterns and Symbolism (1976); Karen McCarthy Brown, Mama Lola (1991); David H. Brown, Santería Enthroned (2003); Helen Regis, "Second Lines, Minstrelsy, and the Contested Landscapes of New Orleans Afro-Creole Festivals" (1999).',
+ parts:[{name:'Africa',sub:'Yoruba, Akan, Zulu and Xhosa',col:TERRA},{name:'The Americas',sub:'Across the water to New Orleans',col:INDIGO}],
+ art:(D,n,P)=>AF_WSC[D.p](n),
+ mapBg:()=>`<rect width="600" height="400" fill="${DEEP}"/>`,
+ ambient:(D,P)=>{ if(SND.ctx){ pad('pad',[[110,165,220],[98,147,196]][D.p],.03); if(D.p===1) waterLoop(); } },
+ finale:async s=>{ art(afCover()); if(SND.ctx) chime();
+   await say(s,'Eight days. Say their names. Do your business well, then go home. Go back for what you forgot. Be a person through other people. Remember those who crossed. Learn from the people, not the movies. Let the dead come first. Mourn on the way there, rejoice on the way back.',{eye:'The end of the walk'});
+   await say(s,'As long as someone says your name, you aren\'t gone. Say one more name tonight.'); },
+ days:[
+ {p:0,t:'Say Their Names',book:'The Kenyan scholar John Mbiti called the recently dead "the living-dead". In many African traditions they stay part of the family for as long as someone alive remembers them by name. When the last person who knew them dies, they pass into the great company of the ancestors.',
+  mean:'Saying a name keeps someone among the living a little longer. Most of us can name fewer of our great-grandparents than we think.',
+  try:'Write down every ancestor\'s name you know, going back as far as you can. Ask a relative for one you\'re missing.',sit:'Breathe in a name. Breathe it out, gently.',a:{k:'count',n:4,label:'Say a name',sound:'bell',q:'Say four names: a parent, a grandparent, a great-grandparent, and someone you never met.'}},
+ {p:0,t:'The Market and the Home',book:'A Yoruba saying: "The world is a market; heaven is home." You come to the market for a while. You trade, talk, laugh, and do your business as well as you can. In the evening, you go home. A good life fulfils the destiny, the orí, you chose before birth.',
+  mean:'Life is a visit, not the whole story. That makes the business of the day matter, and the evening less frightening.',
+  try:'Do one piece of business you\'ve been putting off: a call, an apology, a thank-you. Then rest.',sit:'Breathe in the busy market. Breathe out, walking home.',a:{k:'choose',q:'What does the proverb say life is?',opts:['A prison','A trip to market'],right:1,wrong:'Not to the Yoruba. Choose again.',after:'A trip to market. Do your business well, and then go home.'}},
+ {p:0,t:'Go Back and Get It',book:'Sankofa is an Akan word from Ghana: "go back and get it." A proverb says it is not wrong to go back for what you have forgotten. It\'s pictured as a bird walking forward with its head turned back. Many people of African descent in the Americas have made it their own sign.',
+  mean:'Moving forward doesn\'t mean leaving your dead behind. Going back for their stories is part of going on.',
+  try:'Ask an elder for a story about someone in your family you never met. Write it down.',sit:'Breathe in, looking back. Breathe out, walking on.',a:{k:'hold',ms:4500,label:'Look back',q:'Press and hold, and look back over your shoulder at where you came from.'}},
+ {p:0,t:'A Person Through People',book:'"Umuntu ngumuntu ngabantu": a person is a person through other people. This Zulu and Xhosa saying is the root of ubuntu. The ancestors, amadlozi and izinyanya, are still among those people, and when someone dies far away, a relative may carry their spirit home on a branch of the buffalo-thorn tree.',
+  mean:'You were made by other people, living and dead. Nobody is a person alone.',
+  try:'Tell one person today how they helped make you who you are.',sit:'Breathe in everyone who made you. Breathe out thanks.',a:{k:'choose',q:'A person is a person through...',opts:['Their own effort alone','Other people'],right:1,wrong:'Ubuntu says otherwise. Choose again.'}},
+ {p:1,t:'The Line of Water',book:'For the BaKongo of Central Africa, a line of water, Kalunga, divides the living from the dead. For many of the more than twelve million Africans carried across the Atlantic in slave ships, the ocean itself became Kalunga, and many hoped death would carry them home across it.',
+  mean:'Some of the dead were never mourned properly, and their names were taken. Remembering them is a kind of homegoing.',
+  try:'Learn about one place where enslaved Africans are buried or remembered, like the African Burial Ground in New York, and the people found there.',sit:'Breathe in like a wave coming in. Breathe out like it going home.',a:{k:'still',ms:8000,q:'A moment of quiet for those who crossed. Stay still.'}},
+ {p:1,t:'Not the Movies',book:'Haitian Vodou says that after death part of the soul goes beneath the waters, and after a year and a day the family calls it back up as an ancestor. Every November, at Fèt Gede, Haitians crowd the cemeteries. The zombies and voodoo dolls of film were largely invented in Hollywood in the 1930s, while the US occupied Haiti.',
+  mean:'Whole peoples\' ways of honouring their dead have been turned into horror stories. Learning from the people themselves is a way of setting it right.',
+  try:'Read something by a Haitian writer, like Edwidge Danticat, in their own words.',sit:'Breathe in. Breathe out, letting a false picture go.',a:{k:'choose',q:'Where should you learn about Vodou?',opts:['From horror films','From Haitians themselves'],right:1,wrong:'Those films were made to frighten, not to inform. Choose again.'}},
+ {p:1,t:'The Dead Come First',book:'In Cuban Lucumí they say "Ikú lobí òrìṣà": the dead gave birth to the orishas. So at the start of a ceremony, the ancestors are named first. Many Cuban homes also keep a bóveda: a white table with fresh water, flowers and photos of the family\'s dead. In Brazil, some Candomblé rites for the dead are for initiates only, and stay closed.',
+  mean:'The people who came before you are your roots. It\'s good to remember them before you celebrate anything.',
+  try:'At your next meal with family or friends, take a moment first to remember someone who isn\'t there.',sit:'Breathe in for those who came before. Breathe out for those who\'ll come after.',a:{k:'hold',ms:4000,label:'Remember',q:'Before anything else, press and hold, and remember who came before you.'}},
+ {p:1,t:'Cut the Body Loose',book:'In a New Orleans jazz funeral, the brass band walks the coffin slowly to the cemetery, playing hymns. Then, on the way back, it "cuts the body loose": the music turns joyful, and the second line dances in the street with umbrellas and handkerchiefs. In Black churches across America, a funeral is called a homegoing.',
+  mean:'Grief and joy can share the same day. You mourn on the way there, and rejoice on the way back, because they\'ve gone home.',
+  try:'Choose two songs for your own funeral: one slow, for the walk there, and one joyful, for the walk back. Tell someone.',sit:'Breathe in slowly, like a hymn. Breathe out like a horn.',a:{k:'choose',q:'The coffin is laid to rest. What does the band play on the way back?',opts:['The same slow hymn','Something joyful'],right:1,wrong:'That\'s for the walk there. Choose again.',after:'"When the Saints Go Marching In." They\'ve gone home.'}}
+ ]};
+header({brand:WALK.brand,brandSub:WALK.brandSub,links:[['Many Doors','../../../many-doors/'],[WALK.manualName,WALK.manualUrl]]});
+walkLanding(WALK);
+
+</script>
+<script>document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[target=_blank]');if(a&&a.origin===location.origin)a.removeAttribute('target')},true)</script>
+<a class="mdhome" href="../../index.html#doors" style="position:fixed;left:12px;bottom:12px;z-index:50;font:500 12px/1 Jost,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1E2A2B;background:#FBF3DFe6;border:1px solid rgba(30,42,43,.25);border-radius:999px;padding:9px 13px;text-decoration:none">&larr; Many Doors</a>
+</body></html>
