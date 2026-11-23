@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A free, step-by-step checklist to stop spam calls and texts. No sign-up; your progress stays on your device.">
+<meta property="og:title" content="Spam Shutdown">
+<meta property="og:description" content="Five fixes that stop the ringing, plus a checklist for getting removed from data brokers. Free, no sign-up.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2312302c'/%3E%3Cpath d='M9 9l14 14M23 9L9 23' stroke='%237fe0b2' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>Spam Shutdown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a phone-lock-screen hero (the thing we're silencing), then one reading column of three stacked sections; per-person segmented status controls do the tracking. */
+:root {
+  --bg: #eef2f1;
+  --panel: #ffffff;
+  --ink: #13211f;
+  --muted: #586764;
+  --line: #d6dfdd;
+  --accent: #0b6b62;
+  --accent-soft: #dcefeb;
+  --hero: #12302c;
+  --hero-ink: #eaf5f2;
+  --hero-muted: #9fc1ba;
+  --glass: rgba(255,255,255,.09);
+  --ok: #17784a;   --ok-soft: #dff3e8;
+  --wait: #9a5b00; --wait-soft: #fbefd9;
+  --due: #b3261e;  --due-soft: #fbe4e1;
+  --neutral-soft: #e7ecea;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1615; --panel: #152120; --ink: #e5efed; --muted: #9db1ad; --line: #26403c;
+  --accent: #5fd1c2; --accent-soft: #173a36; --hero: #0a2522; --hero-ink: #eaf5f2; --hero-muted: #8fb5ad; --glass: rgba(255,255,255,.07);
+  --ok: #6fd6a0; --ok-soft: #153325; --wait: #f2b862; --wait-soft: #3a2b12; --due: #ff8a80; --due-soft: #3e1c1a; --neutral-soft: #1d2c2a;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1615; --panel: #152120; --ink: #e5efed; --muted: #9db1ad; --line: #26403c;
+  --accent: #5fd1c2; --accent-soft: #173a36; --hero: #0a2522; --hero-ink: #eaf5f2; --hero-muted: #8fb5ad; --glass: rgba(255,255,255,.07);
+  --ok: #6fd6a0; --ok-soft: #153325; --wait: #f2b862; --wait-soft: #3a2b12; --due: #ff8a80; --due-soft: #3e1c1a; --neutral-soft: #1d2c2a;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--font-body); }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.15; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+button { font: inherit; color: inherit; }
+:is(a, button, input, textarea):focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-size: .92em; background: var(--neutral-soft); border-radius: 4px; padding: 0 5px; white-space: nowrap; }
+.inner { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Hero */
+.hero { background: var(--hero); color: var(--hero-ink); margin-top: calc(-1 * env(safe-area-inset-top, 0px)); padding-top: calc(env(safe-area-inset-top, 0px) + 3rem); padding-bottom: 3rem; }
+.hero .inner { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--hero-muted); }
+.hero h1 { font-size: clamp(2.3rem, 6vw, 3.6rem); font-weight: 800; letter-spacing: -.02em; margin-top: 10px; }
+.hero .lede { color: var(--hero-muted); margin-top: 14px; max-width: 46ch; font-size: 1.05rem; }
+.hero .lede b { color: var(--hero-ink); }
+.lock { display: grid; gap: 10px; }
+.notif { background: var(--glass); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 12px 14px; display: grid; grid-template-columns: 36px minmax(0,1fr) auto; gap: 12px; align-items: center; }
+.notif .ic { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: rgba(255,255,255,.12); }
+.notif .ic svg { width: 18px; height: 18px; fill: none; stroke: var(--hero-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.notif .t { font-weight: 700; font-size: .92rem; }
+.notif .s { color: var(--hero-muted); font-size: .82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.notif .stamp { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; border: 1.5px solid currentColor; color: #7fe0b2; transform: rotate(-4deg); }
+.notif.struck .t, .notif.struck .s { text-decoration: line-through; text-decoration-color: rgba(255,255,255,.45); }
+.lock-cap { font-size: .78rem; color: var(--hero-muted); text-align: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .notif { animation: drop .5s ease-out both; }
+  .notif:nth-child(2) { animation-delay: .12s; } .notif:nth-child(3) { animation-delay: .24s; }
+  @keyframes drop { from { transform: translateY(-8px); } to { transform: none; } }
+}
+
+/* People + progress bar */
+.people { background: var(--panel); border-bottom: 1px solid var(--line); }
+.people .inner { padding-block: 18px; display: grid; gap: 12px; }
+.people-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.people-row > span { font-size: .85rem; color: var(--muted); font-weight: 600; margin-right: 4px; }
+.person { display: flex; align-items: center; gap: 4px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 4px 3px 12px; }
+.person input { border: 0; background: transparent; color: var(--ink); font: inherit; font-weight: 600; width: 8.5em; min-width: 0; padding: 2px 0; }
+.person button { border: 0; background: transparent; color: var(--muted); width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 1.05rem; line-height: 1; }
+.person button:hover { background: var(--neutral-soft); color: var(--ink); }
+.add { border: 1px dashed var(--line); background: transparent; color: var(--accent); border-radius: 999px; padding: 5px 12px; font-weight: 600; cursor: pointer; font-size: .9rem; }
+.add:hover { border-color: var(--accent); }
+.meters { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.meter { display: grid; gap: 4px; font-size: .85rem; }
+.meter .lab { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); }
+.meter .lab b { color: var(--ink); }
+.meter .num { font-variant-numeric: tabular-nums; }
+.bar { height: 8px; background: var(--neutral-soft); border-radius: 99px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; width: 0; }
+@media (prefers-reduced-motion: no-preference) { .bar i { transition: width .35s ease; } }
+.duechip { font-size: .85rem; color: var(--due); background: var(--due-soft); border-radius: 999px; padding: 3px 12px; font-weight: 700; justify-self: start; }
+
+main .inner { display: grid; gap: 56px; padding-block: 48px 72px; }
+section { display: grid; gap: 18px; }
+.sec-head { display: grid; gap: 6px; }
+.sec-head .k { font-family: var(--font-mono); font-size: .78rem; color: var(--accent); letter-spacing: .06em; text-transform: uppercase; }
+.sec-head h2 { font-size: clamp(1.5rem, 3.4vw, 1.9rem); font-weight: 800; letter-spacing: -.01em; }
+.sec-head p { color: var(--muted); max-width: 66ch; }
+
+.list { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; padding: 18px 18px; border-top: 1px solid var(--line); }
+.item:first-child { border-top: 0; }
+.item .n { grid-row: span 3; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--accent); line-height: 1.1; width: 1.4em; }
+.list.brokers .item { grid-template-columns: minmax(0, 1fr); }
+.list.brokers .item .n { display: none; }
+.item h3 { font-size: 1.08rem; font-weight: 600; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.item h3 a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
+.item h3 a::after { content: " ↗"; color: var(--accent); font-size: .85em; }
+.tag { font-family: var(--font-body); font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 4px; }
+.how { color: var(--muted); font-size: .94rem; max-width: 70ch; }
+.tracks { display: grid; gap: 6px; margin-top: 8px; }
+.track { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.track .who { font-size: .82rem; font-weight: 700; min-width: 6.5em; max-width: 10em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track.solo .who { display: none; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--bg); }
+.seg button { border: 0; border-left: 1px solid var(--line); background: transparent; padding: 5px 11px; font-size: .82rem; cursor: pointer; color: var(--muted); }
+.seg button:first-child { border-left: 0; }
+.seg button:hover { color: var(--ink); background: var(--neutral-soft); }
+.seg button[aria-pressed="true"] { font-weight: 700; color: var(--ink); }
+.seg button[aria-pressed="true"][data-s="done"], .seg button[aria-pressed="true"][data-s="gone"] { background: var(--ok-soft); color: var(--ok); }
+.seg button[aria-pressed="true"][data-s="sent"] { background: var(--wait-soft); color: var(--wait); }
+.seg button[aria-pressed="true"][data-s="none"] { background: var(--neutral-soft); }
+.seg button[aria-pressed="true"][data-s="todo"] { background: var(--panel); }
+.when { font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.when.due { color: var(--due); font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) { .seg button { transition: background .15s, color .15s; } }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filters button { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 5px 13px; font-size: .86rem; cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .84rem; color: var(--muted); }
+.legend b { color: var(--ink); }
+.empty { padding: 22px 18px; color: var(--muted); }
+
+.habits { background: var(--accent-soft); border-radius: 14px; padding: 20px 22px; display: grid; gap: 10px; }
+.habits h3 { font-size: 1.1rem; }
+.habits ul { margin: 0; padding-left: 1.15em; display: grid; gap: 8px; max-width: 70ch; }
+.note { font-size: .88rem; color: var(--muted); max-width: 70ch; }
+
+.forward { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 6px; align-content: start; }
+.card h3 { font-size: 1.02rem; font-weight: 600; }
+.card p { color: var(--muted); font-size: .93rem; }
+
+.keep { border-top: 1px solid var(--line); padding-top: 28px; display: grid; gap: 12px; }
+.keep h2 { font-size: 1.15rem; font-weight: 600; }
+.keep p { color: var(--muted); font-size: .92rem; max-width: 66ch; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 7px 14px; cursor: pointer; font-weight: 600; font-size: .9rem; }
+.btn:hover { border-color: var(--accent); }
+.btn.danger { color: var(--due); }
+.btn.danger.armed { background: var(--due); color: var(--panel); border-color: var(--due); }
+textarea { width: 100%; min-height: 84px; font-family: var(--font-mono); font-size: .78rem; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 9px; padding: 10px; resize: vertical; }
+.status { font-size: .88rem; color: var(--ok); min-height: 1.4em; }
+.status.err { color: var(--due); }
+footer { color: var(--muted); font-size: .82rem; }
+
+@media (max-width: 720px) {
+  .hero .inner { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .hero { padding-bottom: 2.25rem; }
+}
+@media (max-width: 480px) {
+  .item { grid-template-columns: minmax(0, 1fr); }
+  .item .n { grid-row: auto; font-size: 1.1rem; }
+  .track .who { min-width: 0; width: 100%; max-width: none; }
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="inner">
+    <div>
+      <p class="eyebrow">A free, do-it-yourself checklist</p>
+      <h1>Make the spam calls stop.</h1>
+      <p class="lede">Fake loan offers, fake Amazon charges, "we're doing roofs in your area" texts. Start with the <b>five fixes this week</b>; they do most of the work. Then chip away at the data broker list that keeps your number off the lists spammers buy.</p>
+    </div>
+    <div class="lock" aria-hidden="true">
+      <div class="notif struck">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></div>
+        <div><p class="t">Potential Spam</p><p class="s">(555) 010-2291 · "Your loan is pre-approved"</p></div>
+        <span class="stamp">Blocked</span>
+      </div>
+      <div class="notif struck">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div><p class="t">+1 555 010 7734</p><p class="s">Hi! We're replacing roofs in your neighborhood…</p></div>
+        <span class="stamp">Filtered</span>
+      </div>
+      <div class="notif struck">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></div>
+        <div><p class="t">Amazon Security</p><p class="s">(555) 010-4410 · "Suspicious $899 charge"</p></div>
+        <span class="stamp">Silenced</span>
+      </div>
+      <p class="lock-cap">What your lock screen looks like once the first two fixes are on.</p>
+    </div>
+  </div>
+</header>
+
+<div class="people">
+  <div class="inner">
+    <div class="people-row" id="peopleRow"><span>Tracking for</span></div>
+    <div class="meters" id="meters"></div>
+  </div>
+</div>
+
+<main>
+  <div class="inner">
+    <section>
+      <div class="sec-head">
+        <p class="k">This week · about an hour</p>
+        <h2>Five fixes that stop the ringing</h2>
+        <p>Most fake loan and fake Amazon calls come from scammers who ignore the Do Not Call list, so blocking on the phone itself is what actually makes it quiet. They're in order of impact. Mark each one done as you finish it.</p>
+      </div>
+      <div class="list" id="quick"></div>
+      <div class="habits">
+        <h3>Habits that keep you off the "live number" lists</h3>
+        <ul>
+          <li>Don't answer, press 1, or say "yes" to unknown callers. Any response marks your number as live, and it gets sold again.</li>
+          <li>Amazon never calls you about an order or a charge. Hang up and check the Amazon app instead. The same goes for your bank, the IRS and Medicare.</li>
+          <li>If a home-repair text is from a real local company, reply <span class="mono">STOP</span>; they're legally required to honor it. If it looks like a scam (odd link, no company name), don't reply. Forward it to <span class="mono">7726</span> and delete it.</li>
+          <li>Give stores, forms and contractors a second number instead of your real one (see "Going forward" below).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <p class="k">Over the next few weeks</p>
+        <h2>Get removed from data brokers</h2>
+        <p>These sites publish your phone number, address and relatives, then sell them to marketers and lead sellers. For most, you search your name, open your own listing, and request removal. Start with the ones tagged <b>Phone</b>. Listings tend to come back, so a re-check reminder appears here three months after you finish each one.</p>
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Show">
+        <button type="button" data-f="all" aria-pressed="true">All 22</button>
+        <button type="button" data-f="open" aria-pressed="false">Still to do</button>
+        <button type="button" data-f="due" aria-pressed="false">Needs a check</button>
+        <button type="button" data-f="phone" aria-pressed="false">Phone sites</button>
+      </div>
+      <div class="legend">
+        <span><b>Requested</b> sent, waiting (check again in 2 weeks)</span>
+        <span><b>Removed</b> confirmed gone</span>
+        <span><b>Not listed</b> searched, nothing there</span>
+      </div>
+      <div class="list brokers" id="brokers"></div>
+      <p class="note">Use one email address just for opt-outs. If a form insists on a phone number, give your second number. Never pay a site or service to remove you; every opt-out here is free.</p>
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <p class="k">Going forward</p>
+        <h2>Keep your real number private</h2>
+      </div>
+      <div class="forward">
+        <div class="card"><h3>A free second number</h3><p><a href="https://voice.google.com/" target="_blank" rel="noopener">Google Voice</a> gives you a free number that rings your phone. Use it for stores, rewards cards, contractors and online forms. If it gets spammy, you can change it without touching your real one.</p></div>
+        <div class="card"><h3>Email aliases</h3><p>iCloud's Hide My Email, Gmail's <span class="mono">you+store@gmail.com</span> trick, or Firefox Relay show you exactly who sold your address.</p></div>
+        <div class="card"><h3>Re-check every few months</h3><p>Come back to this page. Anything that's due for a re-check shows in red at the top.</p></div>
+      </div>
+    </section>
+
+    <section class="keep">
+      <h2>Your progress</h2>
+      <p>Your names and checkmarks are saved only in this browser on this device. Nothing is sent anywhere, and the person who shared this link can't see them. To move to another device or keep a backup, copy your backup code and paste it there.</p>
+      <div class="btns">
+        <button class="btn" id="copyBtn" type="button">Copy backup code</button>
+        <button class="btn" id="restoreToggle" type="button">Restore from a code</button>
+        <button class="btn danger" id="resetBtn" type="button">Start over</button>
+      </div>
+      <div id="restoreBox" hidden>
+        <label for="restoreText" class="note">Paste a backup code, then press Restore.</label>
+        <textarea id="restoreText" spellcheck="false"></textarea>
+        <div class="btns"><button class="btn" id="restoreBtn" type="button">Restore</button></div>
+      </div>
+      <textarea id="codeOut" readonly hidden aria-label="Backup code"></textarea>
+      <p class="status" id="status" role="status"></p>
+      <footer>Links and steps checked November 2026. Opt-out pages move sometimes; if one breaks, search the site's name plus "opt out".</footer>
+    </section>
+  </div>
+</main>
+
+<script>
+const QUICK = [
+  { id: "phone-filter", title: "Turn on your phone's built-in spam filter", tag: "Biggest effect",
+    how: 'iPhone: Settings › Apps › Phone › Screen Unknown Callers (Silence Unknown Callers on older iOS), then Settings › Apps › Messages › Unknown Senders › Filter. Android: Phone app › Settings › Caller ID &amp; spam › Filter spam calls, and turn on Call Screen if offered. Calls from your contacts still ring normally.' },
+  { id: "carrier", title: "Turn on your carrier's free spam blocker", tag: "Biggest effect",
+    how: 'Verizon: <a href="https://www.verizon.com/solutions-and-services/add-ons/protection-and-security/call-filter/" target="_blank" rel="noopener">Call Filter</a> app (the free tier blocks high-risk spam). AT&amp;T: <a href="https://www.att.com/security/" target="_blank" rel="noopener">ActiveArmor</a> app. T-Mobile: <a href="https://www.t-mobile.com/benefits/scam-shield" target="_blank" rel="noopener">Scam Shield</a>, or dial <span class="mono">#662#</span> to turn on Scam Block. Set it to block, not just label.' },
+  { id: "dnc", title: "Add your number to the Do Not Call Registry", tag: "5 minutes",
+    how: 'Go to <a href="https://www.donotcall.gov/" target="_blank" rel="noopener">donotcall.gov</a>, register each cell number, and click the link in the confirmation email. Real companies must stop within 31 days, and it makes later complaints count. It won\'t stop scammers, which is why the two steps above matter more.' },
+  { id: "prescreen", title: "Opt out of pre-approved credit and loan offers", tag: "Loan spam",
+    how: 'At <a href="https://www.optoutprescreen.com/" target="_blank" rel="noopener">optoutprescreen.com</a> (run by the credit bureaus), choose the 5-year online opt-out, or mail their form for a permanent one. This cuts off the "you\'re pre-approved" lists that loan marketers buy.' },
+  { id: "report", title: "Report the worst repeat callers and texters", tag: "Ongoing",
+    how: 'Forward spam texts to <span class="mono">7726</span> (it spells SPAM) to train your carrier\'s filter. Report fake loan and fake Amazon calls at <a href="https://reportfraud.ftc.gov/" target="_blank" rel="noopener">reportfraud.ftc.gov</a>, and unwanted sales calls at donotcall.gov. Then block the number.' },
+];
+
+const BROKERS = [
+  { id: "whitepages", name: "Whitepages (and 411.com)", tag: "Phone", url: "https://www.whitepages.com/suppression_requests", how: "Find your listing, paste its link, and confirm with the automated call to your phone. Covers 411.com too." },
+  { id: "usphonebook", name: "USPhoneBook", tag: "Phone", url: "https://www.usphonebook.com/opt-out/", how: "Search your number or name, pick your listing, remove. No email needed." },
+  { id: "spokeo", name: "Spokeo", tag: "Phone", url: "https://www.spokeo.com/optout", how: "Search yourself on spokeo.com, copy your listing's link, paste it on the opt-out page, then click the email link. Repeat for each listing." },
+  { id: "fastpeoplesearch", name: "FastPeopleSearch", tag: "Phone", url: "https://www.fastpeoplesearch.com/removal", how: "Search, open your record, request removal, solve the captcha." },
+  { id: "truepeoplesearch", name: "TruePeopleSearch", tag: "Phone", url: "https://www.truepeoplesearch.com/removal", how: "Enter name, city, state and email, pick your record, confirm by email." },
+  { id: "thatsthem", name: "That's Them", tag: "Phone", url: "https://thatsthem.com/optout", how: "Fill in the form with the details shown on your listing." },
+  { id: "peopleconnect", name: "Intelius, TruthFinder, Instant Checkmate, US Search, ZabaSearch", tag: "5 sites in one", url: "https://suppression.peopleconnect.us/login", how: "One PeopleConnect opt-out covers all five. Sign in with an email code, find your record, suppress it." },
+  { id: "beenverified", name: "BeenVerified (and PeopleLooker, PeopleSmart)", tag: "3 sites in one", url: "https://www.beenverified.com/app/optout/search", how: "Search, pick your record, confirm by email. One opt-out per email address." },
+  { id: "mylife", name: "MyLife", url: "https://www.mylife.com/privacyrequest", how: "Submit the privacy request form, or email privacy@mylife.com with your profile link. Can be slow; follow up if it's still there." },
+  { id: "radaris", name: "Radaris", url: "https://radaris.com/page/how-to-remove", how: "Follow the removal steps for your profile, then confirm by email." },
+  { id: "peoplefinders", name: "PeopleFinders (and SmartBackgroundChecks)", url: "https://www.peoplefinders.com/opt-out", how: "Fill in the form and confirm by email. Also do smartbackgroundchecks.com/optout; the two share data." },
+  { id: "cyberbackground", name: "CyberBackgroundChecks", url: "https://www.cyberbackgroundchecks.com/removal", how: "Find your record and request removal." },
+  { id: "advancedbg", name: "AdvancedBackgroundChecks", url: "https://www.advancedbackgroundchecks.com/removal", how: "Find your record and request removal." },
+  { id: "searchpeoplefree", name: "SearchPeopleFree", url: "https://www.searchpeoplefree.com/opt-out", how: "Search, select your listing, opt out." },
+  { id: "familytreenow", name: "FamilyTreeNow", url: "https://www.familytreenow.com/optout", how: "Find your record, paste its link, solve the captcha." },
+  { id: "peekyou", name: "PeekYou", url: "https://www.peekyou.com/about/contact/optout", how: "Find your profile link first, then submit the form." },
+  { id: "clustrmaps", name: "ClustrMaps", url: "https://clustrmaps.com/bl/opt-out", how: "Find your listing and submit the opt-out form." },
+  { id: "checkpeople", name: "CheckPeople", url: "https://checkpeople.com/opt-out", how: "Asks for full legal name and birthdate to match your record." },
+  { id: "acxiom", name: "Acxiom", tag: "Marketing lists", url: "https://isapps.acxiom.com/optout/optout.aspx", how: "One of the biggest marketing data sellers. Fill in the form for each person." },
+  { id: "lexisnexis", name: "LexisNexis", tag: "Marketing lists", url: "https://optout.lexisnexis.com/", how: "Online form. Removes you from their people-search products." },
+  { id: "epsilon", name: "Epsilon", tag: "Marketing lists", url: "", how: "No web form. Email optout@epsilon.com with the subject \"Removal\" and your full name and address." },
+  { id: "dataaxle", name: "Data Axle", tag: "Marketing lists", url: "https://data-axle.com/do-not-sell-my-data/", how: "Submit the do-not-sell / delete request form." },
+];
+
+const OPTS_QUICK = [["todo", "To do"], ["done", "Done"]];
+const OPTS_BROKER = [["todo", "To do"], ["sent", "Requested"], ["gone", "Removed"], ["none", "Not listed"]];
+const DAY = 86400000, MAX_PEOPLE = 4, STORE = "spam-shutdown-v1";
+
+let state = { people: [{ id: "p1", name: "" }], status: {} };
+let filter = "all";
+
+function load() {
+  try { const raw = localStorage.getItem(STORE); if (raw) { const v = JSON.parse(raw); if (valid(v)) state = v; } } catch (e) {}
+}
+function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { say("This browser isn't saving changes (private window?). Copy a backup code before you close the page.", true); } }
+function valid(v) { return v && Array.isArray(v.people) && v.people.length > 0 && v.people.length <= MAX_PEOPLE && v.people.every(p => p && typeof p.id === "string") && v.status && typeof v.status === "object"; }
+
+const k = (p, id) => p + ":" + id;
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const toDate = iso => new Date(iso + "T12:00:00");
+const fmt = d => d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+const label = (p, i) => (p.name || "").trim() || (state.people.length === 1 ? "You" : "Person " + (i + 1));
+
+function dueInfo(rec) {
+  if (!rec || !rec.at) return null;
+  const wait = rec.s === "sent" ? 14 : (rec.s === "gone" || rec.s === "none") ? 90 : 0;
+  if (!wait) return null;
+  const when = new Date(toDate(rec.at).getTime() + wait * DAY);
+  return { due: Date.now() >= when.getTime(), when, sent: rec.s === "sent" };
+}
+
+function track(p, pi, item, isQuick) {
+  const rec = state.status[k(p.id, item.id)] || { s: "todo" };
+  const t = document.createElement("div"); t.className = "track" + (state.people.length === 1 ? " solo" : "");
+  const who = document.createElement("span"); who.className = "who"; who.textContent = label(p, pi);
+  const seg = document.createElement("div"); seg.className = "seg"; seg.setAttribute("role", "group"); seg.setAttribute("aria-label", label(p, pi) + ": " + (item.title || item.name));
+  for (const [s, txt] of isQuick ? OPTS_QUICK : OPTS_BROKER) {
+    const b = document.createElement("button"); b.type = "button"; b.dataset.s = s; b.textContent = txt;
+    b.setAttribute("aria-pressed", String(rec.s === s));
+    b.addEventListener("click", () => setStatus(p.id, item.id, s));
+    seg.append(b);
+  }
+  t.append(who, seg);
+  const when = document.createElement("span"); when.className = "when";
+  const d = isQuick ? null : dueInfo(rec);
+  if (d && d.due) { when.classList.add("due"); when.textContent = d.sent ? "Check if it's gone" : "Time to re-check"; }
+  else if (d) when.textContent = (d.sent ? "Check " : "Re-check ") + fmt(d.when);
+  else if (rec.at && rec.s !== "todo") when.textContent = "Done " + fmt(toDate(rec.at));
+  if (when.textContent) t.append(when);
+  return t;
+}
+
+function itemEl(item, idx, isQuick) {
+  const r = document.createElement("div"); r.className = "item";
+  const n = document.createElement("span"); n.className = "n"; n.textContent = String(idx + 1); n.setAttribute("aria-hidden", "true");
+  const h = document.createElement("h3");
+  if (item.url) { const a = document.createElement("a"); a.href = item.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = item.name; h.append(a); }
+  else h.append(document.createTextNode(item.title || item.name));
+  if (item.tag) { const t = document.createElement("span"); t.className = "tag"; t.textContent = item.tag; h.append(t); }
+  const how = document.createElement("p"); how.className = "how"; how.innerHTML = item.how; // fixed, author-written text only
+  const tr = document.createElement("div"); tr.className = "tracks";
+  state.people.forEach((p, pi) => tr.append(track(p, pi, item, isQuick)));
+  r.append(n, h, how, tr);
+  return r;
+}
+
+function brokerMatches(item) {
+  if (filter === "all") return true;
+  if (filter === "phone") return item.tag === "Phone";
+  return state.people.some(p => {
+    const rec = state.status[k(p.id, item.id)];
+    if (filter === "open") return !rec || rec.s === "todo";
+    if (filter === "due") { const d = dueInfo(rec); return d && d.due; }
+  });
+}
+
+function renderPeople() {
+  const row = document.getElementById("peopleRow");
+  row.querySelectorAll(".person, .add").forEach(e => e.remove());
+  state.people.forEach((p, i) => {
+    const w = document.createElement("div"); w.className = "person";
+    const inp = document.createElement("input"); inp.id = "name-" + p.id; inp.value = p.name || ""; inp.placeholder = label({ name: "" }, i); inp.autocomplete = "off"; inp.maxLength = 30;
+    inp.setAttribute("aria-label", "Name for person " + (i + 1));
+    inp.addEventListener("input", () => { p.name = inp.value; save(); renderLists(); renderMeters(); });
+    w.append(inp);
+    if (state.people.length > 1) {
+      const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Remove " + label(p, i));
+      x.addEventListener("click", () => removePerson(p.id, x));
+      w.append(x);
+    }
+    row.append(w);
+  });
+  if (state.people.length < MAX_PEOPLE) {
+    const a = document.createElement("button"); a.type = "button"; a.className = "add"; a.textContent = "+ Add someone in your household";
+    a.addEventListener("click", () => {
+      let n = 1; while (state.people.some(p => p.id === "p" + n)) n++;
+      state.people.push({ id: "p" + n, name: "" }); save(); render();
+      document.getElementById("name-p" + n)?.focus();
+    });
+    row.append(a);
+  }
+}
+
+let armedRemove = null;
+function removePerson(id, btn) {
+  const has = Object.keys(state.status).some(key => key.startsWith(id + ":") && state.status[key].s !== "todo");
+  if (has && armedRemove !== id) { armedRemove = id; btn.textContent = "Sure?"; btn.style.width = "auto"; btn.style.padding = "0 8px"; btn.style.fontSize = ".8rem"; setTimeout(() => { if (armedRemove === id) { armedRemove = null; renderPeople(); } }, 4000); return; }
+  armedRemove = null;
+  state.people = state.people.filter(p => p.id !== id);
+  for (const key of Object.keys(state.status)) if (key.startsWith(id + ":")) delete state.status[key];
+  save(); render();
+}
+
+function renderMeters() {
+  const total = QUICK.length + BROKERS.length;
+  let due = 0;
+  const m = document.getElementById("meters");
+  m.replaceChildren(...state.people.map((p, i) => {
+    let done = 0;
+    for (const q of QUICK) if ((state.status[k(p.id, q.id)] || {}).s === "done") done++;
+    for (const b of BROKERS) { const rec = state.status[k(p.id, b.id)]; if (rec && (rec.s === "gone" || rec.s === "none")) done++; const d = dueInfo(rec); if (d && d.due) due++; }
+    const el = document.createElement("div"); el.className = "meter";
+    const lab = document.createElement("div"); lab.className = "lab";
+    const b = document.createElement("b"); b.textContent = label(p, i);
+    const num = document.createElement("span"); num.className = "num"; num.textContent = done + " of " + total + " cleared";
+    lab.append(b, num);
+    const bar = document.createElement("div"); bar.className = "bar"; const fill = document.createElement("i"); fill.style.width = (done / total * 100) + "%"; bar.append(fill);
+    el.append(lab, bar);
+    return el;
+  }));
+  if (due) { const c = document.createElement("span"); c.className = "duechip"; c.textContent = due === 1 ? "1 item needs a check" : due + " items need a check"; m.append(c); }
+}
+
+function renderLists() {
+  document.getElementById("quick").replaceChildren(...QUICK.map((q, i) => itemEl(q, i, true)));
+  const shown = BROKERS.filter(brokerMatches);
+  const br = document.getElementById("brokers");
+  if (shown.length) br.replaceChildren(...shown.map((b, i) => itemEl(b, i, false)));
+  else { const e = document.createElement("p"); e.className = "empty"; e.textContent = filter === "due" ? "Nothing needs a check right now." : "All done here. Nice work."; br.replaceChildren(e); }
+}
+
+function render() { renderPeople(); renderMeters(); renderLists(); }
+
+function setStatus(pid, id, s) {
+  state.status[k(pid, id)] = s === "todo" ? { s: "todo", at: "" } : { s, at: today() };
+  save(); renderMeters(); renderLists();
+}
+
+document.getElementById("filters").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  filter = b.dataset.f;
+  for (const x of e.currentTarget.querySelectorAll("button")) x.setAttribute("aria-pressed", String(x === b));
+  renderLists();
+});
+
+function say(t, err) { const s = document.getElementById("status"); s.textContent = t; s.classList.toggle("err", !!err); }
+function code() { return btoa(unescape(encodeURIComponent(JSON.stringify(state)))); }
+
+document.getElementById("copyBtn").addEventListener("click", () => {
+  const c = code(), out = document.getElementById("codeOut");
+  out.value = c;
+  const fallback = () => { out.hidden = false; out.focus(); out.select(); say("Copy the selected code and keep it somewhere safe, like a note or an email to yourself."); };
+  try { navigator.clipboard.writeText(c).then(() => { out.hidden = true; say("Backup code copied. Paste it into a note or an email to yourself."); }, fallback); }
+  catch (e) { fallback(); }
+});
+document.getElementById("restoreToggle").addEventListener("click", () => { const b = document.getElementById("restoreBox"); b.hidden = !b.hidden; if (!b.hidden) document.getElementById("restoreText").focus(); });
+document.getElementById("restoreBtn").addEventListener("click", () => {
+  const raw = document.getElementById("restoreText").value.trim();
+  try { const v = JSON.parse(decodeURIComponent(escape(atob(raw)))); if (!valid(v)) throw 0; state = v; save(); render(); document.getElementById("restoreBox").hidden = true; document.getElementById("restoreText").value = ""; say("Progress restored."); }
+  catch (e) { say("That code didn't work. Make sure you copied the whole thing, with no extra spaces.", true); }
+});
+let resetArmed = false;
+document.getElementById("resetBtn").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if (!resetArmed) { resetArmed = true; b.classList.add("armed"); b.textContent = "Erase everything? Press again"; setTimeout(() => { resetArmed = false; b.classList.remove("armed"); b.textContent = "Start over"; }, 5000); return; }
+  resetArmed = false; b.classList.remove("armed"); b.textContent = "Start over";
+  state = { people: [{ id: "p1", name: "" }], status: {} }; save(); render(); say("Cleared. You're starting fresh.");
+});
+
+load();
+render();
+</script>
+
+</body>
+</html>
